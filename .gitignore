@@ -1,0 +1,7 @@
+.settings/
+test/
+Unix-Debug/
+Unix-Release/
+WTF/
+.cproject
+.project
