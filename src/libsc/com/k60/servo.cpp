@@ -23,14 +23,52 @@
 namespace libsc
 {
 
+namespace
+{
+
+inline FTMn_e GetFtmModule(const uint8_t id)
+{
+#if LIBSC_USE_SERVO == 1
+	return FtmUtils::GetFtmModule<LIBSC_SERVO0>();
+
+#elif LIBSC_USE_SERVO > 1
+	switch (id)
+	{
+	case 0:
+		return FtmUtils::GetFtmModule<LIBSC_SERVO0>();
+
+	case 1:
+		return FtmUtils::GetFtmModule<LIBSC_SERVO1>();
+	}
+#endif
+}
+
+inline FTM_CHn_e GetFtmChannel(const uint8_t id)
+{
+#if LIBSC_USE_SERVO == 1
+	return FtmUtils::GetFtmChannel<LIBSC_SERVO0>();
+
+#elif LIBSC_USE_SERVO > 1
+	switch (id)
+	{
+	case 0:
+		return FtmUtils::GetFtmChannel<LIBSC_SERVO0>();
+
+	case 1:
+		return FtmUtils::GetFtmChannel<LIBSC_SERVO1>();
+	}
+#endif
+}
+
+}
+
 #ifdef LIBSC_USE_SERVO
 
 Servo::Servo(const uint8_t id)
 		: m_id(id)
 {
 	m_degree = 90;
-	FTM_PWM_init(FtmUtils::GetFtmModule<LIBSC_SERVO0>(),
-			FtmUtils::GetFtmChannel<LIBSC_SERVO0>(), 50, 750);
+	FTM_PWM_init(GetFtmModule(id), GetFtmChannel(id), 50, 750);
 }
 
 void Servo::SetDegree(const uint8_t degree)
@@ -43,8 +81,7 @@ void Servo::SetDegree(const uint8_t degree)
 
 	const uint32_t duty = static_cast<uint32_t>((real_degree / 180.0f)
 			* (PWM_MAX - PWM_MIN)) + PWM_MIN;
-	FTM_PWM_Duty(FtmUtils::GetFtmModule<LIBSC_SERVO0>(),
-			FtmUtils::GetFtmChannel<LIBSC_SERVO0>(), duty);
+	FTM_PWM_Duty(GetFtmModule(m_id), GetFtmChannel(m_id), duty);
 	m_degree = real_degree;
 }
 
@@ -54,9 +91,9 @@ void Servo::AddDegree(const int16_t degree)
 }
 
 #else
-Servo::Servo(const uint8_t id) {}
-void Servo::SetDegree(const uint8_t degree) {}
-void Servo::AddDegree(const int16_t degree) {}
+Servo::Servo(const uint8_t) : m_id(0) {}
+void Servo::SetDegree(const uint8_t) {}
+void Servo::AddDegree(const int16_t) {}
 
 #endif
 
