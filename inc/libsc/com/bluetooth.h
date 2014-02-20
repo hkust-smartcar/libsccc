@@ -1,6 +1,6 @@
 /*
  * bluetooth.h
- * Bluetooth abstraction
+ * Bluetooth abstraction. For compatibility only, consider using UartDevice
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
@@ -9,35 +9,15 @@
 #ifndef LIBSC_BLUETOOTH_H_
 #define LIBSC_BLUETOOTH_H_
 
-#include <cstdint>
-
-#include <vectors.h>
+#include "libsc/com/uart_device.h"
 
 namespace libsc
 {
 
-class Bluetooth
+class Bluetooth : public UartDevice
 {
 public:
 	Bluetooth();
-	~Bluetooth();
-
-	void StartReceive();
-	void StopReceive();
-	void SendChar(const char ch);
-	void SendStr(const char *str);
-	void SendBuffer(const uint8_t *buf, const uint32_t len);
-	bool PeekChar(char *out_char);
-
-private:
-	static __ISR void IrqHandler();
-
-	struct Chunk;
-	Chunk *m_head;
-	volatile Chunk *m_tail;
-
-	static Bluetooth *m_instance;
-	static bool m_is_initialized;
 };
 
 }
