@@ -26,12 +26,12 @@ namespace libsc
 namespace
 {
 
+#if LIBSC_USE_SERVO == 1
+#define GetFtmModule(x) FtmUtils::GetFtmModule<LIBSC_SERVO0>()
+
+#else
 inline FTMn_e GetFtmModule(const uint8_t id)
 {
-#if LIBSC_USE_SERVO == 1
-	return FtmUtils::GetFtmModule<LIBSC_SERVO0>();
-
-#elif LIBSC_USE_SERVO > 1
 	switch (id)
 	{
 	case 0:
@@ -40,15 +40,16 @@ inline FTMn_e GetFtmModule(const uint8_t id)
 	case 1:
 		return FtmUtils::GetFtmModule<LIBSC_SERVO1>();
 	}
-#endif
 }
 
+#endif
+
+#if LIBSC_USE_MOTOR == 1
+#define GetFtmChannel(x) FtmUtils::GetFtmChannel<LIBSC_SERVO0>()
+
+#else
 inline FTM_CHn_e GetFtmChannel(const uint8_t id)
 {
-#if LIBSC_USE_SERVO == 1
-	return FtmUtils::GetFtmChannel<LIBSC_SERVO0>();
-
-#elif LIBSC_USE_SERVO > 1
 	switch (id)
 	{
 	case 0:
@@ -57,8 +58,9 @@ inline FTM_CHn_e GetFtmChannel(const uint8_t id)
 	case 1:
 		return FtmUtils::GetFtmChannel<LIBSC_SERVO1>();
 	}
-#endif
 }
+
+#endif
 
 }
 
