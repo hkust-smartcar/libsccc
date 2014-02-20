@@ -9,17 +9,31 @@
 #ifndef LIBSC_2013_GEN2_H_
 #define LIBSC_2013_GEN2_H_
 
-#define LIBSC_USE_BT 1
-#define LIBSC_USE_ENCODER 2
+/*
+ * The number should represent the number of devices available, e.g.,
+ * define LIBSC_USE_UART to 2 when there are two UART devices connected. Comment
+ * out the specific defines instead of defining them to 0 for unused devices
+ */
+#define LIBSC_USE_UART 1
+#define LIBSC_USE_ENCODER 1
+#define LIBSC_USE_ENCODER_FTM
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LCD_HW_SPI
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 2
-#define LIBSC_USE_SERVO 1
+//#define LIBSC_USE_SERVO 1
 
 #define LIBSC_BT_UART UART3
+
+#ifdef LIBSC_USE_ENCODER_FTM
+#define LIBSC_ENCODER0_OUT PTB18
+#define LIBSC_ENCODER0_VCC PTB19
+
+#else
 #define LIBSC_ENCODER0 PTA6
 #define LIBSC_ENCODER1 PTA7
+
+#endif
 
 #ifdef LIBSC_USE_LCD_HW_SPI
 #define LIBSC_LCD_RST PTA13

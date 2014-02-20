@@ -9,7 +9,7 @@
 #ifndef LIBSC_CONFIG_INNO_H_
 #define LIBSC_CONFIG_INNO_H_
 
-#define LIBSC_USE_BT 1
+#define LIBSC_USE_UART 1
 #define LIBSC_USE_ENCODER 1
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LED 4
