@@ -24,15 +24,90 @@ namespace libsc
 
 #ifdef LIBSC_USE_MOTOR
 
+namespace
+{
+
+#if LIBSC_USE_MOTOR == 1
+#define GetFtmModule(x) FtmUtils::GetFtmModule<LIBSC_MOTOR0_PWM>()
+
+#else
+inline FTMn_e GetFtmModule(const uint8_t id)
+{
+	switch (id)
+	{
+	case 0:
+		return FtmUtils::GetFtmModule<LIBSC_MOTOR0_PWM>();
+
+	case 1:
+		return FtmUtils::GetFtmModule<LIBSC_MOTOR1_PWM>();
+	}
+}
+
+#endif
+
+#if LIBSC_USE_MOTOR == 1
+#define GetFtmChannel(x) FtmUtils::GetFtmChannel<LIBSC_MOTOR0_PWM>()
+
+#else
+inline FTM_CHn_e GetFtmChannel(const uint8_t id)
+{
+	switch (id)
+	{
+	case 0:
+		return FtmUtils::GetFtmChannel<LIBSC_MOTOR0_PWM>();
+
+	case 1:
+		return FtmUtils::GetFtmChannel<LIBSC_MOTOR1_PWM>();
+	}
+}
+
+#endif
+
+#if LIBSC_USE_MOTOR == 1
+#define GetDirGpio(x) LIBSC_MOTOR0_DIR
+
+#else
+inline PTXn_e GetDirGpio(const uint8_t id)
+{
+	switch (id)
+	{
+	case 0:
+		return LIBSC_MOTOR0_DIR;
+
+	case 1:
+		return LIBSC_MOTOR1_DIR;
+	}
+}
+
+#endif
+
+#if LIBSC_USE_MOTOR == 1
+#define GetDirPinOut(x) LIBSC_PIN_OUT(LIBSC_MOTOR0_DIR)
+
+#else
+inline uint32_t volatile* GetDirPinOut(const uint8_t id)
+{
+	switch (id)
+	{
+	case 0:
+		return LIBSC_PIN_OUT(LIBSC_MOTOR0_DIR);
+
+	case 1:
+		return LIBSC_PIN_OUT(LIBSC_MOTOR1_DIR);
+	}
+}
+#endif
+
+}
+
 Motor::Motor(const uint8_t id)
 		: m_id(id)
 {
 	m_power = 0;
 	m_is_clockwise = true;
 
-	FTM_PWM_init(FtmUtils::GetFtmModule<LIBSC_MOTOR0_PWM>(),
-			FtmUtils::GetFtmChannel<LIBSC_MOTOR0_PWM>(), 10000, 0);
-	gpio_init(LIBSC_MOTOR0_DIR, GPO, 1);
+	FTM_PWM_init(GetFtmModule(id), GetFtmChannel(id), 10000, 0);
+	gpio_init(GetDirGpio(id), GPO, 1);
 }
 
 void Motor::SetPower(const uint16_t power)
@@ -43,8 +118,7 @@ void Motor::SetPower(const uint16_t power)
 		return;
 	}
 
-	FTM_PWM_Duty(FtmUtils::GetFtmModule<LIBSC_MOTOR0_PWM>(),
-			FtmUtils::GetFtmChannel<LIBSC_MOTOR0_PWM>(), real_power * 10);
+	FTM_PWM_Duty(GetFtmModule(m_id), GetFtmChannel(m_id), real_power * 10);
 	m_power = real_power;
 	return;
 }
@@ -61,7 +135,7 @@ void Motor::SetClockwise(const bool flag)
 		return;
 	}
 
-	LIBSC_PIN_OUT(LIBSC_MOTOR0_DIR) = flag ? 1 : 0;
+	GetDirPinOut(m_id) = flag ? 1 : 0;
 	m_is_clockwise = flag;
 }
 
