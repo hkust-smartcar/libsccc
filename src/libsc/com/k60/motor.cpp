@@ -10,6 +10,7 @@
 #include <hw_common.h>
 #include <cstdint>
 
+#include <assert.h>
 #include <MK60_FTM.h>
 #include <MK60_gpio.h>
 
@@ -35,6 +36,8 @@ inline FTMn_e GetFtmModule(const uint8_t id)
 {
 	switch (id)
 	{
+	default:
+		assert(0);
 	case 0:
 		return FtmUtils::GetFtmModule<LIBSC_MOTOR0_PWM>();
 
@@ -53,6 +56,8 @@ inline FTM_CHn_e GetFtmChannel(const uint8_t id)
 {
 	switch (id)
 	{
+	default:
+		assert(0);
 	case 0:
 		return FtmUtils::GetFtmChannel<LIBSC_MOTOR0_PWM>();
 
@@ -71,6 +76,8 @@ inline PTXn_e GetDirGpio(const uint8_t id)
 {
 	switch (id)
 	{
+	default:
+		assert(0);
 	case 0:
 		return LIBSC_MOTOR0_DIR;
 
@@ -79,23 +86,6 @@ inline PTXn_e GetDirGpio(const uint8_t id)
 	}
 }
 
-#endif
-
-#if LIBSC_USE_MOTOR == 1
-#define GetDirPinOut(x) LIBSC_PIN_OUT(LIBSC_MOTOR0_DIR)
-
-#else
-inline uint32_t volatile* GetDirPinOut(const uint8_t id)
-{
-	switch (id)
-	{
-	case 0:
-		return LIBSC_PIN_OUT(LIBSC_MOTOR0_DIR);
-
-	case 1:
-		return LIBSC_PIN_OUT(LIBSC_MOTOR1_DIR);
-	}
-}
 #endif
 
 }
@@ -135,7 +125,7 @@ void Motor::SetClockwise(const bool flag)
 		return;
 	}
 
-	GetDirPinOut(m_id) = flag ? 1 : 0;
+	gpio_set(GetDirGpio(m_id), flag ? 1 : 0);
 	m_is_clockwise = flag;
 }
 
