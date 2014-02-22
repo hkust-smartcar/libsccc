@@ -272,17 +272,15 @@ void Lcd::Send(const bool is_cmd, const uint8_t data) const
 #endif /* LIBSC_USE_LCD_HW_SPI */
 
 #else
-Lcd::Lcd() {}
+Lcd::Lcd(const bool) {}
 void Lcd::Clear() {}
-void Lcd::Clear(const uint16_t color) {}
-void Lcd::DrawPixel(const uint8_t x, const uint8_t y,const uint16_t color) const {}
-void Lcd::DrawChar(const uint8_t x, const uint8_t y, const char ch,
-		const uint16_t color) const {}
-void Lcd::DrawChar(const uint8_t x, const uint8_t y, const char ch,
-		const uint16_t color, const uint16_t bg_color) const {}
-void Lcd::SetActiveRect(const uint8_t x, const uint8_t y, const uint8_t w,
-		const uint8_t h) const {}
-void Lcd::Send(const bool is_cmd, const uint8_t data) const {}
+void Lcd::Clear(const uint16_t) {}
+void Lcd::DrawPixel(const uint8_t, const uint8_t,const uint16_t) const {}
+void Lcd::DrawChar(const uint8_t, const uint8_t, const char,
+		const uint16_t, const uint16_t) const {}
+void Lcd::SetActiveRect(const uint8_t, const uint8_t, const uint8_t,
+		const uint8_t) const {}
+void Lcd::Send(const bool, const uint8_t) const {}
 
 #endif /* LIBSC_USE_LCD */
 
