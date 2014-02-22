@@ -23,6 +23,8 @@
 namespace libsc
 {
 
+#ifdef LIBSC_USE_SERVO
+
 namespace
 {
 
@@ -63,8 +65,6 @@ inline FTM_CHn_e GetFtmChannel(const uint8_t id)
 #endif
 
 }
-
-#ifdef LIBSC_USE_SERVO
 
 Servo::Servo(const uint8_t id)
 		: m_id(id)
