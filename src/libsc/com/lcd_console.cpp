@@ -79,19 +79,16 @@ void LcdConsole::PrintSplashScreen()
 	PrintString("Louis Harrison");
 	m_cursor_x = 0;
 	m_cursor_y += 16;
-	PrintString("Ben Cindy CK");
+	PrintString("Ben Cindy David");
 	m_cursor_x = 0;
 	m_cursor_y += 16;
-	PrintString("David Fai Jimmy");
+	PrintString("Fai Jimmy Ming");
 	m_cursor_x = 0;
 	m_cursor_y += 16;
-	PrintString("Martha Ming Ray");
+	PrintString("Ryan Spartey");
 	m_cursor_x = 0;
 	m_cursor_y += 16;
-	PrintString("Spartey Vibhor");
-	m_cursor_x = 0;
-	m_cursor_y += 16;
-	PrintString("Yumi");
+	PrintString("Vibhor Yumi");
 
 	m_cursor_x = 0;
 	m_cursor_y = 0;
