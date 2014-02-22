@@ -51,7 +51,7 @@ struct UartDevice::Chunk
 	Chunk *next;
 };
 
-UartDevice::UartDevice(const uint8_t uart_port)
+UartDevice::UartDevice(const uint8_t uart_port, const uint32_t baud_rate)
 		: m_uart_port(uart_port)
 {
 	for (m_device_id = 0; m_device_id < LIBSC_USE_UART; ++m_device_id)
@@ -69,7 +69,7 @@ UartDevice::UartDevice(const uint8_t uart_port)
 	}
 
 	m_tail = m_head = new Chunk;
-	uart_init(static_cast<UARTn_e>(UART0 + uart_port), 115200);
+	uart_init(UARTX(uart_port), baud_rate);
 }
 
 UartDevice::~UartDevice()

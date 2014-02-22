@@ -19,7 +19,7 @@ namespace libsc
 class UartDevice
 {
 public:
-	UartDevice(const uint8_t uart_port);
+	UartDevice(const uint8_t uart_port, const uint32_t baud_rate);
 	~UartDevice();
 
 	void StartReceive();
