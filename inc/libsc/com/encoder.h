@@ -1,5 +1,15 @@
+/*
+ * encoder.h
+ * Encoder
+ *
+ * Author: Ming Tsang
+ * Copyright (c) 2014 HKUST SmartCar Team
+ */
+
 #ifndef LIBSC_ENCODER_H_
 #define LIBSC_ENCODER_H_
+
+#include <cstdint>
 
 namespace libsc
 {
@@ -7,19 +17,18 @@ namespace libsc
 class Encoder
 {
 public:
-	Encoder();
+	Encoder(const uint8_t id);
 
-	uint16_t GetCount() const
+	uint32_t GetCount();
+
+	static uint32_t CountDiff(const uint32_t a, const uint32_t b)
 	{
-		return m_count;
-	}
-	uint16_t CountDiff(const uint16_t a) const
-	{
-		return 0;
+		return (uint32_t)(b - a);
 	}
 
 private:
-	static volatile uint16_t m_count;
+	const uint8_t m_id;
+	uint32_t m_count;
 };
 
 }
