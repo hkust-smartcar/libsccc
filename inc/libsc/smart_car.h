@@ -42,8 +42,16 @@ public:
 	}
 
 	void SetMotorDirection(const bool is_forward);
-	void SetMotorPower(const uint16_t power);
-	void AddMotorPower(const uint16_t factor);
+	void SetMotorPower(const uint16_t power)
+	{
+		m_motor.SetPower(power);
+	}
+
+	void AddMotorPower(const uint16_t factor)
+	{
+		m_motor.AddPower(factor);
+	}
+
 	void AddMotorPowerTil(const uint16_t factor, const uint16_t max);
 	void DropMotorPower(const uint16_t factor);
 	void DropMotorPowerTil(const uint16_t factor, const uint16_t min);
@@ -76,15 +84,36 @@ public:
 	 * @param id The id of the LED, [0, 3]
 	 * @param flag
 	 */
-	void SwitchLed(const uint8_t id, const bool flag);
+	void SwitchLed(const uint8_t id, const bool flag)
+	{
+		m_leds[id].SetEnable(flag);
+	}
 
-	void BluetoothSendStr(const char *str);
-	void BluetoothSendBuffer(const uint8_t *buf, const uint32_t len);
-	bool BluetoothPeekChar(char *out_ch);
+	void BluetoothSendStr(const char *str)
+	{
+		m_bt.SendStr(str);
+	}
+
+	void BluetoothSendBuffer(const uint8_t *buf, const uint32_t len)
+	{
+		m_bt.SendBuffer(buf, len);
+	}
+
+	bool BluetoothPeekChar(char *out_ch)
+	{
+		return m_bt.PeekChar(out_ch);
+	}
 
 	bool IsMotorForward() const;
-	bool IsMotorStop() const;
-	uint16_t GetMotorPower() const;
+	bool IsMotorStop() const
+	{
+		return !m_motor.GetPower();
+	}
+
+	uint16_t GetMotorPower() const
+	{
+		return m_motor.GetPower();
+	}
 
 	uint8_t GetRightPercentge() const;
 

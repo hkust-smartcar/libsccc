@@ -38,16 +38,6 @@ void SmartCar::SetMotorDirection(const bool is_forward)
 	m_motor.SetClockwise(!is_forward);
 }
 
-void SmartCar::SetMotorPower(const uint16_t power)
-{
-	m_motor.SetPower(power);
-}
-
-void SmartCar::AddMotorPower(const uint16_t factor)
-{
-	m_motor.AddPower(factor);
-}
-
 void SmartCar::AddMotorPowerTil(const uint16_t factor, const uint16_t max)
 {
 	const uint16_t curr_power = GetMotorPower();
@@ -87,39 +77,9 @@ void SmartCar::SetRightPercentage(const uint8_t percentage)
 			+ SERVO_MIN_DEGREE);
 }
 
-void SmartCar::SwitchLed(const uint8_t id, const bool flag)
-{
-	m_leds[id].SetEnable(flag);
-}
-
-void SmartCar::BluetoothSendStr(const char *str)
-{
-	m_bt.SendStr(str);
-}
-
-void SmartCar::BluetoothSendBuffer(const uint8_t *buf, const uint32_t len)
-{
-	m_bt.SendBuffer(buf, len);
-}
-
-bool SmartCar::BluetoothPeekChar(char *out_ch)
-{
-	return m_bt.PeekChar(out_ch);
-}
-
 bool SmartCar::IsMotorForward() const
 {
 	return !m_motor.IsClockwise();
-}
-
-bool SmartCar::IsMotorStop() const
-{
-	return !m_motor.GetPower();
-}
-
-uint16_t SmartCar::GetMotorPower() const
-{
-	return m_motor.GetPower();
 }
 
 uint8_t SmartCar::GetRightPercentge() const
