@@ -8,6 +8,7 @@
 
 #include <cstdint>
 
+#include "libsc/com/config.h"
 #include "libsc/com/bluetooth.h"
 #include "libsc/com/led.h"
 #include "libsc/com/motor.h"
@@ -94,6 +95,11 @@ void SmartCar::SwitchLed(const uint8_t id, const bool flag)
 void SmartCar::BluetoothSendStr(const char *str)
 {
 	m_bt.SendStr(str);
+}
+
+void SmartCar::BluetoothSendBuffer(const uint8_t *buf, const uint32_t len)
+{
+	m_bt.SendBuffer(buf, len);
 }
 
 bool SmartCar::BluetoothPeekChar(char *out_ch)

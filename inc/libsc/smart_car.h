@@ -79,6 +79,7 @@ public:
 	void SwitchLed(const uint8_t id, const bool flag);
 
 	void BluetoothSendStr(const char *str);
+	void BluetoothSendBuffer(const uint8_t *buf, const uint32_t len);
 	bool BluetoothPeekChar(char *out_ch);
 
 	bool IsMotorForward() const;
