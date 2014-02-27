@@ -46,7 +46,7 @@ inline FTMn_e GetFtmModule(const uint8_t id)
 
 #endif
 
-#if LIBSC_USE_MOTOR == 1
+#if LIBSC_USE_SERVO == 1
 #define GetFtmChannel(x) FtmUtils::GetFtmChannel<LIBSC_SERVO0>()
 
 #else
