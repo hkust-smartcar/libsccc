@@ -12,6 +12,7 @@
 #include <cstdint>
 
 #include "libsc/com/bluetooth.h"
+#include "libsc/com/encoder.h"
 #include "libsc/com/led.h"
 #include "libsc/com/motor.h"
 #include "libsc/com/servo.h"
@@ -115,10 +116,16 @@ public:
 		return m_motor.GetPower();
 	}
 
+	uint32_t GetEncoderCunt()
+	{
+		return m_encoder.GetCount();
+	}
+
 	uint8_t GetRightPercentge() const;
 
 private:
 	Bluetooth m_bt;
+	Encoder m_encoder;
 	Led m_leds[4];
 	Motor m_motor;
 	Servo m_servo;

@@ -17,7 +17,7 @@
 
 #include "libsc/smart_car.h"
 
-#define SERVO_MID_DEGREE 85
+#define SERVO_MID_DEGREE 90
 #define SERVO_AMPLITUDE 40
 #define SERVO_MAX_DEGREE (SERVO_MID_DEGREE + SERVO_AMPLITUDE)
 #define SERVO_MIN_DEGREE (SERVO_MID_DEGREE - SERVO_AMPLITUDE)
@@ -26,9 +26,11 @@ namespace libsc
 {
 
 SmartCar::SmartCar()
-		: m_leds{Led(0), Led(1), Led(2), Led(3)}, m_motor(0), m_servo(0)
+		: m_encoder{0}, m_leds{Led(0), Led(1), Led(2), Led(3)}, m_motor(0),
+		  m_servo(0)
 {
 	m_motor.SetPower(0);
+	SetMotorDirection(true);
 	m_servo.SetDegree(SERVO_MID_DEGREE);
 	m_bt.StartReceive();
 }
