@@ -86,9 +86,9 @@ __ISR void PortIsrManager::IsrHandler()
 	tIsrFunc *port_handlers = PortIsrManager::GetInstance()->m_handlers[port];
 	for (int i = 0; i < PIN_COUNT; ++i)
 	{
-		if ((PORT_ISFR_REG(PORTX_BASE(port)) & (1 << i)))
+		if ((PORT_ISFR_REG(PORTX[port]) & (1 << i)))
 		{
-			PORT_ISFR_REG(PORTX_BASE(port)) |= (1 << i);
+			PORT_ISFR_REG(PORTX[port]) |= (1 << i);
 			if (port_handlers[i])
 			{
 				port_handlers[i]();
