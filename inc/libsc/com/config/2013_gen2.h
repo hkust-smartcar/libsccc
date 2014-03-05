@@ -39,20 +39,20 @@
 
 #ifdef LIBSC_USE_LCD_HW_SPI
 #define LIBSC_LCD_RST PTA13
-#define LIBSC_LCD_DC PTB19
-#define LIBSC_LCD_CS PTB20
+#define LIBSC_LCD_DC PTA17
+#define LIBSC_LCD_CS PTA14
 // Connect SOUT pin with SDAT
-#define LIBSC_LCD_MOSI PTB22
-// MISO pin is not connected but is needed to get the SPI info
-#define LIBSC_LCD_MISO PTB23
-#define LIBSC_LCD_SCLK PTB21
+#define LIBSC_LCD_MOSI PTA16
+// MISO pin is not used (one way transfer) but is needed to get the SPI info
+#define LIBSC_LCD_MISO PTA17
+#define LIBSC_LCD_SCLK PTA15
 
 #else
 #define LIBSC_LCD_RST PTA13
-#define LIBSC_LCD_DC PTB19
-#define LIBSC_LCD_CS PTB20
-#define LIBSC_LCD_SDAT PTB22
-#define LIBSC_LCD_SCLK PTB21
+#define LIBSC_LCD_DC PTA17
+#define LIBSC_LCD_CS PTA14
+#define LIBSC_LCD_SDAT PTA16
+#define LIBSC_LCD_SCLK PTA15
 
 #endif
 
