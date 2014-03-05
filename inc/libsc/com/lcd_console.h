@@ -59,10 +59,7 @@ public:
 		PrintRawString(str, len, 0xFFFF, 0);
 	}
 
-	void Clear()
-	{
-		m_lcd->Clear(0);
-	}
+	void Clear();
 
 private:
 	void NewChar()
@@ -80,6 +77,7 @@ private:
 		{
 			m_cursor_y = 0;
 		}
+		m_cursor_x = 0;
 	}
 
 	Lcd *const m_lcd;

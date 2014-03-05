@@ -18,7 +18,9 @@ namespace libsc
 
 LcdConsole::LcdConsole(Lcd *const lcd)
 		: m_lcd(lcd), m_cursor_x(0), m_cursor_y(0)
-{}
+{
+	m_lcd->Clear(0);
+}
 
 void LcdConsole::PrintChar(const char ch, const uint16_t color,
 		const uint16_t bg_color)
@@ -90,6 +92,13 @@ void LcdConsole::PrintSplashScreen()
 	m_cursor_y += 16;
 	PrintString("Vibhor Yumi");
 
+	m_cursor_x = 0;
+	m_cursor_y = 0;
+}
+
+void LcdConsole::Clear()
+{
+	m_lcd->Clear(0);
 	m_cursor_x = 0;
 	m_cursor_y = 0;
 }
