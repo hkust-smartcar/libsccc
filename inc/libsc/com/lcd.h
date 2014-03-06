@@ -26,11 +26,27 @@ public:
 	explicit Lcd(const bool is_revert);
 
 	void Clear();
-	void Clear(const uint16_t color);
-	void DrawPixel(const uint8_t x, const uint8_t y, const uint16_t color) const;
+	void Clear(const uint16_t color)
+	{
+		DrawPixel(0, 0, W, H, color);
+		m_bg_color = color;
+	}
+
+	void DrawPixel(const uint8_t x, const uint8_t y, const uint8_t w,
+			const uint8_t h, const uint16_t color) const;
+	void DrawPixel(const uint8_t x, const uint8_t y, const uint16_t color) const
+	{
+		DrawPixel(x, y, 1, 1, color);
+	}
+
+	void DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
+			const uint8_t h, const uint16_t *pixel) const;
+	void DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
+			const uint8_t h, const uint16_t color_t, const uint16_t color_f,
+			const bool *data) const;
+
 	void DrawChar(const uint8_t x, const uint8_t y, const char ch,
 			const uint16_t color, const uint16_t bg_color) const;
-
 	void DrawChar(const uint8_t x, const uint8_t y, const char ch,
 			const uint16_t color) const
 	{

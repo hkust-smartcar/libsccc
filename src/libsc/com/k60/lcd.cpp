@@ -156,25 +156,52 @@ void Lcd::Clear()
 	m_bg_color = 0;
 }
 
-void Lcd::Clear(const uint16_t color)
+void Lcd::DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
+		const uint8_t h, const uint16_t *pixel) const
 {
-	SetActiveRect(0, 0, W, H);
-	SEND_COMMAND(0x2C);
-	for (Uint i = 0; i < W * H; ++i)
+	SetActiveRect(x, y, w, h);
+	SEND_COMMAND(CMD_MEMORY_WRITE);
+	const Uint area = w * h;
+	for (Uint i = 0; i < area; ++i)
+	{
+		SEND_DATA(pixel[i] >> 8);
+		SEND_DATA(pixel[i]);
+	}
+}
+
+void Lcd::DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
+		const uint8_t h, const uint16_t color_t, const uint16_t color_f,
+		const bool *data) const
+{
+	SetActiveRect(x, y, w, h);
+	SEND_COMMAND(CMD_MEMORY_WRITE);
+	const Uint area = w * h;
+	for (Uint i = 0; i < area; ++i)
+	{
+		if (data[i])
+		{
+			SEND_DATA(color_t >> 8);
+			SEND_DATA(color_t);
+		}
+		else
+		{
+			SEND_DATA(color_f >> 8);
+			SEND_DATA(color_f);
+		}
+	}
+}
+
+void Lcd::DrawPixel(const uint8_t x, const uint8_t y, const uint8_t w,
+		const uint8_t h, const uint16_t color) const
+{
+	SetActiveRect(x, y, w, h);
+	SEND_COMMAND(CMD_MEMORY_WRITE);
+	const Uint area = w * h;
+	for (Uint i = 0; i < area; ++i)
 	{
 		SEND_DATA(color >> 8);
 		SEND_DATA(color);
 	}
-
-	m_bg_color = color;
-}
-
-void Lcd::DrawPixel(const uint8_t x, const uint8_t y, const uint16_t color) const
-{
-	SetActiveRect(x, y, 1, 1);
-	SEND_COMMAND(CMD_MEMORY_WRITE);
-	SEND_DATA(color >> 8);
-	SEND_DATA(color);
 }
 
 void Lcd::DrawChar(const uint8_t x, const uint8_t y, const char ch,
