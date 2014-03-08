@@ -34,6 +34,7 @@ namespace
 {
 
 UartDevice* g_uart_instances[LIBSC_USE_UART];
+UartDevice::OnReceiveCharListener g_uart_listener[LIBSC_USE_UART];
 
 }
 
@@ -91,15 +92,17 @@ UartDevice::~UartDevice()
 	g_uart_instances[m_device_id] = nullptr;
 }
 
-void UartDevice::StartReceive()
+void UartDevice::StartReceive(OnReceiveCharListener listener)
 {
 	SetIsr(UART_VECTOR(m_uart_port), IrqHandler);
+	g_uart_listener[m_device_id] = listener;
 	uart_rx_irq_en(UARTX(m_uart_port));
 }
 
 void UartDevice::StopReceive()
 {
 	uart_rx_irq_dis(UARTX(m_uart_port));
+	g_uart_listener[m_device_id] = nullptr;
 	SetIsr(UART_VECTOR(m_uart_port), DefaultIsr);
 }
 
@@ -147,9 +150,17 @@ void UartDevice::IrqHandler()
 			Chunk *tail = const_cast<Chunk*>(g_uart_instances[i]->m_tail);
 			while (uart_querychar(LIBSC_BT_UART, &tail->data[tail->end]))
 			{
-				if (++tail->end == CHUNK_SIZE)
+				if (!g_uart_listener[i])
 				{
-					g_uart_instances[i]->m_tail = tail = tail->next = new Chunk;
+					if (++tail->end == CHUNK_SIZE)
+					{
+						g_uart_instances[i]->m_tail = tail = tail->next =
+								new Chunk;
+					}
+				}
+				else
+				{
+					g_uart_listener[i](tail->data[tail->end]);
 				}
 			}
 			return;

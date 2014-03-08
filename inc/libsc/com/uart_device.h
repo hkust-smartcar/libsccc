@@ -19,11 +19,19 @@ namespace libsc
 class UartDevice
 {
 public:
+	typedef void (*OnReceiveCharListener)(const char);
+
 	UartDevice(const uint8_t uart_port, const uint32_t baud_rate);
 	~UartDevice();
 
-	void StartReceive();
+	void StartReceive(OnReceiveCharListener listener);
 	void StopReceive();
+
+	void StartReceive()
+	{
+		StartReceive(nullptr);
+	}
+
 	void SendChar(const char ch);
 	void SendStr(const char *str);
 	void SendBuffer(const uint8_t *buf, const uint32_t len);
