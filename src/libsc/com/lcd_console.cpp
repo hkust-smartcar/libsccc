@@ -25,8 +25,18 @@ LcdConsole::LcdConsole(Lcd *const lcd)
 void LcdConsole::PrintChar(const char ch, const uint16_t color,
 		const uint16_t bg_color)
 {
-	m_lcd->DrawChar(m_cursor_x, m_cursor_y, ch, color, bg_color);
-	NewChar();
+	if (ch == '\n')
+	{
+		do
+		{
+			PrintChar(' ');
+		} while (m_cursor_x != 0);
+	}
+	else
+	{
+		m_lcd->DrawChar(m_cursor_x, m_cursor_y, ch, color, bg_color);
+		NewChar();
+	}
 }
 
 void LcdConsole::PrintString(const char *str, const uint16_t color,
@@ -34,15 +44,7 @@ void LcdConsole::PrintString(const char *str, const uint16_t color,
 {
 	while (*str)
 	{
-		if (*str == '\n')
-		{
-			NewLine();
-		}
-		else
-		{
-			m_lcd->DrawChar(m_cursor_x, m_cursor_y, *str, color, bg_color);
-			NewChar();
-		}
+		PrintChar(*str, color, bg_color);
 		++str;
 	}
 }
@@ -52,15 +54,7 @@ void LcdConsole::PrintRawString(const char *str, const size_t len,
 {
 	for (size_t i = len; len && *str; --i, ++str)
 	{
-		if (*str == '\n')
-		{
-			NewLine();
-		}
-		else
-		{
-			m_lcd->DrawChar(m_cursor_x, m_cursor_y, *str, color, bg_color);
-			NewChar();
-		}
+		PrintChar(*str, color, bg_color);
 	}
 }
 
