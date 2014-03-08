@@ -19,10 +19,10 @@
 
 using namespace std;
 
-namespace libsc
+namespace libutil
 {
 
-string StringUtils::Format(const char *format, ...)
+string String::Format(const char *format, ...)
 {
 	va_list vl;
 	va_start(vl, format);
@@ -31,7 +31,7 @@ string StringUtils::Format(const char *format, ...)
 	return product;
 }
 
-string StringUtils::Format(const char *format, va_list *vl)
+string String::Format(const char *format, va_list *vl)
 {
 	char product[50];
 	vsnprintf(product, 50 * sizeof(char), format, *vl);

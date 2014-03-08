@@ -1,23 +1,23 @@
 /*
- * string_utils.h
- * String util
+ * string.h
+ * String utilities
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBUTIL_STRING_UTILS_H_
-#define LIBUTIL_STRING_UTILS_H_
+#ifndef LIBUTIL_STRING_H_
+#define LIBUTIL_STRING_H_
 
 #include <cstdarg>
 
 #include <memory>
 #include <string>
 
-namespace libsc
+namespace libutil
 {
 
-class StringUtils
+class String
 {
 public:
 	static std::string Format(const char *format, ...);
