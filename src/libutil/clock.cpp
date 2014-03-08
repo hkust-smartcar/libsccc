@@ -10,7 +10,6 @@
 #include <hw_common.h>
 #include <cstdint>
 
-#include <misc.h>
 #include <vectors.h>
 #include <MK60_pit.h>
 
@@ -28,7 +27,7 @@ void Clock::Init()
 {
 	SetIsr(PIT0_VECTORn, IrqHandler);
 	pit_init_ms(PIT0, PRECISION);
-	enable_irq(PIT0_IRQn);
+	EnableIsr(PIT0_VECTORn);
 }
 
 void Clock::IrqHandler()
