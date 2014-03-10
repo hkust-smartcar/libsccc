@@ -28,6 +28,11 @@ public:
 		return m_val;
 	}
 
+	static float AsFloat(const uint32_t val) const
+	{
+		return *reinterpret_cast<const float*>(&val);
+	}
+
 private:
 	TunableInt();
 
