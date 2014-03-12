@@ -33,6 +33,11 @@ public:
 		return *reinterpret_cast<const float*>(&val);
 	}
 
+	static int32_t AsSigned(const uint32_t val) const
+	{
+		return *reinterpret_cast<const int32_t*>(&val);
+	}
+
 private:
 	TunableInt();
 
