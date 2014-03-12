@@ -57,6 +57,7 @@ private:
 	}
 
 	const char *m_name;
+	const char *m_type;
 	uint8_t m_id;
 	volatile uint32_t m_val;
 
@@ -69,7 +70,8 @@ class TunableIntManager
 public:
 	explicit TunableIntManager(libsc::UartDevice *uart);
 
-	const TunableInt* Register(const char *name, const uint32_t val);
+	const TunableInt* Register(const char *name, const char *type,
+			const uint32_t val);
 	void Start();
 	void Stop();
 

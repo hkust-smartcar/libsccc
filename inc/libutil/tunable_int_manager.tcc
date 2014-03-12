@@ -26,7 +26,7 @@ TunableIntManager<size>::TunableIntManager(libsc::UartDevice *uart)
 
 template<uint8_t size>
 const TunableInt* TunableIntManager<size>::Register(const char *name,
-		const uint32_t val)
+		const char *type, const uint32_t val)
 {
 	if (m_curr_id >= size)
 	{
@@ -35,6 +35,7 @@ const TunableInt* TunableIntManager<size>::Register(const char *name,
 
 	TunableInt *var = &m_data[m_curr_id];
 	var->m_name = name;
+	var->m_type = type;
 	var->m_id = m_curr_id;
 	var->m_val = val;
 	++m_curr_id;
@@ -49,8 +50,8 @@ void TunableIntManager<size>::Start()
 
 	for (int i = 0; i < size && m_data[i].m_name; ++i)
 	{
-		m_uart->SendStr(String::Format("%s,%d\n", m_data[i].m_name,
-				m_data[i].m_id).c_str());
+		m_uart->SendStr(String::Format("%s,%s,%d\n", m_data[i].m_name,
+				m_data[i].m_type, m_data[i].m_id).c_str());
 	}
 }
 
