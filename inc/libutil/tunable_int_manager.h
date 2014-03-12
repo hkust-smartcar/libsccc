@@ -38,6 +38,16 @@ public:
 		return *reinterpret_cast<const int32_t*>(&val);
 	}
 
+	static uint32_t AsUnsigned(const int32_t val) const
+	{
+		return *reinterpret_cast<const uint32_t*>(&val);
+	}
+
+	static uint32_t AsUnsigned(const float val) const
+	{
+		return *reinterpret_cast<const uint32_t*>(&val);
+	}
+
 private:
 	TunableInt();
 
