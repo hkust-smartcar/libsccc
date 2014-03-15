@@ -15,8 +15,7 @@
 
 #include "libutil/clock.h"
 
-// We don't need a 1ms precision, at least for now
-#define PRECISION 5
+#define PRECISION 1
 
 namespace libutil
 {

@@ -28,9 +28,24 @@ public:
 		return m_val;
 	}
 
-	static float AsFloat(const uint32_t val) const
+	static float AsFloat(const uint32_t val)
 	{
 		return *reinterpret_cast<const float*>(&val);
+	}
+
+	static int32_t AsSigned(const uint32_t val)
+	{
+		return *reinterpret_cast<const int32_t*>(&val);
+	}
+
+	static uint32_t AsUnsigned(const int32_t val)
+	{
+		return *reinterpret_cast<const uint32_t*>(&val);
+	}
+
+	static uint32_t AsUnsigned(const float val)
+	{
+		return *reinterpret_cast<const uint32_t*>(&val);
 	}
 
 private:
@@ -42,6 +57,7 @@ private:
 	}
 
 	const char *m_name;
+	const char *m_type;
 	uint8_t m_id;
 	volatile uint32_t m_val;
 
@@ -54,7 +70,8 @@ class TunableIntManager
 public:
 	explicit TunableIntManager(libsc::UartDevice *uart);
 
-	const TunableInt* Register(const char *name, const uint32_t val);
+	const TunableInt* Register(const char *name, const char *type,
+			const uint32_t val);
 	void Start();
 	void Stop();
 

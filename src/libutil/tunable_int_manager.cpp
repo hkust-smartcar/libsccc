@@ -11,7 +11,7 @@ namespace libutil
 {
 
 TunableInt::TunableInt()
-		: m_name(nullptr), m_id(0)
+		: m_name(nullptr), m_type(nullptr), m_id(0)
 {}
 
 }

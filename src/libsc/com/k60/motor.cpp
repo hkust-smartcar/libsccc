@@ -102,20 +102,20 @@ Motor::Motor(const uint8_t id)
 
 void Motor::SetPower(const uint16_t power)
 {
-	const uint16_t real_power = libutil::Clamp<uint16_t>(0, power, 1000);
+	const uint16_t real_power = libutil::Clamp<uint16_t>(0, power, 10000);
 	if (m_power == real_power)
 	{
 		return;
 	}
 
-	FTM_PWM_Duty(GetFtmModule(m_id), GetFtmChannel(m_id), real_power * 10);
+	FTM_PWM_Duty(GetFtmModule(m_id), GetFtmChannel(m_id), real_power);
 	m_power = real_power;
 	return;
 }
 
 void Motor::AddPower(const int16_t power)
 {
-	SetPower(libutil::Clamp<int>(0, m_power + power, 1000));
+	SetPower(libutil::Clamp<int>(0, m_power + power, 10000));
 }
 
 void Motor::SetClockwise(const bool flag)

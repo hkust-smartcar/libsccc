@@ -20,7 +20,7 @@ public:
 	explicit Motor(const uint8_t id);
 
 	/**
-	 * Set the PWM duty rate, [0, 1000]
+	 * Set the PWM duty rate, [0, 10000]
 	 *
 	 * @param power
 	 */
@@ -39,7 +39,7 @@ public:
 
 private:
 	const uint8_t m_id;
-	uint16_t m_power; // [0, 1000]
+	uint16_t m_power; // [0, 10000]
 	bool m_is_clockwise;
 };
 
