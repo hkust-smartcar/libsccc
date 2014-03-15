@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-#include <libutil/clock.h>
+#include "libutil/clock.h"
 
 #include "libutil/pid_controller.h"
 

@@ -22,7 +22,6 @@ public:
 	PidController(const uint16_t setpoint, const float kp, const float ki,
 			const float kd);
 
-
 	uint16_t Calc(const Clock::ClockInt time, const uint16_t current_val);
 
 	void SetSetpoint(const uint16_t setpoint)
