@@ -21,11 +21,15 @@ template<uint8_t size>
 TunablePidController::TunablePidController(const uint16_t setpoint,
 		const float kp, const float ki, const float kd, const char *prefix,
 		TunableIntManager<size> *manager)
-		: m_prefix(prefix)
+		: PidController(setpoint, kp, ki, kd),
+		  m_prefix(prefix)
 {
-	m_kp = manager->Register(String::Format("%s_kp", m_prefix).c_str());
-	m_ki = manager->Register(String::Format("%s_ki", m_prefix).c_str());
-	m_kd = manager->Register(String::Format("%s_kd", m_prefix).c_str());
+	m_kp = manager->Register(String::Format("%s_kp", m_prefix).c_str(), "float",
+			TunableInt::AsUnsigned(kp));
+	m_ki = manager->Register(String::Format("%s_ki", m_prefix).c_str(), "float",
+			TunableInt::AsUnsigned(ki));
+	m_kd = manager->Register(String::Format("%s_kd", m_prefix).c_str(), "float",
+			TunableInt::AsUnsigned(kd));
 }
 
 }
