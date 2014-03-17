@@ -23,7 +23,7 @@ class PidController
 {
 public:
 	typedef T InputType;
-	typedef std::make_signed<T>::type SignedInputType;
+	typedef typename std::make_signed<T>::type SignedInputType;
 	typedef U OutputType;
 
 	PidController(const InputType setpoint, const float kp, const float ki,
