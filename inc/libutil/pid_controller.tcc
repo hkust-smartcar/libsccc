@@ -23,7 +23,7 @@ PidController<T, U>::PidController(const InputType setpoint, const float kp,
 {}
 
 template<typename T, typename U>
-PidController<T, U>::OutputType PidController<T, U>::Calc(
+typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 		const Clock::ClockInt time, const InputType current_val)
 {
 	const Clock::ClockInt time_diff = Clock::TimeDiff(time, m_prev_time);
