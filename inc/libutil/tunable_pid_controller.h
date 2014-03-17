@@ -18,14 +18,16 @@
 namespace libutil
 {
 
-class TunablePidController : public PidController
+template<typename T, typename U>
+class TunablePidController<T, U> : public PidController<T, U>
 {
 public:
 	template<uint8_t size>
-	TunablePidController(const uint16_t setpoint, const float kp, const float ki,
-			const float kd, const char *prefix, TunableIntManager<size> *manager);
+	TunablePidController(const InputType setpoint, const float kp,
+			const float ki, const float kd, const char *prefix,
+			TunableIntManager<size> *manager);
 
-	uint16_t Calc(const Clock::ClockInt time, const uint16_t current_val);
+	OutputType Calc(const Clock::ClockInt time, const InputType current_val);
 
 private:
 	const char *m_prefix;

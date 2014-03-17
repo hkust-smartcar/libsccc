@@ -1,5 +1,5 @@
 /*
- * pid_controller.cpp
+ * pid_controller.tcc
  * Generic PID controller
  *
  * Author: Ming Tsang
@@ -15,17 +15,19 @@
 namespace libutil
 {
 
-PidController::PidController(const uint16_t setpoint, const float kp,
+template<typename T, typename U>
+PidController<T, U>::PidController(const InputType setpoint, const float kp,
 		const float ki, const float kd)
 		: m_setpoint(setpoint), m_kp(kp), m_ki(ki), m_kd(kd),
 		  m_accumulated_error(0), m_prev_error(0), m_prev_time(Clock::Time())
 {}
 
-uint16_t PidController::Calc(const Clock::ClockInt time,
-		const uint16_t current_val)
+template<typename T, typename U>
+PidController<T, U>::OutputType PidController<T, U>::Calc(
+		const Clock::ClockInt time, const InputType current_val)
 {
 	const Clock::ClockInt time_diff = Clock::TimeDiff(time, m_prev_time);
-	const uint32_t error = m_setpoint - current_val;
+	const SignedInputType error = m_setpoint - current_val;
 
 	const float p = m_kp * error;
 	m_accumulated_error += error;

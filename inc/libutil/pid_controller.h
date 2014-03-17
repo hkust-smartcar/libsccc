@@ -11,20 +11,27 @@
 
 #include <cstdint>
 
+#include <type_traits>
+
 #include "libutil/clock.h"
 
 namespace libutil
 {
 
+template<typename T, typename U>
 class PidController
 {
 public:
-	PidController(const uint16_t setpoint, const float kp, const float ki,
+	typedef T InputType;
+	typedef std::make_signed<T>::type SignedInputType;
+	typedef U OutputType;
+
+	PidController(const InputType setpoint, const float kp, const float ki,
 			const float kd);
 
-	uint16_t Calc(const Clock::ClockInt time, const uint16_t current_val);
+	OutputType Calc(const Clock::ClockInt time, const InputType current_val);
 
-	void SetSetpoint(const uint16_t setpoint)
+	void SetSetpoint(const InputType setpoint)
 	{
 		m_setpoint = setpoint;
 	}
@@ -45,13 +52,13 @@ public:
 	}
 
 private:
-	uint16_t m_setpoint;
+	InputType m_setpoint;
 	float m_kp;
 	float m_ki;
 	float m_kd;
 
-	int32_t m_accumulated_error;
-	int16_t m_prev_error;
+	SignedInputType m_accumulated_error;
+	SignedInputType m_prev_error;
 	Clock::ClockInt m_prev_time;
 };
 
