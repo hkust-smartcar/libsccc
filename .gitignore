@@ -12,7 +12,15 @@
 *.la
 *.a
 
+#
+build/*
+data/*
+*.map
+*.elf
+WTF/
+test/
+
 # Eclipse
-.settings/
+.settings/*
 .cproject
 .project
