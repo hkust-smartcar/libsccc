@@ -1,6 +1,6 @@
 /*
  * servo.h
- * Servo abstraction (for Futaba S3010)
+ * Servo abstraction
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
@@ -17,8 +17,6 @@ namespace libsc
 class Servo
 {
 public:
-	explicit Servo(const uint8_t id);
-
 	/**
 	 * Set the degree(the servo turn in CCW), [0, 180]
 	 *
@@ -31,8 +29,12 @@ public:
 		return m_degree;
 	}
 
+protected:
+	Servo(const uint8_t id, const uint16_t pwm_min, const uint16_t pwm_max);
+
 private:
 	const uint8_t m_id;
+	const uint16_t m_pwm_min, m_pwm_max;
 	uint8_t m_degree;
 };
 
