@@ -15,6 +15,9 @@
 #elif defined(K60_2013_GEN2)
 #include "config/2013_gen2.h"
 
+#elif defined(K60_2013_CCD)
+#include "config/2013_ccd.h"
+
 #elif defined(K60_2014)
 #include "config/2014.h"
 
