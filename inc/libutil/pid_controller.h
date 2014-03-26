@@ -30,6 +30,10 @@ public:
 			const float kd);
 
 	OutputType Calc(const Clock::ClockInt time, const InputType current_val);
+	OutputType Calc(const InputType current_val)
+	{
+		return Calc(Clock::Time(), current_val);
+	}
 
 	void SetSetpoint(const InputType setpoint)
 	{
@@ -50,6 +54,8 @@ public:
 	{
 		m_kd = kd;
 	}
+
+	void Print(const char *label);
 
 private:
 	InputType m_setpoint;

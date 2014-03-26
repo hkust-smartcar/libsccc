@@ -7,6 +7,7 @@
  */
 
 #include <cstdint>
+#include <cstdio>
 
 #include "libutil/clock.h"
 
@@ -38,6 +39,21 @@ typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 	m_prev_error = error;
 	m_prev_time = time;
 	return p + i + d;
+}
+
+template<typename T, typename U>
+void PidController<T, U>::Print(const char *label)
+{
+	if (label)
+	{
+		iprintf("=== PID State for %s ===\n", label);
+	}
+	else
+	{
+		iprintf("=== PID State ===\n");
+	}
+	iprintf("KP: %f\nKI: %f\nKD: %f\n", m_kp, m_ki, m_kd);
+	return;
 }
 
 }
