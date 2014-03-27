@@ -91,7 +91,8 @@ void Servo::AddDegree(const int16_t degree)
 }
 
 #else
-Servo::Servo(const uint8_t) : m_id(0) {}
+Servo::Servo(const uint8_t, const uint16_t, const uint16_t)
+		: m_id(0), m_pwm_min(0), m_pwm_max(0) {}
 void Servo::SetDegree(const uint8_t) {}
 void Servo::AddDegree(const int16_t) {}
 
