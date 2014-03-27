@@ -1,6 +1,6 @@
 /*
  * servo.cpp
- * Servo abstraction (for Futaba S3010)
+ * Servo abstraction
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
@@ -16,9 +16,6 @@
 #include "libutil/misc.h"
 #include "libsc/com/config.h"
 #include "libsc/com/servo.h"
-
-#define PWM_MAX 1000
-#define PWM_MIN 500
 
 namespace libsc
 {
@@ -66,11 +63,12 @@ inline FTM_CHn_e GetFtmChannel(const uint8_t id)
 
 }
 
-Servo::Servo(const uint8_t id)
-		: m_id(id)
+Servo::Servo(const uint8_t id, const uint16_t pwm_min, const uint16_t pwm_max)
+		: m_id(id), m_pwm_min(pwm_min), m_pwm_max(pwm_max)
 {
 	m_degree = 90;
-	FTM_PWM_init(GetFtmModule(id), GetFtmChannel(id), 50, 750);
+	FTM_PWM_init(GetFtmModule(id), GetFtmChannel(id), 50,
+			(m_pwm_max - m_pwm_min) * 0.5f + m_pwm_min);
 }
 
 void Servo::SetDegree(const uint8_t degree)
@@ -82,7 +80,7 @@ void Servo::SetDegree(const uint8_t degree)
 	}
 
 	const uint32_t duty = static_cast<uint32_t>((real_degree / 180.0f)
-			* (PWM_MAX - PWM_MIN)) + PWM_MIN;
+			* (m_pwm_max - m_pwm_min)) + m_pwm_min;
 	FTM_PWM_Duty(GetFtmModule(m_id), GetFtmChannel(m_id), duty);
 	m_degree = real_degree;
 }

@@ -21,9 +21,16 @@ public:
 
 	uint32_t GetCount();
 
+	/**
+	 * Return how @a a is apart from @a b
+	 *
+	 * @param a Some count gotten in the future, in terms of @a b
+	 * @param b Some count gotten in the past, in terms of @a a
+	 * @return
+	 */
 	static uint32_t CountDiff(const uint32_t a, const uint32_t b)
 	{
-		return (uint32_t)(b - a);
+		return (uint32_t)(a - b);
 	}
 
 private:

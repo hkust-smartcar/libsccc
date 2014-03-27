@@ -29,6 +29,8 @@
 namespace libsc
 {
 
+#ifdef LIBSC_USE_ENCODER
+
 #ifdef LIBSC_USE_ENCODER_FTM
 Encoder::Encoder(const uint8_t id)
 		: m_id(id), m_count(0)
@@ -39,18 +41,6 @@ Encoder::Encoder(const uint8_t id)
 		return;
 	}
 	FTM_QUAD_Init(FtmUtils::GetFtmModule<LIBSC_ENCODER0_OUT>());
-/*
-	SIM_SCGC3 |= SIM_SCGC3_FTM2_MASK;
-	SIM_SCGC5 |=   SIM_SCGC5_PORTB_MASK;
-    PORTB_PCR18 =(0|PORT_PCR_MUX(6));        // set PTB18,PTB19 be quadrature mode
-	PORTB_PCR19 =(0|PORT_PCR_MUX(6));
-	FTM2_SC = 0x00;                           // off counter, interrupt
-    FTM2_CNT = 0x0000;                         // initialise counter
-	FTM_CNTIN_REG(FTM2_BASE_PTR) = 0x0000;
-	FTM_MODE_REG(FTM2_BASE_PTR) |= (FTM_MODE_WPDIS_MASK|FTM_MODE_FTMEN_MASK);   // WPDIS =1, FTMEN=1
-	FTM_MOD_REG(FTM2_BASE_PTR) = 0xFFFF;       // maximum count = 65535
-	FTM2_QDCTRL = 0x0F;
-*/
 }
 
 uint32_t Encoder::GetCount()
@@ -95,5 +85,11 @@ uint32_t Encoder::GetCount()
 }
 
 #endif /* LIBSC_USE_ENCODER_FTM */
+
+#else
+Encoder::Encoder(const uint8_t) : m_id(0) {}
+uint32_t Encoder::GetCount() { return 0; }
+
+#endif /* LIBSC_USE_ENCODER */
 
 }

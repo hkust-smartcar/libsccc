@@ -302,7 +302,13 @@ void Lcd::Send(const bool is_cmd, const uint8_t data) const
 Lcd::Lcd(const bool) {}
 void Lcd::Clear() {}
 void Lcd::Clear(const uint16_t) {}
-void Lcd::DrawPixel(const uint8_t, const uint8_t,const uint16_t) const {}
+void Lcd::DrawPixel(const uint8_t, const uint8_t, const uint8_t, const uint8_t,
+		const uint16_t) const {}
+void Lcd::DrawPixelBuffer(const uint8_t, const uint8_t, const uint8_t,
+		const uint8_t, const uint16_t*) const {}
+void Lcd::DrawPixelBuffer(const uint8_t, const uint8_t, const uint8_t,
+		const uint8_t, const uint16_t, const uint16_t,
+		const bool*) const {}
 void Lcd::DrawChar(const uint8_t, const uint8_t, const char,
 		const uint16_t, const uint16_t) const {}
 void Lcd::SetActiveRect(const uint8_t, const uint8_t, const uint8_t,
