@@ -18,6 +18,8 @@
 namespace libsc
 {
 
+#ifdef LIBSC_USE_LINEAR_CCD
+
 LinearCcd::LinearCcd()
 		: m_clk_state(true)
 {
@@ -52,5 +54,11 @@ const bool* LinearCcd::SampleData()
 	}
 	return m_buffer;
 }
+
+#else
+LinearCcd::LinearCcd() {};
+const bool* SampleData() { return nullptr; }
+
+#endif
 
 }
