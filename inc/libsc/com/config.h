@@ -21,6 +21,9 @@
 #elif defined(K60_2014)
 #include "config/2014.h"
 
+#elif defined(K60_2014_CAMERA)
+#include "config/2014_camera.h"
+
 #else
 #error Unknown board
 
