@@ -301,7 +301,6 @@ void Lcd::Send(const bool is_cmd, const uint8_t data) const
 #else
 Lcd::Lcd(const bool) {}
 void Lcd::Clear() {}
-void Lcd::Clear(const uint16_t) {}
 void Lcd::DrawPixel(const uint8_t, const uint8_t, const uint8_t, const uint8_t,
 		const uint16_t) const {}
 void Lcd::DrawPixelBuffer(const uint8_t, const uint8_t, const uint8_t,
