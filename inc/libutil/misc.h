@@ -11,9 +11,16 @@
 
 #include <algorithm>
 
+namespace libsc
+{
+
+class UartDevice;
+
+}
+
 #define SAFE_DELETE(x) do{if (x) {delete x; x = nullptr;}}while(false)
 #ifdef DEBUG
-#define DEBUG_PRINT(...) printf(__VAR_ARGS__)
+#define DEBUG_PRINT(...) printf(__VA_ARGS__)
 #else
 #define DEBUG_PRINT(...)
 #endif
@@ -26,6 +33,9 @@ inline T Clamp(const T &min, const T &x, const T &max)
 {
 	return std::max(min, std::min(x, max));
 }
+
+void InitDefaultFwriteHandler(libsc::UartDevice *uart);
+void UninitDefaultFwriteHandler();
 
 }
 
