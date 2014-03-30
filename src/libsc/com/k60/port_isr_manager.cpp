@@ -34,6 +34,7 @@ PortIsrManager::PortIsrManager()
 	for (int i = 0; i < PORT_COUNT; ++i)
 	{
 		m_handlers[i] = nullptr;
+		m_is_enabled[i] = false;
 	}
 }
 
@@ -41,6 +42,12 @@ PortIsrManager::~PortIsrManager()
 {
 	for (int i = 0; i < PORT_COUNT; ++i)
 	{
+		if (m_is_enabled[i])
+		{
+			const VECTORn_t v = static_cast<VECTORn_t>(PORTA_VECTORn + i);
+			SetIsr(v, DefaultIsr);
+			DisableIsr(v);
+		}
 		if (m_handlers[i])
 		{
 			delete[] m_handlers[i];
@@ -50,6 +57,12 @@ PortIsrManager::~PortIsrManager()
 
 void PortIsrManager::InitPort(const PTX_e port)
 {
+	if (!m_handlers[port])
+	{
+		m_handlers[port] = new tIsrFunc[PIN_COUNT];
+		memset(m_handlers[port], 0, PIN_COUNT * sizeof(tIsrFunc));
+	}
+
 	switch (port)
 	{
 	case PTA:
@@ -75,9 +88,8 @@ void PortIsrManager::InitPort(const PTX_e port)
 	default:
 		return;
 	}
-	m_handlers[port] = new tIsrFunc[PIN_COUNT];
-	memset(m_handlers[port], 0, PIN_COUNT * sizeof(tIsrFunc));
 	EnableIsr(static_cast<VECTORn_t>(PORTA_VECTORn + port));
+	m_is_enabled[port] = true;
 }
 
 template<PTX_e port>
@@ -100,11 +112,31 @@ __ISR void PortIsrManager::IsrHandler()
 void PortIsrManager::SetIsrHandler(const PTX_e port, const PTn_e pin,
 		tIsrFunc fn)
 {
-	if (!m_handlers[port])
+	if (fn)
 	{
-		InitPort(port);
+		if (!m_is_enabled[port])
+		{
+			InitPort(port);
+		}
+		m_handlers[port][pin] = fn;
 	}
-	m_handlers[port][pin] = fn;
+	else if (m_is_enabled[port])
+	{
+		m_handlers[port][pin] = nullptr;
+
+		// Disable interrupt if all are null
+		for (int i = 0; i < PIN_COUNT; ++i)
+		{
+			if (m_handlers[port][i])
+			{
+				return;
+			}
+		}
+		const VECTORn_t v = static_cast<VECTORn_t>(PORTA_VECTORn + port);
+		SetIsr(v, DefaultIsr);
+		DisableIsr(v);
+		m_is_enabled[port] = false;
+	}
 }
 
 }

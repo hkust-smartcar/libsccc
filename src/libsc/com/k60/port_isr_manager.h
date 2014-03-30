@@ -35,6 +35,7 @@ private:
 	static __ISR void IsrHandler();
 
 	tIsrFunc* m_handlers[PORT_COUNT];
+	bool m_is_enabled[PORT_COUNT];
 
 	static PortIsrManager *m_instance;
 };
