@@ -91,7 +91,7 @@ inline PTXn_e GetDirGpio(const uint8_t id)
 }
 
 Motor::Motor(const uint8_t id)
-		: m_id(id)
+		: m_id(id), multiplier(1)
 {
 	m_power = 0;
 	m_is_clockwise = true;
@@ -100,9 +100,16 @@ Motor::Motor(const uint8_t id)
 	gpio_init(GetDirGpio(id), GPO, 1);
 }
 
+Motor::Motor(const uint8_t id, float m)
+	: m_id(id), m_power(0), m_is_clockwise(true), multiplier(m)
+{
+	FTM_PWM_init(GetFtmModule(id), GetFtmChannel(id), 10000, 0);
+	gpio_init(GetDirGpio(id), GPO, 1);
+}
+
 void Motor::SetPower(const uint16_t power)
 {
-	const uint16_t real_power = libutil::Clamp<uint16_t>(0, power, 10000);
+	const uint16_t real_power = libutil::Clamp<uint16_t>(0, power * multiplier, 10000);
 	if (m_power == real_power)
 	{
 		return;
