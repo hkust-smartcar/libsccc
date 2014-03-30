@@ -10,8 +10,8 @@
 #include <hw_common.h>
 #include <cstring>
 
-#include <misc.h>
 #include <MK60_gpio.h>
+#include <vectors.h>
 
 #include "libsc/com/k60/port_isr_manager.h"
 
@@ -77,7 +77,7 @@ void PortIsrManager::InitPort(const PTX_e port)
 	}
 	m_handlers[port] = new tIsrFunc[PIN_COUNT];
 	memset(m_handlers[port], 0, PIN_COUNT * sizeof(tIsrFunc));
-	enable_irq(static_cast<IRQn_t>(PORTA_IRQn + port));
+	EnableIsr(static_cast<VECTORn_t>(PORTA_VECTORn + port));
 }
 
 template<PTX_e port>
