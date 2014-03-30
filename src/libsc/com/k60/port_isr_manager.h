@@ -20,7 +20,7 @@ class PortIsrManager
 public:
 	static PortIsrManager* GetInstance();
 
-	void AddIsrHandler(const PTX_e port, const PTn_e pin, tIsrFunc fn);
+	void SetIsrHandler(const PTX_e port, const PTn_e pin, tIsrFunc fn);
 
 private:
 	static constexpr int PORT_COUNT = 5;

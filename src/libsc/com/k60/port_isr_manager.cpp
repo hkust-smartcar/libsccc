@@ -97,7 +97,7 @@ __ISR void PortIsrManager::IsrHandler()
 	}
 }
 
-void PortIsrManager::AddIsrHandler(const PTX_e port, const PTn_e pin,
+void PortIsrManager::SetIsrHandler(const PTX_e port, const PTn_e pin,
 		tIsrFunc fn)
 {
 	if (!m_handlers[port])
