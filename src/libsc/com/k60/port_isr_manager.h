@@ -34,7 +34,7 @@ private:
 	PortIsrManager();
 	~PortIsrManager();
 
-	void InitPort(const PTX_e port);
+	void InitPort(const Uint port);
 
 	template<PTX_e port>
 	static __ISR void IsrHandler();
