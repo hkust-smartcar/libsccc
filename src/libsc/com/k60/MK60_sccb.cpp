@@ -11,6 +11,8 @@
  * 技术支持论坛 ：http://www.ourdev.cn/bbs/bbs_list.jsp?bbs_id=1008
 **********************************************************************************/
 
+#ifdef LIBSC_USE_CAMERA
+
 #include <mini_common.h>
 #include <hw_common.h>
 #include <cstdint>
@@ -361,3 +363,5 @@ int SCCB_ReadByte(uint8_t *buffer, uint16_t length, uint8_t read_addr)
 	}
 	return 1;
 }
+
+#endif /* LIBSC_USE_CAMERA */
