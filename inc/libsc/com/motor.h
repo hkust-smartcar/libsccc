@@ -18,7 +18,8 @@ class Motor
 {
 public:
 	explicit Motor(const uint8_t id);
-	Motor(const uint8_t id, const float multiplier);
+
+	explicit Motor(const uint8_t id, float m);
 
 	/**
 	 * Set the PWM duty rate, [0, 10000]
