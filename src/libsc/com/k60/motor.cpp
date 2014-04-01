@@ -100,7 +100,7 @@ Motor::Motor(const uint8_t id)
 	gpio_init(GetDirGpio(id), GPO, 1);
 }
 
-Motor::Motor(const uint8_t id, float m)
+Motor::Motor(const uint8_t id, const float m)
 	: m_id(id), m_power(0), m_is_clockwise(true), multiplier(m)
 {
 	FTM_PWM_init(GetFtmModule(id), GetFtmChannel(id), 10000, 0);
@@ -138,6 +138,7 @@ void Motor::SetClockwise(const bool flag)
 
 #else
 Motor::Motor(const uint8_t id) {}
+Motor::Motor(const uint8_t id, const float m) {}
 void Motor::SetPower(const uint16_t power) {}
 void Motor::AddPower(const int16_t power) {}
 void Motor::SetClockwise(const bool flag) {}
