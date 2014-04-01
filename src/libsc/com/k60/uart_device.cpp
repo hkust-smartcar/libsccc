@@ -15,10 +15,10 @@
 #include <vectors.h>
 #include <MK60_uart.h>
 
-#include "macro.h"
-#include "libutil/misc.h"
 #include "libsc/com/config.h"
 #include "libsc/com/uart_device.h"
+#include "libutil/misc.h"
+#include "macro.h"
 
 #define UART_VECTOR(x) static_cast<VECTORn_t>((x << 1) + UART0_RX_TX_VECTORn)
 #define UARTX(x) static_cast<UARTn_e>(x + UART0)

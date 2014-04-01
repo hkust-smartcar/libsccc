@@ -10,8 +10,8 @@
 #include <hw_common.h>
 #include <cstring>
 
-#include <misc.h>
 #include <MK60_gpio.h>
+#include <vectors.h>
 
 #include "libsc/com/k60/port_isr_manager.h"
 
@@ -34,6 +34,7 @@ PortIsrManager::PortIsrManager()
 	for (int i = 0; i < PORT_COUNT; ++i)
 	{
 		m_handlers[i] = nullptr;
+		m_is_enabled[i] = false;
 	}
 }
 
@@ -41,6 +42,12 @@ PortIsrManager::~PortIsrManager()
 {
 	for (int i = 0; i < PORT_COUNT; ++i)
 	{
+		if (m_is_enabled[i])
+		{
+			const VECTORn_t v = static_cast<VECTORn_t>(PORTA_VECTORn + i);
+			SetIsr(v, DefaultIsr);
+			DisableIsr(v);
+		}
 		if (m_handlers[i])
 		{
 			delete[] m_handlers[i];
@@ -48,8 +55,14 @@ PortIsrManager::~PortIsrManager()
 	}
 }
 
-void PortIsrManager::InitPort(const PTX_e port)
+void PortIsrManager::InitPort(const Uint port)
 {
+	if (!m_handlers[port])
+	{
+		m_handlers[port] = new tIsrFunc[PIN_COUNT];
+		memset(m_handlers[port], 0, PIN_COUNT * sizeof(tIsrFunc));
+	}
+
 	switch (port)
 	{
 	case PTA:
@@ -75,9 +88,8 @@ void PortIsrManager::InitPort(const PTX_e port)
 	default:
 		return;
 	}
-	m_handlers[port] = new tIsrFunc[PIN_COUNT];
-	memset(m_handlers[port], 0, PIN_COUNT * sizeof(tIsrFunc));
-	enable_irq(static_cast<IRQn_t>(PORTA_IRQn + port));
+	EnableIsr(static_cast<VECTORn_t>(PORTA_VECTORn + port));
+	m_is_enabled[port] = true;
 }
 
 template<PTX_e port>
@@ -97,14 +109,34 @@ __ISR void PortIsrManager::IsrHandler()
 	}
 }
 
-void PortIsrManager::AddIsrHandler(const PTX_e port, const PTn_e pin,
+void PortIsrManager::SetIsrHandler(const Uint port, const Uint pin,
 		tIsrFunc fn)
 {
-	if (!m_handlers[port])
+	if (fn)
 	{
-		InitPort(port);
+		if (!m_is_enabled[port])
+		{
+			InitPort(port);
+		}
+		m_handlers[port][pin] = fn;
 	}
-	m_handlers[port][pin] = fn;
+	else if (m_is_enabled[port])
+	{
+		m_handlers[port][pin] = nullptr;
+
+		// Disable interrupt if all are null
+		for (int i = 0; i < PIN_COUNT; ++i)
+		{
+			if (m_handlers[port][i])
+			{
+				return;
+			}
+		}
+		const VECTORn_t v = static_cast<VECTORn_t>(PORTA_VECTORn + port);
+		SetIsr(v, DefaultIsr);
+		DisableIsr(v);
+		m_is_enabled[port] = false;
+	}
 }
 
 }

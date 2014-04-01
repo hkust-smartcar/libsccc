@@ -9,6 +9,7 @@
 #ifndef LIBSC_PORT_ISR_MANAGER_H_
 #define LIBSC_PORT_ISR_MANAGER_H_
 
+#include <mini_common.h>
 #include <MK60_gpio.h>
 #include <vectors.h>
 
@@ -20,7 +21,11 @@ class PortIsrManager
 public:
 	static PortIsrManager* GetInstance();
 
-	void AddIsrHandler(const PTX_e port, const PTn_e pin, tIsrFunc fn);
+	void SetIsrHandler(const Uint port, const Uint pin, tIsrFunc fn);
+	void SetIsrHandler(const PTX_e port, const PTn_e pin, tIsrFunc fn)
+	{
+		SetIsrHandler((Uint)port, (Uint)pin, fn);
+	}
 
 private:
 	static constexpr int PORT_COUNT = 5;
@@ -29,12 +34,13 @@ private:
 	PortIsrManager();
 	~PortIsrManager();
 
-	void InitPort(const PTX_e port);
+	void InitPort(const Uint port);
 
 	template<PTX_e port>
 	static __ISR void IsrHandler();
 
 	tIsrFunc* m_handlers[PORT_COUNT];
+	bool m_is_enabled[PORT_COUNT];
 
 	static PortIsrManager *m_instance;
 };

@@ -25,6 +25,8 @@ class UartDevice;
 #define DEBUG_PRINT(...)
 #endif
 
+#define UTIL_JOIN(x, y) x ## y
+
 namespace libutil
 {
 
