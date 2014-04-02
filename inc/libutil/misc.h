@@ -19,11 +19,6 @@ class UartDevice;
 }
 
 #define SAFE_DELETE(x) do{if (x) {delete x; x = nullptr;}}while(false)
-#ifdef DEBUG
-#define DEBUG_PRINT(...) printf(__VA_ARGS__)
-#else
-#define DEBUG_PRINT(...)
-#endif
 
 #define UTIL_JOIN(x, y) x ## y
 
