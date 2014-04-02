@@ -72,11 +72,11 @@ Encoder::Encoder(const uint8_t id)
 		return;
 	}
 	// TODO Support more than one encoder
-	port_init(LIBSC_ENCODER0, IRQ_RISING | ALT1);
-	gpio_ddr(LIBSC_ENCODER0, GPI);
+	port_init(LIBSC_ENCODER1, IRQ_RISING | ALT1);
+	gpio_ddr(LIBSC_ENCODER1, GPI);
 	PortIsrManager::GetInstance()->SetIsrHandler(
-			static_cast<PTX_e>(PTX(LIBSC_ENCODER0)),
-			static_cast<PTn_e>(PTn(LIBSC_ENCODER0)), IsrHandler);
+			static_cast<PTX_e>(PTX(LIBSC_ENCODER1)),
+			static_cast<PTn_e>(PTn(LIBSC_ENCODER1)), IsrHandler);
 }
 
 uint32_t Encoder::GetCount()
