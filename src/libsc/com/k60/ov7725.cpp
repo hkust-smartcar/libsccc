@@ -54,7 +54,8 @@ struct RegisterInfo
 	uint8_t val; /*寄存器值*/
 };
 
-RegisterInfo* CreateReg(const uint16_t w, const uint16_t h)
+RegisterInfo* CreateReg(const uint16_t w, const uint16_t h,
+		const Ov7725::Config &config)
 {
 	uint16_t _w = libutil::Clamp<uint16_t>(1, w, 640);
 	uint16_t _h = libutil::Clamp<uint16_t>(1, h, 480);
@@ -113,8 +114,8 @@ RegisterInfo* CreateReg(const uint16_t w, const uint16_t h)
 	*(it++) = {OV7725_BDBase, 0x99};
 	*(it++) = {OV7725_BDMStep, 0x03};
 	*(it++) = {OV7725_SDE, 0x04};
-	*(it++) = {OV7725_BRIGHT, 0x00};
-	*(it++) = {OV7725_CNST, 0xFF};
+	*(it++) = {OV7725_BRIGHT, config.brightness};
+	*(it++) = {OV7725_CNST, config.contrast};
 	*(it++) = {OV7725_SIGN, 0x06};
 	*(it++) = {OV7725_UVADJ0, 0x11};
 	*(it++) = {OV7725_UVADJ1, 0x02};
@@ -154,10 +155,18 @@ Ov7725::~Ov7725()
 
 bool Ov7725::Init()
 {
+	Config config;
+	config.brightness = 0x00;
+	config.contrast = 0x3E;
+	return Init(config);
+}
+
+bool Ov7725::Init(const Config &config)
+{
 	bool is_init = false;
 	for (int i = 0; i < 10000 && !is_init; ++i)
 	{
-		is_init = InitCameraConfig();
+		is_init = InitCameraConfig(config);
 	}
 	if (!is_init)
 	{
@@ -217,7 +226,7 @@ const Byte* Ov7725::LockBuffer()
  * 輸出  ：返回1成功，返回0失敗
  * 注意  ：無
  ************************************************/
-bool Ov7725::InitCameraConfig()
+bool Ov7725::InitCameraConfig(const Config &config)
 {
 	SCCB_GPIO_init();
 
@@ -238,9 +247,11 @@ bool Ov7725::InitCameraConfig()
 	}
 	LOG_D("Get ID succeed, SENSOR ID is 0x%x", sensor_id_code);
 	LOG_D("Config Register Number is %d", REG_COUNT);
+	LOG_D("Brightness: %d", config.brightness);
+	LOG_D("Contrast: %d", config.contrast);
 	if (sensor_id_code == OV7725_ID)
 	{
-		std::unique_ptr<RegisterInfo[]> reg(CreateReg(m_w, m_h));
+		std::unique_ptr<RegisterInfo[]> reg(CreateReg(m_w, m_h, config));
 		for (int i = 0; i < REG_COUNT; ++i)
 		{
 			if (!SCCB_WriteByte(reg[i].addr, reg[i].val))
@@ -337,7 +348,10 @@ void Ov7725::OnDma()
 	if (!m_is_buffer_lock)
 	{
 		// Drop the frame as the buffer is locked
-		memcpy((Byte*)m_front_buffer, (const Byte*)m_back_buffer, m_buffer_size);
+		// XXX Hard-code hack, I don't know why is there a 1-byte shift...
+		memcpy((Byte*)m_front_buffer, (const Byte*)m_back_buffer + 1,
+				m_buffer_size - 1);
+		m_front_buffer[m_buffer_size - 1] = m_back_buffer[0];
 		m_is_image_ready = true;
 	}
 	DMA_IRQ_CLEAN((LIBSC_CAMERA_DMA_CH + DMA_CH0)); //清除通道傳輸中斷標誌位元
