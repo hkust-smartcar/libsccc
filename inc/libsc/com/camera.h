@@ -17,17 +17,10 @@ namespace libsc
 class Camera
 {
 public:
-	struct Config
-	{
-		uint8_t brightness;
-		uint8_t contrast;
-	};
-
 	virtual ~Camera()
 	{}
 
 	virtual bool Init() = 0;
-	virtual bool Init(const Config &config) = 0;
 
 	virtual void ShootOnce() = 0;
 	virtual void ShootContinuously() = 0;
