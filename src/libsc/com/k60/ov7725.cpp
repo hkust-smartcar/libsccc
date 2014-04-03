@@ -157,7 +157,7 @@ bool Ov7725::Init()
 {
 	Config config;
 	config.brightness = 0x00;
-	config.contrast = 0x3E;
+	config.contrast = 0x40;
 	return Init(config);
 }
 
@@ -348,7 +348,7 @@ void Ov7725::OnDma()
 	if (!m_is_buffer_lock)
 	{
 		// Drop the frame as the buffer is locked
-		// XXX Hard-code hack, I don't know why is there a 1-byte shift...
+		// XXX Hard-code hack, I don't know why there is a 1-byte shift...
 		memcpy((Byte*)m_front_buffer, (const Byte*)m_back_buffer + 1,
 				m_buffer_size - 1);
 		m_front_buffer[m_buffer_size - 1] = m_back_buffer[0];
