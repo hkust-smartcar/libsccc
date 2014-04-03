@@ -33,6 +33,7 @@ public:
 	~Ov7725();
 
 	bool Init() override;
+	bool Init(const Config &config) override;
 
 	void ShootOnce() override;
 	void ShootContinuously() override;
@@ -83,7 +84,7 @@ private:
 		FAIL_SHOOT
 	};
 
-	bool InitCameraConfig();
+	bool InitCameraConfig(const Config &config);
 	void InitPort();
 
 	inline void RegVsyncHandler();
