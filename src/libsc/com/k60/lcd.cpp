@@ -77,7 +77,7 @@ Lcd::Lcd(const bool is_revert)
 	DELAY_MS(120);
 
 	SEND_COMMAND(CMD_MEM_DATA_ACCESS_CTRL);
-	SEND_DATA(is_revert ? 0xC8 : 0x08);
+	SEND_DATA(is_revert ? 0x08 : 0xC8);
 
 	// 16-bit
 	SEND_COMMAND(CMD_PIXEL_FORMAT);
