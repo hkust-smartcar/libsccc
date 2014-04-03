@@ -15,7 +15,7 @@
  * out the specific defines instead of defining them to 0 for unused devices
  */
 #define LIBSC_USE_UART 1
-#define LIBSC_USE_ENCODER 2
+#define LIBSC_USE_ENCODER 1
 //#define LIBSC_USE_ENCODER_FTM
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LCD_HW_SPI
