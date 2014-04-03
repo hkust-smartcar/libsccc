@@ -38,7 +38,7 @@
 #include "libsc/com/k60/port_isr_manager.h"
 #include "libutil/misc.h"
 
-#define REG_COUNT 49
+#define REG_COUNT 50
 
 namespace libsc
 {
@@ -58,21 +58,23 @@ RegisterInfo* CreateReg(const uint16_t w, const uint16_t h)
 {
 	uint16_t _w = libutil::Clamp<uint16_t>(1, w, 640);
 	uint16_t _h = libutil::Clamp<uint16_t>(1, h, 480);
+	const bool is_qvga = (_w <= 320 && _h <= 240);
 
 	RegisterInfo *reg = new RegisterInfo[REG_COUNT];
 	RegisterInfo *it = reg;
 
 	//寄存器，寄存器值次
-	*(it++) = {OV7725_COM4, 0xC1};
+	// 75FPS
+	*(it++) = {OV7725_COM4, 0x41};
 	*(it++) = {OV7725_CLKRC, 0x00};
 	*(it++) = {OV7725_COM2, 0x03};
 	*(it++) = {OV7725_COM3, 0xD0};
 	// QVGA whenever possible
-	*(it++) = {OV7725_COM7, ((uint8_t)((_w <= 320 && _h <= 240) ? 0x40 : 0x00))};
-	*(it++) = {OV7725_HSTART, 0x3F};
-	*(it++) = {OV7725_HSIZE, 0x50};
-	*(it++) = {OV7725_VSTRT, 0x03};
-	*(it++) = {OV7725_VSIZE, 0x78};
+	*(it++) = {OV7725_COM7, (uint8_t)((is_qvga) ? 0x40 : 0x00)};
+	*(it++) = {OV7725_HSTART, (uint8_t)((is_qvga) ? 0x3F : 0x23)};
+	*(it++) = {OV7725_HSIZE, (uint8_t)((is_qvga) ? 0x50 : 0xA0)};
+	*(it++) = {OV7725_VSTRT, (uint8_t)((is_qvga) ? 0x03 : 0x07)};
+	*(it++) = {OV7725_VSIZE, (uint8_t)((is_qvga) ? 0x78 : 0xF0)};
 	*(it++) = {OV7725_HREF, 0x00};
 	*(it++) = {OV7725_SCAL0, 0x0A};
 	*(it++) = {OV7725_AWB_Ctrl0, 0xE0};
@@ -84,6 +86,7 @@ RegisterInfo* CreateReg(const uint16_t w, const uint16_t h)
 	*(it++) = {OV7725_HOutSize, (uint8_t)(_w >> 2)};
 	*(it++) = {OV7725_VOutSize, (uint8_t)(_h >> 1)};
 	*(it++) = {OV7725_EXHCH, ((uint8_t)(0x00 | ((_h & 0x1) << 2) | (_w & 0x3)))};
+	*(it++) = {OV7725_EXHCL, 0x00};
 
 	*(it++) = {OV7725_GAM1, 0x0c};
 	*(it++) = {OV7725_GAM2, 0x16};
