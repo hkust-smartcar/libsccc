@@ -23,6 +23,7 @@ public:
 	static constexpr uint8_t FONT_W = 8;
 	static constexpr uint8_t FONT_H = 16;
 
+	Lcd();
 	explicit Lcd(const bool is_revert);
 
 	void Clear();
@@ -39,6 +40,8 @@ public:
 		DrawPixel(x, y, 1, 1, color);
 	}
 
+	void DrawGrayscalePixelBuffer(const uint8_t x, const uint8_t y,
+			const uint8_t w, const uint8_t h, const uint8_t *pixel) const;
 	void DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
 			const uint8_t h, const uint16_t *pixel) const;
 	void DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
