@@ -135,11 +135,11 @@ void Motor::SetClockwise(const bool flag)
 }
 
 #else
-Motor::Motor(const uint8_t id) {}
-Motor::Motor(const uint8_t id, const float m) {}
-void Motor::SetPower(const uint16_t power) {}
-void Motor::AddPower(const int16_t power) {}
-void Motor::SetClockwise(const bool flag) {}
+Motor::Motor(const uint8_t) : m_id(0) {}
+Motor::Motor(const uint8_t, const float) : m_id(0) {}
+void Motor::SetPower(const uint16_t) {}
+void Motor::AddPower(const int16_t) {}
+void Motor::SetClockwise(const bool) {}
 
 #endif
 

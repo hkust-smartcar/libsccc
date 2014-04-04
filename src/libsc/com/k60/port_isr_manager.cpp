@@ -109,8 +109,7 @@ __ISR void PortIsrManager::IsrHandler()
 	}
 }
 
-void PortIsrManager::SetIsrHandler(const Uint port, const Uint pin,
-		tIsrFunc fn)
+void PortIsrManager::SetIsrHandler(const Uint port, const Uint pin, tIsrFunc fn)
 {
 	if (fn)
 	{

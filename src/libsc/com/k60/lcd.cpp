@@ -50,6 +50,10 @@ namespace libsc
 
 #ifdef LIBSC_USE_LCD
 
+Lcd::Lcd()
+		: Lcd(false)
+{}
+
 Lcd::Lcd(const bool is_revert)
 		: m_bg_color(0)
 {
@@ -73,7 +77,7 @@ Lcd::Lcd(const bool is_revert)
 	DELAY_MS(120);
 
 	SEND_COMMAND(CMD_MEM_DATA_ACCESS_CTRL);
-	SEND_DATA(is_revert ? 0xC8 : 0x08);
+	SEND_DATA(is_revert ? 0x08 : 0xC8);
 
 	// 16-bit
 	SEND_COMMAND(CMD_PIXEL_FORMAT);
@@ -154,6 +158,20 @@ void Lcd::Clear()
 	DELAY_MS(100);
 
 	m_bg_color = 0;
+}
+
+void Lcd::DrawGrayscalePixelBuffer(const uint8_t x, const uint8_t y,
+		const uint8_t w, const uint8_t h, const uint8_t *pixel) const
+{
+	SetActiveRect(x, y, w, h);
+	SEND_COMMAND(CMD_MEMORY_WRITE);
+	const Uint area = w * h;
+	for (Uint i = 0; i < area; ++i)
+	{
+		const uint16_t col = Lcd::GetRgb565(pixel[i], pixel[i], pixel[i]);
+		SEND_DATA(col >> 8);
+		SEND_DATA(col);
+	}
 }
 
 void Lcd::DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
@@ -299,6 +317,7 @@ void Lcd::Send(const bool is_cmd, const uint8_t data) const
 #endif /* LIBSC_USE_LCD_HW_SPI */
 
 #else
+Lcd::Lcd() {}
 Lcd::Lcd(const bool) {}
 void Lcd::Clear() {}
 void Lcd::DrawPixel(const uint8_t, const uint8_t, const uint8_t, const uint8_t,
