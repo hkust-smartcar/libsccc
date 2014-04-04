@@ -43,6 +43,8 @@
 namespace libsc
 {
 
+#ifdef LIBSC_USE_CAMERA
+
 namespace
 {
 
@@ -364,5 +366,22 @@ __ISR void Ov7725::DmaHandler()
 		g_instance->OnDma();
 	}
 }
+
+#else
+Ov7725::Ov7725(const uint16_t, const uint16_t)
+		: m_w(0), m_h(0),
+		  m_front_buffer(nullptr), m_back_buffer(nullptr),
+		  m_buffer_size(0), m_is_image_ready(false)
+{}
+Ov7725::~Ov7725() {}
+bool Ov7725::Init() { return false; }
+bool Ov7725::Init(const Config&) { return false; }
+void Ov7725::ShootOnce() {}
+void Ov7725::ShootContinuously() {}
+void Ov7725::StopShoot() {}
+const Byte* Ov7725::GetImage() { return nullptr; }
+const Byte* Ov7725::LockBuffer() { return nullptr; }
+
+#endif /* LIBSC_USE_CAMERA */
 
 }

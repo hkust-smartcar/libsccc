@@ -45,10 +45,10 @@ public:
 	}
 
 	/**
-	 * Return a COPY of the buffer, you are required to delete the buffer. This
-	 * is VERY inefficient, use LockBuffer() and UnlockBuffer() instead
+	 * Return a COPY of the buffer, users are required to delete the buffer.
+	 * This is VERY inefficient, use LockBuffer() and UnlockBuffer() instead
 	 *
-	 * @return
+	 * @return The copy, or NULL if failure
 	 */
 	const Byte* GetImage();
 
@@ -58,7 +58,7 @@ public:
 	 *
 	 * REMEMBER to pair each LockBuffer() call with a UnlockBuffer() call!
 	 *
-	 * @return The image buffer, 8 pixel/byte
+	 * @return The image buffer, 8 pixel/byte, or NULL if failure
 	 */
 	const Byte* LockBuffer();
 	void UnlockBuffer()
