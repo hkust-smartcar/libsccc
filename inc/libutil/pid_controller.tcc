@@ -52,7 +52,7 @@ void PidController<T, U>::Print(const char *label)
 	{
 		iprintf("=== PID State ===\n");
 	}
-	iprintf("KP: %f\nKI: %f\nKD: %f\n", m_kp, m_ki, m_kd);
+	printf("KP: %f\nKI: %f\nKD: %f\n", m_kp, m_ki, m_kd);
 	return;
 }
 
