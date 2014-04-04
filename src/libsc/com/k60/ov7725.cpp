@@ -277,7 +277,7 @@ void Ov7725::InitPort()
 			->B[PTn(LIBSC_CAMERA_DMA_SRC_ADDR) >> 3]));
 	dma_portx2buff_init((DMA_CHn)(LIBSC_CAMERA_DMA_CH + DMA_CH0),
 			src_addr, (void*)m_back_buffer, LIBSC_CAMERA_PCLK, DMA_BYTE1,
-			m_buffer_size, DADDR_KEEPON);
+			m_buffer_size, DADDR_RECOVER);
 
 	DMA_DIS((LIBSC_CAMERA_DMA_CH + DMA_CH0));
 	//disable_irq(PORTA_IRQn); //關閉PTA的中斷
