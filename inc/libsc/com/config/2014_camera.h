@@ -18,7 +18,7 @@
 // Support 2 encoders only when using FTM
 #define LIBSC_USE_ENCODER 2
 #define LIBSC_USE_ENCODER_FTM
-//#define LIBSC_USE_LCD 1
+#define LIBSC_USE_LCD 1
 //#define LIBSC_USE_LCD_HW_SPI
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 1
@@ -50,5 +50,11 @@
 #define LIBSC_CAMERA_SDA PTB11
 #define LIBSC_CAMERA_SCL PTB20
 #define LIBSC_CAMERA_VSYNC PTA29
+
+#define LIBSC_LCD_RST PTB2
+#define LIBSC_LCD_DC PTB3
+#define LIBSC_LCD_CS PTB4
+#define LIBSC_LCD_SDAT PTB5
+#define LIBSC_LCD_SCLK PTB6
 
 #endif /* LIBSC_2014_CAMERA_H_ */
