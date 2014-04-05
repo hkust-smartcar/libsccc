@@ -38,7 +38,7 @@ typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 
 	m_prev_error = error;
 	m_prev_time = time;
-	return p + i + d;
+	return p + i - d;
 }
 
 template<typename T, typename U>
