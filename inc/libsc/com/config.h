@@ -18,6 +18,9 @@
 #elif defined(K60_2013_CCD)
 #include "config/2013_ccd.h"
 
+#elif defined(K60_2013_MAGNETIC)
+#include "config/2013_magnetic.h"
+
 #elif defined(K60_2014)
 #include "config/2014.h"
 
