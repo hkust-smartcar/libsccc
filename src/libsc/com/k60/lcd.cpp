@@ -322,8 +322,8 @@ Lcd::Lcd(const bool) {}
 void Lcd::Clear() {}
 void Lcd::DrawPixel(const uint8_t, const uint8_t, const uint8_t, const uint8_t,
 		const uint16_t) const {}
-void Lcd::DrawGrayscalePixelBuffer(const uint8_t x, const uint8_t y,
-		const uint8_t w, const uint8_t h, const uint8_t *pixel) const {}
+void Lcd::DrawGrayscalePixelBuffer(const uint8_t, const uint8_t, const uint8_t,
+		const uint8_t, const uint8_t*) const {}
 void Lcd::DrawPixelBuffer(const uint8_t, const uint8_t, const uint8_t,
 		const uint8_t, const uint16_t*) const {}
 void Lcd::DrawPixelBuffer(const uint8_t, const uint8_t, const uint8_t,
