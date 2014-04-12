@@ -55,9 +55,17 @@ public:
 		m_kd = kd;
 	}
 
+	void Restart()
+	{
+		m_prev_time = Clock::Time();
+	}
+
 	void Print(const char *label);
 
 private:
+	inline void PrintError(const int);
+	inline void PrintError(const double);
+
 	InputType m_setpoint;
 	float m_kp;
 	float m_ki;

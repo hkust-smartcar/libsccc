@@ -9,6 +9,8 @@
 #include <cstdint>
 #include <cstdio>
 
+#include <log.h>
+
 #include "libutil/clock.h"
 
 #include "libutil/pid_controller.h"
@@ -38,7 +40,20 @@ typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 
 	m_prev_error = error;
 	m_prev_time = time;
+	LOG_D("P: %f I: %f D: %f", p, i, d);
 	return p + i - d;
+}
+
+template<typename T, typename U>
+inline void PidController<T, U>::PrintError(const int)
+{
+	printf("Accumulated Error: %d\n", m_accumulated_error);
+}
+
+template<typename T, typename U>
+inline void PidController<T, U>::PrintError(const double)
+{
+	printf("Accumulated Error: %f\n", m_accumulated_error);
 }
 
 template<typename T, typename U>
@@ -52,8 +67,8 @@ void PidController<T, U>::Print(const char *label)
 	{
 		iprintf("=== PID State ===\n");
 	}
-	printf("KP: %f\nKI: %f\nKD: %f\n", m_kp, m_ki, m_kd);
-	return;
+	printf("KP: %f KI: %f KD: %f\n", m_kp, m_ki, m_kd);
+	PrintError(m_accumulated_error);
 }
 
 }
