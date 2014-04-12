@@ -22,8 +22,8 @@ public:
 	LinearCcd();
 
 	/**
-	 * Return the captured data in a bool array, where light pixel is true,
-	 * false otherwise. Must NOT delete the returned array
+	 * Return the captured data in a bool array, where dark pixel is true, false
+	 * otherwise. Must NOT delete the returned array
 	 *
 	 * @return
 	 */
