@@ -26,11 +26,44 @@ PidController<T, U>::PidController(const InputType setpoint, const float kp,
 {}
 
 template<typename T, typename U>
+inline void PidController<T, U>::PrintSetpoint(const int)
+{
+	LOG_D("SP: %d", m_setpoint);
+}
+
+template<typename T, typename U>
+inline void PidController<T, U>::PrintSetpoint(const float)
+{
+	LOG_D("SP: %f", m_setpoint);
+}
+
+template<typename T, typename U>
+inline void PidController<T, U>::PrintError(const int32_t error)
+{
+	LOG_D("Error: prev(%ld) now(%ld) accum(%ld)", m_prev_error, error,
+			m_accumulated_error);
+}
+
+template<typename T, typename U>
+inline void PidController<T, U>::PrintError(const int16_t error)
+{
+	LOG_D("Error: prev(%d) now(%d) accum(%d)", m_prev_error, error,
+			m_accumulated_error);
+}
+
+template<typename T, typename U>
+inline void PidController<T, U>::PrintError(const float error)
+{
+	LOG_D("Error: prev(%f) now(%f) accum(%f)", m_prev_error, error,
+			m_accumulated_error);
+}
+
+template<typename T, typename U>
 typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 		const Clock::ClockInt time, const InputType current_val)
 {
 	const Clock::ClockInt time_diff = Clock::TimeDiff(time, m_prev_time);
-	const SignedInputType error = m_setpoint - current_val;
+	const InputType error = m_setpoint - current_val;
 
 	const float p = m_kp * error;
 	m_accumulated_error += error;
@@ -38,22 +71,11 @@ typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 	const float slope = (error - m_prev_error) / (float)time_diff;
 	const float d = m_kd * slope;
 
+	PrintError(error);
 	m_prev_error = error;
 	m_prev_time = time;
-	LOG_D("P: %f I: %f D: %f", p, i, d);
+	LOG_D("P(%f) + I(%f) - D(%f) = %f", p, i, d, p + i - d);
 	return p + i - d;
-}
-
-template<typename T, typename U>
-inline void PidController<T, U>::PrintError(const int)
-{
-	printf("Accumulated Error: %d\n", m_accumulated_error);
-}
-
-template<typename T, typename U>
-inline void PidController<T, U>::PrintError(const double)
-{
-	printf("Accumulated Error: %f\n", m_accumulated_error);
 }
 
 template<typename T, typename U>
@@ -61,14 +83,13 @@ void PidController<T, U>::Print(const char *label)
 {
 	if (label)
 	{
-		iprintf("=== PID State for %s ===\n", label);
+		LOG_I("=== PID State for %s ===", label);
 	}
 	else
 	{
-		iprintf("=== PID State ===\n");
+		LOG_I("=== PID State ===");
 	}
-	printf("KP: %f KI: %f KD: %f\n", m_kp, m_ki, m_kd);
-	PrintError(m_accumulated_error);
+	LOG_I("KP: %f KI: %f KD: %f", m_kp, m_ki, m_kd);
 }
 
 }
