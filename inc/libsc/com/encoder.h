@@ -17,25 +17,18 @@ namespace libsc
 class Encoder
 {
 public:
-	Encoder(const uint8_t id);
+	explicit Encoder(const uint8_t id);
 
-	uint32_t GetCount();
+	void Update();
 
-	/**
-	 * Return how @a a is apart from @a b
-	 *
-	 * @param a Some count gotten in the future, in terms of @a b
-	 * @param b Some count gotten in the past, in terms of @a a
-	 * @return
-	 */
-	static uint32_t CountDiff(const uint32_t a, const uint32_t b)
+	int16_t GetCount() const
 	{
-		return (uint32_t)(a - b);
+		return m_count;
 	}
 
 private:
 	const uint8_t m_id;
-	uint32_t m_count;
+	int16_t m_count;
 };
 
 }
