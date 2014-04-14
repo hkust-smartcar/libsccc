@@ -55,6 +55,16 @@ public:
 		m_kd = kd;
 	}
 
+	/**
+	 * Set the upper bound of i, <= 0 means unlimited i
+	 *
+	 * @param value
+	 */
+	void SetILimit(const float value)
+	{
+		m_i_limit = value;
+	}
+
 	void Restart()
 	{
 		m_accumulated_error = 0;
@@ -74,6 +84,8 @@ private:
 	float m_kp;
 	float m_ki;
 	float m_kd;
+
+	float m_i_limit;
 
 	InputType m_accumulated_error;
 	InputType m_prev_error;
