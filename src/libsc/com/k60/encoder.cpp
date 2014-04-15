@@ -108,14 +108,13 @@ __ISR void IsrHandler()
 }
 
 Encoder::Encoder(const uint8_t id)
-		: m_id(id), m_count(0), m_prev_count(0)
+		: m_id(id), m_count(0)
 {
 	if (id >= LIBSC_USE_ENCODER)
 	{
 		LOG_E("Requested encoder does not exists");
 		return;
 	}
-	// TODO Support more than one encoder
 	port_init(GetGpio(m_id), IRQ_RISING | ALT1);
 	gpio_ddr(GetGpio(m_id), GPI);
 	PortIsrManager::GetInstance()->SetIsrHandler(PTX(GetGpio(m_id)),
