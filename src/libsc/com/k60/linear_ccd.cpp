@@ -43,7 +43,7 @@ const bool* LinearCcd::SampleData()
 		gpio_set(LIBSC_LINEAR_CCD0_CLK, m_clk_state);
 		m_clk_state ^= true;
 
-		// White == true
+		// Black == true
 		m_buffer[i] = (gpio_get(LIBSC_LINEAR_CCD0_AO) == 1);
 
 		if (is_si_triggered)
