@@ -98,7 +98,7 @@ inline PTXn_e GetGpio(const uint8_t id)
 
 #endif
 
-volatile uint32_t g_count = 0;
+volatile int16_t g_count = 0;
 
 __ISR void IsrHandler()
 {
