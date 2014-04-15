@@ -10,6 +10,7 @@
 
 #include "libsc/com/trs_d05.h"
 
+#define FREQ 300
 // Found by trial and error!!!
 #define PWM_MIN 300
 #define PWM_MAX 1200
@@ -18,7 +19,7 @@ namespace libsc
 {
 
 TrsD05::TrsD05(const uint8_t id)
-		: Servo(id, PWM_MIN, PWM_MAX)
+		: Servo(id, FREQ, PWM_MIN, PWM_MAX)
 {}
 
 }

@@ -63,11 +63,12 @@ inline FTM_CHn_e GetFtmChannel(const uint8_t id)
 
 }
 
-Servo::Servo(const uint8_t id, const uint16_t pwm_min, const uint16_t pwm_max)
+Servo::Servo(const uint8_t id, const uint16_t freq, const uint16_t pwm_min,
+		const uint16_t pwm_max)
 		: m_id(id), m_pwm_min(pwm_min), m_pwm_max(pwm_max)
 {
 	m_degree = 90;
-	FTM_PWM_init(GetFtmModule(id), GetFtmChannel(id), 50,
+	FTM_PWM_init(GetFtmModule(id), GetFtmChannel(id), freq,
 			(m_pwm_max - m_pwm_min) * 0.5f + m_pwm_min);
 }
 

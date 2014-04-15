@@ -30,7 +30,8 @@ public:
 	}
 
 protected:
-	Servo(const uint8_t id, const uint16_t pwm_min, const uint16_t pwm_max);
+	Servo(const uint8_t id, const uint16_t freq, const uint16_t pwm_min,
+			const uint16_t pwm_max);
 
 private:
 	const uint8_t m_id;

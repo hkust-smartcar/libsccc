@@ -10,6 +10,7 @@
 
 #include "libsc/com/futaba_s3010.h"
 
+#define FREQ 130
 #define PWM_MIN 500
 #define PWM_MAX 1000
 
@@ -17,7 +18,7 @@ namespace libsc
 {
 
 FutabaS3010::FutabaS3010(const uint8_t id)
-		: Servo(id, PWM_MIN, PWM_MAX)
+		: Servo(id, FREQ, PWM_MIN, PWM_MAX)
 {}
 
 }
