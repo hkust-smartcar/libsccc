@@ -10,10 +10,14 @@
 
 #include "libsc/com/trs_d05.h"
 
-#define FREQ 300
+#define FREQ 50
 // Found by trial and error!!!
+// Freq = 50
 #define PWM_MIN 300
 #define PWM_MAX 1200
+// Freq = 100
+//#define PWM_MIN 1550 - 900
+//#define PWM_MAX 1550 + 900
 
 namespace libsc
 {

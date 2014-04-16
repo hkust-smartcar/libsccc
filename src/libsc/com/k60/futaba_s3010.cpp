@@ -10,7 +10,7 @@
 
 #include "libsc/com/futaba_s3010.h"
 
-#define FREQ 130
+#define FREQ 50
 #define PWM_MIN 500
 #define PWM_MAX 1000
 
