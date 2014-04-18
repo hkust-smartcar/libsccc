@@ -19,12 +19,16 @@ namespace libsc
 class PortIsrManager
 {
 public:
+	typedef void (*OnTriggerPortIsrListener)(const PTX_e port, const PTn_e pin);
+
 	static PortIsrManager* GetInstance();
 
-	void SetIsrHandler(const Uint port, const Uint pin, tIsrFunc fn);
-	void SetIsrHandler(const PTX_e port, const PTn_e pin, tIsrFunc fn)
+	void SetIsrHandler(const Uint port, const Uint pin,
+			OnTriggerPortIsrListener listener);
+	void SetIsrHandler(const PTX_e port, const PTn_e pin,
+			OnTriggerPortIsrListener listener)
 	{
-		SetIsrHandler((Uint)port, (Uint)pin, fn);
+		SetIsrHandler((Uint)port, (Uint)pin, listener);
 	}
 
 private:
@@ -39,7 +43,7 @@ private:
 	template<PTX_e port>
 	static __ISR void IsrHandler();
 
-	tIsrFunc* m_handlers[PORT_COUNT];
+	OnTriggerPortIsrListener* m_handlers[PORT_COUNT];
 	bool m_is_enabled[PORT_COUNT];
 
 	static PortIsrManager *m_instance;

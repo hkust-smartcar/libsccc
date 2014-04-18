@@ -332,7 +332,7 @@ void Ov7725::OnVsync()
 	}
 }
 
-__ISR void Ov7725::VsyncHandler()
+void Ov7725::VsyncHandler(const PTX_e, const PTn_e)
 {
 	if (g_instance)
 	{

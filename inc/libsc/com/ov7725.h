@@ -91,7 +91,7 @@ private:
 	inline void UnregVsyncHandler();
 
 	void OnVsync();
-	static __ISR void VsyncHandler();
+	static void VsyncHandler();
 	void OnDma();
 	static __ISR void DmaHandler();
 

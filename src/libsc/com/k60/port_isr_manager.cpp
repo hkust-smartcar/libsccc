@@ -59,8 +59,8 @@ void PortIsrManager::InitPort(const Uint port)
 {
 	if (!m_handlers[port])
 	{
-		m_handlers[port] = new tIsrFunc[PIN_COUNT];
-		memset(m_handlers[port], 0, PIN_COUNT * sizeof(tIsrFunc));
+		m_handlers[port] = new OnTriggerPortIsrListener[PIN_COUNT];
+		memset(m_handlers[port], 0, PIN_COUNT * sizeof(OnTriggerPortIsrListener));
 	}
 
 	switch (port)
@@ -95,7 +95,8 @@ void PortIsrManager::InitPort(const Uint port)
 template<PTX_e port>
 __ISR void PortIsrManager::IsrHandler()
 {
-	tIsrFunc *port_handlers = PortIsrManager::GetInstance()->m_handlers[port];
+	OnTriggerPortIsrListener *port_handlers =
+			PortIsrManager::GetInstance()->m_handlers[port];
 	for (int i = 0; i < PIN_COUNT; ++i)
 	{
 		if ((PORT_ISFR_REG(PORTX[port]) & (1 << i)))
@@ -103,13 +104,14 @@ __ISR void PortIsrManager::IsrHandler()
 			PORT_ISFR_REG(PORTX[port]) |= (1 << i);
 			if (port_handlers[i])
 			{
-				port_handlers[i]();
+				port_handlers[i](port, static_cast<PTn_e>(i));
 			}
 		}
 	}
 }
 
-void PortIsrManager::SetIsrHandler(const Uint port, const Uint pin, tIsrFunc fn)
+void PortIsrManager::SetIsrHandler(const Uint port, const Uint pin,
+		OnTriggerPortIsrListener fn)
 {
 	if (fn)
 	{

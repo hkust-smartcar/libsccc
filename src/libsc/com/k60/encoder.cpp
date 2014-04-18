@@ -98,11 +98,22 @@ inline PTXn_e GetGpio(const uint8_t id)
 
 #endif
 
-volatile int16_t g_count = 0;
+volatile int16_t g_count[LIBSC_USE_ENCODER] = {};
 
-__ISR void IsrHandler()
+void IsrHandler(const PTX_e port, const PTn_e pin)
 {
-	++g_count;
+	switch (PTXn(port, pin))
+	{
+	case LIBSC_ENCODER0:
+		++g_count[0];
+		break;
+
+#if LIBSC_USE_ENCODER > 1
+	case LIBSC_ENCODER1:
+		++g_count[1];
+		break;
+#endif
+	}
 }
 
 }
@@ -123,8 +134,8 @@ Encoder::Encoder(const uint8_t id)
 
 void Encoder::Update()
 {
-	m_count = g_count;
-	g_count = 0;
+	m_count = g_count[m_id];
+	g_count[m_id] = 0;
 }
 
 #endif /* LIBSC_USE_ENCODER_FTM */
