@@ -12,6 +12,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include <list>
+
 #include <vectors.h>
 #include <MK60_uart.h>
 
@@ -20,10 +22,14 @@
 #include "libutil/misc.h"
 #include "macro.h"
 
+using namespace std;
+
 #define UART_VECTOR(x) static_cast<VECTORn_t>((x << 1) + UART0_RX_TX_VECTORn)
 #define UARTX(x) static_cast<UARTn_e>(x + UART0)
 
-#define CHUNK_SIZE 32
+#define CHUNK_SIZE 64
+// Maximum number of chunk allocated for Tx
+#define MAX_TX_CHUNK 8
 
 namespace libsc
 {
@@ -34,14 +40,13 @@ namespace
 {
 
 UartDevice* g_uart_instances[LIBSC_USE_UART];
-UartDevice::OnReceiveCharListener g_uart_listener[LIBSC_USE_UART];
 
 }
 
 struct UartDevice::Chunk
 {
 	Chunk()
-			: start(0), end(0), next(nullptr)
+			: start(0), end(0)
 	{
 		memset(data, 0, CHUNK_SIZE);
 	}
@@ -49,11 +54,11 @@ struct UartDevice::Chunk
 	char data[CHUNK_SIZE];
 	uint8_t start;
 	uint8_t end;
-	Chunk *next;
 };
 
 UartDevice::UartDevice(const uint8_t uart_port, const uint32_t baud_rate)
-		: m_uart_port(uart_port)
+		: m_listener(nullptr), m_send_buf_size(0), m_is_tx_idle(true),
+		  m_uart_port(uart_port)
 {
 	for (m_device_id = 0; m_device_id < LIBSC_USE_UART; ++m_device_id)
 	{
@@ -69,8 +74,12 @@ UartDevice::UartDevice(const uint8_t uart_port, const uint32_t baud_rate)
 		return;
 	}
 
-	m_tail = m_head = new Chunk;
 	uart_init(UARTX(uart_port), baud_rate);
+	m_txfifo_size = 1 << (UART_PFIFO_TXFIFOSIZE(UART_PFIFO_REG(UARTN[m_uart_port])));
+	if (m_txfifo_size != 1)
+	{
+		m_txfifo_size <<= 1;
+	}
 }
 
 UartDevice::~UartDevice()
@@ -82,59 +91,80 @@ UartDevice::~UartDevice()
 
 	StopReceive();
 
-	Chunk *next = nullptr;
-	for (Chunk *c = m_head; c; c = next)
-	{
-		next = c->next;
-		SAFE_DELETE(c);
-	}
-
 	g_uart_instances[m_device_id] = nullptr;
 }
 
 void UartDevice::StartReceive(OnReceiveCharListener listener)
 {
 	SetIsr(UART_VECTOR(m_uart_port), IrqHandler);
-	g_uart_listener[m_device_id] = listener;
+	m_listener = listener;
 	uart_rx_irq_en(UARTX(m_uart_port));
 }
 
 void UartDevice::StopReceive()
 {
 	uart_rx_irq_dis(UARTX(m_uart_port));
-	g_uart_listener[m_device_id] = nullptr;
+	m_listener = nullptr;
 	SetIsr(UART_VECTOR(m_uart_port), DefaultIsr);
 }
 
 void UartDevice::SendChar(const char ch)
 {
-	uart_putchar(UARTX(m_uart_port), ch);
+	if (m_send_buf_size == 0)
+	{
+		m_send_buf.push_back(Chunk());
+		++m_send_buf_size;
+	}
+	if (m_send_buf.back().end == CHUNK_SIZE)
+	{
+		if (m_send_buf_size >= MAX_TX_CHUNK)
+		{
+			m_send_buf.pop_front();
+			m_send_buf.push_back(Chunk());
+		}
+		else
+		{
+			m_send_buf.push_back(Chunk());
+			++m_send_buf_size;
+		}
+	}
+	m_send_buf.back().data[m_send_buf.back().end++] = ch;
+
+	if (m_is_tx_idle)
+	{
+		m_is_tx_idle = false;
+		uart_txc_irq_en(UARTX(m_uart_port));
+	}
 }
 
 void UartDevice::SendStr(const char *str)
 {
-	uart_putstr(UARTX(m_uart_port), str);
+	while (*str)
+	{
+		SendChar(*str++);
+	}
 }
 
 void UartDevice::SendBuffer(const uint8_t *buf, const uint32_t len)
 {
-	uart_putbuff(UARTX(m_uart_port), buf, len);
+	for (uint32_t i = 0; i < len; ++i)
+	{
+		SendChar(static_cast<char>(buf[i]));
+	}
 }
 
 bool UartDevice::PeekChar(char *out_char)
 {
-	Chunk *tail = const_cast<Chunk*>(m_tail);
-	if (m_head == tail && m_head->start == m_head->end)
+	if (m_receive_buf.empty()
+			|| m_receive_buf.front().start == m_receive_buf.front().end)
 	{
 		return false;
 	}
 
-	*out_char = m_head->data[m_head->start];
-	if (++m_head->start == CHUNK_SIZE)
+	*out_char = m_receive_buf.front().data[m_receive_buf.front().start];
+	if (++m_receive_buf.front().start == CHUNK_SIZE)
 	{
-		Chunk *pop = m_head;
-		m_head = m_head->next;
-		SAFE_DELETE(pop);
+		m_receive_buf.pop_front();
 	}
 	return true;
 }
@@ -143,33 +173,79 @@ void UartDevice::IrqHandler()
 {
 	const VECTORn_t v = GetVectorX();
 	const uint8_t uart_port = ((v - UART0_RX_TX_VECTORn) >> 1);
+
 	for (int i = 0; i < LIBSC_USE_UART; ++i)
 	{
 		if (g_uart_instances[i] && g_uart_instances[i]->m_uart_port == uart_port)
 		{
-			Chunk *tail = const_cast<Chunk*>(g_uart_instances[i]->m_tail);
-			while (uart_querychar(LIBSC_BT_UART, &tail->data[tail->end]))
+			if (UART_S1_REG(UARTN[g_uart_instances[i]->m_uart_port])
+					& UART_S1_TC_MASK)
 			{
-				if (!g_uart_listener[i])
-				{
-					if (++tail->end == CHUNK_SIZE)
-					{
-						g_uart_instances[i]->m_tail = tail = tail->next =
-								new Chunk;
-					}
-				}
-				else
-				{
-					g_uart_listener[i](tail->data[tail->end]);
-				}
+				g_uart_instances[i]->OnInterruptTx();
+			}
+			else
+			{
+				g_uart_instances[i]->OnInterruptRx();
 			}
 			return;
 		}
 	}
 }
 
+void UartDevice::OnInterruptRx()
+{
+	char ch;
+	while (uart_querychar(UARTX(m_uart_port), &ch))
+	{
+		if (!m_listener)
+		{
+			if (m_receive_buf.empty())
+			{
+				m_receive_buf.push_back(Chunk());
+			}
+			m_receive_buf.back().data[m_receive_buf.back().end] = ch;
+			if (++m_receive_buf.back().end == CHUNK_SIZE)
+			{
+				m_receive_buf.push_back(Chunk());
+			}
+		}
+		else
+		{
+			m_listener(ch);
+		}
+	}
+}
+
+void UartDevice::OnInterruptTx()
+{
+	if (m_send_buf_size == 0
+			|| m_send_buf.front().start == m_send_buf.front().end)
+	{
+		m_is_tx_idle = true;
+		uart_txc_irq_dis(UARTX(m_uart_port));
+		return;
+	}
+
+	while (UART_TCFIFO_TXCOUNT(UART_TCFIFO_REG(UARTN[m_uart_port]))
+			< m_txfifo_size)
+	{
+		//uart_putchar(UARTX(m_uart_port),
+		//		m_send_buf.front().data[m_send_buf.front().start]);
+		UART_D_REG(UARTN[m_uart_port]) =
+				(uint8_t)m_send_buf.front().data[m_send_buf.front().start];
+		if (++m_send_buf.front().start == CHUNK_SIZE)
+		{
+			--m_send_buf_size;
+			m_send_buf.pop_front();
+		}
+	}
+}
+
 #else
-UartDevice::UartDevice(const uint8_t) {}
+UartDevice::UartDevice(const uint8_t)
+		: m_listener(nullptr), m_send_buf_size(0), m_is_tx_idle(true),
+		  m_uart_port(0), m_device_id(0), m_txfifo_size(1)
+{}
 UartDevice::~UartDevice() {}
 void UartDevice::StartReceive() {}
 void UartDevice::StopReceive() {}

@@ -11,6 +11,8 @@
 
 #include <cstdint>
 
+#include <list>
+
 #include <vectors.h>
 
 namespace libsc
@@ -40,12 +42,20 @@ public:
 private:
 	static __ISR void IrqHandler();
 
+	void OnInterruptRx();
+	void OnInterruptTx();
+
 	struct Chunk;
-	Chunk *m_head;
-	volatile Chunk *m_tail;
+	std::list<Chunk> m_receive_buf;
+	OnReceiveCharListener m_listener;
+
+	std::list<Chunk> m_send_buf;
+	volatile uint8_t m_send_buf_size;
+	volatile bool m_is_tx_idle;
 
 	uint8_t m_uart_port;
 	uint8_t m_device_id;
+	uint8_t m_txfifo_size;
 };
 
 }
