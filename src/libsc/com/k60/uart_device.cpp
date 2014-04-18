@@ -23,7 +23,7 @@
 #define UART_VECTOR(x) static_cast<VECTORn_t>((x << 1) + UART0_RX_TX_VECTORn)
 #define UARTX(x) static_cast<UARTn_e>(x + UART0)
 
-#define CHUNK_SIZE 16
+#define CHUNK_SIZE 32
 
 namespace libsc
 {
