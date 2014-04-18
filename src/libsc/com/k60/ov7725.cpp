@@ -370,8 +370,9 @@ __ISR void Ov7725::DmaHandler()
 #else
 Ov7725::Ov7725(const uint16_t, const uint16_t)
 		: m_w(0), m_h(0),
+		  m_is_buffer_lock(false),
 		  m_front_buffer(nullptr), m_back_buffer(nullptr),
-		  m_buffer_size(0), m_is_image_ready(false)
+		  m_buffer_size(0), m_is_shoot_once(true), m_is_image_ready(false)
 {}
 Ov7725::~Ov7725() {}
 bool Ov7725::Init() { return false; }
