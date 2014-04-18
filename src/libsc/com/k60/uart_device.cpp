@@ -179,13 +179,13 @@ void UartDevice::IrqHandler()
 		if (g_uart_instances[i] && g_uart_instances[i]->m_uart_port == uart_port)
 		{
 			if (UART_S1_REG(UARTN[g_uart_instances[i]->m_uart_port])
-					& UART_S1_TC_MASK)
+					& UART_S1_RDRF_MASK)
 			{
-				g_uart_instances[i]->OnInterruptTx();
+				g_uart_instances[i]->OnInterruptRx();
 			}
 			else
 			{
-				g_uart_instances[i]->OnInterruptRx();
+				g_uart_instances[i]->OnInterruptTx();
 			}
 			return;
 		}
