@@ -226,8 +226,8 @@ void UartDevice::OnInterruptTx()
 		return;
 	}
 
-	while (UART_TCFIFO_TXCOUNT(UART_TCFIFO_REG(UARTN[m_uart_port]))
-			< m_txfifo_size)
+	for (int i = UART_TCFIFO_TXCOUNT(UART_TCFIFO_REG(UARTN[m_uart_port]));
+			i < m_txfifo_size; ++i)
 	{
 		//uart_putchar(UARTX(m_uart_port),
 		//		m_send_buf.front().data[m_send_buf.front().start]);
