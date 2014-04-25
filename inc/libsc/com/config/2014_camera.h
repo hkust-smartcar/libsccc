@@ -63,9 +63,9 @@
 #define LIBSC_VR ADC1_SE4b
 
 //Gyro Ports//
-#define GYROADC ADC0_SE14
+#define GYROADC ADC1_SE4a //PTE0
 #define ANGLEADC ADC0_SE14
-#define RZADC ADC1_SE10
-#define RXADC ADC1_SE11
+#define RXADC ADC1_SE5a //PTE1
+#define RZADC ADC1_SE6a //PTE2
 
 #endif /* LIBSC_2014_CAMERA_H_ */
