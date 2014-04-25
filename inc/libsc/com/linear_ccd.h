@@ -17,12 +17,12 @@ namespace libsc
 class LinearCcd
 {
 public:
-	static constexpr int SENSOR_W = 256;
+	static constexpr int SENSOR_W = 128;
 
 	LinearCcd();
 
 	/**
-	 * Return the captured data in a bool array, where dark pixel is true, false
+	 * Return the captured data in a bool array, where dark pixel is false, true
 	 * otherwise. Must NOT delete the returned array
 	 *
 	 * @return
@@ -31,7 +31,6 @@ public:
 
 private:
 	bool m_buffer[SENSOR_W];
-	bool m_clk_state;
 };
 
 }
