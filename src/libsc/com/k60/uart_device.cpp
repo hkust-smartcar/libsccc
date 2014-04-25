@@ -80,6 +80,8 @@ UartDevice::UartDevice(const uint8_t uart_port, const uint32_t baud_rate)
 	{
 		m_txfifo_size <<= 1;
 	}
+
+	SetIsr(UART_VECTOR(m_uart_port), IrqHandler);
 }
 
 UartDevice::~UartDevice()
@@ -96,7 +98,6 @@ UartDevice::~UartDevice()
 
 void UartDevice::StartReceive(OnReceiveCharListener listener)
 {
-	SetIsr(UART_VECTOR(m_uart_port), IrqHandler);
 	m_listener = listener;
 	uart_rx_irq_en(UARTX(m_uart_port));
 }
@@ -105,7 +106,6 @@ void UartDevice::StopReceive()
 {
 	uart_rx_irq_dis(UARTX(m_uart_port));
 	m_listener = nullptr;
-	SetIsr(UART_VECTOR(m_uart_port), DefaultIsr);
 }
 
 void UartDevice::SendChar(const char ch)
