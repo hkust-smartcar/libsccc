@@ -55,7 +55,7 @@ const bool* LinearCcd::SampleData()
 }
 
 #else
-LinearCcd::LinearCcd() : m_clk_state(false) {}
+LinearCcd::LinearCcd() {}
 const bool* LinearCcd::SampleData() { return nullptr; }
 
 #endif

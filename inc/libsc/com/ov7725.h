@@ -95,7 +95,7 @@ private:
 	void OnVsync();
 	static void VsyncHandler(const PTX_e port, const PTn_e pin);
 	void OnDma();
-	static void DmaHandler(const PTX_e port, const PTn_e pin);
+	static __ISR void DmaHandler();
 
 	uint16_t m_w;
 	uint16_t m_h;
