@@ -64,8 +64,8 @@ bool Button::IsDown() const
 }
 
 #else
-Button::Button(const uint8_t) : m_id(0) {}
-bool Button::IsDown() const { return false; }
+//LightSensor::LightSensor(const uint8_t) : m_id(0) {}
+//bool LightSensor::IsDown() { return false; }
 
 #endif /* LIBSC_USE_BUTTON */
 
