@@ -359,7 +359,7 @@ void Ov7725::OnDma()
 	DMA_IRQ_CLEAN((LIBSC_CAMERA_DMA_CH + DMA_CH0)); //清除通道傳輸中斷標誌位元
 }
 
-__ISR void Ov7725::DmaHandler()
+void Ov7725::DmaHandler(const PTX_e, const PTn_e)
 {
 	if (g_instance)
 	{

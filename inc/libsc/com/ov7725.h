@@ -14,6 +14,8 @@
 #include <cstdint>
 #include <memory>
 
+#include <MK60_port.h>
+
 #include "libsc/com/camera.h"
 
 namespace libsc
@@ -91,9 +93,9 @@ private:
 	inline void UnregVsyncHandler();
 
 	void OnVsync();
-	static void VsyncHandler();
+	static void VsyncHandler(const PTX_e port, const PTn_e pin);
 	void OnDma();
-	static __ISR void DmaHandler();
+	static void DmaHandler(const PTX_e port, const PTn_e pin);
 
 	uint16_t m_w;
 	uint16_t m_h;
