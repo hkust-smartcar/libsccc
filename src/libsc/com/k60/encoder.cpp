@@ -141,7 +141,7 @@ void Encoder::Update()
 #endif /* LIBSC_USE_ENCODER_FTM */
 
 #else
-Encoder::Encoder(const uint8_t) : m_id(0) {}
+Encoder::Encoder(const uint8_t) : m_id(0), m_count(0) {}
 void Encoder::Update() {}
 
 #endif /* LIBSC_USE_ENCODER */
