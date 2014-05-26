@@ -91,9 +91,13 @@ private:
 
 	inline void RegVsyncHandler();
 	inline void UnregVsyncHandler();
+	inline void RegHrefHandler();
+	inline void UnregHrefHandler();
 
 	void OnVsync();
+	void OnHref();
 	static void VsyncHandler(const PTX_e port, const PTn_e pin);
+	static void HrefHandler(const PTX_e port, const PTn_e pin);
 	void OnDma();
 	static __ISR void DmaHandler();
 
