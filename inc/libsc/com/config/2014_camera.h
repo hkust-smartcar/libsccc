@@ -16,13 +16,16 @@
  */
 #define LIBSC_USE_UART 1
 // Support 2 encoders only when using FTM
-#define LIBSC_USE_ENCODER 2
-#define LIBSC_USE_ENCODER_FTM
+//#define LIBSC_USE_ENCODER 2
+//#define LIBSC_USE_ENCODER_FTM
 #define LIBSC_USE_LCD 1
 //#define LIBSC_USE_LCD_HW_SPI
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 2
 #define LIBSC_USE_CAMERA 1
+
+#define LIBSC_USE_TEMPERATURE_SENSOR 1
+#define LIBSC_TEMPERATURE0 PTC2
 
 #define LIBSC_BT_UART UART3
 #define LIBSC_BT_UART_BAUD 115200
@@ -63,10 +66,11 @@
 #define LIBSC_VR ADC1_SE4b
 
 //Gyro Ports//
-#define GYROADC ADC0_SE15
+//#define GYROADC ADC0_SE15
 //#define ANGLEADC ADC0_SE14
 #define RXADC ADC0_SE14
-#define RZADC ADC1_SE15
+//#define RZADC ADC1_SE15
+
 
 
 #endif /* LIBSC_2014_CAMERA_H_ */
