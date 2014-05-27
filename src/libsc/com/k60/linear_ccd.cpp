@@ -9,54 +9,133 @@
 #include <mini_common.h>
 #include <hw_common.h>
 #include <cstdint>
+#include <bitset>
 
 #include <MK60_gpio.h>
 
 #include "libsc/com/config.h"
 #include "libsc/com/linear_ccd.h"
+#include "libsc/com/k60/macro.h"
 
 namespace libsc
 {
 
 #ifdef LIBSC_USE_LINEAR_CCD
 
-LinearCcd::LinearCcd()
+namespace
 {
-	// PTB10, AO(D1)
-	gpio_init(LIBSC_LINEAR_CCD0_AO, GPI, 1);
-	// PTB9 , Clock / CLK
-	gpio_init(LIBSC_LINEAR_CCD0_CLK, GPO, 0);
-	// PTB8 , SI
-	gpio_init(LIBSC_LINEAR_CCD0_SI, GPO, 1);
+
+#if LIBSC_USE_LINEAR_CCD == 1
+#define GetAoPin(x) LIBSC_LINEAR_CCD0_AO
+#define GetClkPin(x) LIBSC_LINEAR_CCD0_CLK
+#define GetSiPin(x) LIBSC_LINEAR_CCD0_SI
+
+#else
+inline PTXn_e GetAoPin(const uint8_t id)
+{
+	switch (id)
+	{
+	default:
+		assert(0);
+
+	case 0:
+		return LIBSC_LINEAR_CCD0_AO;
+
+	case 1:
+		return LIBSC_LINEAR_CCD1_AO;
+	}
 }
 
-const bool* LinearCcd::SampleData()
+inline PTXn_e GetClkPin(const uint8_t id)
 {
-	gpio_set(LIBSC_LINEAR_CCD0_SI, 1);
-	bool is_si_triggered = true;
-
-	for (int i = 0; i < SENSOR_W; ++i)
+	switch (id)
 	{
-		gpio_set(LIBSC_LINEAR_CCD0_CLK, 1);
-		DELAY_US(50);
-		gpio_set(LIBSC_LINEAR_CCD0_CLK, 0);
-		DELAY_US(50);
+	default:
+		assert(0);
 
-		// Black == false
-		m_buffer[i] = (gpio_get(LIBSC_LINEAR_CCD0_AO) == 0);
+	case 0:
+		return LIBSC_LINEAR_CCD0_CLK;
 
-		if (is_si_triggered)
-		{
-			gpio_set(LIBSC_LINEAR_CCD0_SI, 0);
-			is_si_triggered = false;
-		}
+	case 1:
+		return LIBSC_LINEAR_CCD1_CLK;
 	}
-	return m_buffer;
+}
+
+inline PTXn_e GetSiPin(const uint8_t id)
+{
+	switch (id)
+	{
+	default:
+		assert(0);
+
+	case 0:
+		return LIBSC_LINEAR_CCD0_SI;
+
+	case 1:
+		return LIBSC_LINEAR_CCD1_SI;
+	}
+}
+
+#endif
+
+}
+
+LinearCcd::LinearCcd(const uint8_t id)
+		: m_id(id), m_index(0)
+{
+	// PTB10, AO(D1)
+	gpio_init(GetAoPin(id), GPI, 1);
+	// PTB9 , Clock / CLK
+	gpio_init(GetClkPin(id), GPO, 0);
+	// PTB8 , SI
+	gpio_init(GetSiPin(id), GPO, 1);
+}
+
+void LinearCcd::StartSample()
+{
+	m_index = 0;
+}
+
+bool LinearCcd::SampleProcess()
+{
+	if (IsImageReady())
+	{
+		return true;
+	}
+
+	if (m_index == 0)
+	{
+		gpio_set(GetSiPin(m_id), 1);
+	}
+
+	gpio_set(GetClkPin(m_id), 1);
+	DELAY_US(50);
+	gpio_set(GetClkPin(m_id), 0);
+	DELAY_US(50);
+
+	// Black == false
+	m_back_buffer[m_index] = (gpio_get(GetAoPin(m_id)) == 0);
+
+	if (m_index == 0)
+	{
+		gpio_set(GetSiPin(m_id), 0);
+	}
+
+	if (++m_index >= SENSOR_W)
+	{
+		m_front_buffer = m_back_buffer;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 #else
-LinearCcd::LinearCcd() {}
-const bool* LinearCcd::SampleData() { return nullptr; }
+LinearCcd::LinearCcd() : m_index(0) {}
+void LinearCcd::StartSample() {}
+bool LinearCcd::SampleProcess() { return false; }
 
 #endif
 
