@@ -12,6 +12,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "libutil/misc.h"
+
 namespace libsc
 {
 
@@ -92,7 +94,7 @@ public:
 
 	static uint16_t GetRgb565(const uint8_t r, const uint8_t g, const uint8_t b)
 	{
-		return ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
+		return libutil::GetRgb565(r, g, b);
 	}
 
 private:
