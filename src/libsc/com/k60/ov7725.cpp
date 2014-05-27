@@ -292,9 +292,14 @@ void Ov7725::InitPort()
 	LIBSC_PIN_DDR(LIBSC_CAMERA_PCLK) = GPO;
 
 	//場中斷，下拉，下降沿觸發中斷，帶濾波
-	port_init(LIBSC_CAMERA_VSYNC, ALT1 | IRQ_RISING | PULLUP | PF);
+	port_init(LIBSC_CAMERA_VSYNC, ALT1 | IRQ_FALLING | PULLUP | PF);
 	// GPI
 	LIBSC_PIN_DDR(LIBSC_CAMERA_VSYNC) = GPI;
+
+	//row中斷，下拉，rising沿觸發中斷，帶濾波
+	port_init(LIBSC_CAMERA_HREF, ALT1 | IRQ_RISING | PULLUP | PF);
+	// GPI
+	LIBSC_PIN_DDR(LIBSC_CAMERA_HREF) = GPI;
 
 	UnregVsyncHandler();
 }
@@ -311,17 +316,24 @@ inline void Ov7725::UnregVsyncHandler()
 			PTn(LIBSC_CAMERA_VSYNC), nullptr);
 }
 
+inline void Ov7725::RegHrefHandler()
+{
+	PortIsrManager::GetInstance()->SetIsrHandler(PTX(LIBSC_CAMERA_HREF),
+			PTn(LIBSC_CAMERA_HREF), HrefHandler);
+}
+
+inline void Ov7725::UnregHrefHandler()
+{
+	PortIsrManager::GetInstance()->SetIsrHandler(PTX(LIBSC_CAMERA_HREF),
+			PTn(LIBSC_CAMERA_HREF), nullptr);
+}
+
 void Ov7725::OnVsync()
 {
 	//場中斷需要判斷是場結束還是場開始
 	if (m_state == START_SHOOT) //需要開始採集圖像
 	{
-		m_state = SHOOTING; //標記圖像採集中
-		//關閉VSYNC的中斷
-		UnregVsyncHandler();
-
-		DMA_EN(LIBSC_CAMERA_DMA_CH + DMA_CH0); //使能通道CHn 硬體請求
-		DMA_DADDR(LIBSC_CAMERA_DMA_CH + DMA_CH0) = (uint32_t)m_back_buffer; //恢復地址
+		RegHrefHandler();
 	}
 	else
 	{
@@ -332,11 +344,37 @@ void Ov7725::OnVsync()
 	}
 }
 
+void Ov7725::OnHref()
+{
+	//場中斷需要判斷是場結束還是場開始
+	if (m_state == START_SHOOT) //需要開始採集圖像
+	{
+		DMA_EN(LIBSC_CAMERA_DMA_CH + DMA_CH0); //使能通道CHn 硬體請求
+		DMA_DADDR(LIBSC_CAMERA_DMA_CH + DMA_CH0) = (uint32_t)m_back_buffer; //恢復地址
+		UnregHrefHandler();
+	}
+	else
+	{
+		LOG_E("Href Error");
+		m_state = FAIL_SHOOT; //標記圖像採集失敗
+		//關閉VSYNC的中斷
+		UnregHrefHandler();
+	}
+}
+
 void Ov7725::VsyncHandler(const PTX_e, const PTn_e)
 {
 	if (g_instance)
 	{
 		g_instance->OnVsync();
+	}
+}
+
+void Ov7725::HrefHandler(const PTX_e, const PTn_e)
+{
+	if (g_instance)
+	{
+		g_instance->OnHref();
 	}
 }
 
@@ -350,10 +388,8 @@ void Ov7725::OnDma()
 	if (!m_is_buffer_lock)
 	{
 		// Drop the frame as the buffer is locked
-		// XXX Hard-code hack, I don't know why there is a 1-byte shift...
-		memcpy((Byte*)m_front_buffer, (const Byte*)m_back_buffer + 1,
-				m_buffer_size - 1);
-		m_front_buffer[m_buffer_size - 1] = m_back_buffer[0];
+		memcpy((Byte*)m_front_buffer, (const Byte*)m_back_buffer,
+				m_buffer_size);
 		m_is_image_ready = true;
 	}
 	DMA_IRQ_CLEAN((LIBSC_CAMERA_DMA_CH + DMA_CH0)); //清除通道傳輸中斷標誌位元
