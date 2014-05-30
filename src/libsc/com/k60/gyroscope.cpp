@@ -65,6 +65,12 @@ void Gyroscope::Update()
 	}
 }
 
+#else
+Gyroscope::Gyroscope() : m_current(0), m_avg(0) {}
+Gyroscope::Gyroscope(const Uint) : Gyroscope() {}
+Gyroscope::~Gyroscope() {}
+void Gyroscope::Update() {}
+
 #endif
 
 }
