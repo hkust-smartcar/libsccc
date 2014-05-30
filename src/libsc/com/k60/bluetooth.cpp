@@ -17,8 +17,15 @@
 namespace libsc
 {
 
+#ifdef LIBSC_BT_UART
+
 Bluetooth::Bluetooth()
 		: UartDevice(LIBSC_BT_UART, LIBSC_BT_UART_BAUD)
 {}
+
+#else
+Bluetooth::Bluetooth() {}
+
+#endif
 
 }
