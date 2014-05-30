@@ -109,9 +109,9 @@ bool LinearCcd::SampleProcess()
 	}
 
 	gpio_set(GetClkPin(m_id), 1);
-	DELAY_US(50);
+	//DELAY_US(50);
 	gpio_set(GetClkPin(m_id), 0);
-	DELAY_US(50);
+	//DELAY_US(50);
 
 	// Black == false
 	m_back_buffer[m_index] = (gpio_get(GetAoPin(m_id)) == 0);
@@ -133,7 +133,7 @@ bool LinearCcd::SampleProcess()
 }
 
 #else
-LinearCcd::LinearCcd() : m_index(0) {}
+LinearCcd::LinearCcd(const uint8_t) : m_id(0), m_index(0) {}
 void LinearCcd::StartSample() {}
 bool LinearCcd::SampleProcess() { return false; }
 
