@@ -27,6 +27,10 @@
 #elif defined(K60_2014_CAMERA)
 #include "config/2014_camera.h"
 
+#elif defined(K60_2014_CCD)
+#include "config/2014_ccd.h"
+
+
 #else
 #error Unknown board
 
