@@ -113,7 +113,7 @@ bool LinearCcd::SampleProcess()
 	gpio_set(GetClkPin(m_id), 0);
 	//DELAY_US(50);
 
-	// Black == false
+	// The output is nominally 0V for no light input
 	m_back_buffer[m_index] = (gpio_get(GetAoPin(m_id)) == 0);
 
 	if (m_index == 0)
