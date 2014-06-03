@@ -17,6 +17,13 @@
 #include "libsc/com/linear_ccd.h"
 #include "libsc/com/k60/macro.h"
 
+// The output is nominally 0V for no light input
+#ifndef LIBSC_NEGATE_LINEAR_CCD
+#define CCD_DARK 0
+#else
+#define CCD_DARK 1
+#endif
+
 namespace libsc
 {
 
@@ -113,8 +120,7 @@ bool LinearCcd::SampleProcess()
 	gpio_set(GetClkPin(m_id), 0);
 	//DELAY_US(50);
 
-	// The output is nominally 0V for no light input
-	m_back_buffer[m_index] = (gpio_get(GetAoPin(m_id)) == 0);
+	m_back_buffer[m_index] = (gpio_get(GetAoPin(m_id)) == CCD_DARK);
 
 	if (m_index == 0)
 	{
