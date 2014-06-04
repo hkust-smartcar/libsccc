@@ -18,11 +18,11 @@
 #include <MK60_gpio.h>
 #include <MK60_spi.h>
 
-#include "macro.h"
-#include "lcd_font.h"
-#include "spi_utils.h"
 #include "libsc/com/config.h"
 #include "libsc/com/lcd.h"
+#include "libsc/com/k60/macro.h"
+#include "libsc/com/k60/lcd_font.h"
+#include "libsc/com/k60/spi_utils.h"
 
 #define SEND_COMMAND(dat) Send(true, dat)
 #define SEND_DATA(dat) Send(false, dat)

@@ -34,15 +34,6 @@ using namespace std;
 namespace libsc
 {
 
-#ifdef LIBSC_USE_UART
-
-namespace
-{
-
-UartDevice* g_uart_instances[LIBSC_USE_UART];
-
-}
-
 struct UartDevice::Chunk
 {
 	Chunk()
@@ -55,6 +46,15 @@ struct UartDevice::Chunk
 	uint8_t start;
 	uint8_t end;
 };
+
+#ifdef LIBSC_USE_UART
+
+namespace
+{
+
+UartDevice* g_uart_instances[LIBSC_USE_UART];
+
+}
 
 UartDevice::UartDevice(const uint8_t uart_port, const uint32_t baud_rate)
 		: m_listener(nullptr), m_send_buf_size(0), m_is_tx_idle(true),
@@ -242,15 +242,16 @@ void UartDevice::OnInterruptTx()
 }
 
 #else
-UartDevice::UartDevice(const uint8_t)
+UartDevice::UartDevice(const uint8_t, const uint32_t)
 		: m_listener(nullptr), m_send_buf_size(0), m_is_tx_idle(true),
 		  m_uart_port(0), m_device_id(0), m_txfifo_size(1)
 {}
 UartDevice::~UartDevice() {}
-void UartDevice::StartReceive() {}
+void UartDevice::StartReceive(OnReceiveCharListener) {}
 void UartDevice::StopReceive() {}
 void UartDevice::SendChar(const char) {}
 void UartDevice::SendStr(const char*) {}
+void UartDevice::SendBuffer(const uint8_t*, const uint32_t) {}
 bool UartDevice::PeekChar(char*) { return false; }
 
 #endif

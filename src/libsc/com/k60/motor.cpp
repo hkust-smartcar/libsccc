@@ -130,7 +130,11 @@ void Motor::SetClockwise(const bool flag)
 		return;
 	}
 
+#ifndef LIBSC_NEGATE_MOTOR
 	gpio_set(GetDirGpio(m_id), flag ? 1 : 0);
+#else
+	gpio_set(GetDirGpio(m_id), flag ? 0 : 1);
+#endif
 	m_is_clockwise = flag;
 }
 

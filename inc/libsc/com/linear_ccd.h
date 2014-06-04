@@ -10,6 +10,7 @@
 #define LIBSC_LINEAR_CCD_H_
 
 #include <cstdint>
+#include <bitset>
 
 namespace libsc
 {
@@ -19,18 +20,33 @@ class LinearCcd
 public:
 	static constexpr int SENSOR_W = 128;
 
-	LinearCcd();
+	explicit LinearCcd(const uint8_t id);
 
+	void StartSample();
+	bool SampleProcess();
 	/**
-	 * Return the captured data in a bool array, where dark pixel is false, true
-	 * otherwise. Must NOT delete the returned array
+	 * Return the latest completely captured data, where dark pixel is false,
+	 * true otherwise
 	 *
 	 * @return
 	 */
-	const bool* SampleData();
+	const std::bitset<SENSOR_W>& GetData() const
+	{
+		return m_front_buffer;
+	}
+
+	bool IsImageReady() const
+	{
+		return (m_index >= SENSOR_W);
+	}
 
 private:
-	bool m_buffer[SENSOR_W];
+	const uint8_t m_id;
+
+	std::bitset<SENSOR_W> m_front_buffer;
+	std::bitset<SENSOR_W> m_back_buffer;
+
+	int m_index;
 };
 
 }
