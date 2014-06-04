@@ -75,7 +75,7 @@ Joystick::State Joystick::GetState() const
 
 #else
 Joystick::Joystick(const uint8_t) : m_id(0) {}
-State Joystick::GetState() const { return IDLE; }
+Joystick::State Joystick::GetState() const { return IDLE; }
 
 #endif /* LIBSC_USE_BUTTON */
 
