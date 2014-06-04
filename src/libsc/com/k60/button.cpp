@@ -37,8 +37,10 @@ inline PTXn_e GetGpio(const uint8_t id)
 	case 0:
 		return LIBSC_BUTTON0;
 
+#if LIBSC_USE_BUTTON > 1
 	case 1:
 		return LIBSC_BUTTON1;
+#endif
 
 #if LIBSC_USE_BUTTON > 2
 	case 2:
