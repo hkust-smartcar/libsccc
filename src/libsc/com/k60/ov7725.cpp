@@ -138,6 +138,17 @@ Ov7725::Ov7725(const uint16_t w, const uint16_t h)
 	m_buffer_size = ceil(m_w * m_h / 8.0);
 	m_front_buffer = new Byte[m_buffer_size];
 	m_back_buffer = new Byte[m_buffer_size];
+
+#ifdef DEBUG
+	bool flag = true;
+	for (size_t i = 0; i < m_buffer_size; ++i)
+	{
+		m_front_buffer[i] = flag ? 0xFF : 0;
+		m_back_buffer[i] = flag ? 0xFF : 0;
+		flag ^= true;
+	}
+#endif
+
 	g_instance = this;
 }
 
@@ -333,7 +344,9 @@ void Ov7725::OnVsync()
 	//場中斷需要判斷是場結束還是場開始
 	if (m_state == START_SHOOT) //需要開始採集圖像
 	{
-		RegHrefHandler();
+		DMA_EN(LIBSC_CAMERA_DMA_CH + DMA_CH0); //使能通道CHn 硬體請求
+		DMA_DADDR(LIBSC_CAMERA_DMA_CH + DMA_CH0) = (uint32_t)m_back_buffer; //恢復地址
+		UnregVsyncHandler();
 	}
 	else
 	{
