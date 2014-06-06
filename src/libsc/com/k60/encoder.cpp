@@ -33,10 +33,10 @@ namespace
 {
 
 #if LIBSC_USE_ENCODER == 1
-#define GetQdA(x) LIBSC_ENCODER0_QDA
+#define GetQdA(x) FtmUtils::GetFtmModule<LIBSC_ENCODER0_QDA>()
 
 #else
-inline PTXn_e GetQdA(const uint8_t id)
+inline FTMn_e GetQdA(const uint8_t id)
 {
 	switch (id)
 	{
@@ -44,10 +44,10 @@ inline PTXn_e GetQdA(const uint8_t id)
 		assert(0);
 
 	case 0:
-		return LIBSC_ENCODER0_QDA;
+		return FtmUtils::GetFtmModule<LIBSC_ENCODER0_QDA>();
 
 	case 1:
-		return LIBSC_ENCODER1_QDA;
+		return FtmUtils::GetFtmModule<LIBSC_ENCODER1_QDA>();
 	}
 }
 
@@ -63,13 +63,13 @@ Encoder::Encoder(const uint8_t id)
 		LOG_E("Requested encoder does not exists");
 		return;
 	}
-	FTM_QUAD_Init(FtmUtils::GetFtmModule<GetQdA(m_id)>());
+	FTM_QUAD_Init(GetQdA(m_id));
 }
 
 void Encoder::Update()
 {
-	m_count = FTM_QUAD_get(FtmUtils::GetFtmModule<GetQdA(m_id)>());
-	FTM_QUAD_clean(FtmUtils::GetFtmModule<GetQdA(m_id)>());
+	m_count = FTM_QUAD_get(GetQdA(m_id));
+	FTM_QUAD_clean(GetQdA(m_id));
 	return;
 }
 
