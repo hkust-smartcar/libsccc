@@ -12,10 +12,25 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "lcd.h"
+#include "libsc/com/lcd.h"
 
 namespace libsc
 {
+
+namespace internal
+{
+
+inline constexpr int LcdConsoleGetMaxTextW()
+{
+	return Lcd::W / Lcd::FONT_W;
+}
+
+inline constexpr int LcdConsoleGetMaxTextH()
+{
+	return Lcd::H / Lcd::FONT_H;
+}
+
+}
 
 class LcdConsole
 {
@@ -27,7 +42,6 @@ public:
 			const uint16_t bg_color);
 	void PrintRawString(const char *str, const size_t len,
 			const uint16_t color, const uint16_t bg_color);
-	void PrintSplashScreen();
 
 	void PrintChar(const char ch, const uint16_t color)
 	{
@@ -60,11 +74,34 @@ public:
 	}
 
 	void Clear();
+	void ClearCache();
+
+	void SetCursorRow(const uint8_t row)
+	{
+		m_cursor_y = libutil::ClampVal<uint8_t>(0, row, GetMaxTextH());
+	}
 
 private:
+	struct CellData
+	{
+		char ch;
+		uint16_t color;
+		uint16_t bg_color;
+	};
+
+	static constexpr int GetMaxTextW()
+	{
+		return internal::LcdConsoleGetMaxTextW();
+	}
+
+	static constexpr int GetMaxTextH()
+	{
+		return internal::LcdConsoleGetMaxTextH();
+	}
+
 	void NewChar()
 	{
-		if ((m_cursor_x += Lcd::FONT_W) >= Lcd::W)
+		if (++m_cursor_x >= GetMaxTextW())
 		{
 			NewLine();
 			m_cursor_x = 0;
@@ -73,7 +110,7 @@ private:
 
 	void NewLine()
 	{
-		if ((m_cursor_y += Lcd::FONT_H) >= Lcd::H)
+		if (++m_cursor_y >= GetMaxTextH())
 		{
 			m_cursor_y = 0;
 		}
@@ -83,6 +120,9 @@ private:
 	Lcd *const m_lcd;
 	uint8_t m_cursor_x;
 	uint8_t m_cursor_y;
+
+	CellData m_buffer[internal::LcdConsoleGetMaxTextW()
+			* internal::LcdConsoleGetMaxTextH()];
 };
 
 }
