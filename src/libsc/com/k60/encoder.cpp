@@ -78,7 +78,7 @@ namespace
 {
 
 #if LIBSC_USE_ENCODER == 1
-#define GetGpio(x) LIBSC_ENCODER0
+#define GetGpio(x) LIBSC_ENCODER0_QDA
 
 #else
 inline PTXn_e GetGpio(const uint8_t id)
@@ -89,10 +89,10 @@ inline PTXn_e GetGpio(const uint8_t id)
 		assert(0);
 
 	case 0:
-		return LIBSC_ENCODER0;
+		return LIBSC_ENCODER0_QDA;
 
 	case 1:
-		return LIBSC_ENCODER1;
+		return LIBSC_ENCODER1_QDA;
 	}
 }
 
@@ -104,12 +104,12 @@ void IsrHandler(const PTX_e port, const PTn_e pin)
 {
 	switch (PTXn(port, pin))
 	{
-	case LIBSC_ENCODER0:
+	case LIBSC_ENCODER0_QDA:
 		++g_count[0];
 		break;
 
 #if LIBSC_USE_ENCODER > 1
-	case LIBSC_ENCODER1:
+	case LIBSC_ENCODER1_QDA:
 		++g_count[1];
 		break;
 #endif
