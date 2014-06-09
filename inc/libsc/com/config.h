@@ -30,6 +30,8 @@
 #elif defined(K60_2014_CCD)
 #include "config/2014_ccd.h"
 
+#elif defined(K60_2014_MAGNETIC)
+#include "config/2014_magnetic.h"
 
 #else
 #error Unknown board
