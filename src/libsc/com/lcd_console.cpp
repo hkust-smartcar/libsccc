@@ -20,7 +20,7 @@ namespace libsc
 LcdConsole::LcdConsole(Lcd *const lcd)
 		: m_lcd(lcd), m_cursor_x(0), m_cursor_y(0)
 {
-	Clear();
+	Clear(true);
 }
 
 void LcdConsole::PrintChar(const char ch, const uint16_t color,
@@ -61,22 +61,20 @@ void LcdConsole::PrintString(const char *str, const uint16_t color,
 void LcdConsole::PrintRawString(const char *str, const size_t len,
 		const uint16_t color, const uint16_t bg_color)
 {
-	for (size_t i = len; len && *str; --i, ++str)
+	for (size_t i = len; i && *str; --i, ++str)
 	{
 		PrintChar(*str, color, bg_color);
 	}
 }
 
-void LcdConsole::Clear()
+void LcdConsole::Clear(const bool is_clear_screen)
 {
-	m_lcd->Clear(0);
+	if (is_clear_screen)
+	{
+		m_lcd->Clear(0);
+	}
 	m_cursor_x = 0;
 	m_cursor_y = 0;
-	ClearCache();
-}
-
-void LcdConsole::ClearCache()
-{
 	memset(m_buffer, 0, sizeof(m_buffer));
 }
 

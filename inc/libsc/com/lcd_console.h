@@ -73,11 +73,11 @@ public:
 		PrintRawString(str, len, 0xFFFF, 0);
 	}
 
-	void Clear();
-	void ClearCache();
+	void Clear(const bool is_clear_screen);
 
 	void SetCursorRow(const uint8_t row)
 	{
+		m_cursor_x = 0;
 		m_cursor_y = libutil::ClampVal<uint8_t>(0, row, GetMaxTextH());
 	}
 
