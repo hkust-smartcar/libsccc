@@ -19,7 +19,7 @@ namespace libutil
 class Clock
 {
 public:
-	typedef uint16_t ClockInt;
+	typedef uint32_t ClockInt;
 
 	static void Init();
 	static ClockInt Time()
