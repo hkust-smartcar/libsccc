@@ -81,14 +81,6 @@ public:
 		m_cursor_y = libutil::ClampVal<uint8_t>(0, row, GetMaxTextH());
 	}
 
-private:
-	struct CellData
-	{
-		char ch;
-		uint16_t color;
-		uint16_t bg_color;
-	};
-
 	static constexpr int GetMaxTextW()
 	{
 		return internal::LcdConsoleGetMaxTextW();
@@ -98,6 +90,14 @@ private:
 	{
 		return internal::LcdConsoleGetMaxTextH();
 	}
+
+private:
+	struct CellData
+	{
+		char ch;
+		uint16_t color;
+		uint16_t bg_color;
+	};
 
 	void NewChar()
 	{
