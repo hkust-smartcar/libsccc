@@ -75,10 +75,22 @@ UartDevice::UartDevice(const uint8_t uart_port, const uint32_t baud_rate)
 	}
 
 	uart_init(UARTX(uart_port), baud_rate);
-	m_txfifo_size = (UART_PFIFO_REG(UARTN[m_uart_port]) >> 4) & 0x7;
-	if (m_txfifo_size != 1)
+	const uint8_t pfifo_reg = UART_PFIFO_REG(UARTN[m_uart_port]) >> 4;
+	if (!(pfifo_reg & 0x8))
 	{
-		m_txfifo_size <<= 1;
+		m_txfifo_size = 1;
+	}
+	else
+	{
+		m_txfifo_size = pfifo_reg & 0x7;
+		if (m_txfifo_size == 0)
+		{
+			m_txfifo_size = 1;
+		}
+		else
+		{
+			m_txfifo_size <<= 2;
+		}
 	}
 
 	SetIsr(UART_VECTOR(m_uart_port), IrqHandler);

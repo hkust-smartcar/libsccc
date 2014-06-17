@@ -258,10 +258,10 @@ bool Ov7725::InitCameraConfig(const Config &config)
 		LOG_E("Error while reading id");
 		return false;
 	}
-	//LOG_D("Get ID succeed, SENSOR ID is 0x%x", sensor_id_code);
-	//LOG_D("Config Register Number is %d", REG_COUNT);
-	//LOG_D("Brightness: %d", config.brightness);
-	//LOG_D("Contrast: %d", config.contrast);
+	/*LOG_D("Get ID succeed, SENSOR ID is 0x%x", sensor_id_code);
+	LOG_D("Config Register Number is %d", REG_COUNT);
+	LOG_D("Brightness: %d", config.brightness);
+	LOG_D("Contrast: %d", config.contrast);*/
 	if (sensor_id_code == OV7725_ID)
 	{
 		std::unique_ptr<RegisterInfo[]> reg(CreateReg(m_w, m_h, config));
@@ -278,7 +278,7 @@ bool Ov7725::InitCameraConfig(const Config &config)
 	{
 		return false;
 	}
-	LOG_I("OV7725 Register Config Success!");
+//	LOG_I("OV7725 Register Config Success!");
 	return true;
 }
 
