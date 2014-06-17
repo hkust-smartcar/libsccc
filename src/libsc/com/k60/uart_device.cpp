@@ -75,13 +75,14 @@ UartDevice::UartDevice(const uint8_t uart_port, const uint32_t baud_rate)
 	}
 
 	uart_init(UARTX(uart_port), baud_rate);
-	m_txfifo_size = 1 << (UART_PFIFO_TXFIFOSIZE(UART_PFIFO_REG(UARTN[m_uart_port])));
+	m_txfifo_size = (UART_PFIFO_REG(UARTN[m_uart_port]) >> 4) & 0x7;
 	if (m_txfifo_size != 1)
 	{
 		m_txfifo_size <<= 1;
 	}
 
 	SetIsr(UART_VECTOR(m_uart_port), IrqHandler);
+	EnableIsr(UART_VECTOR(m_uart_port));
 }
 
 UartDevice::~UartDevice()
@@ -218,17 +219,17 @@ void UartDevice::OnInterruptRx()
 
 void UartDevice::OnInterruptTx()
 {
-	if (m_send_buf_size == 0
-			|| m_send_buf.front().start == m_send_buf.front().end)
-	{
-		m_is_tx_idle = true;
-		uart_txc_irq_dis(UARTX(m_uart_port));
-		return;
-	}
-
 	for (int i = UART_TCFIFO_TXCOUNT(UART_TCFIFO_REG(UARTN[m_uart_port]));
 			i < m_txfifo_size; ++i)
 	{
+		if (m_send_buf_size == 0
+				|| m_send_buf.front().start == m_send_buf.front().end)
+		{
+			m_is_tx_idle = true;
+			uart_txc_irq_dis(UARTX(m_uart_port));
+			return;
+		}
+
 		//uart_putchar(UARTX(m_uart_port),
 		//		m_send_buf.front().data[m_send_buf.front().start]);
 		UART_D_REG(UARTN[m_uart_port]) =

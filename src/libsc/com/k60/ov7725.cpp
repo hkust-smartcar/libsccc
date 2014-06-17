@@ -258,10 +258,10 @@ bool Ov7725::InitCameraConfig(const Config &config)
 		LOG_E("Error while reading id");
 		return false;
 	}
-	LOG_D("Get ID succeed, SENSOR ID is 0x%x", sensor_id_code);
-	LOG_D("Config Register Number is %d", REG_COUNT);
-	LOG_D("Brightness: %d", config.brightness);
-	LOG_D("Contrast: %d", config.contrast);
+	//LOG_D("Get ID succeed, SENSOR ID is 0x%x", sensor_id_code);
+	//LOG_D("Config Register Number is %d", REG_COUNT);
+	//LOG_D("Brightness: %d", config.brightness);
+	//LOG_D("Contrast: %d", config.contrast);
 	if (sensor_id_code == OV7725_ID)
 	{
 		std::unique_ptr<RegisterInfo[]> reg(CreateReg(m_w, m_h, config));
@@ -298,9 +298,6 @@ void Ov7725::InitPort()
 	//DMA_IRQ_EN(LIBSC_CAMERA_DMA_CH);
 	SetIsr((VECTORn_t)(LIBSC_CAMERA_DMA_CH + DMA0_VECTORn), DmaHandler);
 	EnableIsr((VECTORn_t)(LIBSC_CAMERA_DMA_CH + DMA0_VECTORn));
-
-	port_init(LIBSC_CAMERA_PCLK, ALT1 | DMA_RISING | PULLUP); //PCLK
-	LIBSC_PIN_DDR(LIBSC_CAMERA_PCLK) = GPO;
 
 	//場中斷，下拉，下降沿觸發中斷，帶濾波
 	port_init(LIBSC_CAMERA_VSYNC, ALT1 | IRQ_FALLING | PULLUP | PF);
@@ -401,8 +398,9 @@ void Ov7725::OnDma()
 	if (!m_is_buffer_lock)
 	{
 		// Drop the frame as the buffer is locked
-		memcpy((Byte*)m_front_buffer, (const Byte*)m_back_buffer,
-				m_buffer_size);
+		memcpy((Byte*)m_front_buffer, (const Byte*)m_back_buffer + 1,
+				m_buffer_size - 1);
+		m_front_buffer[m_buffer_size - 1] = m_back_buffer[0];
 		m_is_image_ready = true;
 	}
 	DMA_IRQ_CLEAN((LIBSC_CAMERA_DMA_CH + DMA_CH0)); //清除通道傳輸中斷標誌位元
