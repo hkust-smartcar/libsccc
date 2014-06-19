@@ -20,6 +20,16 @@ namespace libutil
 {
 
 template<uint8_t size>
+TunableIntManager* TunableIntManager<size>::GetInstance(libsc::UartDevice *uart)
+{
+	if (!m_instance)
+	{
+		m_instance = new TunableIntManager(uart);
+	}
+	return m_instance;
+}
+
+template<uint8_t size>
 TunableIntManager<size>::TunableIntManager(libsc::UartDevice *uart)
 		: m_uart(uart), m_curr_id(0), m_buffer_it(0)
 {}
@@ -46,7 +56,6 @@ template<uint8_t size>
 void TunableIntManager<size>::Start()
 {
 	m_uart->StartReceive(OnUartReceiveChar);
-	m_instance = this;
 
 	for (int i = 0; i < size && m_data[i].m_name; ++i)
 	{
@@ -59,7 +68,6 @@ template<uint8_t size>
 void TunableIntManager<size>::Stop()
 {
 	m_uart->StopReceive();
-	m_instance = nullptr;
 }
 
 template<uint8_t size>

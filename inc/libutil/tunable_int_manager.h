@@ -68,7 +68,7 @@ template<uint8_t size>
 class TunableIntManager
 {
 public:
-	explicit TunableIntManager(libsc::UartDevice *uart);
+	static TunableIntManager* GetInstance(libsc::UartDevice *uart);
 
 	const TunableInt* Register(const char *name, const char *type,
 			const uint32_t val);
@@ -76,6 +76,8 @@ public:
 	void Stop();
 
 private:
+	explicit TunableIntManager(libsc::UartDevice *uart);
+
 	static void OnUartReceiveChar(const char ch);
 
 	libsc::UartDevice *m_uart;
