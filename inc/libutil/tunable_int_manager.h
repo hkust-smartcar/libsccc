@@ -8,10 +8,7 @@
 #ifndef LIBUTIL_TUNABLE_INT_MANAGER_H_
 #define LIBUTIL_TUNABLE_INT_MANAGER_H_
 
-#include <cstddef>
 #include <cstdint>
-
-#include "libbase/k60/misc_utils.h"
 
 namespace libsc
 {
@@ -29,6 +26,12 @@ namespace libutil
 class TunableInt
 {
 public:
+	enum Type
+	{
+		INTEGER,
+		REAL
+	};
+
 	uint32_t GetValue() const
 	{
 		return m_val;
@@ -63,7 +66,7 @@ private:
 	}
 
 	const char *m_name;
-	const char *m_type;
+	Type m_type;
 	uint8_t m_id;
 	volatile uint32_t m_val;
 
@@ -74,14 +77,16 @@ template<uint8_t size>
 class TunableIntManager
 {
 public:
-	explicit TunableIntManager(libsc::k60::UartDevice *uart);
+	static TunableIntManager* GetInstance(libsc::k60::UartDevice *uart);
 
-	const TunableInt* Register(const char *name, const char *type,
+	const TunableInt* Register(const char *name, const TunableInt::Type type,
 			const uint32_t val);
 	void Start();
 	void Stop();
 
 private:
+	explicit TunableIntManager(libsc::k60::UartDevice *uart);
+
 	void OnUartReceiveChar(const Byte *bytes, const size_t count);
 
 	libsc::k60::UartDevice *m_uart;
@@ -89,7 +94,12 @@ private:
 	uint8_t m_curr_id;
 	char m_buffer[5];
 	int m_buffer_it;
+
+	static TunableIntManager *m_instance;
 };
+
+template<uint8_t size>
+TunableIntManager<size> *TunableIntManager<size>::m_instance = nullptr;
 
 }
 
