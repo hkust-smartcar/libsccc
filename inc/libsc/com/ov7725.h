@@ -10,6 +10,7 @@
 #define LIBSC_OV7725_H_
 
 #include <mini_common.h>
+#include <hw_common.h>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
