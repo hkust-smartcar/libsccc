@@ -5,9 +5,13 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
+#ifndef LIBUTIL_TUNABLE_INT_MANAGER_TCC_
+#define LIBUTIL_TUNABLE_INT_MANAGER_TCC_
+
 #include <mini_common.h>
 #include <hw_common.h>
 #include <cstdint>
+#include <cstring>
 
 #include <assert.h>
 
@@ -20,7 +24,7 @@ namespace libutil
 {
 
 template<uint8_t size>
-TunableIntManager* TunableIntManager<size>::GetInstance(libsc::UartDevice *uart)
+TunableIntManager<size>* TunableIntManager<size>::GetInstance(libsc::UartDevice *uart)
 {
 	if (!m_instance)
 	{
@@ -36,7 +40,7 @@ TunableIntManager<size>::TunableIntManager(libsc::UartDevice *uart)
 
 template<uint8_t size>
 const TunableInt* TunableIntManager<size>::Register(const char *name,
-		const char *type, const uint32_t val)
+		const TunableInt::Type type, const uint32_t val)
 {
 	if (m_curr_id >= size)
 	{
@@ -59,8 +63,16 @@ void TunableIntManager<size>::Start()
 
 	for (int i = 0; i < size && m_data[i].m_name; ++i)
 	{
-		m_uart->SendStr(String::Format("%s,%s,%d\n", m_data[i].m_name,
-				m_data[i].m_type, m_data[i].m_id).c_str());
+		if (m_data[i].m_type == TunableInt::INTEGER)
+		{
+			printf("%s,integer,%d,%d\n", m_data[i].m_name, m_data[i].m_id,
+					m_data[i].m_val);
+		}
+		else
+		{
+			printf("%s,real,%d,%.3f\n", m_data[i].m_name, m_data[i].m_id,
+					TunableInt::AsFloat(m_data[i].m_val));
+		}
 	}
 }
 
@@ -84,3 +96,5 @@ void TunableIntManager<size>::OnUartReceiveChar(const char ch)
 }
 
 }
+
+#endif /* LIBUTIL_TUNABLE_INT_MANAGER_TCC_ */

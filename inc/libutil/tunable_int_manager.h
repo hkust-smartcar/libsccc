@@ -23,6 +23,12 @@ namespace libutil
 class TunableInt
 {
 public:
+	enum Type
+	{
+		INTEGER,
+		REAL
+	};
+
 	uint32_t GetValue() const
 	{
 		return m_val;
@@ -57,7 +63,7 @@ private:
 	}
 
 	const char *m_name;
-	const char *m_type;
+	Type m_type;
 	uint8_t m_id;
 	volatile uint32_t m_val;
 
@@ -70,7 +76,7 @@ class TunableIntManager
 public:
 	static TunableIntManager* GetInstance(libsc::UartDevice *uart);
 
-	const TunableInt* Register(const char *name, const char *type,
+	const TunableInt* Register(const char *name, const TunableInt::Type type,
 			const uint32_t val);
 	void Start();
 	void Stop();
