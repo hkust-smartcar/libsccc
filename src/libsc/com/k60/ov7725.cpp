@@ -398,9 +398,11 @@ void Ov7725::OnDma()
 	if (!m_is_buffer_lock)
 	{
 		// Drop the frame as the buffer is locked
-		memcpy((Byte*)m_front_buffer, (const Byte*)m_back_buffer + 1,
+		/*memcpy((Byte*)m_front_buffer, (const Byte*)m_back_buffer + 1,
 				m_buffer_size - 1);
-		m_front_buffer[m_buffer_size - 1] = m_back_buffer[0];
+		m_front_buffer[m_buffer_size - 1] = m_back_buffer[0];*/
+		memcpy((Byte*)m_front_buffer, (const Byte*)m_back_buffer,
+						m_buffer_size);
 		m_is_image_ready = true;
 	}
 	DMA_IRQ_CLEAN((LIBSC_CAMERA_DMA_CH + DMA_CH0)); //清除通道傳輸中斷標誌位元
