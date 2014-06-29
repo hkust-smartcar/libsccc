@@ -9,7 +9,9 @@
 #include <syscall.h>
 #include <cstdint>
 
-#include <libsc/com/uart_device.h>
+#include "libsc/k60/uart_device.h"
+
+using namespace libsc::k60;
 
 namespace libutil
 {
@@ -17,7 +19,7 @@ namespace libutil
 namespace
 {
 
-libsc::UartDevice *g_uart = nullptr;
+UartDevice *g_uart = nullptr;
 
 int MyFwriteHandler(int, char *ptr, int len)
 {
@@ -30,7 +32,7 @@ int MyFwriteHandler(int, char *ptr, int len)
 
 }
 
-void InitDefaultFwriteHandler(libsc::UartDevice *uart)
+void InitDefaultFwriteHandler(UartDevice *uart)
 {
 	g_uart = uart;
 	__g_fwrite_handler = MyFwriteHandler;
