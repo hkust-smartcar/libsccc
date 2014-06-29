@@ -13,7 +13,8 @@
 
 #include <type_traits>
 
-#include "libutil/clock.h"
+#include "libsc/k60/system_timer.h"
+#include "libsc/k60/timer.h"
 
 namespace libutil
 {
@@ -29,10 +30,11 @@ public:
 	PidController(const InputType setpoint, const float kp, const float ki,
 			const float kd);
 
-	OutputType Calc(const Clock::ClockInt time, const InputType current_val);
+	OutputType Calc(const libsc::k60::Timer::TimerInt time,
+			const InputType current_val);
 	OutputType Calc(const InputType current_val)
 	{
-		return Calc(Clock::Time(), current_val);
+		return Calc(libsc::k60::SystemTimer::Time(), current_val);
 	}
 
 	void SetSetpoint(const InputType setpoint)
@@ -68,7 +70,7 @@ public:
 	void Restart()
 	{
 		m_accumulated_error = 0;
-		m_prev_time = Clock::Time();
+		m_prev_time = libsc::k60::SystemTimer::Time();
 	}
 
 	void Print(const char *label);
@@ -89,7 +91,7 @@ private:
 
 	InputType m_accumulated_error;
 	InputType m_prev_error;
-	Clock::ClockInt m_prev_time;
+	libsc::k60::Timer::TimerInt m_prev_time;
 };
 
 }
