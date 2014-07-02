@@ -88,7 +88,7 @@ public:
 	void Stop();
 
 private:
-	explicit TunableIntManager(libsc::k60::UartDevice *uart);
+	explicit TunableIntManager(libsc::UartDevice *uart);
 
 	void OnUartReceiveChar(const Byte *bytes, const size_t count);
 
