@@ -14,12 +14,9 @@
 
 namespace libsc
 {
-namespace k60
-{
 
 class UartDevice;
 
-}
 }
 
 #define SAFE_DELETE(x) do{if (x) {delete x; x = nullptr;}}while(false)
@@ -46,7 +43,7 @@ inline uint16_t GetRgb565(const uint8_t r, const uint8_t g, const uint8_t b)
 	return ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
 }
 
-void InitDefaultFwriteHandler(libsc::k60::UartDevice *uart);
+void InitDefaultFwriteHandler(libsc::UartDevice *uart);
 void UninitDefaultFwriteHandler();
 
 }

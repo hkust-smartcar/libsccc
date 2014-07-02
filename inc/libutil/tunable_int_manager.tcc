@@ -10,14 +10,12 @@
 
 #include <mini_common.h>
 #include <hw_common.h>
-
-#include <cassert>
 #include <cstdint>
 #include <cstring>
 
-#include <functional>
+#include <assert.h>
 
-#include "libsc/k60/uart_device.h"
+#include "libsc/com/uart_device.h"
 
 #include "libutil/string.h"
 #include "libutil/tunable_int_manager.h"
@@ -26,7 +24,7 @@ namespace libutil
 {
 
 template<uint8_t size>
-TunableIntManager<size>* TunableIntManager<size>::GetInstance(libsc::k60::UartDevice *uart)
+TunableIntManager<size>* TunableIntManager<size>::GetInstance(libsc::UartDevice *uart)
 {
 	if (!m_instance)
 	{
@@ -36,7 +34,7 @@ TunableIntManager<size>* TunableIntManager<size>::GetInstance(libsc::k60::UartDe
 }
 
 template<uint8_t size>
-TunableIntManager<size>::TunableIntManager(libsc::k60::UartDevice *uart)
+TunableIntManager<size>::TunableIntManager(libsc::UartDevice *uart)
 		: m_uart(uart), m_curr_id(0), m_buffer_it(0)
 {}
 
@@ -61,22 +59,19 @@ const TunableInt* TunableIntManager<size>::Register(const char *name,
 template<uint8_t size>
 void TunableIntManager<size>::Start()
 {
-	m_uart->StartReceive([this](const Byte *bytes, const size_t count)
-			{
-				OnUartReceiveChar(bytes, count);
-			});
+	m_uart->StartReceive(OnUartReceiveChar);
 
 	for (int i = 0; i < size && m_data[i].m_name; ++i)
 	{
 		if (m_data[i].m_type == TunableInt::INTEGER)
 		{
-			m_uart->SendStr(String::Format("%s,integer,%d,%d\n", m_data[i].m_name,
-					m_data[i].m_id, m_data[i].m_val).c_str());
+			printf("%s,integer,%d,%d\n", m_data[i].m_name, m_data[i].m_id,
+					m_data[i].m_val);
 		}
 		else
 		{
-			m_uart->SendStr(String::Format("%s,real,%d,%.3f\n", m_data[i].m_name,
-					m_data[i].m_id, TunableInt::AsFloat(m_data[i].m_val)).c_str());
+			printf("%s,real,%d,%.3f\n", m_data[i].m_name, m_data[i].m_id,
+					TunableInt::AsFloat(m_data[i].m_val));
 		}
 	}
 }
@@ -88,19 +83,15 @@ void TunableIntManager<size>::Stop()
 }
 
 template<uint8_t size>
-void TunableIntManager<size>::OnUartReceiveChar(const Byte *bytes,
-		const size_t count)
+void TunableIntManager<size>::OnUartReceiveChar(const char ch)
 {
-	for (size_t i = 0; i < count; ++i)
+	m_instance->m_buffer[m_instance->m_buffer_it] = ch;
+	if (++m_instance->m_buffer_it >= 5)
 	{
-		m_buffer[m_buffer_it] = bytes[i];
-		if (++m_buffer_it >= 5)
-		{
-			m_data[(Uint)m_buffer[0]].SetValue(
-					m_buffer[1] << 24 | m_buffer[2] << 16
-					| m_buffer[3] << 8 | m_buffer[4]);
-			m_buffer_it = 0;
-		}
+		m_instance->m_data[(Uint)m_instance->m_buffer[0]].SetValue(
+				m_instance->m_buffer[1] << 24 | m_instance->m_buffer[2] << 16
+				| m_instance->m_buffer[3] << 8 | m_instance->m_buffer[4]);
+		m_instance->m_buffer_it = 0;
 	}
 }
 

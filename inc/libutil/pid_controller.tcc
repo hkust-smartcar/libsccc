@@ -11,8 +11,7 @@
 
 #include <log.h>
 
-#include "libsc/k60/system_timer.h"
-#include "libsc/k60/timer.h"
+#include "libutil/clock.h"
 #include "libutil/misc.h"
 #include "libutil/pid_controller.h"
 
@@ -23,8 +22,7 @@ template<typename T, typename U>
 PidController<T, U>::PidController(const InputType setpoint, const float kp,
 		const float ki, const float kd)
 		: m_setpoint(setpoint), m_kp(kp), m_ki(ki), m_kd(kd), m_i_limit(0.0f),
-		  m_accumulated_error(0), m_prev_error(0),
-		  m_prev_time(libsc::k60::SystemTimer::Time())
+		  m_accumulated_error(0), m_prev_error(0), m_prev_time(Clock::Time())
 {}
 
 template<typename T, typename U>
@@ -62,10 +60,9 @@ inline void PidController<T, U>::PrintError(const float error)
 
 template<typename T, typename U>
 typename PidController<T, U>::OutputType PidController<T, U>::Calc(
-		const libsc::k60::Timer::TimerInt time, const InputType current_val)
+		const Clock::ClockInt time, const InputType current_val)
 {
-	const libsc::k60::Timer::TimerInt time_diff =
-			libsc::k60::Timer::TimeDiff(time, m_prev_time);
+	const Clock::ClockInt time_diff = Clock::TimeDiff(time, m_prev_time);
 	const InputType error = m_setpoint - current_val;
 
 	m_p = m_kp * error;
