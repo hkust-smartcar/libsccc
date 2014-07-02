@@ -6,31 +6,25 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
+#include <mini_common.h>
 #include <hw_common.h>
-
-#include <cassert>
 #include <cstdint>
 #include <bitset>
 
-#include <log.h>
-
-#include "libbase/k60/gpio.h"
+#include <MK60_gpio.h>
 
 #include "libsc/com/config.h"
-#include "libsc/k60/linear_ccd.h"
-
-using namespace libbase::k60;
+#include "libsc/com/linear_ccd.h"
+#include "libsc/com/k60/macro.h"
 
 // The output is nominally 0V for no light input
 #ifndef LIBSC_NEGATE_LINEAR_CCD
-#define CCD_DARK false
+#define CCD_DARK 0
 #else
-#define CCD_DARK true
+#define CCD_DARK 1
 #endif
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_LINEAR_CCD
@@ -39,23 +33,12 @@ namespace
 {
 
 #if LIBSC_USE_LINEAR_CCD == 1
-inline PinConfig::Name GetAdPin(const uint8_t)
-{
-	return LIBSC_LINEAR_CCD0_AD;
-}
-
-inline PinConfig::Name GetClkPin(const uint8_t)
-{
-	return LIBSC_LINEAR_CCD0_CLK;
-}
-
-inline PinConfig::Name GetSiPin(const uint8_t)
-{
-	return LIBSC_LINEAR_CCD0_SI;
-}
+#define GetAoPin(x) LIBSC_LINEAR_CCD0_AO
+#define GetClkPin(x) LIBSC_LINEAR_CCD0_CLK
+#define GetSiPin(x) LIBSC_LINEAR_CCD0_SI
 
 #else
-inline PinConfig::Name GetAdPin(const uint8_t id)
+inline PTXn_e GetAoPin(const uint8_t id)
 {
 	switch (id)
 	{
@@ -63,14 +46,14 @@ inline PinConfig::Name GetAdPin(const uint8_t id)
 		assert(0);
 
 	case 0:
-		return LIBSC_LINEAR_CCD0_AD;
+		return LIBSC_LINEAR_CCD0_AO;
 
 	case 1:
-		return LIBSC_LINEAR_CCD1_AD;
+		return LIBSC_LINEAR_CCD1_AO;
 	}
 }
 
-inline PinConfig::Name GetClkPin(const uint8_t id)
+inline PTXn_e GetClkPin(const uint8_t id)
 {
 	switch (id)
 	{
@@ -85,7 +68,7 @@ inline PinConfig::Name GetClkPin(const uint8_t id)
 	}
 }
 
-inline PinConfig::Name GetSiPin(const uint8_t id)
+inline PTXn_e GetSiPin(const uint8_t id)
 {
 	switch (id)
 	{
@@ -102,33 +85,18 @@ inline PinConfig::Name GetSiPin(const uint8_t id)
 
 #endif
 
-GpiConfig GetAdGpiConfig(const uint8_t id)
-{
-	GpiConfig config;
-	config.pin = GetAdPin(id);
-	return config;
-}
-
-GpoConfig GetClkGpoConfig(const uint8_t id)
-{
-	GpoConfig config;
-	config.pin = GetClkPin(id);
-	return config;
-}
-
-GpoConfig GetSiGpoConfig(const uint8_t id)
-{
-	GpoConfig config;
-	config.pin = GetSiPin(id);
-	return config;
-}
-
 }
 
 LinearCcd::LinearCcd(const uint8_t id)
-		: m_ad_pin(GetAdGpiConfig(id)), m_clk_pin(GetClkGpoConfig(id)),
-		  m_si_pin(GetSiGpoConfig(id)), m_index(0)
-{}
+		: m_id(id), m_index(0)
+{
+	// PTB10, AO(D1)
+	gpio_init(GetAoPin(id), GPI, 1);
+	// PTB9 , Clock / CLK
+	gpio_init(GetClkPin(id), GPO, 0);
+	// PTB8 , SI
+	gpio_init(GetSiPin(id), GPO, 1);
+}
 
 void LinearCcd::StartSample()
 {
@@ -144,19 +112,19 @@ bool LinearCcd::SampleProcess()
 
 	if (m_index == 0)
 	{
-		m_si_pin.Set(true);
+		gpio_set(GetSiPin(m_id), 1);
 	}
 
-	m_clk_pin.Set(true);
-	DELAY_US(3);
-	m_clk_pin.Set(false);
-	DELAY_US(3);
+	gpio_set(GetClkPin(m_id), 1);
+	//DELAY_US(50);
+	gpio_set(GetClkPin(m_id), 0);
+	//DELAY_US(50);
 
-	m_back_buffer[m_index] = (m_ad_pin.Get() == CCD_DARK);
+	m_back_buffer[m_index] = (gpio_get(GetAoPin(m_id)) == CCD_DARK);
 
 	if (m_index == 0)
 	{
-		m_si_pin.Set(false);
+		gpio_set(GetSiPin(m_id), 0);
 	}
 
 	if (++m_index >= SENSOR_W)
@@ -171,15 +139,10 @@ bool LinearCcd::SampleProcess()
 }
 
 #else
-LinearCcd::LinearCcd(const uint8_t)
-		: m_ad_pin(nullptr), m_clk_pin(nullptr), m_si_pin(nullptr), m_index(0)
-{
-	LOG_D("Configured not to use LinearCcd");
-}
+LinearCcd::LinearCcd(const uint8_t) : m_id(0), m_index(0) {}
 void LinearCcd::StartSample() {}
 bool LinearCcd::SampleProcess() { return false; }
 
 #endif
 
-}
 }
