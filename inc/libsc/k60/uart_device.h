@@ -71,7 +71,6 @@ private:
 	OnReceiveListener m_listener;
 
 	std::list<Chunk> m_tx_buf;
-	volatile uint8_t m_tx_buf_size;
 	volatile bool m_is_tx_idle;
 
 	libbase::k60::Uart m_uart;

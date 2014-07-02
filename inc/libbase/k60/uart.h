@@ -83,10 +83,11 @@ public:
 	std::vector<Byte> GetBytes() const;
 	bool PeekBytes(std::vector<Byte> *out_bytes) const;
 	void SendByte(const Byte byte);
-	size_t SendBytes(const Byte *bytes, const size_t size);
-	size_t SendBytes(const std::vector<Byte> &bytes)
+	bool PutByte(const Byte byte);
+	size_t PutBytes(const Byte *bytes, const size_t size);
+	size_t PutBytes(const std::vector<Byte> &bytes)
 	{
-		return SendBytes(bytes.data(), bytes.size());
+		return PutBytes(bytes.data(), bytes.size());
 	}
 
 	uint8_t GetTxFifoSize() const

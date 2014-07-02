@@ -431,14 +431,26 @@ bool Uart::PeekBytes(vector<Byte> *out_bytes) const
 void Uart::SendByte(const Byte byte)
 {
 	// Read S1 to clear TDRE
-	if (GET_BIT(MEM_MAP[m_module]->S1, UART_S1_TDRE_SHIFT)
-			|| MEM_MAP[m_module]->TCFIFO < m_tx_fifo_size)
+	while (!GET_BIT(MEM_MAP[m_module]->S1, UART_S1_TDRE_SHIFT)
+			&& MEM_MAP[m_module]->TCFIFO >= m_tx_fifo_size)
+	{}
+	MEM_MAP[m_module]->D = byte;
+}
+
+bool Uart::PutByte(const Byte byte)
+{
+	if (GET_BIT(MEM_MAP[m_module]->S1, UART_S1_TDRE_SHIFT))
 	{
 		MEM_MAP[m_module]->D = byte;
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
-size_t Uart::SendBytes(const Byte *bytes, const size_t size)
+size_t Uart::PutBytes(const Byte *bytes, const size_t size)
 {
 	const size_t send = std::min<Uint>(
 			m_tx_fifo_size - MEM_MAP[m_module]->TCFIFO, size);

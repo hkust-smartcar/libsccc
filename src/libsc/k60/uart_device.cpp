@@ -33,7 +33,7 @@ using namespace libbase::k60;
 
 #define CHUNK_SIZE 64
 // Maximum number of chunk allocated for Tx
-#define MAX_TX_CHUNK 8
+#define MAX_TX_CHUNK 3
 
 namespace libsc
 {
@@ -119,7 +119,7 @@ UartConfig GetUartConfig(const uint8_t id, const UartConfig::BaudRate baud_rate)
 }
 
 UartDevice::UartDevice(const uint8_t id, const UartConfig::BaudRate baud_rate)
-		: m_listener(nullptr), m_tx_buf_size(0), m_is_tx_idle(true),
+		: m_listener(nullptr), m_is_tx_idle(true),
 		  m_uart(GetUartConfig(id, baud_rate))
 {}
 
@@ -142,15 +142,25 @@ void UartDevice::StopReceive()
 
 void UartDevice::SendByte(const Byte b)
 {
-	if (m_tx_buf_size == 0)
+	if (m_tx_buf.empty())
 	{
 		m_tx_buf.push_back(Chunk());
-		++m_tx_buf_size;
 	}
+	else if (m_tx_buf.size() == 1)
+	{
+		// Prevent race condition when ediing the same element
+		m_uart.SetTxIsr(nullptr);
+		m_is_tx_idle = true;
+	}
+	else if (m_tx_buf.size() >= CHUNK_SIZE + 3)
+	{
+		// Stop ever-growing buffer if UART is not connected at all
+		return;
+	}
+
 	if (m_tx_buf.back().end == CHUNK_SIZE)
 	{
 		m_tx_buf.push_back(Chunk());
-		++m_tx_buf_size;
 	}
 	m_tx_buf.back().data[m_tx_buf.back().end++] = b;
 
@@ -187,19 +197,17 @@ void UartDevice::OnTxEmpty(Uart *uart)
 		return;
 	}
 
-	while (m_tx_buf_size >= MAX_TX_CHUNK)
+	while (m_tx_buf.size() >= MAX_TX_CHUNK)
 	{
 		m_tx_buf.pop_front();
-		--m_tx_buf_size;
 	}
 
 	Chunk *front = &m_tx_buf.front();
 	const size_t size = front->end - front->start;
-	front->start += uart->SendBytes(&front->data[front->start], size);
+	front->start += uart->PutBytes(&front->data[front->start], size);
 	if (front->start == CHUNK_SIZE)
 	{
 		m_tx_buf.pop_front();
-		--m_tx_buf_size;
 	}
 }
 
