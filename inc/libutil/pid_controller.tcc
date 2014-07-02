@@ -68,19 +68,19 @@ typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 			libsc::k60::Timer::TimeDiff(time, m_prev_time);
 	const InputType error = m_setpoint - current_val;
 
-	const float p = m_kp * error;
+	m_p = m_kp * error;
 	m_accumulated_error += error;
-	float i = m_ki * m_accumulated_error;
+	m_i = m_ki * m_accumulated_error;
 	if (m_i_limit > 0.0f)
 	{
-		const float clamp_i = libutil::Clamp<float>(-m_i_limit, i, m_i_limit);
+		const float clamp_i = libutil::Clamp<float>(-m_i_limit, m_i, m_i_limit);
 #ifdef LIBUTIL_DEBUG_PID_CONTROLLER
-		LOG_D("I clamped: orig(%f), now(%f)", i, clamp_i);
+		LOG_D("I clamped: orig(%f), now(%f)", m_i, clamp_i);
 #endif
-		i = clamp_i;
+		m_i = clamp_i;
 	}
-	const float slope = (error - m_prev_error) / (float)time_diff;
-	const float d = m_kd * slope;
+	const float slope = (error - m_prev_error) * 1000 / (float)time_diff;
+	m_d = m_kd * slope;
 
 #ifdef LIBUTIL_DEBUG_PID_CONTROLLER
 	PrintError(error);
@@ -88,9 +88,9 @@ typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 	m_prev_error = error;
 	m_prev_time = time;
 #ifdef LIBUTIL_DEBUG_PID_CONTROLLER
-	LOG_D("P(%f) + I(%f) - D(%f) = %f", p, i, d, p + i + d);
+	LOG_D("P(%f) + I(%f) - D(%f) = %f", m_p, m_i, m_d, m_p + m_i + m_d);
 #endif
-	return p + i + d;
+	return m_p + m_i + m_d;
 }
 
 template<typename T, typename U>
