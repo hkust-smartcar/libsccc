@@ -8,7 +8,10 @@
 #ifndef LIBUTIL_TUNABLE_INT_MANAGER_H_
 #define LIBUTIL_TUNABLE_INT_MANAGER_H_
 
+#include <cstddef>
 #include <cstdint>
+
+#include "libbase/k60/misc_utils.h"
 
 namespace libsc
 {
