@@ -6,6 +6,8 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
+#include <hw_common.h>
+
 #include <cassert>
 #include <cstdint>
 #include <bitset>
@@ -146,9 +148,9 @@ bool LinearCcd::SampleProcess()
 	}
 
 	m_clk_pin.Set(true);
-	//DELAY_US(50);
+	DELAY_US(3);
 	m_clk_pin.Set(false);
-	//DELAY_US(50);
+	DELAY_US(3);
 
 	m_back_buffer[m_index] = (m_ad_pin.Get() == CCD_DARK);
 
