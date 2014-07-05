@@ -305,7 +305,7 @@ void Ov7725::InitPort()
 	LIBSC_PIN_DDR(LIBSC_CAMERA_VSYNC) = GPI;
 
 	//row中斷，下拉，rising沿觸發中斷，帶濾波
-	port_init(LIBSC_CAMERA_HREF, ALT1 | IRQ_RISING | PULLUP | PF);
+	port_init(LIBSC_CAMERA_HREF, ALT1 | IRQ_FALLING | PULLUP | PF);
 	// GPI
 	LIBSC_PIN_DDR(LIBSC_CAMERA_HREF) = GPI;
 

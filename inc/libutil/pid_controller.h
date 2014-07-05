@@ -71,6 +71,41 @@ public:
 		m_prev_time = Clock::Time();
 	}
 
+	InputType GetSetpoint() const
+	{
+		return m_setpoint;
+	}
+
+	float GetKp() const
+	{
+		return m_kp;
+	}
+
+	float GetKi() const
+	{
+		return m_ki;
+	}
+
+	float GetKd() const
+	{
+		return m_kd;
+	}
+
+	float GetP() const
+	{
+		return m_p;
+	}
+
+	float GetI() const
+	{
+		return m_i;
+	}
+
+	float GetD() const
+	{
+		return m_d;
+	}
+
 	void Print(const char *label);
 
 private:
@@ -86,6 +121,10 @@ private:
 	float m_kd;
 
 	float m_i_limit;
+
+	float m_p;
+	float m_i;
+	float m_d;
 
 	InputType m_accumulated_error;
 	InputType m_prev_error;
