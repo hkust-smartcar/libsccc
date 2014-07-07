@@ -21,23 +21,16 @@ namespace k60
 
 class Gpo;
 
-struct GpiConfig
-{
-	PinConfig::Name pin;
-	std::bitset<PinConfig::ConfigBit::SIZE> config;
-};
-
-struct GpoConfig
-{
-	PinConfig::Name pin;
-	std::bitset<PinConfig::ConfigBit::SIZE> config;
-	bool is_high = false;
-};
-
 class Gpi
 {
 public:
-	explicit Gpi(const GpiConfig &config);
+	struct Config
+	{
+		PinConfig::Name pin;
+		std::bitset<PinConfig::ConfigBit::SIZE> config;
+	};
+
+	explicit Gpi(const Config &config);
 	Gpi(Gpi &&rhs);
 	explicit Gpi(Pin &&rhs);
 	explicit Gpi(nullptr_t);
@@ -59,7 +52,14 @@ private:
 class Gpo
 {
 public:
-	explicit Gpo(const GpoConfig &config);
+	struct Config
+	{
+		PinConfig::Name pin;
+		std::bitset<PinConfig::ConfigBit::SIZE> config;
+		bool is_high = false;
+	};
+
+	explicit Gpo(const Config &config);
 	Gpo(Gpo &&rhs);
 	explicit Gpo(Pin &&rhs);
 	explicit Gpo(nullptr_t);
@@ -82,8 +82,8 @@ private:
 class Gpio
 {
 public:
-	explicit Gpio(const GpiConfig &config);
-	explicit Gpio(const GpoConfig &config);
+	explicit Gpio(const Gpi::Config &config);
+	explicit Gpio(const Gpo::Config &config);
 	explicit Gpio(nullptr_t);
 
 	void Set(bool is_high)

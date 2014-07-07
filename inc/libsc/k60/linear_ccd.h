@@ -45,6 +45,8 @@ public:
 	}
 
 private:
+	inline void Delay();
+
 	libbase::k60::Gpi m_ad_pin;
 	libbase::k60::Gpo m_clk_pin;
 	libbase::k60::Gpo m_si_pin;

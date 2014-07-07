@@ -69,6 +69,12 @@ void SetInterruptBit(const PinConfig::Interrupt config, uint32_t *reg)
 
 Pin::Pin(const PinConfig &config)
 {
+	if (config.pin == PinConfig::Name::DISABLE)
+	{
+		assert(false);
+		return;
+	}
+
 	SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK << PinUtils::GetPort(config.pin);
 	uint32_t reg = 0;
 
@@ -142,22 +148,47 @@ Pin::Pin(const PinConfig &config)
 
 Pin::Pin(Pin &&rhs)
 		: m_name(rhs.m_name)
-{}
+{
+	rhs.m_name = PinConfig::Name::DISABLE;
+}
 
 Pin::Pin(nullptr_t)
+		: m_name(PinConfig::Name::DISABLE)
 {}
 
 Pin::~Pin()
-{}
+{
+	Uninit();
+}
 
 Pin& Pin::operator=(Pin &&rhs)
 {
-	m_name = rhs.m_name;
+	if (this != &rhs)
+	{
+		Uninit();
+		m_name = rhs.m_name;
+		rhs.m_name = PinConfig::Name::DISABLE;
+	}
 	return *this;
+}
+
+void Pin::Uninit()
+{
+	if (m_name != PinConfig::Name::DISABLE)
+	{
+		MEM_MAP[PinUtils::GetPort(m_name)]
+				->PCR[PinUtils::GetPinNumber(m_name)] = 0 | PORT_PCR_MUX(0);
+	}
 }
 
 void Pin::SetInterrupt(const PinConfig::Interrupt config)
 {
+	if (m_name == PinConfig::Name::DISABLE)
+	{
+		assert(false);
+		return;
+	}
+
 	uint32_t irqc = 0;
 	SetInterruptBit(config, &irqc);
 	uint32_t reg = MEM_MAP[PinUtils::GetPort(m_name)]
@@ -174,12 +205,24 @@ void Pin::SetInterrupt(const PinConfig::Interrupt config)
 
 bool Pin::IsInterruptRequested() const
 {
+	if (m_name == PinConfig::Name::DISABLE)
+	{
+		assert(false);
+		return false;
+	}
+
 	return GET_BIT(PORT_ISFR_REG(MEM_MAP[PinUtils::GetPort(m_name)]),
 			PinUtils::GetPinNumber(m_name));
 }
 
 void Pin::ConsumeInterrupt()
 {
+	if (m_name == PinConfig::Name::DISABLE)
+	{
+		assert(false);
+		return;
+	}
+
 	SET_BIT(PORT_ISFR_REG(MEM_MAP[PinUtils::GetPort(m_name)]),
 			PinUtils::GetPinNumber(m_name));
 }

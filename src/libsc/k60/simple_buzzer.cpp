@@ -36,9 +36,9 @@ inline PinConfig::Name GetPin(const uint8_t)
 
 #endif
 
-GpoConfig GetGpoConfig(const uint8_t id)
+Gpo::Config GetGpoConfig(const uint8_t id)
 {
-	GpoConfig config;
+	Gpo::Config config;
 	config.pin = GetPin(id);
 	return config;
 }

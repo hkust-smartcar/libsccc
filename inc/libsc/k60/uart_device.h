@@ -12,12 +12,22 @@
 #include <cstdint>
 
 #include <functional>
-#include <list>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/uart.h"
+
+namespace libbase
+{
+namespace k60
+{
+
+class Uart;
+
+}
+}
 
 namespace libsc
 {
@@ -31,46 +41,88 @@ public:
 			const size_t size)> OnReceiveListener;
 
 	UartDevice(const uint8_t id,
-			const libbase::k60::UartConfig::BaudRate baud_rate);
+			const libbase::k60::Uart::Config::BaudRate baud_rate);
 	~UartDevice();
 
-	void StartReceive(OnReceiveListener listener);
-	void StopReceive();
+	/**
+	 * Send a string through UART. A copy will be queued
+	 *
+	 * @param str
+	 */
+	void SendStr(const char *str);
+	/**
+	 * Send a string through UART. A moved copy will be queued
+	 *
+	 * @param str
+	 */
+	void SendStr(std::unique_ptr<char[]> &&str);
+	/**
+	 * Send a string through UART. A moved copy will be queued
+	 *
+	 * @param str
+	 */
+	void SendStr(std::string &&str);
 
-	void StartReceive()
+	/**
+	 * Send a buffer through UART. A copy will be queued
+	 *
+	 * @param buf
+	 * @param len
+	 */
+	void SendBuffer(const Byte *buf, const size_t len);
+	/**
+	 * Send a buffer through UART. A moved copy will be queued
+	 *
+	 * @param buf
+	 * @param len
+	 */
+	void SendBuffer(std::unique_ptr<Byte[]> &&buf, const size_t len);
+	/**
+	 * Send a buffer through UART. A moved copy will be queued
+	 *
+	 * @param buf
+	 */
+	void SendBuffer(std::vector<Byte> &&buf);
+
+	/**
+	 * Send a string literal through UART. MUST ONLY be used with string
+	 * literals
+	 *
+	 * @param str
+	 */
+	void SendStrLiteral(const char *str);
+
+	void SendStr(const std::string &str)
 	{
-		StartReceive(nullptr);
+		SendBuffer(reinterpret_cast<const Byte*>(str.data()), str.size());
+	}
+	void SendBuffer(const std::vector<Byte> &buf)
+	{
+		SendBuffer(buf.data(), buf.size());
 	}
 
-	void SendByte(const Byte b);
-	void SendStr(const char *str)
+	void EnableRx(const OnReceiveListener &listener);
+	void EnableRx()
 	{
-		while (*str)
-		{
-			SendByte(*str++);
-		}
+		EnableRx(nullptr);
 	}
-
-	void SendBuffer(const Byte *buf, const size_t len)
-	{
-		for (size_t i = 0; i < len; ++i)
-		{
-			SendByte(static_cast<char>(buf[i]));
-		}
-	}
-
+	void DisableRx();
 	bool PeekChar(char *out_char);
 
 private:
-	struct Chunk;
+	struct RxBuffer;
+	struct TxBuffer;
+
+	inline void EnableTx();
+	inline void DisableTx();
 
 	void OnTxEmpty(libbase::k60::Uart *uart);
 	void OnRxFull(libbase::k60::Uart *uart);
 
-	std::list<Chunk> m_rx_buf;
+	std::unique_ptr<volatile RxBuffer> m_rx_buf;
 	OnReceiveListener m_listener;
 
-	std::list<Chunk> m_tx_buf;
+	std::unique_ptr<TxBuffer> m_tx_buf;
 	volatile bool m_is_tx_idle;
 
 	libbase::k60::Uart m_uart;

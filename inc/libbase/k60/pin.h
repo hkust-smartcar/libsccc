@@ -37,14 +37,16 @@ struct PinConfig
 
 		PTE0 = 128, PTE1, PTE2, PTE3, PTE4, PTE5, PTE6, PTE7, PTE8, PTE9,
 		PTE10, PTE11, PTE12,
-		PTE24 = 152, PTE25, PTE26, PTE27, PTE28
+		PTE24 = 152, PTE25, PTE26, PTE27, PTE28,
+
+		DISABLE = 160
 	};
 
 	enum struct MuxControl
 	{
 		DISABLE,
 		GPIO,
-		ALT2, ALT3, ALT4, ALT5, ALT6, ALT7,
+		ALT2, ALT3, ALT4, ALT5, ALT6, ALT7
 	};
 
 	enum struct Interrupt
@@ -67,13 +69,13 @@ struct PinConfig
 		PULL_ENABLE,
 		PULL_UP,
 
-		SIZE,
+		SIZE
 	};
 
 	static constexpr int PORT_COUNT = 5;
 	static constexpr int PORT_PIN_COUNT = 32;
 
-	Name pin;
+	Name pin = Name::DISABLE;
 	MuxControl mux = MuxControl::DISABLE;
 	Interrupt interrupt = Interrupt::DISABLE;
 	std::bitset<ConfigBit::SIZE> config = 0x0;
@@ -83,10 +85,12 @@ class Pin
 {
 public:
 	explicit Pin(const PinConfig &config);
+	Pin(const Pin&) = delete;
 	Pin(Pin &&rhs);
 	explicit Pin(nullptr_t);
 	~Pin();
 
+	Pin& operator=(const Pin&) = delete;
 	Pin& operator=(Pin &&rhs);
 
 	PinConfig::Name GetName() const
@@ -99,6 +103,8 @@ public:
 	void ConsumeInterrupt();
 
 private:
+	void Uninit();
+
 	PinConfig::Name m_name;
 };
 

@@ -7,6 +7,7 @@
 
 #include <hw_common.h>
 
+#include <cassert>
 #include <cstdint>
 #include <cmath>
 
@@ -33,44 +34,44 @@ constexpr UART_MemMapPtr MEM_MAP[6] = {UART0_BASE_PTR, UART1_BASE_PTR,
 
 Uart* g_instances[6] = {};
 
-uint32_t GetBaudRate(UartConfig::BaudRate br)
+uint32_t GetBaudRate(Uart::Config::BaudRate br)
 {
 	switch (br)
 	{
-	case UartConfig::BaudRate::BR_2400:
+	case Uart::Config::BaudRate::BR_2400:
 		return 2400;
 
-	case UartConfig::BaudRate::BR_4800:
+	case Uart::Config::BaudRate::BR_4800:
 		return 4800;
 
-	case UartConfig::BaudRate::BR_9600:
+	case Uart::Config::BaudRate::BR_9600:
 		return 9600;
 
-	case UartConfig::BaudRate::BR_14400:
+	case Uart::Config::BaudRate::BR_14400:
 		return 14400;
 
-	case UartConfig::BaudRate::BR_19200:
+	case Uart::Config::BaudRate::BR_19200:
 		return 19200;
 
-	case UartConfig::BaudRate::BR_28800:
+	case Uart::Config::BaudRate::BR_28800:
 		return 28800;
 
-	case UartConfig::BaudRate::BR_38400:
+	case Uart::Config::BaudRate::BR_38400:
 		return 38400;
 
-	case UartConfig::BaudRate::BR_57600:
+	case Uart::Config::BaudRate::BR_57600:
 		return 57600;
 
-	case UartConfig::BaudRate::BR_76800:
+	case Uart::Config::BaudRate::BR_76800:
 		return 76800;
 
-	case UartConfig::BaudRate::BR_115200:
+	case Uart::Config::BaudRate::BR_115200:
 		return 115200;
 
-	case UartConfig::BaudRate::BR_230400:
+	case Uart::Config::BaudRate::BR_230400:
 		return 230400;
 
-	case UartConfig::BaudRate::BR_460800:
+	case Uart::Config::BaudRate::BR_460800:
 		return 460800;
 
 	default:
@@ -102,13 +103,13 @@ uint8_t GetFifoSize(const uint8_t buf_depth_reg)
 
 }
 
-Uart::Uart(const UartConfig &config)
+Uart::Uart(const Config &config)
 		: m_is_fifo(false), m_tx(nullptr), m_tx_fifo_size(1), m_tx_isr(nullptr),
 		  m_rx(nullptr), m_rx_fifo_size(1), m_rx_isr(nullptr)
 {
-	if (!SetModule(config.tx_pin, config.rx_pin))
+	if (!InitModule(config.tx_pin, config.rx_pin))
 	{
-		assert(0);
+		assert(false);
 	}
 
 	SetEnableClockGate(true);
@@ -116,24 +117,23 @@ Uart::Uart(const UartConfig &config)
 	MEM_MAP[m_module]->C2 = 0;
 
 	g_instances[m_module] = this;
-	SetBaudRate(config.baud_rate);
+	InitBaudRate(config.baud_rate);
 	InitPin(config.tx_pin, config.rx_pin);
 
 	InitC1Reg(config);
 	InitFifo(config);
+	InitInterrupt(config);
 	MEM_MAP[m_module]->C2 |= UART_C2_TE_MASK | UART_C2_RE_MASK;
 }
 
 Uart::~Uart()
 {
-	SetTxIsr(nullptr);
-	SetRxIsr(nullptr);
 	// Disable UART
 	MEM_MAP[m_module]->C2 = 0;
 	SetEnableClockGate(false);
 }
 
-bool Uart::SetModule(const PinConfig::Name tx_pin, const PinConfig::Name rx_pin)
+bool Uart::InitModule(const PinConfig::Name tx_pin, const PinConfig::Name rx_pin)
 {
 	int tx_module = -1;
 	switch (tx_pin)
@@ -271,7 +271,7 @@ void Uart::SetEnableClockGate(const bool flag)
 	}
 }
 
-void Uart::SetBaudRate(const UartConfig::BaudRate br)
+void Uart::InitBaudRate(const Config::BaudRate br)
 {
 	const uint32_t clock = ((m_module < 2) ? core_clk_khz : bus_clk_khz) * 1000;
 	const float target = clock / (float)GetBaudRate(br) / 16.0f;
@@ -310,22 +310,22 @@ void Uart::InitPin(const PinConfig::Name tx_pin, const PinConfig::Name rx_pin)
 	m_rx = Pin(rx_config);
 }
 
-void Uart::InitC1Reg(const UartConfig &config)
+void Uart::InitC1Reg(const Config &config)
 {
 	UART_MemMapPtr uart_ptr = MEM_MAP[m_module];
 	uart_ptr->C1 = 0;
-	SetLoopMode(config.config.test(UartConfig::ConfigBit::LOOP_MODE));
-	if (config.config.test(UartConfig::ConfigBit::ENABLE_EVEN_PARITY))
+	SetLoopMode(config.config.test(Config::ConfigBit::LOOP_MODE));
+	if (config.config.test(Config::ConfigBit::ENABLE_EVEN_PARITY))
 	{
 		SET_BIT(uart_ptr->C1, UART_C1_PE_MASK);
 	}
 }
 
-void Uart::InitFifo(const UartConfig &config)
+void Uart::InitFifo(const Config &config)
 {
 	UART_MemMapPtr uart_ptr = MEM_MAP[m_module];
 	uart_ptr->CFIFO = 0;
-	m_is_fifo = config.config.test(UartConfig::ConfigBit::FIFO);
+	m_is_fifo = config.config.test(Config::ConfigBit::FIFO);
 	if (m_is_fifo)
 	{
 		SET_BIT(uart_ptr->PFIFO, UART_PFIFO_TXFE_SHIFT);
@@ -354,6 +354,27 @@ void Uart::InitFifo(const UartConfig &config)
 	{
 		CLEAR_BIT(uart_ptr->PFIFO, UART_PFIFO_TXFE_SHIFT);
 		CLEAR_BIT(uart_ptr->PFIFO, UART_PFIFO_RXFE_SHIFT);
+	}
+}
+
+void Uart::InitInterrupt(const Config &config)
+{
+	m_tx_isr = config.tx_isr;
+	m_rx_isr = config.rx_isr;
+
+	if (m_tx_isr || m_rx_isr)
+	{
+		SetIsr(static_cast<VECTORn_t>(UART0_RX_TX_VECTORn + (m_module << 1)),
+				IrqHandler);
+		if (m_tx_isr)
+		{
+			SET_BIT(MEM_MAP[m_module]->C2, UART_C2_TIE_SHIFT);
+		}
+		if (m_rx_isr)
+		{
+			SET_BIT(MEM_MAP[m_module]->C2, UART_C2_RIE_SHIFT);
+		}
+		EnableIsr(static_cast<VECTORn_t>(UART0_RX_TX_VECTORn + (m_module << 1)));
 	}
 }
 
@@ -472,43 +493,27 @@ size_t Uart::PutBytes(const Byte *bytes, const size_t size)
 	return send;
 }
 
-void Uart::SetTxIsr(OnTxEmptyListener isr)
+void Uart::SetEnableTxIrq(const bool flag)
 {
-	CLEAR_BIT(MEM_MAP[m_module]->C2, UART_C2_TIE_SHIFT);
-	m_tx_isr = isr;
-	SetInterrupt();
-}
-
-void Uart::SetRxIsr(OnRxFullListener isr)
-{
-	CLEAR_BIT(MEM_MAP[m_module]->C2, UART_C2_RIE_SHIFT);
-	m_rx_isr = isr;
-	SetInterrupt();
-}
-
-void Uart::SetInterrupt()
-{
-	if (!m_tx_isr && !m_rx_isr)
+	if (flag)
 	{
-		DisableIsr(static_cast<VECTORn_t>(UART0_RX_TX_VECTORn + (m_module << 1)));
-		SetIsr(static_cast<VECTORn_t>(UART0_RX_TX_VECTORn + (m_module << 1)),
-				nullptr);
-		CLEAR_BIT(MEM_MAP[m_module]->C2, UART_C2_TIE_SHIFT);
-		CLEAR_BIT(MEM_MAP[m_module]->C2, UART_C2_RIE_SHIFT);
+		SET_BIT(MEM_MAP[m_module]->C2, UART_C2_TIE_SHIFT);
 	}
 	else
 	{
-		SetIsr(static_cast<VECTORn_t>(UART0_RX_TX_VECTORn + (m_module << 1)),
-				IrqHandler);
-		if (m_tx_isr)
-		{
-			SET_BIT(MEM_MAP[m_module]->C2, UART_C2_TIE_SHIFT);
-		}
-		if (m_rx_isr)
-		{
-			SET_BIT(MEM_MAP[m_module]->C2, UART_C2_RIE_SHIFT);
-		}
-		EnableIsr(static_cast<VECTORn_t>(UART0_RX_TX_VECTORn + (m_module << 1)));
+		CLEAR_BIT(MEM_MAP[m_module]->C2, UART_C2_TIE_SHIFT);
+	}
+}
+
+void Uart::SetEnableRxIrq(const bool flag)
+{
+	if (flag)
+	{
+		SET_BIT(MEM_MAP[m_module]->C2, UART_C2_RIE_SHIFT);
+	}
+	else
+	{
+		CLEAR_BIT(MEM_MAP[m_module]->C2, UART_C2_RIE_SHIFT);
 	}
 }
 
@@ -516,6 +521,15 @@ __ISR void Uart::IrqHandler()
 {
 	const VECTORn_t v = GetVectorX();
 	const int module = (v - UART0_RX_TX_VECTORn) >> 1;
+	if (!g_instances[module])
+	{
+		// Something wrong?
+		assert(false);
+		CLEAR_BIT(MEM_MAP[module]->C2, UART_C2_TIE_SHIFT);
+		CLEAR_BIT(MEM_MAP[module]->C2, UART_C2_RIE_SHIFT);
+		return;
+	}
+
 	if (GET_BIT(MEM_MAP[module]->C2, UART_C2_TIE_SHIFT)
 			&& GET_BIT(MEM_MAP[module]->S1, UART_S1_TDRE_SHIFT))
 	{

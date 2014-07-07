@@ -6,6 +6,8 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
+#include <mini_common.h>
+#include <hw_common.h>
 #include <syscall.h>
 #include <cstdint>
 
@@ -25,7 +27,7 @@ int MyFwriteHandler(int, char *ptr, int len)
 {
 	if (g_uart)
 	{
-		g_uart->SendBuffer(reinterpret_cast<const uint8_t*>(ptr), len);
+		g_uart->SendBuffer(reinterpret_cast<const Byte*>(ptr), len);
 	}
 	return len;
 }

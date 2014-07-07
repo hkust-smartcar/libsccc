@@ -24,7 +24,7 @@ namespace
 constexpr GPIO_MemMapPtr MEM_MAP[5] = {PTA_BASE_PTR, PTB_BASE_PTR, PTC_BASE_PTR,
 		PTD_BASE_PTR, PTE_BASE_PTR};
 
-PinConfig GetPinConfig(const GpiConfig &config)
+PinConfig GetPinConfig(const Gpi::Config &config)
 {
 	PinConfig pin_config;
 	pin_config.pin = config.pin;
@@ -33,7 +33,7 @@ PinConfig GetPinConfig(const GpiConfig &config)
 	return pin_config;
 }
 
-PinConfig GetPinConfig(const GpoConfig &config)
+PinConfig GetPinConfig(const Gpo::Config &config)
 {
 	PinConfig pin_config;
 	pin_config.pin = config.pin;
@@ -44,7 +44,7 @@ PinConfig GetPinConfig(const GpoConfig &config)
 
 }
 
-Gpi::Gpi(const GpiConfig &config)
+Gpi::Gpi(const Gpi::Config &config)
 		: m_pin(GetPinConfig(config))
 {
 	RESET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PDDR,
@@ -88,7 +88,7 @@ Gpo Gpi::ToGpo()
 	return Gpo(std::move(m_pin));
 }
 
-Gpo::Gpo(const GpoConfig &config)
+Gpo::Gpo(const Gpo::Config &config)
 		: m_pin(GetPinConfig(config))
 {
 	SET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PDDR,
@@ -149,11 +149,11 @@ Gpi Gpo::ToGpi()
 	return Gpi(std::move(m_pin));
 }
 
-Gpio::Gpio(const GpiConfig &config)
+Gpio::Gpio(const Gpi::Config &config)
 		: m_gpi(config), m_gpo(nullptr), m_is_gpo(false)
 {}
 
-Gpio::Gpio(const GpoConfig &config)
+Gpio::Gpio(const Gpo::Config &config)
 		: m_gpi(nullptr), m_gpo(config), m_is_gpo(true)
 {}
 

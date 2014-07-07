@@ -37,7 +37,7 @@ inline PinConfig::Name GetPin(const uint8_t id)
 	switch (id)
 	{
 	default:
-		assert(0);
+		assert(false);
 
 	case 0:
 		return LIBSC_SWITCH0;
@@ -69,9 +69,9 @@ inline PinConfig::Name GetPin(const uint8_t id)
 
 #endif
 
-GpiConfig GetGpiConfig(const uint8_t id)
+Gpi::Config GetGpiConfig(const uint8_t id)
 {
-	GpiConfig config;
+	Gpi::Config config;
 	config.pin = GetPin(id);
 	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
 	return config;

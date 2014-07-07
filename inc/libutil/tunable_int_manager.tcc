@@ -61,7 +61,7 @@ const TunableInt* TunableIntManager<size>::Register(const char *name,
 template<uint8_t size>
 void TunableIntManager<size>::Start()
 {
-	m_uart->StartReceive([this](const Byte *bytes, const size_t count)
+	m_uart->EnableRx([this](const Byte *bytes, const size_t count)
 			{
 				OnUartReceiveChar(bytes, count);
 			});
@@ -71,12 +71,12 @@ void TunableIntManager<size>::Start()
 		if (m_data[i].m_type == TunableInt::INTEGER)
 		{
 			m_uart->SendStr(String::Format("%s,integer,%d,%d\n",
-					m_data[i].m_name, m_data[i].m_id, m_data[i].m_val).c_str());
+					m_data[i].m_name, m_data[i].m_id, m_data[i].m_val));
 		}
 		else
 		{
 			m_uart->SendStr(String::Format("%s,real,%d,%.3f\n", m_data[i].m_name,
-					m_data[i].m_id, TunableInt::AsFloat(m_data[i].m_val)).c_str());
+					m_data[i].m_id, TunableInt::AsFloat(m_data[i].m_val)));
 		}
 	}
 }
@@ -84,7 +84,7 @@ void TunableIntManager<size>::Start()
 template<uint8_t size>
 void TunableIntManager<size>::Stop()
 {
-	m_uart->StopReceive();
+	m_uart->DisableRx();
 }
 
 template<uint8_t size>

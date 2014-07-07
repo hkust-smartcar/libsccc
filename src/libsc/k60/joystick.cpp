@@ -43,41 +43,41 @@ namespace
 #define UNUSED
 #endif
 
-GpiConfig GetUpGpiConfig(const uint8_t id UNUSED)
+Gpi::Config GetUpGpiConfig(const uint8_t id UNUSED)
 {
-	GpiConfig config;
+	Gpi::Config config;
 	config.pin = GetUpPin(id);
 	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
 	return config;
 }
 
-GpiConfig GetDownGpiConfig(const uint8_t id UNUSED)
+Gpi::Config GetDownGpiConfig(const uint8_t id UNUSED)
 {
-	GpiConfig config;
+	Gpi::Config config;
 	config.pin = GetDownPin(id);
 	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
 	return config;
 }
 
-GpiConfig GetLeftGpiConfig(const uint8_t id UNUSED)
+Gpi::Config GetLeftGpiConfig(const uint8_t id UNUSED)
 {
-	GpiConfig config;
+	Gpi::Config config;
 	config.pin = GetLeftPin(id);
 	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
 	return config;
 }
 
-GpiConfig GetRightGpiConfig(const uint8_t id UNUSED)
+Gpi::Config GetRightGpiConfig(const uint8_t id UNUSED)
 {
-	GpiConfig config;
+	Gpi::Config config;
 	config.pin = GetRightPin(id);
 	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
 	return config;
 }
 
-GpiConfig GetSelectGpiConfig(const uint8_t id UNUSED)
+Gpi::Config GetSelectGpiConfig(const uint8_t id UNUSED)
 {
-	GpiConfig config;
+	Gpi::Config config;
 	config.pin = GetSelectPin(id);
 	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
 	return config;

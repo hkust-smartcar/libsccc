@@ -9,6 +9,7 @@
 
 #include <cstdint>
 
+#include "libbase/k60/clock_utils.h"
 #include "libbase/k60/pit.h"
 #include "libsc/k60/timer.h"
 
@@ -22,19 +23,21 @@ namespace k60
 namespace
 {
 
-PitConfig GetPitConfig(const uint8_t pit_channel)
+Pit::Config GetPitConfig(const uint8_t pit_channel,
+		const Pit::OnPitTriggerListener &isr)
 {
-	PitConfig config;
+	Pit::Config config;
 	config.channel = pit_channel;
-	config.count = bus_clk_khz;
+	config.count = ClockUtils::GetBusTickPerMs();
+	config.isr = isr;
 	return config;
 }
 
 }
 
 Timer::Timer(const uint8_t pit_channel)
-		: m_pit(GetPitConfig(pit_channel), std::bind(&Timer::OnTick, this,
-				std::placeholders::_1)), m_ms(0)
+		: m_pit(GetPitConfig(pit_channel, std::bind(&Timer::OnTick, this,
+				std::placeholders::_1))), m_ms(0)
 {}
 
 Timer::~Timer()
