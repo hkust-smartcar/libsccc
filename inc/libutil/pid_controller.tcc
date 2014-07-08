@@ -11,7 +11,7 @@
 
 #include <log.h>
 
-#include "libsc/k60/system_timer.h"
+#include "libsc/k60/system.h"
 #include "libsc/k60/timer.h"
 #include "libutil/misc.h"
 #include "libutil/pid_controller.h"
@@ -24,7 +24,7 @@ PidController<T, U>::PidController(const InputType setpoint, const float kp,
 		const float ki, const float kd)
 		: m_setpoint(setpoint), m_kp(kp), m_ki(ki), m_kd(kd), m_i_limit(0.0f),
 		  m_accumulated_error(0), m_prev_error(0),
-		  m_prev_time(libsc::k60::SystemTimer::Time())
+		  m_prev_time(libsc::k60::System::Time())
 {}
 
 template<typename T, typename U>

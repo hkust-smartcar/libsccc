@@ -19,6 +19,10 @@ namespace libbase
 namespace k60
 {
 
+/**
+ * Generate PWM signal using PIT and GPIO, only guarantee precision down to us
+ * level
+ */
 class PitPwm : public Pwm
 {
 public:
@@ -30,11 +34,11 @@ public:
 
 	explicit PitPwm(const Config &config);
 
-	void SetPeriodUs(const uint32_t period_us, const uint32_t high_time_us) override;
-	void SetHighTimeUs(const uint32_t high_time_us) override;
+	void SetPeriod(const uint32_t period, const uint32_t pos_width) override;
+	void SetPosWidth(const uint32_t pos_width) override;
 
 private:
-	void Setup(const uint32_t period_us, const uint32_t high_time_us);
+	void Setup(const uint32_t period, const uint32_t pos_width);
 
 	void OnTick(Pit*);
 
@@ -42,10 +46,11 @@ private:
 	Gpo m_pin;
 
 	volatile bool m_flag;
-	uint32_t m_high_time;
-	uint32_t m_high_count;
-	uint32_t m_low_time;
-	uint32_t m_low_count;
+	Pwm::Config::Precision m_precision;
+	uint32_t m_pos_width;
+	uint32_t m_pos_count;
+	uint32_t m_neg_width;
+	uint32_t m_neg_count;
 };
 
 }

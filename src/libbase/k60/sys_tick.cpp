@@ -6,6 +6,7 @@
  */
 
 #include <hw_common.h>
+
 #include <cassert>
 #include <cstdint>
 
@@ -19,7 +20,7 @@ namespace k60
 
 void SysTick::DelayUs(const uint16_t us)
 {
-	const uint32_t count = us * ClockUtils::GetCoreTickPerUs() - 1;
+	const uint32_t count = ClockUtils::GetCoreTickPerUs(us) - 1;
 	SYST_RVR = count & 0x00FFFFFFu;
 	SYST_CVR = 0;
 	SYST_CSR = 0 | SysTick_CSR_CLKSOURCE_MASK | SysTick_CSR_ENABLE_MASK;

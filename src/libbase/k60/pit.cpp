@@ -15,7 +15,6 @@
 #include <vectors.h>
 
 #include "libbase/k60/clock_utils.h"
-#include "libbase/k60/delay.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pit.h"
 
@@ -27,20 +26,12 @@ namespace k60
 namespace
 {
 
-Pit* g_instances[4] = {};
-
-inline void ConsumeInterrupt(const int channel)
+inline void ConsumeInterrupt_(const int channel)
 {
 	SET_BIT(PIT_TFLG(channel), PIT_TFLG_TIF_SHIFT);
 }
 
-Pit::Config GetPitConfig(const uint8_t channel)
-{
-	Pit::Config pc;
-	pc.channel = channel;
-	pc.is_enable = false;
-	return pc;
-}
+Pit* g_instances[4] = {};
 
 }
 
@@ -59,7 +50,7 @@ Pit::Pit(const Config &config)
 
 	SetEnable(false);
 	SetCount(config.count);
-	ConsumeInterrupt(m_channel);
+	ConsumeInterrupt();
 	SetIsr(config.isr);
 	if (config.is_enable)
 	{
@@ -137,7 +128,7 @@ void Pit::SetEnable(const bool flag)
 	}
 }
 
-void Pit::SetCount(uint32_t count)
+void Pit::SetCount(const uint32_t count)
 {
 	PIT_LDVAL(m_channel) = count - 1;
 	if (GET_BIT(PIT_TCTRL(m_channel), PIT_TCTRL_TEN_SHIFT))
@@ -152,6 +143,11 @@ uint32_t Pit::GetCountLeft() const
 	return PIT_CVAL(m_channel);
 }
 
+void Pit::ConsumeInterrupt()
+{
+	ConsumeInterrupt_(m_channel);
+}
+
 bool Pit::IsInterruptRequested() const
 {
 	return GET_BIT(PIT_TFLG(m_channel), PIT_TFLG_TIF_SHIFT);
@@ -163,9 +159,9 @@ __ISR void Pit::IrqHandler()
 	const int channel = v - PIT0_VECTORn;
 	if (!g_instances[channel])
 	{
-		// Something wrong?
+		// Something's wrong?
 		assert(false);
-		ConsumeInterrupt(channel);
+		ConsumeInterrupt_(channel);
 		return;
 	}
 
@@ -173,29 +169,7 @@ __ISR void Pit::IrqHandler()
 	{
 		g_instances[channel]->m_isr(g_instances[channel]);
 	}
-	ConsumeInterrupt(channel);
-}
-
-PitDelay::PitDelay(const uint8_t channel)
-		: m_pit(GetPitConfig(channel))
-{}
-
-void PitDelay::DelayUs(const uint16_t us)
-{
-	m_pit.SetCount(us * ClockUtils::GetBusTickPerUs());
-	m_pit.SetEnable(true);
-	ConsumeInterrupt(m_pit.GetChannel());
-	while (!m_pit.IsInterruptRequested())
-	{}
-}
-
-void PitDelay::DelayMs(const uint16_t ms)
-{
-	m_pit.SetCount(ms * ClockUtils::GetBusTickPerMs());
-	m_pit.SetEnable(true);
-	ConsumeInterrupt(m_pit.GetChannel());
-	while (!m_pit.IsInterruptRequested())
-	{}
+	ConsumeInterrupt_(channel);
 }
 
 }

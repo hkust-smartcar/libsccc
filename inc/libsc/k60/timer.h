@@ -10,8 +10,6 @@
 
 #include <cstdint>
 
-#include "libbase/k60/pit.h"
-
 namespace libsc
 {
 namespace k60
@@ -22,18 +20,15 @@ class Timer
 public:
 	typedef uint32_t TimerInt;
 
-	explicit Timer(const uint8_t pit_channel);
-	~Timer();
+	virtual ~Timer()
+	{}
 
 	/**
 	 * Return the time elapsed, in ms
 	 *
 	 * @return
 	 */
-	TimerInt Time()
-	{
-		return m_ms;
-	}
+	virtual TimerInt Time() = 0;
 
 	/**
 	 * Return how @a a is apart from @a b
@@ -46,12 +41,6 @@ public:
 	{
 		return (TimerInt)(a - b);
 	}
-
-private:
-	void OnTick(libbase::k60::Pit*);
-
-	libbase::k60::Pit m_pit;
-	volatile TimerInt m_ms;
 };
 
 }

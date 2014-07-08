@@ -5,14 +5,14 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBBASE_K60_DELAY_H_
-#define LIBBASE_K60_DELAY_H_
+#ifndef LIBSC_K60_DELAY_H_
+#define LIBSC_K60_DELAY_H_
 
 #include <cstdint>
 
 #include "libbase/k60/misc_utils.h"
 
-namespace libbase
+namespace libsc
 {
 namespace k60
 {
@@ -45,4 +45,4 @@ public:
 }
 }
 
-#endif /* LIBBASE_K60_DELAY_H_ */
+#endif /* LIBSC_K60_DELAY_H_ */

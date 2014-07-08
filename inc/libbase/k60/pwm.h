@@ -20,17 +20,24 @@ class Pwm
 public:
 	struct Config
 	{
+		enum struct Precision
+		{
+			US,
+			NS,
+		};
+
 		PinConfig::Name pin;
-		uint32_t period_us;
-		uint32_t high_time_us;
+		uint32_t period;
+		uint32_t pos_width;
+		// Should only select NS when period < 1000 us
+		Precision precision = Precision::US;
 	};
 
 	virtual ~Pwm()
 	{}
 
-	virtual void SetPeriodUs(const uint32_t period_us,
-			const uint32_t high_time_us) = 0;
-	virtual void SetHighTimeUs(const uint32_t high_time_us) = 0;
+	virtual void SetPeriod(const uint32_t period, const uint32_t pos_width) = 0;
+	virtual void SetPosWidth(const uint32_t pos_width) = 0;
 };
 
 }

@@ -13,8 +13,6 @@
 #include <cstdint>
 #include <functional>
 
-#include "libbase/k60/delay.h"
-
 namespace libbase
 {
 namespace k60
@@ -46,9 +44,15 @@ public:
 
 	void SetEnable(const bool flag);
 
-	void SetCount(uint32_t count);
+	void SetCount(const uint32_t count);
 	uint32_t GetCountLeft() const;
 
+	/**
+	 * Consume an interrupt, this basically clear the IRQ flag for this
+	 * particular PIT channel. Notice that you don't need to call it in a
+	 * OnPitTriggerListener as it has been called for you
+	 */
+	void ConsumeInterrupt();
 	bool IsInterruptRequested() const;
 
 	uint8_t GetChannel() const
@@ -65,18 +69,6 @@ private:
 	uint8_t m_channel;
 	OnPitTriggerListener m_isr;
 	bool m_is_init;
-};
-
-class PitDelay : public Delay
-{
-public:
-	explicit PitDelay(const uint8_t channel);
-
-	void DelayUs(const uint16_t us) override;
-	void DelayMs(const uint16_t ms) override;
-
-private:
-	Pit m_pit;
 };
 
 }

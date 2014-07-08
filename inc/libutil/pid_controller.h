@@ -13,7 +13,7 @@
 
 #include <type_traits>
 
-#include "libsc/k60/system_timer.h"
+#include "libsc/k60/system.h"
 #include "libsc/k60/timer.h"
 
 namespace libutil
@@ -34,7 +34,7 @@ public:
 			const InputType current_val);
 	OutputType Calc(const InputType current_val)
 	{
-		return Calc(libsc::k60::SystemTimer::Time(), current_val);
+		return Calc(libsc::k60::System::Time(), current_val);
 	}
 
 	void SetSetpoint(const InputType setpoint)
@@ -70,7 +70,7 @@ public:
 	void Restart()
 	{
 		m_accumulated_error = 0;
-		m_prev_time = libsc::k60::SystemTimer::Time();
+		m_prev_time = libsc::k60::System::Time();
 	}
 
 	InputType GetSetpoint() const

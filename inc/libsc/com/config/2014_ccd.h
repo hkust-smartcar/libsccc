@@ -79,12 +79,14 @@
 #define LIBSC_LINEAR_CCD1_CLK libbase::k60::PinConfig::Name::PTC4
 #define LIBSC_LINEAR_CCD1_AD libbase::k60::PinConfig::Name::PTB21
 
-#define LIBSC_MOTOR0_PWM PTD6
-#define LIBSC_MOTOR0_DIR PTE6
-#define LIBSC_MOTOR1_PWM PTD7
-#define LIBSC_MOTOR1_DIR PTE7
+#define LIBSC_MOTOR0_PWM libbase::k60::PinConfig::Name::PTD6
+#define LIBSC_MOTOR0_DIR libbase::k60::PinConfig::Name::PTE6
+#define LIBSC_MOTOR1_PWM libbase::k60::PinConfig::Name::PTD7
+#define LIBSC_MOTOR1_DIR libbase::k60::PinConfig::Name::PTE7
 
-#define LIBSC_SERVO0 PTA10
+#define LIBSC_SERVO0 libbase::k60::PinConfig::Name::PTA10
+
+#define LIBSC_SYSTEM_TIMER_PIT_CHANNEL 0
 
 #define LIBSC_SWITCH0 libbase::k60::PinConfig::Name::PTE8
 #define LIBSC_SWITCH1 libbase::k60::PinConfig::Name::PTE9

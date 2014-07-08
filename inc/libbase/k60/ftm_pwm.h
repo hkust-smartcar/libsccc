@@ -27,8 +27,8 @@ public:
 
 	explicit FtmPwm(const Config &config);
 
-	void SetPeriodUs(const uint32_t period_us, const uint32_t high_time_us) override;
-	void SetHighTimeUs(const uint32_t high_time_us) override;
+	void SetPeriod(const uint32_t period, const uint32_t pos_width) override;
+	void SetPosWidth(const uint32_t pos_width) override;
 
 private:
 	bool InitModule(const PinConfig::Name pin);
@@ -36,7 +36,8 @@ private:
 	uint8_t m_module;
 	uint8_t m_channel;
 
-	uint32_t m_period_us;
+	Pwm::Config::Precision m_precision;
+	uint32_t m_period;
 };
 
 }

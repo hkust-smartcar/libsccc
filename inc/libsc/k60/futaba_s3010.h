@@ -1,17 +1,21 @@
 /*
  * futaba_s3010.h
- * Futaba S3010 servo abstraction
+ * Futaba S3010 RC servo
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBSC_FUTABA_S3010_H_
-#define LIBSC_FUTABA_S3010_H_
+#ifndef LIBSC_K60_FUTABA_S3010_H_
+#define LIBSC_K60_FUTABA_S3010_H_
 
-#include "libsc/com/servo.h"
+#include <cstdint>
+
+#include "libsc/k60/servo.h"
 
 namespace libsc
+{
+namespace k60
 {
 
 class FutabaS3010 : public Servo
@@ -21,5 +25,6 @@ public:
 };
 
 }
+}
 
-#endif /* LIBSC_FUTABA_S3010_H_ */
+#endif /* LIBSC_K60_FUTABA_S3010_H_ */

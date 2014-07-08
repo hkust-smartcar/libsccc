@@ -10,8 +10,6 @@
 
 #include <cstdint>
 
-#include "libbase/k60/delay.h"
-
 #ifdef SysTick
 #undef SysTick
 #endif
@@ -25,15 +23,6 @@ class SysTick
 {
 public:
 	static void DelayUs(const uint16_t us);
-};
-
-class SysTickDelay : public Delay
-{
-public:
-	void DelayUs(const uint16_t us) override
-	{
-		SysTick::DelayUs(us);
-	}
 };
 
 }

@@ -23,28 +23,39 @@ namespace k60
 namespace
 {
 
-inline uint32_t GetFrequency(const uint32_t period)
+inline uint32_t GetFrequency(const uint32_t period,
+		const Pwm::Config::Precision precision)
 {
-	return 1000000 / period;
+	switch (precision)
+	{
+	default:
+	case Pwm::Config::Precision::US:
+		return 1000000 / period;
+
+	case Pwm::Config::Precision::NS:
+		return 1000000000 / period;
+	}
 }
 
-inline uint32_t GetDuty(const uint32_t period, const uint32_t high_time)
+inline uint32_t GetDuty(const uint32_t period, const uint32_t pos_width)
 {
-	return high_time * 10000 / period;
+	return pos_width * 1000 / period;
 }
 
 }
 
 FtmPwm::FtmPwm(const Config &config)
-		: m_period_us(config.period_us)
+		: m_precision(config.precision),
+		  m_period(config.period)
 {
 	if (!InitModule(config.pin))
 	{
 		assert(false);
 	}
+	assert(config.pos_width <= m_period);
 	FTM_PWM_init((FTMn_e)m_module, (FTM_CHn_e)m_channel,
-			GetFrequency(config.period_us),
-			GetDuty(config.period_us, config.high_time_us));
+			GetFrequency(m_period, m_precision),
+			GetDuty(m_period, config.pos_width));
 }
 
 bool FtmPwm::InitModule(const PinConfig::Name pin)
@@ -144,17 +155,19 @@ bool FtmPwm::InitModule(const PinConfig::Name pin)
 	}
 }
 
-void FtmPwm::SetPeriodUs(const uint32_t period_us, const uint32_t high_time_us)
+void FtmPwm::SetPeriod(const uint32_t period, const uint32_t pos_width)
 {
-	FTM_PWM_freq((FTMn_e)m_module, GetFrequency(period_us));
-	FTM_PWM_Duty((FTMn_e)m_module, (FTM_CHn_e)m_channel, GetDuty(period_us,
-			high_time_us));
+	assert(pos_width <= period);
+	FTM_PWM_freq((FTMn_e)m_module, GetFrequency(period, m_precision));
+	FTM_PWM_Duty((FTMn_e)m_module, (FTM_CHn_e)m_channel, GetDuty(period,
+			pos_width));
+	m_period = period;
 }
 
-void FtmPwm::SetHighTimeUs(const uint32_t high_time_us)
+void FtmPwm::SetPosWidth(const uint32_t pos_width)
 {
-	FTM_PWM_Duty((FTMn_e)m_module, (FTM_CHn_e)m_channel, GetDuty(m_period_us,
-			high_time_us));
+	FTM_PWM_Duty((FTMn_e)m_module, (FTM_CHn_e)m_channel, GetDuty(m_period,
+			pos_width));
 }
 
 }

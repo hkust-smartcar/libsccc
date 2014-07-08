@@ -11,7 +11,8 @@
 
 #include "libbase/k60/clock_utils.h"
 #include "libbase/k60/pit.h"
-#include "libsc/k60/timer.h"
+
+#include "libsc/k60/pit_timer.h"
 
 using namespace libbase::k60;
 
@@ -35,15 +36,13 @@ Pit::Config GetPitConfig(const uint8_t pit_channel,
 
 }
 
-Timer::Timer(const uint8_t pit_channel)
-		: m_pit(GetPitConfig(pit_channel, std::bind(&Timer::OnTick, this,
-				std::placeholders::_1))), m_ms(0)
+PitTimer::PitTimer(const uint8_t pit_channel)
+		: m_pit(GetPitConfig(pit_channel, std::bind(&PitTimer::OnTick, this,
+				std::placeholders::_1))),
+		  m_ms(0)
 {}
 
-Timer::~Timer()
-{}
-
-void Timer::OnTick(libbase::k60::Pit*)
+void PitTimer::OnTick(Pit*)
 {
 	++m_ms;
 }

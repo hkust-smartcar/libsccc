@@ -21,10 +21,14 @@ public:
 		return 1000000 / frequency;
 	}
 
-	static uint32_t GetHighTimeUs(const uint32_t period_us,
-			const Uint duty_10000)
+	static uint32_t GetPeriodNs(const uint32_t frequency)
 	{
-		return period_us * duty_10000 / 10000;
+		return 1000000000 / frequency;
+	}
+
+	static uint32_t GetPosWidth(const uint32_t period, const Uint duty_1000)
+	{
+		return period * duty_1000 / 1000;
 	}
 };
 

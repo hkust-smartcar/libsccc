@@ -45,29 +45,41 @@ PitPwm::PitPwm(const Config &config)
 		: m_pit(GetPitConfig(config,
 				  std::bind(&PitPwm::OnTick, this, std::placeholders::_1))),
 		  m_pin(GetGpoConfig(config)),
-		  m_flag(true)
+		  m_flag(true),
+		  m_precision(config.precision)
 {
-	Setup(config.period_us, config.high_time_us);
+	Setup(config.period, config.pos_width);
 }
 
-void PitPwm::Setup(const uint32_t period_us, const uint32_t high_time_us)
+void PitPwm::Setup(const uint32_t period, const uint32_t pos_width)
 {
-	assert(high_time_us <= period_us);
+	assert(pos_width <= period);
 
 	m_pit.SetEnable(false);
 
-	m_high_time = high_time_us;
-	m_high_count = ClockUtils::GetBusTickPerUs() * m_high_time;
-	m_low_time = period_us - high_time_us;
-	m_low_count = ClockUtils::GetBusTickPerUs() * m_low_time;
+	m_pos_width = pos_width;
+	m_neg_width = period - pos_width;
+	switch (m_precision)
+	{
+	default:
+	case Pwm::Config::Precision::US:
+		m_pos_count = ClockUtils::GetBusTickPerUs(m_pos_width);
+		m_neg_count = ClockUtils::GetBusTickPerUs(m_neg_width);
+		break;
 
-	if (m_high_count == 0)
+	case Pwm::Config::Precision::NS:
+		m_pos_count = ClockUtils::GetBusTickPerNs(m_pos_width);
+		m_neg_count = ClockUtils::GetBusTickPerNs(m_neg_width);
+		break;
+	}
+
+	if (m_pos_count == 0)
 	{
 		// 0% duty cycle (always low)
 		m_pin.Set(false);
 		m_flag = false;
 	}
-	else if (m_low_count == 0)
+	else if (m_neg_count == 0)
 	{
 		// 100% duty cycle (always high)
 		m_pin.Set(true);
@@ -76,21 +88,20 @@ void PitPwm::Setup(const uint32_t period_us, const uint32_t high_time_us)
 	else
 	{
 		// Anything in between
-		m_pit.SetCount(m_flag ? m_low_count : m_high_count);
+		m_pit.SetCount(m_flag ? m_neg_count : m_pos_count);
 		m_pit.SetEnable(true);
 	}
 }
 
-void PitPwm::SetPeriodUs(const uint32_t period_us, const uint32_t high_time_us)
+void PitPwm::SetPeriod(const uint32_t period, const uint32_t pos_width)
 {
-	Setup(period_us, high_time_us);
+	Setup(period, pos_width);
 }
 
-void PitPwm::SetHighTimeUs(const uint32_t high_time_us)
+void PitPwm::SetPosWidth(const uint32_t pos_width)
 {
-	const uint32_t period = m_high_time + m_low_time;
-	assert(high_time_us <= period);
-	Setup(period, high_time_us);
+	const uint32_t period = m_pos_width + m_neg_width;
+	Setup(period, pos_width);
 }
 
 void PitPwm::OnTick(Pit*)
@@ -98,13 +109,13 @@ void PitPwm::OnTick(Pit*)
 	if (m_flag)
 	{
 		m_pin.Set(false);
-		m_pit.SetCount(m_low_count);
+		m_pit.SetCount(m_neg_count);
 		m_flag = false;
 	}
 	else
 	{
 		m_pin.Set(true);
-		m_pit.SetCount(m_high_count);
+		m_pit.SetCount(m_pos_count);
 		m_flag = true;
 	}
 }
