@@ -30,7 +30,7 @@ void LcdConsole::PrintChar(const char ch, const uint16_t color,
 	{
 		do
 		{
-			PrintChar(' ');
+			PrintChar(' ', 0, bg_color);
 		} while (m_cursor_x != 0);
 	}
 	else
