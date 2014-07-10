@@ -18,6 +18,7 @@
 
 #include "libsc/k60/uart_device.h"
 
+#include "libutil/misc.h"
 #include "libutil/string.h"
 #include "libutil/tunable_int_manager.h"
 
@@ -59,24 +60,29 @@ const TunableInt* TunableIntManager<size>::Register(const char *name,
 }
 
 template<uint8_t size>
-void TunableIntManager<size>::Start()
+void TunableIntManager<size>::Start(const bool is_broadcast)
 {
 	m_uart->EnableRx([this](const Byte *bytes, const size_t count)
 			{
 				OnUartReceiveChar(bytes, count);
 			});
 
-	for (int i = 0; i < size && m_data[i].m_name; ++i)
+	if (is_broadcast)
 	{
-		if (m_data[i].m_type == TunableInt::INTEGER)
+		for (int i = 0; i < size && m_data[i].m_name; ++i)
 		{
-			m_uart->SendStr(String::Format("%s,integer,%d,%d\n",
-					m_data[i].m_name, m_data[i].m_id, m_data[i].m_val));
-		}
-		else
-		{
-			m_uart->SendStr(String::Format("%s,real,%d,%.3f\n", m_data[i].m_name,
-					m_data[i].m_id, TunableInt::AsFloat(m_data[i].m_val)));
+			if (m_data[i].m_type == TunableInt::INTEGER)
+			{
+				m_uart->SendStr(String::Format("%s,integer,%d,%d\n",
+						m_data[i].m_name, m_data[i].m_id,
+						htobe32(m_data[i].m_val)));
+			}
+			else
+			{
+				m_uart->SendStr(String::Format("%s,real,%d,%.3f\n",
+						m_data[i].m_name, m_data[i].m_id,
+						TunableInt::AsFloat(htobe32(m_data[i].m_val))));
+			}
 		}
 	}
 }
@@ -96,8 +102,9 @@ void TunableIntManager<size>::OnUartReceiveChar(const Byte *bytes,
 		m_buffer[m_buffer_it] = bytes[i];
 		if (++m_buffer_it >= 5)
 		{
-			m_data[(Uint)m_buffer[0]].SetValue(m_buffer[1] << 24
-					| m_buffer[2] << 16 | m_buffer[3] << 8 | m_buffer[4]);
+			uint32_t val = m_buffer[1] << 24 | m_buffer[2] << 16
+					| m_buffer[3] << 8 | m_buffer[4];
+			m_data[(Uint)m_buffer[0]].SetValue(be32toh(val));
 			m_buffer_it = 0;
 		}
 	}

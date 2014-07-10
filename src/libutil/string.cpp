@@ -33,9 +33,9 @@ string String::Format(const char *format, ...)
 
 string String::Format(const char *format, va_list *vl)
 {
-	char product[50];
-	vsnprintf(product, 50 * sizeof(char), format, *vl);
-	product[49] = '\0';
+	static char product[64];
+	vsnprintf(product, 64 * sizeof(char), format, *vl);
+	product[63] = '\0';
 	return product;
 }
 

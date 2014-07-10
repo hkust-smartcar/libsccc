@@ -70,6 +70,11 @@ public:
 	void Restart()
 	{
 		m_accumulated_error = 0;
+		ResetTime();
+	}
+
+	void ResetTime()
+	{
 		m_prev_time = libsc::k60::System::Time();
 	}
 

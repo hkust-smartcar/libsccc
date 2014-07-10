@@ -109,6 +109,11 @@ public:
 	void DisableRx();
 	bool PeekChar(char *out_char);
 
+	void SetLoopMode(const bool flag)
+	{
+		m_uart.SetLoopMode(flag);
+	}
+
 private:
 	struct RxBuffer;
 	struct TxBuffer;

@@ -39,7 +39,7 @@ inline uint32_t GetFrequency(const uint32_t period,
 
 inline uint32_t GetDuty(const uint32_t period, const uint32_t pos_width)
 {
-	return pos_width * 1000 / period;
+	return pos_width * 1000 / period * 10;
 }
 
 }

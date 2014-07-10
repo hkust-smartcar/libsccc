@@ -40,6 +40,11 @@ public:
 		return m_val;
 	}
 
+	uint8_t GetId() const
+	{
+		return m_id;
+	}
+
 	static float AsFloat(const uint32_t val)
 	{
 		return *reinterpret_cast<const float*>(&val);
@@ -84,7 +89,12 @@ public:
 
 	const TunableInt* Register(const char *name, const TunableInt::Type type,
 			const uint32_t val);
-	void Start();
+
+	void Start(const bool is_broadcast);
+	void Start()
+	{
+		Start(true);
+	}
 	void Stop();
 
 private:

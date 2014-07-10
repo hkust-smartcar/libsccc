@@ -108,24 +108,7 @@ struct UartDevice::TxBuffer
 		}
 
 		Slot& operator=(const Slot&) = delete;
-		volatile Slot& operator=(Slot &&rhs) volatile
-		{
-			if (this != &rhs)
-			{
-				Byte* const data_ = rhs.data.byte_;
-				bool is_mem_owned_ = rhs.is_mem_owned;
-				Recycle();
-				rhs.data.byte_ = nullptr;
-				rhs.is_mem_owned = false;
-
-				data.byte_ = data_;
-				type = rhs.type;
-				size = rhs.size;
-				it = rhs.it;
-				is_mem_owned = is_mem_owned_;
-			}
-			return *this;
-		}
+		volatile Slot& operator=(Slot &&rhs) volatile;
 
 		Slot& operator=(Slot &&rhs)
 		{
@@ -175,20 +158,7 @@ struct UartDevice::TxBuffer
 			: sending_slot(nullptr), queued(0), sent(0)
 	{}
 
-	void PushBuffer(Slot &&slot)
-	{
-		if (GetSize() > MAX_TX_BUFFER)
-		{
-			while (GetSize() > TX_BUFFER_LOWER_BOUND)
-			{
-				++sent;
-			}
-		}
-		Slot *s;
-		while ((s = &slots[queued++ % TX_BUFFER_UPPER_BOUND]) == sending_slot)
-		{}
-		*s = std::move(slot);
-	}
+	void PushBuffer(Slot &&slot);
 
 	void Acquire()
 	{
@@ -205,6 +175,41 @@ struct UartDevice::TxBuffer
 	volatile Uint queued;
 	volatile Uint sent;
 };
+
+volatile UartDevice::TxBuffer::Slot& UartDevice::TxBuffer::Slot::operator=(
+		Slot &&rhs) volatile
+{
+	if (this != &rhs)
+	{
+		Byte* const data_ = rhs.data.byte_;
+		bool is_mem_owned_ = rhs.is_mem_owned;
+		Recycle();
+		rhs.data.byte_ = nullptr;
+		rhs.is_mem_owned = false;
+
+		data.byte_ = data_;
+		type = rhs.type;
+		size = rhs.size;
+		it = rhs.it;
+		is_mem_owned = is_mem_owned_;
+	}
+	return *this;
+}
+
+void UartDevice::TxBuffer::PushBuffer(Slot &&slot)
+{
+	if (GetSize() > MAX_TX_BUFFER)
+	{
+		while (GetSize() > TX_BUFFER_LOWER_BOUND)
+		{
+			++sent;
+		}
+	}
+	Slot *s;
+	while ((s = &slots[queued++ % TX_BUFFER_UPPER_BOUND]) == sending_slot)
+	{}
+	*s = std::move(slot);
+}
 
 namespace
 {
@@ -420,6 +425,7 @@ void UartDevice::OnTxEmpty(Uart *uart)
 
 void UartDevice::EnableRx(const OnReceiveListener &listener)
 {
+	DisableRx();
 	m_listener = listener;
 	m_uart.SetEnableRxIrq(true);
 }
