@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "libbase/k60/pin.h"
+#include "libbase/k60/misc_utils.h"
 
 namespace libbase
 {
