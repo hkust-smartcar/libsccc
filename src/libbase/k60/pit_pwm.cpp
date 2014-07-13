@@ -62,12 +62,12 @@ void PitPwm::Setup(const uint32_t period, const uint32_t pos_width)
 	switch (m_precision)
 	{
 	default:
-	case Pwm::Config::Precision::US:
+	case Pwm::Config::Precision::kUs:
 		m_pos_count = ClockUtils::GetBusTickPerUs(m_pos_width);
 		m_neg_count = ClockUtils::GetBusTickPerUs(m_neg_width);
 		break;
 
-	case Pwm::Config::Precision::NS:
+	case Pwm::Config::Precision::KNs:
 		m_pos_count = ClockUtils::GetBusTickPerNs(m_pos_width);
 		m_neg_count = ClockUtils::GetBusTickPerNs(m_neg_width);
 		break;

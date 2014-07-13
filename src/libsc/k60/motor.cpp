@@ -83,7 +83,7 @@ FtmPwm::Config GetFtmPwmConfig(const uint8_t id)
 	config.pin = GetPwmPin(id);
 	config.period = PERIOD;
 	config.pos_width = 0;
-	config.precision = Pwm::Config::Precision::NS;
+	config.precision = Pwm::Config::Precision::KNs;
 	return config;
 }
 

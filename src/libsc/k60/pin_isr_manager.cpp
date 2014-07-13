@@ -6,7 +6,6 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#include <hw_common.h>
 #include <cstring>
 
 #include <vectors.h>

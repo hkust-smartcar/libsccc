@@ -5,13 +5,24 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#include <hw_common.h>
+#include "libbase/k60/hardware.h"
 
 #include <cassert>
 #include <cstdint>
 
 #include "libbase/k60/clock_utils.h"
 #include "libbase/k60/sys_tick.h"
+
+#define SysTickPtr ((SysTick_Type*)SysTick_BASE)
+#define SYST_CSR (SysTickPtr->CTRL)
+#define SYST_RVR (SysTickPtr->LOAD)
+#define SYST_CVR (SysTickPtr->VAL)
+#define SYST_CALIB (SysTickPtr->CALIB)
+
+#define SysTick_CSR_COUNTFLAG_SHIFT SysTick_CTRL_COUNTFLAG_Pos
+#define SysTick_CSR_CLKSOURCE_MASK SysTick_CTRL_CLKSOURCE_Msk
+#define SysTick_CSR_ENABLE_MASK SysTick_CTRL_ENABLE_Msk
+#define SysTick_CSR_ENABLE_SHIFT SysTick_CTRL_ENABLE_Pos
 
 namespace libbase
 {

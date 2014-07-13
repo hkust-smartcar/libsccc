@@ -27,7 +27,7 @@ public:
 	struct Config
 	{
 		PinConfig::Name pin;
-		std::bitset<PinConfig::ConfigBit::SIZE> config;
+		std::bitset<PinConfig::ConfigBit::kSize> config;
 	};
 
 	explicit Gpi(const Config &config);
@@ -55,7 +55,7 @@ public:
 	struct Config
 	{
 		PinConfig::Name pin;
-		std::bitset<PinConfig::ConfigBit::SIZE> config;
+		std::bitset<PinConfig::ConfigBit::kSize> config;
 		bool is_high = false;
 	};
 

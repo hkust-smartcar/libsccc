@@ -41,6 +41,10 @@ public:
 
 	Pit& operator=(const Pit&) = delete;
 	Pit& operator=(Pit &&rhs);
+	operator bool() const
+	{
+		return m_is_init;
+	}
 
 	void SetEnable(const bool flag);
 
@@ -68,6 +72,7 @@ private:
 
 	uint8_t m_channel;
 	OnPitTriggerListener m_isr;
+
 	bool m_is_init;
 };
 

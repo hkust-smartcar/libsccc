@@ -47,7 +47,7 @@ Gpi::Config GetUpGpiConfig(const uint8_t id UNUSED)
 {
 	Gpi::Config config;
 	config.pin = GetUpPin(id);
-	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
+	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
 	return config;
 }
 
@@ -55,7 +55,7 @@ Gpi::Config GetDownGpiConfig(const uint8_t id UNUSED)
 {
 	Gpi::Config config;
 	config.pin = GetDownPin(id);
-	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
+	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
 	return config;
 }
 
@@ -63,7 +63,7 @@ Gpi::Config GetLeftGpiConfig(const uint8_t id UNUSED)
 {
 	Gpi::Config config;
 	config.pin = GetLeftPin(id);
-	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
+	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
 	return config;
 }
 
@@ -71,7 +71,7 @@ Gpi::Config GetRightGpiConfig(const uint8_t id UNUSED)
 {
 	Gpi::Config config;
 	config.pin = GetRightPin(id);
-	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
+	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
 	return config;
 }
 
@@ -79,7 +79,7 @@ Gpi::Config GetSelectGpiConfig(const uint8_t id UNUSED)
 {
 	Gpi::Config config;
 	config.pin = GetSelectPin(id);
-	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
+	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
 	return config;
 }
 

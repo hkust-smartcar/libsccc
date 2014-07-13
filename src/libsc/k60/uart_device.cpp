@@ -6,9 +6,6 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#include <mini_common.h>
-#include <hw_common.h>
-
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -24,6 +21,7 @@
 
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/uart.h"
+
 #include "libsc/com/config.h"
 #include "libsc/k60/uart_device.h"
 #include "libutil/misc.h"
@@ -271,7 +269,7 @@ Uart::Config GetUartConfig(const uint8_t id,
 	config.tx_pin = GetTxPin(id);
 	config.rx_pin = GetRxPin(id);
 	config.baud_rate = baud_rate;
-	config.config.set(Uart::Config::ConfigBit::FIFO);
+	config.config.set(Uart::Config::ConfigBit::kFifo);
 	config.tx_isr = tx_isr;
 	config.rx_isr = rx_isr;
 	return config;

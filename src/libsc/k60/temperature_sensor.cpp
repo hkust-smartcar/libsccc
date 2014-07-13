@@ -6,7 +6,6 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#include <hw_common.h>
 #include <cstdint>
 #include <cmath>
 
@@ -15,6 +14,7 @@
 #include "libbase/k60/gpio.h"
 
 #include "libsc/com/config.h"
+#include "libsc/k60/system.h"
 #include "libsc/k60/temperature_sensor.h"
 
 using namespace libbase::k60;
@@ -94,16 +94,16 @@ void TemperatureSensor::UpdateTemperature()
 bool TemperatureSensor::Init()
 {
 	m_pin.Set(false);
-	DELAY_US(480);
+	System::DelayUs(480);
 	//m_pin.Set(true);
 	m_pin.EnsureGpi();
-	DELAY_US(60);
+	System::DelayUs(60);
 	if (m_pin.Get())
 	{
 		LOG_E("Failed initializing temperature sensor");
 		return false;
 	}
-	DELAY_US(240);
+	System::DelayUs(240);
 	return true;
 }
 
@@ -115,15 +115,15 @@ void TemperatureSensor::SendByte(const uint8_t byte)
 		if ((byte >> i) & 0x1)
 		{
 			m_pin.EnsureGpi();
-			DELAY_US(60);
+			System::DelayUs(60);
 			m_pin.EnsureGpo();
 		}
 		else
 		{
-			DELAY_US(60);
+			System::DelayUs(60);
 			m_pin.Set(true);
 		}
-		DELAY_US(1);
+		System::DelayUs(1);
 	}
 }
 
@@ -133,9 +133,9 @@ uint8_t TemperatureSensor::ReceiveByte()
 	for (int i = 0; i < 8; ++i)
 	{
 		m_pin.Set(false);
-		DELAY_US(1);
+		System::DelayUs(1);
 		product |= (m_pin.Get() ? 1 : 0) << i;
-		DELAY_US(61);
+		System::DelayUs(61);
 	}
 	return product;
 }

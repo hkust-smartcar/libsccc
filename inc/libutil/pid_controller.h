@@ -113,27 +113,18 @@ public:
 		return m_d;
 	}
 
-	void Print(const char *label);
-
 private:
-	inline void PrintSetpoint(const int);
-	inline void PrintSetpoint(const float);
-	inline void PrintError(const int32_t error);
-	inline void PrintError(const int16_t error);
-	inline void PrintError(const float error);
-
 	InputType m_setpoint;
 	float m_kp;
 	float m_ki;
 	float m_kd;
 
-	float m_i_limit;
-
 	float m_p;
 	float m_i;
 	float m_d;
 
-	InputType m_accumulated_error;
+	float m_i_limit;
+	float m_accumulated_error;
 	InputType m_prev_error;
 	libsc::k60::Timer::TimerInt m_prev_time;
 };

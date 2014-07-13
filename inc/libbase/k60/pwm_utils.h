@@ -8,6 +8,10 @@
 #ifndef LIBBASE_K60_PWM_UTILS_H_
 #define LIBBASE_K60_PWM_UTILS_H_
 
+#include <cstdint>
+
+#include "libbase/k60/misc_utils.h"
+
 namespace libbase
 {
 namespace k60

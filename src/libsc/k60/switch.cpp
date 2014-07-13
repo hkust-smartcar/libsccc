@@ -73,7 +73,7 @@ Gpi::Config GetGpiConfig(const uint8_t id)
 {
 	Gpi::Config config;
 	config.pin = GetPin(id);
-	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
+	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
 	return config;
 }
 

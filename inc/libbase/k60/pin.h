@@ -44,41 +44,49 @@ struct PinConfig
 
 	enum struct MuxControl
 	{
-		DISABLE,
-		GPIO,
-		ALT2, ALT3, ALT4, ALT5, ALT6, ALT7
+		kDisable,
+		kGpio,
+		kAlt2, kAlt3, kAlt4, kAlt5, kAlt6, kAlt7
 	};
 
 	enum struct Interrupt
 	{
-		DISABLE,
-		DMA_RISING, DMA_FALLING, DMA_BOTH,
-		RISING, FALLING, BOTH,
-		LOW, HIGH
+		kDisable,
+
+		kDmaRising,
+		kDmaFalling,
+		kDmaBoth,
+
+		kRising,
+		kFalling,
+		kBoth,
+
+		kLow,
+		kHigh
 	};
 
 	enum ConfigBit
 	{
-		HIGH_DRIVE_STRENGTH = 0,
-		OPEN_DRAIN,
+		kHighDriveStrength = 0,
+		kOpenDrain,
 		// Disable the passive input filter when high speed interfaces of more
 		// than 2 MHz are supported on the pin
-		PASSIVE_FILTER,
-		SLOW_SLEW_RATE,
+		kPassiveFilter,
+		kSlowSlewRate,
 		// Enable the internal pull-up or pull-down resistor
-		PULL_ENABLE,
-		PULL_UP,
+		kPullEnable,
+		kPullUp,
 
-		SIZE
+		kSize
 	};
 
 	static constexpr int PORT_COUNT = 5;
 	static constexpr int PORT_PIN_COUNT = 32;
 
 	Name pin = Name::DISABLE;
-	MuxControl mux = MuxControl::DISABLE;
-	Interrupt interrupt = Interrupt::DISABLE;
-	std::bitset<ConfigBit::SIZE> config = 0x0;
+	MuxControl mux = MuxControl::kDisable;
+	Interrupt interrupt = Interrupt::kDisable;
+	std::bitset<ConfigBit::kSize> config = 0x0;
 };
 
 class Pin

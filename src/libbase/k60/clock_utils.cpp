@@ -5,7 +5,8 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#include <hw_common.h>
+#include "libbase/k60/hardware.h"
+
 #include <cstdint>
 
 #include "libbase/k60/clock_utils.h"

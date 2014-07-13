@@ -6,8 +6,6 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#include <mini_common.h>
-#include <hw_common.h>
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>

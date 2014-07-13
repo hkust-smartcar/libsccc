@@ -6,8 +6,6 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#include <hw_common.h>
-
 #include <cassert>
 #include <cstdint>
 #include <bitset>
@@ -18,6 +16,7 @@
 
 #include "libsc/com/config.h"
 #include "libsc/k60/linear_ccd.h"
+#include "libsc/k60/system.h"
 #include "libutil/misc.h"
 
 using namespace libbase::k60;
@@ -176,7 +175,7 @@ bool LinearCcd::SampleProcess()
 		Delay();
 		m_clk_pin.Set(false);
 		Delay();
-		DELAY_US(20);
+		System::DelayUs(20);
 		return true;
 	}
 	else

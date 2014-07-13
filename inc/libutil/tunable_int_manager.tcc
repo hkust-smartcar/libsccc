@@ -8,17 +8,14 @@
 #ifndef LIBUTIL_TUNABLE_INT_MANAGER_TCC_
 #define LIBUTIL_TUNABLE_INT_MANAGER_TCC_
 
-#include <mini_common.h>
-#include <hw_common.h>
-
 #include <cassert>
 #include <cstdint>
 
 #include <functional>
 
-#include "libsc/k60/uart_device.h"
+#include "libbase/k60/misc_utils.h"
 
-#include "libutil/misc.h"
+#include "libsc/k60/uart_device.h"
 #include "libutil/string.h"
 #include "libutil/tunable_int_manager.h"
 

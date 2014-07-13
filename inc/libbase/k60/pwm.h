@@ -22,15 +22,15 @@ public:
 	{
 		enum struct Precision
 		{
-			US,
-			NS,
+			kUs,
+			KNs,
 		};
 
 		PinConfig::Name pin;
 		uint32_t period;
 		uint32_t pos_width;
 		// Should only select NS when period < 1000 us
-		Precision precision = Precision::US;
+		Precision precision = Precision::kUs;
 	};
 
 	virtual ~Pwm()

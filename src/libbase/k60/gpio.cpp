@@ -5,7 +5,8 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#include <hw_common.h>
+#include "libbase/k60/hardware.h"
+
 #include <cassert>
 
 #include "libbase/k60/gpio.h"
@@ -21,14 +22,13 @@ namespace k60
 namespace
 {
 
-constexpr GPIO_MemMapPtr MEM_MAP[5] = {PTA_BASE_PTR, PTB_BASE_PTR, PTC_BASE_PTR,
-		PTD_BASE_PTR, PTE_BASE_PTR};
+constexpr GPIO_Type* MEM_MAPS[5] = {PTA, PTB, PTC, PTD, PTE};
 
 PinConfig GetPinConfig(const Gpi::Config &config)
 {
 	PinConfig pin_config;
 	pin_config.pin = config.pin;
-	pin_config.mux = PinConfig::MuxControl::GPIO;
+	pin_config.mux = PinConfig::MuxControl::kGpio;
 	pin_config.config = config.config;
 	return pin_config;
 }
@@ -37,7 +37,7 @@ PinConfig GetPinConfig(const Gpo::Config &config)
 {
 	PinConfig pin_config;
 	pin_config.pin = config.pin;
-	pin_config.mux = PinConfig::MuxControl::GPIO;
+	pin_config.mux = PinConfig::MuxControl::kGpio;
 	pin_config.config = config.config;
 	return pin_config;
 }
@@ -47,7 +47,7 @@ PinConfig GetPinConfig(const Gpo::Config &config)
 Gpi::Gpi(const Gpi::Config &config)
 		: m_pin(GetPinConfig(config))
 {
-	RESET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PDDR,
+	RESET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PDDR,
 			PinUtils::GetPinNumber(m_pin.GetName()));
 }
 
@@ -58,7 +58,7 @@ Gpi::Gpi(Gpi &&rhs)
 Gpi::Gpi(Pin &&rhs)
 		: m_pin(std::move(rhs))
 {
-	RESET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PDDR,
+	RESET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PDDR,
 			PinUtils::GetPinNumber(m_pin.GetName()));
 }
 
@@ -77,9 +77,9 @@ Gpi& Gpi::operator=(Gpi &&rhs)
 
 bool Gpi::Get() const
 {
-	assert(!GET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PDDR,
+	assert(!GET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PDDR,
 			PinUtils::GetPinNumber(m_pin.GetName())));
-	return GET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PDIR,
+	return GET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PDIR,
 			PinUtils::GetPinNumber(m_pin.GetName()));
 }
 
@@ -91,7 +91,7 @@ Gpo Gpi::ToGpo()
 Gpo::Gpo(const Gpo::Config &config)
 		: m_pin(GetPinConfig(config))
 {
-	SET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PDDR,
+	SET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PDDR,
 			PinUtils::GetPinNumber(m_pin.GetName()));
 	Set(config.is_high);
 }
@@ -103,7 +103,7 @@ Gpo::Gpo(Gpo &&rhs)
 Gpo::Gpo(Pin &&rhs)
 		: m_pin(std::move(rhs))
 {
-	SET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PDDR,
+	SET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PDDR,
 			PinUtils::GetPinNumber(m_pin.GetName()));
 }
 
@@ -122,25 +122,25 @@ Gpo& Gpo::operator=(Gpo &&rhs)
 
 void Gpo::Set(bool is_high)
 {
-	assert(GET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PDDR,
+	assert(GET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PDDR,
 			PinUtils::GetPinNumber(m_pin.GetName())));
 	if (is_high)
 	{
-		SET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PSOR,
+		SET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PSOR,
 				PinUtils::GetPinNumber(m_pin.GetName()));
 	}
 	else
 	{
-		SET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PCOR,
+		SET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PCOR,
 				PinUtils::GetPinNumber(m_pin.GetName()));
 	}
 }
 
 void Gpo::Turn()
 {
-	assert(GET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PDDR,
+	assert(GET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PDDR,
 			PinUtils::GetPinNumber(m_pin.GetName())));
-	SET_BIT(MEM_MAP[PinUtils::GetPort(m_pin.GetName())]->PTOR,
+	SET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PTOR,
 			PinUtils::GetPinNumber(m_pin.GetName()));
 }
 

@@ -34,35 +34,35 @@ public:
 	{
 		enum struct BaudRate
 		{
-			BR_2400,
-			BR_4800,
-			BR_9600,
-			BR_14400,
-			BR_19200,
-			BR_28800,
-			BR_38400,
-			BR_57600,
-			BR_76800,
-			BR_115200,
-			BR_230400,
-			BR_460800,
+			k2400,
+			k4800,
+			k9600,
+			k14400,
+			k19200,
+			k28800,
+			k38400,
+			k57600,
+			k76800,
+			k115200,
+			k230400,
+			k460800,
 		};
 
 		enum ConfigBit
 		{
 			// Connect TX to RX
-			LOOP_MODE,
+			kLoopMode,
 			// Enable parity bit or not, if enabled, it would be even parity
-			ENABLE_EVEN_PARITY,
-			FIFO,
+			kEnableEvenParity,
+			kFifo,
 
-			SIZE,
+			kSize,
 		};
 
 		PinConfig::Name tx_pin;
 		PinConfig::Name rx_pin;
 		BaudRate baud_rate;
-		std::bitset<ConfigBit::SIZE> config;
+		std::bitset<ConfigBit::kSize> config;
 
 		Uart::OnTxEmptyListener tx_isr;
 		// The # bytes in the Tx buffer needed to fire the interrupt
@@ -78,7 +78,17 @@ public:
 	};
 
 	explicit Uart(const Config &config);
+	explicit Uart(nullptr_t);
+	Uart(const Uart&) = delete;
+	Uart(Uart &&rhs);
 	~Uart();
+
+	Uart& operator=(const Uart&) = delete;
+	Uart& operator=(Uart &&rhs);
+	operator bool() const
+	{
+		return m_is_init;
+	}
 
 	void SetLoopMode(const bool flag);
 
@@ -111,21 +121,22 @@ public:
 private:
 	enum Module
 	{
-		UART0 = 0,
-		UART1,
-		UART2,
-		UART3,
-		UART4,
-		UART5,
+		kUart0 = 0,
+		kUart1,
+		kUart2,
+		kUart3,
+		kUart4,
+		kUart5,
 	};
 
-	void SetEnableClockGate(const bool flag);
 	bool InitModule(const PinConfig::Name tx_pin, const PinConfig::Name rx_pin);
 	void InitBaudRate(const Config::BaudRate br);
 	void InitPin(const PinConfig::Name tx_pin, const PinConfig::Name rx_pin);
 	void InitC1Reg(const Config &config);
 	void InitFifo(const Config &config);
 	void InitInterrupt(const Config &config);
+
+	void Uninit();
 
 	static __ISR void IrqHandler();
 
@@ -139,6 +150,8 @@ private:
 	Pin m_rx;
 	uint8_t m_rx_fifo_size;
 	OnRxFullListener m_rx_isr;
+
+	bool m_is_init;
 };
 
 }

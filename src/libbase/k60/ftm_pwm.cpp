@@ -29,10 +29,10 @@ inline uint32_t GetFrequency(const uint32_t period,
 	switch (precision)
 	{
 	default:
-	case Pwm::Config::Precision::US:
+	case Pwm::Config::Precision::kUs:
 		return 1000000 / period;
 
-	case Pwm::Config::Precision::NS:
+	case Pwm::Config::Precision::KNs:
 		return 1000000000 / period;
 	}
 }
