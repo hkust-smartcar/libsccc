@@ -23,6 +23,7 @@
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LCD_HW_SPI
 #define LIBSC_USE_LED 4
+#define LIBSC_USE_LIGHT_SENSOR 2
 #define LIBSC_USE_LINEAR_CCD 2
 #define LIBSC_NEGATE_LINEAR_CCD
 #define LIBSC_USE_MOTOR 1
@@ -78,6 +79,9 @@
 #define LIBSC_LINEAR_CCD1_SI libbase::k60::PinConfig::Name::PTC3
 #define LIBSC_LINEAR_CCD1_CLK libbase::k60::PinConfig::Name::PTC4
 #define LIBSC_LINEAR_CCD1_AD libbase::k60::PinConfig::Name::PTB21
+
+#define LIBSC_LIGHT_SENSOR0 libbase::k60::PinConfig::Name::PTE25
+#define LIBSC_LIGHT_SENSOR1 libbase::k60::PinConfig::Name::PTB22
 
 #define LIBSC_MOTOR0_PWM libbase::k60::PinConfig::Name::PTD6
 #define LIBSC_MOTOR0_DIR libbase::k60::PinConfig::Name::PTE6
