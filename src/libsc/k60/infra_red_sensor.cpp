@@ -67,13 +67,13 @@ InfraRedSensor::InfraRedSensor(const uint8_t id)
 		: m_pin(GetGpiConfig(id))
 {}
 
-bool InfraRedSensor::IsDetected()
+bool InfraRedSensor::IsDetected() const
 {
 	return m_pin.Get();
 }
 
 void InfraRedSensor::SetOnDetectListener(
-		PinIsrManager::OnPinIrqListener listener)
+		const PinIsrManager::OnPinIrqListener &listener)
 {
 	m_pin.GetPin()->SetInterrupt(PinConfig::Interrupt::RISING);
 	PinIsrManager::GetInstance()->SetPinIsr(m_pin.GetPin(), listener);
@@ -85,8 +85,8 @@ InfraRedSensor::InfraRedSensor(const uint8_t)
 {
 	LOG_D("Configured not to use InfraRedSensor");
 }
-bool InfraRedSensor::IsDetected() { return false; }
-void InfraRedSensor::SetOnDetectListener(PinIsrManager::OnPinIrqListener) {}
+bool InfraRedSensor::IsDetected() const { return false; }
+void InfraRedSensor::SetOnDetectListener(const PinIsrManager::OnPinIrqListener&) {}
 
 #endif
 

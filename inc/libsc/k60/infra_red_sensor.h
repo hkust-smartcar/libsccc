@@ -25,8 +25,8 @@ class InfraRedSensor
 public:
 	explicit InfraRedSensor(const uint8_t id);
 
-	bool IsDetected();
-	void SetOnDetectListener(PinIsrManager::OnPinIrqListener listener);
+	bool IsDetected() const;
+	void SetOnDetectListener(const PinIsrManager::OnPinIrqListener &listener);
 
 private:
 	libbase::k60::Gpi m_pin;
