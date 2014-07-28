@@ -8,6 +8,8 @@
 
 #include <cstring>
 
+#include <functional>
+
 #include <vectors.h>
 
 #include "libbase/k60/misc_utils.h"
@@ -97,7 +99,7 @@ void PinIsrManager::InitPort(const Uint port)
 	m_is_enable[port] = true;
 }
 
-void PinIsrManager::SetPinIsr(libbase::k60::Pin *pin, OnPinIrqListener isr)
+void PinIsrManager::SetPinIsr(Pin *pin, const OnPinIrqListener &isr)
 {
 	const Uint port = PinUtils::GetPort(pin->GetName());
 	const Uint pin_num = PinUtils::GetPinNumber(pin->GetName());
@@ -107,8 +109,9 @@ void PinIsrManager::SetPinIsr(libbase::k60::Pin *pin, OnPinIrqListener isr)
 		{
 			InitPort(port);
 		}
-		m_pin_data[port][pin_num].pin = pin;
+		m_pin_data[port][pin_num].pin = nullptr;
 		m_pin_data[port][pin_num].isr = isr;
+		m_pin_data[port][pin_num].pin = pin;
 	}
 	else if (m_is_enable[port])
 	{
@@ -136,7 +139,7 @@ __ISR void PinIsrManager::PortIrqHandler()
 	PinData *pin_data = PinIsrManager::GetInstance()->m_pin_data[port];
 	for (int i = 0; i < PinConfig::PORT_PIN_COUNT; ++i)
 	{
-		if (pin_data[i].pin->IsInterruptRequested())
+		if (pin_data[i].pin && pin_data[i].pin->IsInterruptRequested())
 		{
 			pin_data[i].pin->ConsumeInterrupt();
 			if (pin_data[i].isr)

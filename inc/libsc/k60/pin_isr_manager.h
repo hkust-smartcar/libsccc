@@ -12,6 +12,7 @@
 #include <vectors.h>
 
 #include <bitset>
+#include <functional>
 
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
@@ -24,11 +25,12 @@ namespace k60
 class PinIsrManager
 {
 public:
-	typedef void (*OnPinIrqListener)(const libbase::k60::PinConfig::Name pin);
+	typedef std::function<void(const libbase::k60::PinConfig::Name pin)>
+			OnPinIrqListener;
 
 	static PinIsrManager* GetInstance();
 
-	void SetPinIsr(libbase::k60::Pin *pin, OnPinIrqListener isr);
+	void SetPinIsr(libbase::k60::Pin *pin, const OnPinIrqListener &isr);
 
 private:
 	struct PinData
