@@ -456,7 +456,7 @@ void UartDevice::OnRxFull(Uart *uart)
 	{
 		for (size_t i = 0; i < bytes.size(); ++i)
 		{
-			if (m_rx_buf->GetSize() == 0)
+			if (m_rx_buf->GetSize() + 1 >= RX_BUFFER_SIZE)
 			{
 				break;
 			}
