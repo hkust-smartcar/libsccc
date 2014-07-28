@@ -8,10 +8,11 @@
 #ifndef LIBBASE_K60_PIT_H_
 #define LIBBASE_K60_PIT_H_
 
-#include <vectors.h>
-
+#include <cstddef>
 #include <cstdint>
 #include <functional>
+
+#include <vectors.h>
 
 namespace libbase
 {

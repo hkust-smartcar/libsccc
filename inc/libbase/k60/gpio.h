@@ -8,6 +8,7 @@
 #ifndef LIBBASE_K60_GPIO_H_
 #define LIBBASE_K60_GPIO_H_
 
+#include <cstddef>
 #include <cstdint>
 
 #include <bitset>

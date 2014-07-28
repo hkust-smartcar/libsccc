@@ -8,6 +8,7 @@
 #ifndef LIBBASE_K60_DAC_H_
 #define LIBBASE_K60_DAC_H_
 
+#include <cstddef>
 #include <cstdint>
 
 #include "libbase/k60/misc_utils.h"

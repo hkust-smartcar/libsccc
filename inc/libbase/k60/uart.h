@@ -8,13 +8,14 @@
 #ifndef LIBBASE_K60_UART_H_
 #define LIBBASE_K60_UART_H_
 
-#include <vectors.h>
-
+#include <cstddef>
 #include <cstdint>
 
 #include <bitset>
 #include <functional>
 #include <vector>
+
+#include <vectors.h>
 
 #include "libbase/k60/pin.h"
 #include "libbase/k60/misc_utils.h"
