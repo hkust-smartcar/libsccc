@@ -9,14 +9,18 @@
 #include <cassert>
 #include <cstdint>
 
+#include <functional>
+
 #include <log.h>
 
 #include "libbase/k60/gpio.h"
 
 #include "libsc/com/config.h"
 #include "libsc/k60/light_sensor.h"
+#include "libsc/k60/pin_isr_manager.h"
 
 using namespace libbase::k60;
+using namespace std;
 
 namespace libsc
 {
@@ -52,11 +56,31 @@ inline PinConfig::Name GetPin(const uint8_t id)
 
 #endif
 
-GpiConfig GetGpiConfig(const uint8_t id)
+void OnPinIrqListener(const PinConfig::Name pin,
+		const LightSensor::OnDetectListener &listener)
 {
-	GpiConfig config;
+	switch (pin)
+	{
+	default:
+		assert(false);
+
+	case LIBSC_LIGHT_SENSOR0:
+		listener(0);
+		return;
+
+#if LIBSC_USE_LIGHT_SENSOR > 1
+	case LIBSC_LIGHT_SENSOR1:
+		listener(1);
+		return;
+#endif
+	}
+}
+
+Gpi::Config GetGpiConfig(const uint8_t id)
+{
+	Gpi::Config config;
 	config.pin = GetPin(id);
-	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
+	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
 	return config;
 }
 
@@ -66,9 +90,23 @@ LightSensor::LightSensor(const uint8_t id)
 		: m_pin(GetGpiConfig(id))
 {}
 
-bool LightSensor::IsDetected()
+bool LightSensor::IsDetected() const
 {
 	return m_pin.Get();
+}
+
+void LightSensor::SetOnDetectListener(const OnDetectListener &listener)
+{
+	m_pin.GetPin()->SetInterrupt(PinConfig::Interrupt::kRising);
+	if (listener)
+	{
+		PinIsrManager::GetInstance()->SetPinIsr(m_pin.GetPin(),
+				std::bind(OnPinIrqListener, placeholders::_1, listener));
+	}
+	else
+	{
+		PinIsrManager::GetInstance()->SetPinIsr(m_pin.GetPin(), nullptr);
+	}
 }
 
 #else
@@ -78,6 +116,7 @@ LightSensor::LightSensor(const uint8_t)
 	LOG_D("Configured not to use LightSensor");
 }
 bool LightSensor::IsDetected() const { return false; }
+void LightSensor::SetOnDetectListener(const OnDetectListener&) {}
 
 #endif
 

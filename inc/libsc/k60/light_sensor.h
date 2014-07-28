@@ -11,6 +11,8 @@
 
 #include <cstdint>
 
+#include <functional>
+
 #include "libbase/k60/gpio.h"
 
 namespace libsc
@@ -21,9 +23,12 @@ namespace k60
 class LightSensor
 {
 public:
+	typedef std::function<void(const uint8_t id)> OnDetectListener;
+
 	explicit LightSensor(const uint8_t id);
 
 	bool IsDetected() const;
+	void SetOnDetectListener(const OnDetectListener &listener);
 
 private:
 	libbase::k60::Gpi m_pin;
