@@ -6,8 +6,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBSC_K60_SIMPLE_BUZZER_H_
-#define LIBSC_K60_SIMPLE_BUZZER_H_
+#pragma once
 
 #include <cstdint>
 
@@ -31,5 +30,3 @@ private:
 
 }
 }
-
-#endif /* LIBSC_K60_SIMPLE_BUZZER_H_ */

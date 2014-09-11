@@ -5,8 +5,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBBASE_K60_SYS_TICK_H_
-#define LIBBASE_K60_SYS_TICK_H_
+#pragma once
 
 #include <cstdint>
 
@@ -27,5 +26,3 @@ public:
 
 }
 }
-
-#endif /* LIBBASE_K60_SYS_TICK_H_ */

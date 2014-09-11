@@ -10,10 +10,17 @@
 #include <cassert>
 #include <cstdint>
 
+#include "libbase/log.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pin_utils.h"
 #include "libbase/k60/sim.h"
+
+#include "libutil/misc.h"
+
+using namespace libutil;
+
+#define PORT_COUNT 5
 
 namespace libbase
 {
@@ -23,44 +30,44 @@ namespace k60
 namespace
 {
 
-constexpr PORT_Type* MEM_MAPS[5] = {PORTA, PORTB, PORTC, PORTD, PORTE};
+constexpr PORT_Type* MEM_MAPS[PORT_COUNT] = {PORTA, PORTB, PORTC, PORTD, PORTE};
 
-void SetInterruptBit(const PinConfig::Interrupt config, uint32_t *reg)
+void SetInterruptBit(const Pin::Config::Interrupt config, uint32_t *reg)
 {
 	switch (config)
 	{
-	case PinConfig::Interrupt::kDisable:
+	case Pin::Config::Interrupt::kDisable:
 		break;
 
-	case PinConfig::Interrupt::kDmaRising:
+	case Pin::Config::Interrupt::kDmaRising:
 		*reg |= PORT_PCR_IRQC(0x1);
 		break;
 
-	case PinConfig::Interrupt::kDmaFalling:
+	case Pin::Config::Interrupt::kDmaFalling:
 		*reg |= PORT_PCR_IRQC(0x2);
 		break;
 
-	case PinConfig::Interrupt::kDmaBoth:
+	case Pin::Config::Interrupt::kDmaBoth:
 		*reg |= PORT_PCR_IRQC(0x3);
 		break;
 
-	case PinConfig::Interrupt::kLow:
+	case Pin::Config::Interrupt::kLow:
 		*reg |= PORT_PCR_IRQC(0x8);
 		break;
 
-	case PinConfig::Interrupt::kRising:
+	case Pin::Config::Interrupt::kRising:
 		*reg |= PORT_PCR_IRQC(0x9);
 		break;
 
-	case PinConfig::Interrupt::kFalling:
+	case Pin::Config::Interrupt::kFalling:
 		*reg |= PORT_PCR_IRQC(0xA);
 		break;
 
-	case PinConfig::Interrupt::kBoth:
+	case Pin::Config::Interrupt::kBoth:
 		*reg |= PORT_PCR_IRQC(0xB);
 		break;
 
-	case PinConfig::Interrupt::kHigh:
+	case Pin::Config::Interrupt::kHigh:
 		*reg |= PORT_PCR_IRQC(0xC);
 		break;
 	}
@@ -68,75 +75,76 @@ void SetInterruptBit(const PinConfig::Interrupt config, uint32_t *reg)
 
 }
 
-Pin::Pin(const PinConfig &config)
+Pin::Pin(const Config &config)
+		: m_name(Name::kDisable)
 {
-	if (config.pin == PinConfig::Name::DISABLE)
+	if (config.pin == Name::kDisable || !PINOUT::RegPin(config.pin))
 	{
 		assert(false);
 		return;
 	}
 
-	Sim::SetEnableClockGate((Sim::ClockGate)((int)Sim::ClockGate::kPortA
-			+ PinUtils::GetPort(config.pin)), true);
+	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kPortA,
+			PinUtils::GetPort(config.pin)), true);
 	uint32_t reg = 0;
 
 	switch (config.mux)
 	{
-	case PinConfig::MuxControl::kDisable:
+	case Config::MuxControl::kAnalog:
 		reg |= PORT_PCR_MUX(0);
 		break;
 
-	case PinConfig::MuxControl::kGpio:
+	case Config::MuxControl::kGpio:
 		reg |= PORT_PCR_MUX(1);
 		break;
 
-	case PinConfig::MuxControl::kAlt2:
+	case Config::MuxControl::kAlt2:
 		reg |= PORT_PCR_MUX(2);
 		break;
 
-	case PinConfig::MuxControl::kAlt3:
+	case Config::MuxControl::kAlt3:
 		reg |= PORT_PCR_MUX(3);
 		break;
 
-	case PinConfig::MuxControl::kAlt4:
+	case Config::MuxControl::kAlt4:
 		reg |= PORT_PCR_MUX(4);
 		break;
 
-	case PinConfig::MuxControl::kAlt5:
+	case Config::MuxControl::kAlt5:
 		reg |= PORT_PCR_MUX(5);
 		break;
 
-	case PinConfig::MuxControl::kAlt6:
+	case Config::MuxControl::kAlt6:
 		reg |= PORT_PCR_MUX(6);
 		break;
 
-	case PinConfig::MuxControl::kAlt7:
+	case Config::MuxControl::kAlt7:
 		reg |= PORT_PCR_MUX(7);
 		break;
 	}
 
 	SetInterruptBit(config.interrupt, &reg);
 
-	if (config.config[PinConfig::ConfigBit::kHighDriveStrength])
+	if (config.config[Config::ConfigBit::kHighDriveStrength])
 	{
 		reg |= PORT_PCR_DSE_MASK;
 	}
-	if (config.config[PinConfig::ConfigBit::kOpenDrain])
+	if (config.config[Config::ConfigBit::kOpenDrain])
 	{
 		reg |= PORT_PCR_ODE_MASK;
 	}
-	if (config.config[PinConfig::ConfigBit::kPassiveFilter])
+	if (config.config[Config::ConfigBit::kPassiveFilter])
 	{
 		reg |= PORT_PCR_PFE_MASK;
 	}
-	if (config.config[PinConfig::ConfigBit::kSlowSlewRate])
+	if (config.config[Config::ConfigBit::kSlowSlewRate])
 	{
 		reg |= PORT_PCR_SRE_MASK;
 	}
-	if (config.config[PinConfig::ConfigBit::kPullEnable])
+	if (config.config[Config::ConfigBit::kPullEnable])
 	{
 		reg |= PORT_PCR_PE_MASK;
-		if (config.config[PinConfig::ConfigBit::kPullUp])
+		if (config.config[Config::ConfigBit::kPullUp])
 		{
 			reg |= PORT_PCR_PS_MASK;
 		}
@@ -155,7 +163,7 @@ Pin::Pin(Pin &&rhs)
 }
 
 Pin::Pin(nullptr_t)
-		: m_name(PinConfig::Name::DISABLE)
+		: m_name(Name::kDisable)
 {}
 
 Pin::~Pin()
@@ -168,11 +176,12 @@ Pin& Pin::operator=(Pin &&rhs)
 	if (this != &rhs)
 	{
 		Uninit();
-		const PinConfig::Name name = rhs.m_name;
-		rhs.m_name = PinConfig::Name::DISABLE;
-		if (name != PinConfig::Name::DISABLE)
+		if (rhs)
 		{
-			m_name = rhs.m_name;
+			const Name name = rhs.m_name;
+			rhs.m_name = Name::kDisable;
+
+			m_name = name;
 		}
 	}
 	return *this;
@@ -180,20 +189,19 @@ Pin& Pin::operator=(Pin &&rhs)
 
 void Pin::Uninit()
 {
-	if (m_name != PinConfig::Name::DISABLE)
+	if (m_name != Name::kDisable)
 	{
+		m_name = Name::kDisable;
+
 		MEM_MAPS[PinUtils::GetPort(m_name)]
 				->PCR[PinUtils::GetPinNumber(m_name)] = 0 | PORT_PCR_MUX(0);
+		PINOUT::UnregPin(m_name);
 	}
 }
 
-void Pin::SetInterrupt(const PinConfig::Interrupt config)
+void Pin::SetInterrupt(const Config::Interrupt config)
 {
-	if (m_name == PinConfig::Name::DISABLE)
-	{
-		assert(false);
-		return;
-	}
+	STATE_GUARD(Pin, VOID);
 
 	uint32_t irqc = 0;
 	SetInterruptBit(config, &irqc);
@@ -211,11 +219,7 @@ void Pin::SetInterrupt(const PinConfig::Interrupt config)
 
 bool Pin::IsInterruptRequested() const
 {
-	if (m_name == PinConfig::Name::DISABLE)
-	{
-		assert(false);
-		return false;
-	}
+	STATE_GUARD(Pin, false);
 
 	return GET_BIT(MEM_MAPS[PinUtils::GetPort(m_name)]->ISFR,
 			PinUtils::GetPinNumber(m_name));
@@ -223,11 +227,7 @@ bool Pin::IsInterruptRequested() const
 
 void Pin::ConsumeInterrupt()
 {
-	if (m_name == PinConfig::Name::DISABLE)
-	{
-		assert(false);
-		return;
-	}
+	STATE_GUARD(Pin, VOID);
 
 	SET_BIT(MEM_MAPS[PinUtils::GetPort(m_name)]->ISFR,
 			PinUtils::GetPinNumber(m_name));

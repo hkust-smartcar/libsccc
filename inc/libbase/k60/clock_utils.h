@@ -5,8 +5,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBBASE_K60_CLOCK_UTILS_H_
-#define LIBBASE_K60_CLOCK_UTILS_H_
+#pragma once
 
 #include <cstdint>
 
@@ -102,5 +101,3 @@ public:
 
 }
 }
-
-#endif /* LIBBASE_K60_CLOCK_UTILS_H_ */

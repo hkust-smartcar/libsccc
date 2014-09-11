@@ -6,8 +6,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBSC_K60_FUTABA_S3010_H_
-#define LIBSC_K60_FUTABA_S3010_H_
+#pragma once
 
 #include <cstdint>
 
@@ -26,5 +25,3 @@ public:
 
 }
 }
-
-#endif /* LIBSC_K60_FUTABA_S3010_H_ */

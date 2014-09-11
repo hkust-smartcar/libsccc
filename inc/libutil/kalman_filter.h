@@ -5,10 +5,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBUTIL_KALMAN_FILTER_H_
-#define LIBUTIL_KALMAN_FILTER_H_
-
-#include <mini_common.h>
+#pragma once
 
 namespace libutil
 {
@@ -31,5 +28,3 @@ private:
 };
 
 }
-
-#endif /* LIBUTIL_KALMAN_FILTER_H_ */

@@ -6,14 +6,13 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBSC_K60_INFRA_RED_SENSOR_H_
-#define LIBSC_K60_INFRA_RED_SENSOR_H_
+#pragma once
 
 #include <cstdint>
 
-#include "libbase/k60/gpio.h"
+#include <functional>
 
-#include "libsc/k60/pin_isr_manager.h"
+#include "libbase/k60/gpio.h"
 
 namespace libsc
 {
@@ -23,16 +22,17 @@ namespace k60
 class InfraRedSensor
 {
 public:
+	typedef std::function<void(const uint8_t id)> OnDetectListener;
+
+	InfraRedSensor(const uint8_t id, const OnDetectListener &listener);
 	explicit InfraRedSensor(const uint8_t id);
 
 	bool IsDetected() const;
-	void SetOnDetectListener(const PinIsrManager::OnPinIrqListener &listener);
 
 private:
 	libbase::k60::Gpi m_pin;
+	OnDetectListener m_isr;
 };
 
 }
 }
-
-#endif /* LIBSC_K60_INFRA_RED_SENSOR_H_ */

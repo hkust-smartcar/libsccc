@@ -9,11 +9,10 @@
 #include <cstdint>
 #include <cmath>
 
-#include <log.h>
-
+#include "libbase/log.h"
 #include "libbase/k60/gpio.h"
 
-#include "libsc/com/config.h"
+#include "libsc/config.h"
 #include "libsc/k60/system.h"
 #include "libsc/k60/temperature_sensor.h"
 
@@ -34,8 +33,12 @@ namespace
 {
 
 #if LIBSC_USE_TEMPERATURE_SENSOR == 1
-inline PinConfig::Name GetPin(const uint8_t)
+inline PinConfig::Name GetPin(const uint8_t id)
 {
+	if (id != 0)
+	{
+		assert(false);
+	}
 	return LIBSC_TEMPERATURE0;
 }
 
@@ -145,7 +148,7 @@ uint8_t TemperatureSensor::ReceiveByte()
 TemperatureSensor::TemperatureSensor(const uint8_t)
 		: m_pin(nullptr), m_temperature(0.0f)
 {
-	LOG_D("Configured not to use TemperatureSensor");
+	LOG_DL("Configured not to use TemperatureSensor");
 }
 void TemperatureSensor::UpdateTemperature() {}
 

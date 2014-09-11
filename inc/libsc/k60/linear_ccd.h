@@ -6,8 +6,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBSC_K60_LINEAR_CCD_H_
-#define LIBSC_K60_LINEAR_CCD_H_
+#pragma once
 
 #include <cstdint>
 #include <bitset>
@@ -22,7 +21,7 @@ namespace k60
 class LinearCcd
 {
 public:
-	static constexpr int SENSOR_W = 128;
+	static constexpr int kSensorW = 128;
 
 	explicit LinearCcd(const uint8_t id);
 
@@ -34,14 +33,14 @@ public:
 	 *
 	 * @return
 	 */
-	const std::bitset<SENSOR_W>& GetData() const
+	const std::bitset<kSensorW>& GetData() const
 	{
 		return m_front_buffer;
 	}
 
 	bool IsImageReady() const
 	{
-		return (m_index >= SENSOR_W);
+		return (m_index >= kSensorW);
 	}
 
 private:
@@ -51,13 +50,11 @@ private:
 	libbase::k60::Gpo m_clk_pin;
 	libbase::k60::Gpo m_si_pin;
 
-	std::bitset<SENSOR_W> m_front_buffer;
-	std::bitset<SENSOR_W> m_back_buffer;
+	std::bitset<kSensorW> m_front_buffer;
+	std::bitset<kSensorW> m_back_buffer;
 
 	int m_index;
 };
 
 }
 }
-
-#endif /* LIBSC_K60_LINEAR_CCD_H_ */

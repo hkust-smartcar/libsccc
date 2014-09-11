@@ -11,16 +11,13 @@
 
 #include <functional>
 
-#include <log.h>
-
+#include "libbase/log.h"
 #include "libbase/k60/gpio.h"
 
-#include "libsc/com/config.h"
+#include "libsc/config.h"
 #include "libsc/k60/light_sensor.h"
-#include "libsc/k60/pin_isr_manager.h"
 
 using namespace libbase::k60;
-using namespace std;
 
 namespace libsc
 {
@@ -33,18 +30,23 @@ namespace
 {
 
 #if LIBSC_USE_LIGHT_SENSOR == 1
-inline PinConfig::Name GetPin(const uint8_t)
+inline Pin::Name GetPin(const uint8_t id)
 {
+	if (id != 0)
+	{
+		assert(false);
+	}
 	return LIBSC_LIGHT_SENSOR0;
 }
 
 #else
-inline PinConfig::Name GetPin(const uint8_t id)
+inline Pin::Name GetPin(const uint8_t id)
 {
 	switch (id)
 	{
 	default:
-		assert(0);
+		assert(false);
+		// no break
 
 	case 0:
 		return LIBSC_LIGHT_SENSOR0;
@@ -56,38 +58,33 @@ inline PinConfig::Name GetPin(const uint8_t id)
 
 #endif
 
-void OnPinIrqListener(const PinConfig::Name pin,
+Gpi::Config GetGpiConfig(const uint8_t id,
 		const LightSensor::OnDetectListener &listener)
-{
-	switch (pin)
-	{
-	default:
-		assert(false);
-
-	case LIBSC_LIGHT_SENSOR0:
-		listener(0);
-		return;
-
-#if LIBSC_USE_LIGHT_SENSOR > 1
-	case LIBSC_LIGHT_SENSOR1:
-		listener(1);
-		return;
-#endif
-	}
-}
-
-Gpi::Config GetGpiConfig(const uint8_t id)
 {
 	Gpi::Config config;
 	config.pin = GetPin(id);
-	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
+	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	if (listener)
+	{
+		config.interrupt = Pin::Config::Interrupt::kRising;
+		config.isr = [&listener, id](Gpi*)
+				{
+					listener(id);
+				};
+	}
 	return config;
 }
 
 }
 
+LightSensor::LightSensor(const uint8_t id, const OnDetectListener &listener)
+		: m_pin(nullptr), m_isr(listener)
+{
+	m_pin = Gpi(GetGpiConfig(id, m_isr));
+}
+
 LightSensor::LightSensor(const uint8_t id)
-		: m_pin(GetGpiConfig(id))
+		: LightSensor(id, nullptr)
 {}
 
 bool LightSensor::IsDetected() const
@@ -95,28 +92,16 @@ bool LightSensor::IsDetected() const
 	return m_pin.Get();
 }
 
-void LightSensor::SetOnDetectListener(const OnDetectListener &listener)
-{
-	m_pin.GetPin()->SetInterrupt(PinConfig::Interrupt::kRising);
-	if (listener)
-	{
-		PinIsrManager::GetInstance()->SetPinIsr(m_pin.GetPin(),
-				std::bind(OnPinIrqListener, placeholders::_1, listener));
-	}
-	else
-	{
-		PinIsrManager::GetInstance()->SetPinIsr(m_pin.GetPin(), nullptr);
-	}
-}
-
 #else
+LightSensor::LightSensor(const uint8_t, const OnDetectListener&)
+		: LightSensor(0)
+{}
 LightSensor::LightSensor(const uint8_t)
 		: m_pin(nullptr)
 {
-	LOG_D("Configured not to use LightSensor");
+	LOG_DL("Configured not to use LightSensor");
 }
 bool LightSensor::IsDetected() const { return false; }
-void LightSensor::SetOnDetectListener(const OnDetectListener&) {}
 
 #endif
 

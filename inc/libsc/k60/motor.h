@@ -6,8 +6,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBSC_K60_MOTOR_H_
-#define LIBSC_K60_MOTOR_H_
+#pragma once
 
 #include <cstdint>
 
@@ -22,14 +21,17 @@ namespace k60
 class Motor
 {
 public:
-	explicit Motor(const uint8_t id);
 	/**
-	 * Construct a DC motor and set a multiplier to compensate the power output
+	 * Construct a DC motor
 	 *
 	 * @param id
-	 * @param multiplier [0, 200], in percentage
+	 * @param is_clockwise_high Whether to pull high while rotating clockwise
+	 * @param multiplier A multiplier in percentage to compensate the power
+	 * output, [0, 200]
 	 */
-	Motor(const uint8_t id, const uint8_t multiplier);
+	Motor(const uint8_t id, const bool is_clockwise_high,
+			const uint8_t multiplier);
+	Motor(const uint8_t id, const bool is_clockwise_high);
 
 	/**
 	 * Set the motor power percentage, [0, 100] * 10 (i.e., 84 => 8.4%)
@@ -43,6 +45,14 @@ public:
 		return m_power;
 	}
 
+	/**
+	 * Clockwise (top view):
+	 * |-------|   ^
+	 * | Motor |-- ^
+	 * |-------|   ^
+	 *
+	 * @param flag
+	 */
 	void SetClockwise(const bool flag);
 	bool IsClockwise() const
 	{
@@ -50,15 +60,15 @@ public:
 	}
 
 private:
+	const bool m_is_clockwise_high;
+	const uint8_t m_multiplier;
+
 	libbase::k60::FtmPwm m_pwm;
 	libbase::k60::Gpo m_dir;
 
-	const uint8_t m_multiplier;
 	uint16_t m_power;
 	bool m_is_clockwise;
 };
 
 }
 }
-
-#endif /* LIBSC_K60_MOTOR_H_ */

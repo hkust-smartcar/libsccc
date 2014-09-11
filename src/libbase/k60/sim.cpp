@@ -51,6 +51,7 @@ uint32_t Sim::GetRamBytes()
 	{
 	default:
 		assert(false);
+		// no break
 
 	case SIM_SOPT1_RAMSIZE(0x1):
 		return 8 << 10;
@@ -75,6 +76,7 @@ Sim::Kinetis Sim::GetKinetisFamily()
 	{
 	default:
 		assert(false);
+		// no break
 
 	case SIM_SDID_FAMID(0):
 		return Kinetis::kK10;
@@ -247,8 +249,12 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 		SetClockGateBit(SIM->SCGC5, SIM_SCGC5_PORTE_SHIFT, flag);
 		break;
 
-	case ClockGate::kRnga:
+	case ClockGate::kRng:
+#ifdef MK60DZ10
+		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_RNGB_SHIFT, flag);
+#else
 		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_RNGA_SHIFT, flag);
+#endif
 		break;
 
 	case ClockGate::kRtc:

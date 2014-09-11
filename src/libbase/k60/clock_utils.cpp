@@ -10,6 +10,7 @@
 #include <cstdint>
 
 #include "libbase/k60/clock_utils.h"
+#include "libbase/k60/mcg.h"
 #include "libbase/k60/misc_utils.h"
 
 namespace libbase
@@ -17,36 +18,52 @@ namespace libbase
 namespace k60
 {
 
+namespace
+{
+
+uint32_t GetBusClock_()
+{
+	const Uint core_div = ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV1_MASK)
+			>> SIM_CLKDIV1_OUTDIV1_SHIFT) + 1;
+	const Uint bus_div = ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV2_MASK)
+			>> SIM_CLKDIV1_OUTDIV2_SHIFT) + 1;
+	return Mcg::GetCoreClock() * core_div / bus_div;
+}
+
+}
+
 uint32_t ClockUtils::GetCoreClock()
 {
-	static uint32_t cache = core_clk_khz * 1000;
-	return cache;
+	return Mcg::GetCoreClock();
 }
 
 uint32_t ClockUtils::GetCoreClockKhz()
 {
-	return core_clk_khz;
+	static uint32_t cache = GetCoreClock() / 1000;
+	return cache;
 }
 
 Uint ClockUtils::GetCoreClockMhz()
 {
-	return core_clk_mhz;
+	static uint32_t cache = GetCoreClock() / 1000000;
+	return cache;
 }
 
 uint32_t ClockUtils::GetBusClock()
 {
-	static uint32_t cache = bus_clk_khz * 1000;
+	static uint32_t cache = GetBusClock_();
 	return cache;
 }
 
 uint32_t ClockUtils::GetBusClockKhz()
 {
-	return bus_clk_khz;
+	static uint32_t cache = GetBusClock() / 1000;
+	return cache;
 }
 
 Uint ClockUtils::GetBusClockMhz()
 {
-	static uint32_t cache = bus_clk_khz / 1000;
+	static uint32_t cache = GetBusClock() / 1000000;
 	return cache;
 }
 

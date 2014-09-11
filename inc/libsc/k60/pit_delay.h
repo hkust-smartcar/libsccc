@@ -5,8 +5,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBSC_K60_PIT_DELAY_H_
-#define LIBSC_K60_PIT_DELAY_H_
+#pragma once
 
 #include <cstdint>
 
@@ -35,5 +34,3 @@ private:
 
 }
 }
-
-#endif /* LIBSC_K60_PIT_DELAY_H_ */

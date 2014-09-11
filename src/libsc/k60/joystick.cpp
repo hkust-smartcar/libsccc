@@ -9,11 +9,10 @@
 #include <cassert>
 #include <cstdint>
 
-#include <log.h>
-
+#include "libbase/log.h"
 #include "libbase/k60/gpio.h"
 
-#include "libsc/com/config.h"
+#include "libsc/config.h"
 #include "libsc/k60/joystick.h"
 
 using namespace libbase::k60;
@@ -47,7 +46,7 @@ Gpi::Config GetUpGpiConfig(const uint8_t id UNUSED)
 {
 	Gpi::Config config;
 	config.pin = GetUpPin(id);
-	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
+	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
 	return config;
 }
 
@@ -55,7 +54,7 @@ Gpi::Config GetDownGpiConfig(const uint8_t id UNUSED)
 {
 	Gpi::Config config;
 	config.pin = GetDownPin(id);
-	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
+	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
 	return config;
 }
 
@@ -63,7 +62,7 @@ Gpi::Config GetLeftGpiConfig(const uint8_t id UNUSED)
 {
 	Gpi::Config config;
 	config.pin = GetLeftPin(id);
-	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
+	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
 	return config;
 }
 
@@ -71,7 +70,7 @@ Gpi::Config GetRightGpiConfig(const uint8_t id UNUSED)
 {
 	Gpi::Config config;
 	config.pin = GetRightPin(id);
-	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
+	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
 	return config;
 }
 
@@ -79,7 +78,7 @@ Gpi::Config GetSelectGpiConfig(const uint8_t id UNUSED)
 {
 	Gpi::Config config;
 	config.pin = GetSelectPin(id);
-	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
+	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
 	return config;
 }
 
@@ -128,7 +127,7 @@ Joystick::Joystick(const uint8_t)
 		: m_pins{Gpi(nullptr), Gpi(nullptr), Gpi(nullptr), Gpi(nullptr),
 				  Gpi(nullptr)}
 {
-	LOG_D("Configured not to use Joystick");
+	LOG_DL("Configured not to use Joystick");
 }
 Joystick::State Joystick::GetState() const { return State::IDLE; }
 

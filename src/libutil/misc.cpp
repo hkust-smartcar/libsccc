@@ -6,11 +6,11 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#include <syscall.h>
-
 #include <cstdint>
 
+#include "libbase/syscall.h"
 #include "libbase/k60/misc_utils.h"
+
 #include "libsc/k60/uart_device.h"
 #include "libutil/misc.h"
 
@@ -38,13 +38,13 @@ int MyFwriteHandler(int, char *ptr, int len)
 void InitDefaultFwriteHandler(UartDevice *uart)
 {
 	g_uart = uart;
-	__g_fwrite_handler = MyFwriteHandler;
+	g_fwrite_handler = MyFwriteHandler;
 }
 
 void UninitDefaultFwriteHandler()
 {
 	g_uart = nullptr;
-	__g_fwrite_handler = nullptr;
+	g_fwrite_handler = nullptr;
 }
 
 }

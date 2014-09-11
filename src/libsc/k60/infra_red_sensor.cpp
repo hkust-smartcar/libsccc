@@ -9,13 +9,13 @@
 #include <cassert>
 #include <cstdint>
 
-#include <log.h>
+#include <functional>
 
+#include "libbase/log.h"
 #include "libbase/k60/gpio.h"
 
-#include "libsc/com/config.h"
+#include "libsc/config.h"
 #include "libsc/k60/infra_red_sensor.h"
-#include "libsc/k60/pin_isr_manager.h"
 
 using namespace libbase::k60;
 
@@ -30,18 +30,23 @@ namespace
 {
 
 #if LIBSC_USE_INFRA_RED_SENSOR == 1
-inline PinConfig::Name GetPin(const uint8_t)
+inline Pin::Name GetPin(const uint8_t id)
 {
+	if (id != 0)
+	{
+		assert(false);
+	}
 	return LIBSC_INFRA_RED0;
 }
 
 #else
-inline PinConfig::Name GetPin(const uint8_t id)
+inline Pin::Name GetPin(const uint8_t id)
 {
 	switch (id)
 	{
 	default:
-		assert(0);
+		assert(false);
+		// no break
 
 	case 0:
 		return LIBSC_INFRA_RED0;
@@ -53,18 +58,34 @@ inline PinConfig::Name GetPin(const uint8_t id)
 
 #endif
 
-GpiConfig GetGpiConfig(const uint8_t id)
+Gpi::Config GetGpiConfig(const uint8_t id,
+		const InfraRedSensor::OnDetectListener &listener)
 {
-	GpiConfig config;
+	Gpi::Config config;
 	config.pin = GetPin(id);
-	config.config.set(PinConfig::ConfigBit::PASSIVE_FILTER);
+	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	if (listener)
+	{
+		config.interrupt = Pin::Config::Interrupt::kRising;
+		config.isr = [&listener](Gpi*)
+				{
+					listener(id);
+				};
+	}
 	return config;
 }
 
 }
 
+InfraRedSensor::InfraRedSensor(const uint8_t id,
+		const OnDetectListener &listener)
+		: m_pin(nullptr), m_isr(listener)
+{
+	m_pin = Gpi(GetGpiConfig(id, m_isr));
+}
+
 InfraRedSensor::InfraRedSensor(const uint8_t id)
-		: m_pin(GetGpiConfig(id))
+		: InfraRedSensor(id, nullptr)
 {}
 
 bool InfraRedSensor::IsDetected() const
@@ -72,21 +93,16 @@ bool InfraRedSensor::IsDetected() const
 	return m_pin.Get();
 }
 
-void InfraRedSensor::SetOnDetectListener(
-		const PinIsrManager::OnPinIrqListener &listener)
-{
-	m_pin.GetPin()->SetInterrupt(PinConfig::Interrupt::RISING);
-	PinIsrManager::GetInstance()->SetPinIsr(m_pin.GetPin(), listener);
-}
-
 #else
+InfraRedSensor::InfraRedSensor(const uint8_t, const OnDetectListener&)
+		: InfraRedSensor(0)
+{}
 InfraRedSensor::InfraRedSensor(const uint8_t)
 		: m_pin(nullptr)
 {
-	LOG_D("Configured not to use InfraRedSensor");
+	LOG_DL("Configured not to use InfraRedSensor");
 }
 bool InfraRedSensor::IsDetected() const { return false; }
-void InfraRedSensor::SetOnDetectListener(const PinIsrManager::OnPinIrqListener&) {}
 
 #endif
 

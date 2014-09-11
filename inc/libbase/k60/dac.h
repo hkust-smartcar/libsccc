@@ -5,8 +5,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBBASE_K60_DAC_H_
-#define LIBBASE_K60_DAC_H_
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -21,6 +20,14 @@ namespace k60
 class Dac
 {
 public:
+	enum struct Name
+	{
+		kDac0 = 0,
+		kDac1,
+
+		kDisable
+	};
+
 	struct Config
 	{
 		enum struct Source
@@ -40,13 +47,12 @@ public:
 			kOneTimeScan,
 		};
 
-		// [0 - 1]
-		uint8_t module;
+		Dac::Name module;
 		Source src = Source::kVdda;
 
 		uint16_t data[16] = {};
-		// [0 - 16]
-		Uint data_size = 0;
+		// [1 - 16]
+		Uint data_size;
 		BufferMode buffer_mode = BufferMode::kNormal;
 	};
 
@@ -60,7 +66,7 @@ public:
 	Dac& operator=(Dac &&rhs);
 	operator bool() const
 	{
-		return m_is_init;
+		return (m_name != Dac::Name::kDisable);
 	}
 
 	void SetData(const uint16_t *data, const Uint size,
@@ -82,11 +88,8 @@ private:
 	void InitC0Reg(const Config &config);
 	void Uninit();
 
-	uint8_t m_module;
-	bool m_is_init;
+	Name m_name;
 };
 
 }
 }
-
-#endif /* LIBBASE_K60_DAC_H_ */

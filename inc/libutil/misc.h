@@ -52,6 +52,18 @@ inline uint16_t GetRgb565(const uint8_t r, const uint8_t g, const uint8_t b)
 void InitDefaultFwriteHandler(libsc::k60::UartDevice *uart);
 void UninitDefaultFwriteHandler();
 
+template<typename T>
+inline T EnumAdvance(const T e, const int n)
+{
+	return static_cast<T>(static_cast<int>(e) + n);
+}
+
+template<typename T, typename U>
+inline T EnumAdvance(const T e, const U n)
+{
+	return EnumAdvance(e, static_cast<int>(n));
+}
+
 }
 
 #endif /* LIBUTIL_MISC_H_ */

@@ -6,12 +6,14 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBSC_K60_SERVO_H_
-#define LIBSC_K60_SERVO_H_
+#pragma once
 
 #include <cstdint>
 
 #include "libbase/k60/ftm_pwm.h"
+#include "libbase/k60/soft_pwm.h"
+
+#include "libsc/config.h"
 
 namespace libsc
 {
@@ -27,7 +29,6 @@ public:
 	 * @param degree
 	 */
 	void SetDegree(const uint16_t degree);
-	void AddDegree(const int16_t degree);
 	uint16_t GetDegree() const
 	{
 		return m_degree;
@@ -46,14 +47,21 @@ protected:
 			const uint16_t pos_width_max);
 
 private:
-	libbase::k60::FtmPwm m_pwm;
-
 	const uint16_t m_pos_width_min;
 	const uint16_t m_pos_width_diff;
+
+#ifdef LIBSC_USE_SERVO
+#ifdef LIBSC_USE_SOFT_SERVO_PWM
+	libbase::k60::SoftPwm m_pwm;
+
+#else
+	libbase::k60::FtmPwm m_pwm;
+
+#endif // LIBSC_USE_SOFT_SERVO_PWM
+#endif // LIBSC_USE_SERVO
+
 	uint16_t m_degree;
 };
 
 }
 }
-
-#endif /* LIBSC_K60_SERVO_H_ */

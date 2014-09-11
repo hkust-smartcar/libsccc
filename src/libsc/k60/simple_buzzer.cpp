@@ -9,11 +9,10 @@
 #include <cassert>
 #include <cstdint>
 
-#include <log.h>
-
+#include "libbase/log.h"
 #include "libbase/k60/gpio.h"
 
-#include "libsc/com/config.h"
+#include "libsc/config.h"
 #include "libsc/k60/simple_buzzer.h"
 
 using namespace libbase::k60;
@@ -29,8 +28,12 @@ namespace
 {
 
 #if LIBSC_USE_BUZZER == 1
-inline PinConfig::Name GetPin(const uint8_t)
+inline Pin::Name GetPin(const uint8_t id)
 {
+	if (id != 0)
+	{
+		assert(false);
+	}
 	return LIBSC_BUZZER0;
 }
 
@@ -58,7 +61,7 @@ void SimpleBuzzer::SetBeep(const bool is_beep)
 SimpleBuzzer::SimpleBuzzer(const uint8_t)
 		: m_pin(nullptr)
 {
-	LOG_D("Configured not to use SimpleBuzzer");
+	LOG_DL("Configured not to use SimpleBuzzer");
 }
 void SimpleBuzzer::SetBeep(const bool) {}
 

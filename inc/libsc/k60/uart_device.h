@@ -6,9 +6,9 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBSC_UART_DEVICE_H_
-#define LIBSC_UART_DEVICE_H_
+#pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include <functional>
@@ -19,15 +19,7 @@
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/uart.h"
 
-namespace libbase
-{
-namespace k60
-{
-
-class Uart;
-
-}
-}
+#include "libutil/dynamic_block_buffer.h"
 
 namespace libsc
 {
@@ -116,7 +108,6 @@ public:
 
 private:
 	struct RxBuffer;
-	struct TxBuffer;
 
 	inline void EnableTx();
 	inline void DisableTx();
@@ -127,7 +118,7 @@ private:
 	std::unique_ptr<volatile RxBuffer> m_rx_buf;
 	OnReceiveListener m_listener;
 
-	std::unique_ptr<TxBuffer> m_tx_buf;
+	libutil::DynamicBlockBuffer m_tx_buf;
 	volatile bool m_is_tx_idle;
 
 	libbase::k60::Uart m_uart;
@@ -135,5 +126,3 @@ private:
 
 }
 }
-
-#endif /* LIBSC_UART_DEVICE_H_ */

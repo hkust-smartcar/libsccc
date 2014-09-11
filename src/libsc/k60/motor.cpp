@@ -9,12 +9,14 @@
 #include <cassert>
 #include <cstdint>
 
+#include "libbase/log.h"
 #include "libbase/k60/ftm_pwm.h"
 #include "libbase/k60/gpio.h"
 #include "libbase/k60/misc_utils.h"
+#include "libbase/k60/pin.h"
 #include "libbase/k60/pwm_utils.h"
 
-#include "libsc/com/config.h"
+#include "libsc/config.h"
 #include "libsc/k60/motor.h"
 #include "libutil/misc.h"
 
@@ -34,18 +36,26 @@ namespace
 {
 
 #if LIBSC_USE_MOTOR == 1
-inline PinConfig::Name GetPwmPin(const uint8_t)
+inline Pin::Name GetPwmPin(const uint8_t id)
 {
+	if (id != 0)
+	{
+		assert(false);
+	}
 	return LIBSC_MOTOR0_PWM;
 }
 
-inline PinConfig::Name GetDirPin(const uint8_t)
+inline Pin::Name GetDirPin(const uint8_t id)
 {
+	if (id != 0)
+	{
+		assert(false);
+	}
 	return LIBSC_MOTOR0_DIR;
 }
 
 #else
-inline PinConfig::Name GetPwmPin(const uint8_t id)
+inline Pin::Name GetPwmPin(const uint8_t id)
 {
 	switch (id)
 	{
@@ -60,7 +70,7 @@ inline PinConfig::Name GetPwmPin(const uint8_t id)
 	}
 }
 
-inline PinConfig::Name GetDirPin(const uint8_t id)
+inline Pin::Name GetDirPin(const uint8_t id)
 {
 	switch (id)
 	{
@@ -84,6 +94,7 @@ FtmPwm::Config GetFtmPwmConfig(const uint8_t id)
 	config.period = PERIOD;
 	config.pos_width = 0;
 	config.precision = Pwm::Config::Precision::KNs;
+	config.alignment = FtmPwm::Config::Alignment::kCenter;
 	return config;
 }
 
@@ -96,16 +107,20 @@ Gpo::Config GetDirConfig(const uint8_t id)
 
 }
 
-Motor::Motor(const uint8_t id)
-		: Motor(id, 100)
-{}
-
-Motor::Motor(const uint8_t id, const uint8_t multiplier)
-		: m_pwm(GetFtmPwmConfig(id)),
-		  m_dir(GetDirConfig(id)),
+Motor::Motor(const uint8_t id, const bool is_clockwise_high,
+		const uint8_t multiplier)
+		: m_is_clockwise_high(is_clockwise_high),
 		  m_multiplier(multiplier),
+		  m_pwm(GetFtmPwmConfig(id)),
+		  m_dir(GetDirConfig(id)),
 		  m_power(0),
 		  m_is_clockwise(true)
+{
+	m_dir.Set(is_clockwise_high);
+}
+
+Motor::Motor(const uint8_t id, const bool is_clockwise_high)
+		: Motor(id, is_clockwise_high, 100)
 {}
 
 void Motor::SetPower(const uint16_t power)
@@ -134,17 +149,18 @@ void Motor::SetClockwise(const bool flag)
 		return;
 	}
 
-#ifndef LIBSC_NEGATE_MOTOR
-	m_dir.Set(flag);
-#else
-	m_dir.Set(!flag);
-#endif
+	m_dir.Set(!(flag ^ m_is_clockwise_high));
 	m_is_clockwise = flag;
 }
 
 #else
-Motor::Motor(const uint8_t) : m_id(0) {}
-Motor::Motor(const uint8_t, const float) : m_id(0) {}
+Motor::Motor(const uint8_t, const bool)
+		: m_is_clockwise_high(false), m_multiplier(0), m_pwm(nullptr),
+		  m_dir(nullptr), m_power(0), m_is_clockwise(false)
+{
+	LOG_DL("Configured not to use Motor");
+}
+Motor::Motor(const uint8_t, const bool, const uint8_t) : Motor(0, false) {}
 void Motor::SetPower(const uint16_t) {}
 void Motor::AddPower(const int16_t) {}
 void Motor::SetClockwise(const bool) {}

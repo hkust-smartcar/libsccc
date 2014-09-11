@@ -8,11 +8,10 @@
 #include <cassert>
 #include <cstdint>
 
-#include <log.h>
-
+#include "libbase/log.h"
 #include "libbase/k60/gpio.h"
 
-#include "libsc/com/config.h"
+#include "libsc/config.h"
 #include "libsc/k60/led.h"
 
 using namespace libbase::k60;
@@ -28,15 +27,23 @@ namespace
 {
 
 #if LIBSC_USE_LED == 1
-#define GetPin(x) LIBSC_LED0
+inline Pin::Name GetPin(const uint8_t id)
+{
+	if (id != 0)
+	{
+		assert(false);
+	}
+	return LIBSC_LED0;
+}
 
 #else
-inline PinConfig::Name GetPin(const uint8_t id)
+inline Pin::Name GetPin(const uint8_t id)
 {
 	switch (id)
 	{
 	default:
-		assert(0);
+		assert(false);
+		// no break
 
 	case 0:
 		return LIBSC_LED0;
@@ -88,7 +95,7 @@ void Led::Switch()
 Led::Led(const uint8_t id)
 		: m_pin(nullptr)
 {
-	LOG_D("Configured not to use Led");
+	LOG_DL("Configured not to use Led");
 }
 void Led::SetEnable(const bool flag) {}
 void Led::Switch() {}

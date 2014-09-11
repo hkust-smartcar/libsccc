@@ -5,14 +5,14 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBBASE_K60_PIT_H_
-#define LIBBASE_K60_PIT_H_
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
+
 #include <functional>
 
-#include <vectors.h>
+#include "libbase/k60/misc_utils.h"
 
 namespace libbase
 {
@@ -79,5 +79,3 @@ private:
 
 }
 }
-
-#endif /* LIBBASE_K60_PIT_H_ */

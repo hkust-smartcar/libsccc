@@ -6,8 +6,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBBASE_K60_SIM_H_
-#define LIBBASE_K60_SIM_H_
+#pragma once
 
 #include <cstdint>
 
@@ -68,7 +67,7 @@ public:
 		kPortC,
 		kPortD,
 		kPortE,
-		kRnga,
+		kRng,
 		kRtc,
 		kSdhc,
 		kSpi0,
@@ -101,5 +100,3 @@ public:
 
 }
 }
-
-#endif /* LIBBASE_K60_SIM_H_ */

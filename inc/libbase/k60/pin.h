@@ -5,8 +5,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBBASE_K60_PIN_H_
-#define LIBBASE_K60_PIN_H_
+#pragma once
 
 #include <cstdint>
 
@@ -17,106 +16,247 @@ namespace libbase
 namespace k60
 {
 
-struct PinConfig
-{
-	enum Name
-	{
-		PTA0 = 0, PTA1, PTA2, PTA3, PTA4, PTA5, PTA6, PTA7, PTA8, PTA9,
-		PTA10, PTA11, PTA12, PTA13, PTA14, PTA15, PTA16, PTA17, PTA18, PTA19,
-		PTA24 = 24, PTA25, PTA26, PTA27, PTA28, PTA29,
-
-		PTB0 = 32, PTB1, PTB2, PTB3, PTB4, PTB5, PTB6, PTB7, PTB8, PTB9,
-		PTB10, PTB11, PTB16 = 48, PTB17, PTB18, PTB19,
-		PTB20, PTB21, PTB22, PTB23,
-
-		PTC0 = 64, PTC1, PTC2, PTC3, PTC4, PTC5, PTC6, PTC7, PTC8, PTC9,
-		PTC10, PTC11, PTC12, PTC13, PTC14, PTC15, PTC16, PTC17, PTC18, PTC19,
-
-		PTD0 = 96, PTD1, PTD2, PTD3, PTD4, PTD5, PTD6, PTD7, PTD8, PTD9,
-		PTD10, PTD11, PTD12, PTD13, PTD14, PTD15,
-
-		PTE0 = 128, PTE1, PTE2, PTE3, PTE4, PTE5, PTE6, PTE7, PTE8, PTE9,
-		PTE10, PTE11, PTE12,
-		PTE24 = 152, PTE25, PTE26, PTE27, PTE28,
-
-		DISABLE = 160
-	};
-
-	enum struct MuxControl
-	{
-		kDisable,
-		kGpio,
-		kAlt2, kAlt3, kAlt4, kAlt5, kAlt6, kAlt7
-	};
-
-	enum struct Interrupt
-	{
-		kDisable,
-
-		kDmaRising,
-		kDmaFalling,
-		kDmaBoth,
-
-		kRising,
-		kFalling,
-		kBoth,
-
-		kLow,
-		kHigh
-	};
-
-	enum ConfigBit
-	{
-		kHighDriveStrength = 0,
-		kOpenDrain,
-		// Disable the passive input filter when high speed interfaces of more
-		// than 2 MHz are supported on the pin
-		kPassiveFilter,
-		kSlowSlewRate,
-		// Enable the internal pull-up or pull-down resistor
-		kPullEnable,
-		kPullUp,
-
-		kSize
-	};
-
-	static constexpr int PORT_COUNT = 5;
-	static constexpr int PORT_PIN_COUNT = 32;
-
-	Name pin = Name::DISABLE;
-	MuxControl mux = MuxControl::kDisable;
-	Interrupt interrupt = Interrupt::kDisable;
-	std::bitset<ConfigBit::kSize> config = 0x0;
-};
-
 class Pin
 {
 public:
-	explicit Pin(const PinConfig &config);
+	enum struct Name
+	{
+		kPta0 = 0,
+		kPta1,
+		kPta2,
+		kPta3,
+		kPta4,
+		kPta5,
+		kPta6,
+		kPta7,
+		kPta8,
+		kPta9,
+		kPta10,
+		kPta11,
+		kPta12,
+		kPta13,
+		kPta14,
+		kPta15,
+		kPta16,
+		kPta17,
+		kPta18,
+		kPta19,
+		kPta20,
+		kPta21,
+		kPta22,
+		kPta23,
+		kPta24,
+		kPta25,
+		kPta26,
+		kPta27,
+		kPta28,
+		kPta29,
+		kPta30,
+		kPta31,
+
+		kPtb0 = 32,
+		kPtb1,
+		kPtb2,
+		kPtb3,
+		kPtb4,
+		kPtb5,
+		kPtb6,
+		kPtb7,
+		kPtb8,
+		kPtb9,
+		kPtb10,
+		kPtb11,
+		kPtb12,
+		kPtb13,
+		kPtb14,
+		kPtb15,
+		kPtb16,
+		kPtb17,
+		kPtb18,
+		kPtb19,
+		kPtb20,
+		kPtb21,
+		kPtb22,
+		kPtb23,
+		kPtb24,
+		kPtb25,
+		kPtb26,
+		kPtb27,
+		kPtb28,
+		kPtb29,
+		kPtb30,
+		kPtb31,
+
+		kPtc0 = 64,
+		kPtc1,
+		kPtc2,
+		kPtc3,
+		kPtc4,
+		kPtc5,
+		kPtc6,
+		kPtc7,
+		kPtc8,
+		kPtc9,
+		kPtc10,
+		kPtc11,
+		kPtc12,
+		kPtc13,
+		kPtc14,
+		kPtc15,
+		kPtc16,
+		kPtc17,
+		kPtc18,
+		kPtc19,
+		kPtc20,
+		kPtc21,
+		kPtc22,
+		kPtc23,
+		kPtc24,
+		kPtc25,
+		kPtc26,
+		kPtc27,
+		kPtc28,
+		kPtc29,
+		kPtc30,
+		kPtc31,
+
+		kPtd0 = 96,
+		kPtd1,
+		kPtd2,
+		kPtd3,
+		kPtd4,
+		kPtd5,
+		kPtd6,
+		kPtd7,
+		kPtd8,
+		kPtd9,
+		kPtd10,
+		kPtd11,
+		kPtd12,
+		kPtd13,
+		kPtd14,
+		kPtd15,
+		kPtd16,
+		kPtd17,
+		kPtd18,
+		kPtd19,
+		kPtd20,
+		kPtd21,
+		kPtd22,
+		kPtd23,
+		kPtd24,
+		kPtd25,
+		kPtd26,
+		kPtd27,
+		kPtd28,
+		kPtd29,
+		kPtd30,
+		kPtd31,
+
+		kPte0 = 128,
+		kPte1,
+		kPte2,
+		kPte3,
+		kPte4,
+		kPte5,
+		kPte6,
+		kPte7,
+		kPte8,
+		kPte9,
+		kPte10,
+		kPte11,
+		kPte12,
+		kPte13,
+		kPte14,
+		kPte15,
+		kPte16,
+		kPte17,
+		kPte18,
+		kPte19,
+		kPte20,
+		kPte21,
+		kPte22,
+		kPte23,
+		kPte24,
+		kPte25,
+		kPte26,
+		kPte27,
+		kPte28,
+		kPte29,
+		kPte30,
+		kPte31,
+
+		kDisable = 160
+	};
+
+	struct Config
+	{
+		enum struct MuxControl
+		{
+			kAnalog, kGpio, kAlt2, kAlt3, kAlt4, kAlt5, kAlt6, kAlt7
+		};
+
+		enum struct Interrupt
+		{
+			kDisable,
+
+			kDmaRising, kDmaFalling, kDmaBoth,
+
+			kRising, kFalling, kBoth,
+
+			kLow, kHigh
+		};
+
+		enum ConfigBit
+		{
+			kHighDriveStrength = 0, kOpenDrain,
+			// Disable the passive input filter when high speed interfaces of more
+			// than 2 MHz are supported on the pin
+			kPassiveFilter,
+			kSlowSlewRate,
+			// Enable the internal pull-up or pull-down resistor
+			kPullEnable,
+			kPullUp,
+
+			kSize
+		};
+
+		Name pin;
+		MuxControl mux;
+		Interrupt interrupt = Interrupt::kDisable;
+		std::bitset<ConfigBit::kSize> config = 0x0;
+	};
+
+	explicit Pin(const Config &config);
+	explicit Pin(nullptr_t);
+	Pin()
+			: Pin(nullptr)
+	{}
 	Pin(const Pin&) = delete;
 	Pin(Pin &&rhs);
-	explicit Pin(nullptr_t);
 	~Pin();
 
 	Pin& operator=(const Pin&) = delete;
 	Pin& operator=(Pin &&rhs);
+	operator bool() const
+	{
+		return (m_name != Name::kDisable);
+	}
 
-	PinConfig::Name GetName() const
+	Name GetName() const
 	{
 		return m_name;
 	}
 
-	void SetInterrupt(const PinConfig::Interrupt config);
+	void SetInterrupt(const Config::Interrupt config);
 	bool IsInterruptRequested() const;
 	void ConsumeInterrupt();
 
 private:
 	void Uninit();
 
-	PinConfig::Name m_name;
+	Name m_name;
 };
 
 }
 }
-
-#endif /* LIBBASE_K60_PIN_H_ */

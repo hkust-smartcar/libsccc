@@ -8,11 +8,10 @@
 #include <cassert>
 #include <cstdint>
 
-#include <log.h>
-
+#include "libbase/log.h"
 #include "libbase/k60/gpio.h"
 
-#include "libsc/com/config.h"
+#include "libsc/config.h"
 #include "libsc/k60/button.h"
 
 using namespace libbase::k60;
@@ -28,15 +27,23 @@ namespace
 {
 
 #if LIBSC_USE_BUTTON == 1
-#define GetPin(x) LIBSC_BUTTON0
+inline Pin::Name GetPin(const uint8_t id)
+{
+	if (id != 0)
+	{
+		assert(false);
+	}
+	return LIBSC_BUTTON0;
+}
 
 #else
-inline PinConfig::Name GetPin(const uint8_t id)
+inline Pin::Name GetPin(const uint8_t id)
 {
 	switch (id)
 	{
 	default:
-		assert(0);
+		assert(false);
+		// no break
 
 	case 0:
 		return LIBSC_BUTTON0;
@@ -74,7 +81,7 @@ Gpi::Config GetGpiConfig(const uint8_t id)
 {
 	Gpi::Config config;
 	config.pin = GetPin(id);
-	config.config.set(PinConfig::ConfigBit::kPassiveFilter);
+	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
 	return config;
 }
 
@@ -93,7 +100,7 @@ bool Button::IsDown() const
 Button::Button(const uint8_t)
 		: m_pin(nullptr)
 {
-	LOG_D("Configured not to use Button");
+	LOG_DL("Configured not to use Button");
 }
 bool Button::IsDown() const { return false; }
 

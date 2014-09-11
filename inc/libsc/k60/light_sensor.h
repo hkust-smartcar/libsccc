@@ -6,8 +6,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBSC_K60_LIGHT_SENSOR_H_
-#define LIBSC_K60_LIGHT_SENSOR_H_
+#pragma once
 
 #include <cstdint>
 
@@ -25,16 +24,15 @@ class LightSensor
 public:
 	typedef std::function<void(const uint8_t id)> OnDetectListener;
 
+	LightSensor(const uint8_t id, const OnDetectListener &listener);
 	explicit LightSensor(const uint8_t id);
 
 	bool IsDetected() const;
-	void SetOnDetectListener(const OnDetectListener &listener);
 
 private:
 	libbase::k60::Gpi m_pin;
+	OnDetectListener m_isr;
 };
 
 }
 }
-
-#endif /* LIBSC_K60_LIGHT_SENSOR_H_ */

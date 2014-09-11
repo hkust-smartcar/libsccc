@@ -5,15 +5,26 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#include <mini_common.h>
+#include "libbase/k60/hardware.h"
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 
-#include <MK60_FTM.h>
-
+#include "libbase/log.h"
+#include "libbase/k60/clock_utils.h"
+#include "libbase/k60/ftm.h"
 #include "libbase/k60/ftm_pwm.h"
+#include "libbase/k60/ftm_utils.h"
+#include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
+#include "libbase/k60/pinout.h"
+#include "libbase/k60/pwm.h"
+#include "libbase/k60/sim.h"
+
+#include "libutil/misc.h"
+
+using namespace libutil;
 
 namespace libbase
 {
@@ -23,151 +34,405 @@ namespace k60
 namespace
 {
 
-inline uint32_t GetFrequency(const uint32_t period,
-		const Pwm::Config::Precision precision)
+constexpr FTM_Type* MEM_MAPS[PINOUT::GetFtmCount()] = {FTM0, FTM1, FTM2};
+
+FtmPwm* g_instances[PINOUT::GetFtmCount()][PINOUT::GetFtmChannelCount()] = {};
+
+class ModCalc
 {
+public:
+	void Calc(const uint32_t period, const Pwm::Config::Precision precision);
+
+	uint8_t GetPrescaler() const
+	{
+		return m_prescaler;
+	}
+
+	uint16_t GetMod() const
+	{
+		return m_mod;
+	}
+
+private:
+	uint8_t m_prescaler;
+	uint16_t m_mod;
+};
+
+void ModCalc::Calc(const uint32_t period, const Pwm::Config::Precision precision)
+{
+	uint32_t ticks = 0;
 	switch (precision)
 	{
 	default:
+		assert(false);
+		// no break
+
 	case Pwm::Config::Precision::kUs:
-		return 1000000 / period;
+		ticks = ClockUtils::GetBusTickPerUs(period);
+		break;
 
 	case Pwm::Config::Precision::KNs:
-		return 1000000000 / period;
+		ticks = ClockUtils::GetBusTickPerNs(period);
+		break;
 	}
+
+	m_prescaler = 0;
+	while (ticks > UINT16_MAX)
+	{
+		ticks >>= 1;
+		++m_prescaler;
+	}
+	// Check if prescaler is too large or not
+	assert(!(m_prescaler & ~FTM_SC_PS_MASK));
+	m_mod = ticks;
 }
 
-inline uint32_t GetDuty(const uint32_t period, const uint32_t pos_width)
+class CvCalc
 {
-	return pos_width * 1000 / period * 10;
+public:
+	void Calc(const uint32_t pos_width, const Pwm::Config::Precision precision,
+			const uint8_t prescaler);
+
+	uint16_t GetCv() const
+	{
+		return m_cv;
+	}
+
+private:
+	uint16_t m_cv;
+};
+
+void CvCalc::Calc(const uint32_t pos_width,
+		const Pwm::Config::Precision precision, const uint8_t prescaler)
+{
+	uint32_t ticks = 0;
+	switch (precision)
+	{
+	default:
+		assert(false);
+		// no break
+
+	case Pwm::Config::Precision::kUs:
+		ticks = ClockUtils::GetBusTickPerUs(pos_width);
+		break;
+
+	case Pwm::Config::Precision::KNs:
+		ticks = ClockUtils::GetBusTickPerNs(pos_width);
+		break;
+	}
+
+	m_cv = ticks >> prescaler;
 }
 
 }
 
 FtmPwm::FtmPwm(const Config &config)
-		: m_precision(config.precision),
-		  m_period(config.period)
+		: m_period(config.period),
+		  m_precision(config.precision),
+		  m_alignment(config.alignment),
+		  m_pin(nullptr),
+		  m_is_init(false)
 {
+	assert(config.pos_width <= config.period);
 	if (!InitModule(config.pin))
 	{
 		assert(false);
-	}
-	assert(config.pos_width <= m_period);
-	FTM_PWM_init((FTMn_e)m_module, (FTM_CHn_e)m_channel,
-			GetFrequency(m_period, m_precision),
-			GetDuty(m_period, config.pos_width));
-}
-
-bool FtmPwm::InitModule(const PinConfig::Name pin)
-{
-	// Temporarily place here
-	FTMn_e module = FTMn_e::FTM_MAX;
-	FTM_CHn_e channel = FTM_CHn_e::FTM_CH0;
-	switch (pin)
-	{
-	case PinConfig::Name::PTA3:
-	case PinConfig::Name::PTC1:
-		module = FTMn_e::FTM0;
-		channel = FTM_CHn_e::FTM_CH0;
-		break;
-
-	case PinConfig::Name::PTA4:
-	case PinConfig::Name::PTC2:
-		module = FTMn_e::FTM0;
-		channel = FTM_CHn_e::FTM_CH1;
-		break;
-
-	case PinConfig::Name::PTA5:
-	case PinConfig::Name::PTC3:
-		module = FTMn_e::FTM0;
-		channel = FTM_CHn_e::FTM_CH2;
-		break;
-
-	case PinConfig::Name::PTA6:
-	case PinConfig::Name::PTC4:
-		module = FTMn_e::FTM0;
-		channel = FTM_CHn_e::FTM_CH3;
-		break;
-
-	case PinConfig::Name::PTA7:
-	case PinConfig::Name::PTD4:
-		module = FTMn_e::FTM0;
-		channel = FTM_CHn_e::FTM_CH4;
-		break;
-
-	case PinConfig::Name::PTA0:
-	case PinConfig::Name::PTD5:
-		module = FTMn_e::FTM0;
-		channel = FTM_CHn_e::FTM_CH5;
-		break;
-
-	case PinConfig::Name::PTA1:
-	case PinConfig::Name::PTD6:
-		module = FTMn_e::FTM0;
-		channel = FTM_CHn_e::FTM_CH6;
-		break;
-
-	case PinConfig::Name::PTA2:
-	case PinConfig::Name::PTD7:
-		module = FTMn_e::FTM0;
-		channel = FTM_CHn_e::FTM_CH7;
-		break;
-
-	case PinConfig::Name::PTA8:
-	case PinConfig::Name::PTA12:
-	case PinConfig::Name::PTB0:
-		module = FTMn_e::FTM1;
-		channel = FTM_CHn_e::FTM_CH0;
-		break;
-
-	case PinConfig::Name::PTA9:
-	case PinConfig::Name::PTA13:
-	case PinConfig::Name::PTB1:
-		module = FTMn_e::FTM1;
-		channel = FTM_CHn_e::FTM_CH1;
-		break;
-
-	case PinConfig::Name::PTA10:
-	case PinConfig::Name::PTB18:
-		module = FTMn_e::FTM2;
-		channel = FTM_CHn_e::FTM_CH0;
-		break;
-
-	case PinConfig::Name::PTA11:
-	case PinConfig::Name::PTB19:
-		module = FTMn_e::FTM2;
-		channel = FTM_CHn_e::FTM_CH1;
-		break;
-
-	default:
-		break;
+		return;
 	}
 
-	if (module != FTMn_e::FTM_MAX)
+	bool is_module_init = false;
+	for (Uint i = 0; i < PINOUT::GetFtmChannelCount(); ++i)
 	{
-		m_module = module;
-		m_channel = channel;
-		return true;
+		// Channels under the same module must share the same period/frequency,
+		// alignment and polarity
+		if (g_instances[m_module][i])
+		{
+			is_module_init = true;
+			if (g_instances[m_module][i]->m_period != config.period
+					|| GET_BIT(MEM_MAPS[m_module]->SC, FTM_SC_CPWMS_SHIFT)
+							!= (config.alignment == Config::Alignment::kCenter))
+			{
+				assert(false);
+				return;
+			}
+		}
+	}
+
+	m_is_init = true;
+
+	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kFtm0, m_module), true);
+
+	g_instances[m_module][m_channel] = this;
+	InitPin(config.pin);
+	SetReadOnlyReg(false);
+	InitChannelPolarity(config);
+
+	ModCalc mc;
+	uint32_t period = config.period;
+	if (config.alignment == Config::Alignment::kCenter)
+	{
+		period >>= 1;
+	}
+	mc.Calc(period, config.precision);
+
+	CvCalc cc;
+	uint32_t pos_width = config.pos_width;
+	if (config.alignment == Config::Alignment::kCenter)
+	{
+		pos_width >>= 1;
+	}
+	cc.Calc(pos_width, m_precision, mc.GetPrescaler());
+
+	if (!is_module_init)
+	{
+		InitChannel(config, cc.GetCv());
+		InitCounter(mc.GetMod());
+		InitScReg(config, mc.GetPrescaler());
+		InitConfReg(config);
 	}
 	else
 	{
+		InitChannel(config, cc.GetCv());
+	}
+
+	SetReadOnlyReg(true);
+}
+
+FtmPwm::FtmPwm(FtmPwm &&rhs)
+		: FtmPwm(nullptr)
+{
+	*this = std::move(rhs);
+}
+
+FtmPwm::FtmPwm(nullptr_t)
+		: m_module(0),
+		  m_channel(0),
+		  m_period(0),
+		  m_precision(Config::Precision::kUs),
+		  m_alignment(Config::Alignment::kEdge),
+		  m_pin(nullptr),
+		  m_is_init(false)
+{}
+
+FtmPwm::~FtmPwm()
+{
+	Uninit();
+}
+
+FtmPwm& FtmPwm::operator=(FtmPwm &&rhs)
+{
+	if (this != &rhs)
+	{
+		Uninit();
+		if (rhs)
+		{
+			rhs.m_is_init = false;
+
+			m_module = rhs.m_module;
+			m_channel = rhs.m_channel;
+			m_period = rhs.m_period;
+			m_precision = rhs.m_precision;
+			m_alignment = rhs.m_alignment;
+
+			m_pin = std::move(rhs.m_pin);
+
+			m_is_init = true;
+			g_instances[m_module][m_channel] = this;
+		}
+	}
+	return *this;
+}
+
+bool FtmPwm::InitModule(const Pin::Name pin)
+{
+	const Ftm::Name ftm = FtmUtils::GetFtmName(pin);
+	if (ftm == Ftm::Name::kDisable)
+	{
 		return false;
 	}
+
+	m_module = FtmUtils::GetFtmModule(ftm);
+	m_channel = FtmUtils::GetFtmChannel(ftm);
+	return true;
+}
+
+void FtmPwm::InitPin(const Pin::Name pin)
+{
+	Pin::Config config;
+	config.pin = pin;
+	if (((int)pin >= (int)Pin::Name::kPta0 && (int)pin <= (int)Pin::Name::kPta13)
+			|| (int)pin == (int)Pin::Name::kPtb0
+			|| (int)pin == (int)Pin::Name::kPtb1
+			|| (int)pin == (int)Pin::Name::kPtb18
+			|| (int)pin == (int)Pin::Name::kPtb19)
+	{
+		config.mux = Pin::Config::MuxControl::kAlt3;
+	}
+	else if (((int)pin >= (int)Pin::Name::kPtc1
+					&& (int)pin <= (int)Pin::Name::kPtc4)
+			|| ((int)pin >= (int)Pin::Name::kPtd4
+					&& (int)pin <= (int)Pin::Name::kPtd7))
+	{
+		config.mux = Pin::Config::MuxControl::kAlt4;
+	}
+
+	m_pin = Pin(config);
+}
+
+void FtmPwm::InitChannelPolarity(const Config &config)
+{
+	if (config.is_active_high)
+	{
+		CLEAR_BIT(MEM_MAPS[m_module]->POL, m_channel);
+		CLEAR_BIT(MEM_MAPS[m_module]->OUTINIT, m_channel);
+	}
+	else
+	{
+		SET_BIT(MEM_MAPS[m_module]->POL, m_channel);
+		SET_BIT(MEM_MAPS[m_module]->OUTINIT, m_channel);
+	}
+}
+
+void FtmPwm::InitCounter(const uint16_t mod)
+{
+	MEM_MAPS[m_module]->CNT = 0;
+
+	uint32_t cntin_reg = 0;
+	cntin_reg |= FTM_CNTIN_INIT(0);
+
+	MEM_MAPS[m_module]->CNTIN = cntin_reg;
+
+	uint32_t mod_reg = 0;
+	mod_reg |= FTM_MOD_MOD(mod);
+
+	MEM_MAPS[m_module]->MOD = mod_reg;
+}
+
+void FtmPwm::InitChannel(const Config &config, const uint16_t cv)
+{
+	uint32_t csc_reg = 0;
+	if (config.alignment == Config::Alignment::kEdge)
+	{
+		SET_BIT(csc_reg, FTM_CnSC_MSB_SHIFT);
+	}
+	SET_BIT(csc_reg, FTM_CnSC_ELSB_SHIFT);
+
+	MEM_MAPS[m_module]->CONTROLS[m_channel].CnSC = csc_reg;
+
+	SetCv(cv);
+}
+
+void FtmPwm::InitScReg(const Config &config, const uint8_t prescaler)
+{
+	uint32_t reg = 0;
+	if (config.alignment == Config::Alignment::kCenter)
+	{
+		SET_BIT(reg, FTM_SC_CPWMS_SHIFT);
+	}
+	reg |= FTM_SC_CLKS(1);
+
+	MEM_MAPS[m_module]->SC = reg;
+
+	SetPrescaler(prescaler);
+}
+
+void FtmPwm::InitConfReg(const Config&)
+{
+	uint32_t reg = 0;
+	reg |= FTM_CONF_BDMMODE(1);
+
+	MEM_MAPS[m_module]->CONF = reg;
+}
+
+void FtmPwm::Uninit()
+{
+	if (m_is_init)
+	{
+		m_is_init = false;
+
+		SetReadOnlyReg(false);
+		MEM_MAPS[m_module]->CONTROLS[m_channel].CnSC = 0;
+		SetReadOnlyReg(true);
+
+		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kFtm0, m_module),
+				false);
+		g_instances[m_module][m_channel] = nullptr;
+	}
+}
+
+void FtmPwm::SetReadOnlyReg(const bool flag)
+{
+	if (flag)
+	{
+		SET_BIT(MEM_MAPS[m_module]->FMS, FTM_FMS_WPEN_SHIFT);
+	}
+	else
+	{
+		SET_BIT(MEM_MAPS[m_module]->MODE, FTM_MODE_WPDIS_SHIFT);
+	}
+}
+
+void FtmPwm::SetCv(const uint16_t cv)
+{
+	uint32_t cv_reg = 0;
+	cv_reg |= FTM_CnV_VAL(cv);
+
+	MEM_MAPS[m_module]->CONTROLS[m_channel].CnV = cv_reg;
+}
+
+void FtmPwm::SetPrescaler(const uint8_t prescaler)
+{
+	MEM_MAPS[m_module]->SC &= ~FTM_SC_PS_MASK;
+	MEM_MAPS[m_module]->SC |= FTM_SC_PS(prescaler);
 }
 
 void FtmPwm::SetPeriod(const uint32_t period, const uint32_t pos_width)
 {
+	STATE_GUARD(FtmPwm, VOID);
+
 	assert(pos_width <= period);
-	FTM_PWM_freq((FTMn_e)m_module, GetFrequency(period, m_precision));
-	FTM_PWM_Duty((FTMn_e)m_module, (FTM_CHn_e)m_channel, GetDuty(period,
-			pos_width));
+	for (Uint i = 0; i < PINOUT::GetFtmChannelCount(); ++i)
+	{
+		if (g_instances[m_module][i] && g_instances[m_module][i] != this)
+		{
+			assert(false);
+			return;
+		}
+	}
+
+	SetReadOnlyReg(false);
+	ModCalc mc;
+	mc.Calc(period, m_precision);
+	InitCounter(mc.GetMod());
+	CvCalc cc;
+	cc.Calc(pos_width, m_precision, mc.GetPrescaler());
+	SetCv(cc.GetCv());
+	SetPrescaler(mc.GetPrescaler());
+	SetReadOnlyReg(true);
+
 	m_period = period;
 }
 
 void FtmPwm::SetPosWidth(const uint32_t pos_width)
 {
-	FTM_PWM_Duty((FTMn_e)m_module, (FTM_CHn_e)m_channel, GetDuty(m_period,
-			pos_width));
+	STATE_GUARD(FtmPwm, VOID);
+
+	CvCalc cc;
+	uint32_t pos_width_ = pos_width;
+	if (m_alignment == Config::Alignment::kCenter)
+	{
+		pos_width_ >>= 1;
+	}
+	cc.Calc(pos_width_, m_precision, GetPrescaler());
+
+	SetCv(cc.GetCv());
+}
+
+uint8_t FtmPwm::GetPrescaler() const
+{
+	STATE_GUARD(FtmPwm, 0);
+
+	return GET_BITS(MEM_MAPS[m_module]->SC, FTM_SC_PS_SHIFT, FTM_SC_PS_MASK);
 }
 
 }

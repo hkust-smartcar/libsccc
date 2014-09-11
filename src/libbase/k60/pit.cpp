@@ -13,12 +13,16 @@
 #include <algorithm>
 #include <functional>
 
-#include <vectors.h>
-
+#include "libbase/log.h"
 #include "libbase/k60/clock_utils.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pit.h"
 #include "libbase/k60/sim.h"
+#include "libbase/k60/vectors.h"
+
+#include "libutil/misc.h"
+
+using namespace libutil;
 
 namespace libbase
 {
@@ -81,16 +85,16 @@ Pit& Pit::operator=(Pit &&rhs)
 	if (this != &rhs)
 	{
 		Uninit();
-		if (rhs.m_is_init)
+		if (rhs)
 		{
+			rhs.m_is_init = false;
+
 			m_channel = rhs.m_channel;
 			// Copy instead of move to prevent race condition
 			m_isr = rhs.m_isr;
 
 			m_is_init = true;
 			g_instances[m_channel] = this;
-
-			rhs.m_is_init = false;
 		}
 	}
 	return *this;
@@ -101,14 +105,14 @@ void Pit::SetIsr(const OnPitTriggerListener &isr)
 	m_isr = isr;
 	if (m_isr)
 	{
-		::SetIsr(static_cast<VECTORn_t>(PIT0_VECTORn + m_channel), IrqHandler);
+		::SetIsr(EnumAdvance(PIT0_IRQn, m_channel), IrqHandler);
 		SET_BIT(PIT->CHANNEL[m_channel].TCTRL, PIT_TCTRL_TIE_SHIFT);
-		EnableIsr(static_cast<VECTORn_t>(PIT0_VECTORn + m_channel));
+		EnableIrq(EnumAdvance(PIT0_IRQn, m_channel));
 	}
 	else
 	{
-		DisableIsr(static_cast<VECTORn_t>(PIT0_VECTORn + m_channel));
-		::SetIsr(static_cast<VECTORn_t>(PIT0_VECTORn + m_channel), nullptr);
+		DisableIrq(EnumAdvance(PIT0_IRQn, m_channel));
+		::SetIsr(EnumAdvance(PIT0_IRQn, m_channel), nullptr);
 		CLEAR_BIT(PIT->CHANNEL[m_channel].TCTRL, PIT_TCTRL_TIE_SHIFT);
 	}
 }
@@ -127,10 +131,8 @@ void Pit::Uninit()
 
 void Pit::SetEnable(const bool flag)
 {
-	if (!*this)
-	{
-		return;
-	}
+	STATE_GUARD(Pit, VOID);
+
 	if (flag)
 	{
 		SET_BIT(PIT->CHANNEL[m_channel].TCTRL, PIT_TCTRL_TEN_SHIFT);
@@ -143,10 +145,8 @@ void Pit::SetEnable(const bool flag)
 
 void Pit::SetCount(const uint32_t count)
 {
-	if (!*this)
-	{
-		return;
-	}
+	STATE_GUARD(Pit, VOID);
+
 	PIT->CHANNEL[m_channel].LDVAL = std::max<uint32_t>(count, 1) - 1;
 	if (GET_BIT(PIT->CHANNEL[m_channel].TCTRL, PIT_TCTRL_TEN_SHIFT))
 	{
@@ -157,36 +157,30 @@ void Pit::SetCount(const uint32_t count)
 
 uint32_t Pit::GetCountLeft() const
 {
-	if (!*this)
-	{
-		return 0;
-	}
+	STATE_GUARD(Pit, 0);
+
 	return PIT->CHANNEL[m_channel].CVAL;
 }
 
 void Pit::ConsumeInterrupt()
 {
-	if (!*this)
-	{
-		return;
-	}
+	STATE_GUARD(Pit, VOID);
+
 	ConsumeInterrupt_(m_channel);
 }
 
 bool Pit::IsInterruptRequested() const
 {
-	if (!*this)
-	{
-		return false;
-	}
+	STATE_GUARD(Pit, false);
+
 	return GET_BIT(PIT->CHANNEL[m_channel].TFLG, PIT_TFLG_TIF_SHIFT);
 }
 
 __ISR void Pit::IrqHandler()
 {
-	const VECTORn_t v = GetVectorX();
-	const int channel = v - PIT0_VECTORn;
-	if (!g_instances[channel])
+	const int channel = GetActiveIrq() - PIT0_IRQn;
+	Pit *const that = g_instances[channel];
+	if (!that || !(*that))
 	{
 		// Something's wrong?
 		assert(false);
@@ -194,9 +188,9 @@ __ISR void Pit::IrqHandler()
 		return;
 	}
 
-	if (g_instances[channel]->m_isr)
+	if (that->m_isr)
 	{
-		g_instances[channel]->m_isr(g_instances[channel]);
+		that->m_isr(that);
 	}
 	ConsumeInterrupt_(channel);
 }

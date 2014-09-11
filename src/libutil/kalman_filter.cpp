@@ -5,8 +5,6 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#include <mini_common.h>
-
 #include "libutil/kalman_filter.h"
 
 namespace libutil

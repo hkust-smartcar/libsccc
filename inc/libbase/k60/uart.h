@@ -5,8 +5,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  */
 
-#ifndef LIBBASE_K60_UART_H_
-#define LIBBASE_K60_UART_H_
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -15,10 +14,8 @@
 #include <functional>
 #include <vector>
 
-#include <vectors.h>
-
-#include "libbase/k60/pin.h"
 #include "libbase/k60/misc_utils.h"
+#include "libbase/k60/pin.h"
 
 namespace libbase
 {
@@ -51,30 +48,30 @@ public:
 
 		enum ConfigBit
 		{
-			// Connect TX to RX
+			/// Connect TX to RX
 			kLoopMode,
-			// Enable parity bit or not, if enabled, it would be even parity
+			/// Enable parity bit or not, if enabled, it would be even parity
 			kEnableEvenParity,
 			kFifo,
 
 			kSize,
 		};
 
-		PinConfig::Name tx_pin;
-		PinConfig::Name rx_pin;
+		Pin::Name tx_pin;
+		Pin::Name rx_pin;
 		BaudRate baud_rate;
 		std::bitset<ConfigBit::kSize> config;
 
-		Uart::OnTxEmptyListener tx_isr;
-		// The # bytes in the Tx buffer needed to fire the interrupt
+		OnTxEmptyListener tx_isr;
+		/// The # bytes in the Tx buffer needed to fire the interrupt
 		uint8_t tx_irq_threshold = 0;
-		// To treat tx_irq_threshold as a percentage of Tx buffer size
+		/// To treat tx_irq_threshold as a percentage of Tx buffer size
 		bool is_tx_irq_threshold_percentage = false;
 
-		Uart::OnRxFullListener rx_isr;
-		// The # bytes in the Tx buffer needed to fire the interrupt
+		OnRxFullListener rx_isr;
+		/// The # bytes in the Tx buffer needed to fire the interrupt
 		uint8_t rx_irq_threshold = 1;
-		// To treat rx_irq_threshold as a percentage of Rx buffer size
+		/// To treat rx_irq_threshold as a percentage of Rx buffer size
 		bool is_rx_irq_threshold_percentage = false;
 	};
 
@@ -130,14 +127,16 @@ private:
 		kUart5,
 	};
 
-	bool InitModule(const PinConfig::Name tx_pin, const PinConfig::Name rx_pin);
+	bool InitModule(const Pin::Name tx_pin, const Pin::Name rx_pin);
 	void InitBaudRate(const Config::BaudRate br);
-	void InitPin(const PinConfig::Name tx_pin, const PinConfig::Name rx_pin);
+	void InitPin(const Pin::Name tx_pin, const Pin::Name rx_pin);
 	void InitC1Reg(const Config &config);
 	void InitFifo(const Config &config);
 	void InitInterrupt(const Config &config);
 
 	void Uninit();
+
+	void SetInterrupt(const bool tx_flag, const bool rx_flag);
 
 	static __ISR void IrqHandler();
 
@@ -157,5 +156,3 @@ private:
 
 }
 }
-
-#endif /* LIBBASE_K60_UART_H_ */
