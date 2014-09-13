@@ -97,6 +97,7 @@ public:
 
 	void Set(bool is_high);
 	void Turn();
+	bool Get() const;
 
 	void Set()
 	{

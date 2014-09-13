@@ -219,6 +219,12 @@ void Gpo::Turn()
 			PinUtils::GetPinNumber(m_pin.GetName()));
 }
 
+bool Gpo::Get() const
+{
+	return GET_BIT(MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]->PDOR,
+			PinUtils::GetPinNumber(m_pin.GetName()));
+}
+
 Gpi Gpo::ToGpi()
 {
 	STATE_GUARD(Gpo, Gpi(nullptr));
