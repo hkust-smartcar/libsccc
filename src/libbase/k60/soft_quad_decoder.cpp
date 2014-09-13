@@ -107,7 +107,7 @@ void SoftQuadDecoder::Uninit()
 
 int32_t SoftQuadDecoder::GetCount()
 {
-	return m_count;
+	return m_count * 4;
 }
 
 void SoftQuadDecoder::ResetCount()

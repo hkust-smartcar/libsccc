@@ -2,10 +2,7 @@
  * encoder.h
  * Phase A/B encoder. Provides two mechanisms to read the feedback value,
  * interrupt based software emulation and hardware quadrature decoding. Software
- * emulation will pose a large overhead to the system. In K60, the encoder
- * resolution will be extended to 4 times the original when using hardware
- * quadrature decoding. We emulate this behavior by multiplying the current
- * count by 4 in software mode, so there will be a maximum of +-3 error.
+ * emulation will pose a large overhead to the system
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
@@ -34,8 +31,7 @@ public:
 	void Update();
 
 	/**
-	 * Return the decoded count. Notice that under software emulation, only one
-	 * single phase is currently supported (that means, no direction feedback)
+	 * Return the decoded count
 	 *
 	 * @return
 	 */

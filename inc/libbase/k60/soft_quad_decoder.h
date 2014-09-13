@@ -1,6 +1,9 @@
 /*
  * soft_quad_decoder.h
- * Software emulated quadrature decoding using pin interrupt and GPIO
+ * Software emulated quadrature decoding using pin interrupt and GPIO. In K60,
+ * the encoder resolution will be extended to 4 times the original when using
+ * hardware quadrature decoding. We emulate this behavior by multiplying the
+ * current count by 4 in software mode, so there will be a maximum of +-3 error
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
