@@ -242,23 +242,67 @@ Gpio::Gpio(const Gpo::Config &config)
 		: m_gpi(nullptr), m_gpo(config), m_is_gpo(true)
 {}
 
+Gpio::Gpio(Gpio &&rhs)
+		: Gpio(nullptr)
+{
+	*this = std::move(rhs);
+}
+
 Gpio::Gpio(nullptr_t)
 		: m_gpi(nullptr), m_gpo(nullptr), m_is_gpo(true)
 {}
 
+Gpio::~Gpio()
+{
+	Uninit();
+}
+
+Gpio& Gpio::operator=(Gpio &&rhs)
+{
+	if (this != &rhs)
+	{
+		Uninit();
+		if (rhs)
+		{
+			m_gpi = std::move(rhs.m_gpi);
+			m_gpo = std::move(rhs.m_gpo);
+			m_is_gpo = rhs.m_is_gpo;
+		}
+	}
+	return *this;
+}
+
+void Gpio::Uninit()
+{
+	if (m_gpi)
+	{
+		m_gpi = Gpi(nullptr);
+	}
+	else if (m_gpo)
+	{
+		m_gpo = Gpo(nullptr);
+	}
+}
+
 void Gpio::EnsureGpi()
 {
+	STATE_GUARD(Gpio, VOID);
+
 	if (m_is_gpo)
 	{
 		m_gpi = m_gpo.ToGpi();
+		m_is_gpo = false;
 	}
 }
 
 void Gpio::EnsureGpo()
 {
+	STATE_GUARD(Gpio, VOID);
+
 	if (!m_is_gpo)
 	{
 		m_gpo = m_gpi.ToGpo();
+		m_is_gpo = true;
 	}
 }
 

@@ -139,6 +139,16 @@ public:
 	explicit Gpio(const Gpi::Config &config);
 	explicit Gpio(const Gpo::Config &config);
 	explicit Gpio(nullptr_t);
+	Gpio(const Gpio&) = delete;
+	Gpio(Gpio &&rhs);
+	~Gpio();
+
+	Gpio& operator=(const Gpio&) = delete;
+	Gpio& operator=(Gpio &&rhs);
+	operator bool() const
+	{
+		return (m_gpi || m_gpo);
+	}
 
 	void Set(bool is_high)
 	{
@@ -162,6 +172,8 @@ public:
 	void EnsureGpo();
 
 private:
+	void Uninit();
+
 	Gpi m_gpi;
 	Gpo m_gpo;
 	bool m_is_gpo;
