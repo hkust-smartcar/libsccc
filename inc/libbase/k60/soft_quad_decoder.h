@@ -12,6 +12,7 @@
 #include <cstdint>
 
 #include "libbase/k60/gpio.h"
+#include "libbase/k60/quad_decoder.h"
 
 namespace libbase
 {
