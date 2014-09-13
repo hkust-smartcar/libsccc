@@ -162,6 +162,27 @@ public:
 		m_gpo.Turn();
 	}
 
+	void Set()
+	{
+		Set(true);
+	}
+
+	void Reset()
+	{
+		Set(false);
+	}
+
+	void Clear()
+	{
+		Reset();
+	}
+
+	bool GetOutput()
+	{
+		EnsureGpo();
+		return m_gpo.Get();
+	}
+
 	bool Get()
 	{
 		EnsureGpi();
