@@ -193,23 +193,36 @@ public:
 	{
 		enum struct MuxControl
 		{
-			kAnalog, kGpio, kAlt2, kAlt3, kAlt4, kAlt5, kAlt6, kAlt7
+			kAnalog,
+			kGpio,
+			kAlt2,
+			kAlt3,
+			kAlt4,
+			kAlt5,
+			kAlt6,
+			kAlt7
 		};
 
 		enum struct Interrupt
 		{
 			kDisable,
 
-			kDmaRising, kDmaFalling, kDmaBoth,
+			kDmaRising,
+			kDmaFalling,
+			kDmaBoth,
 
-			kRising, kFalling, kBoth,
+			kRising,
+			kFalling,
+			kBoth,
 
-			kLow, kHigh
+			kLow,
+			kHigh
 		};
 
 		enum ConfigBit
 		{
-			kHighDriveStrength = 0, kOpenDrain,
+			kHighDriveStrength = 0,
+			kOpenDrain,
 			// Disable the passive input filter when high speed interfaces of more
 			// than 2 MHz are supported on the pin
 			kPassiveFilter,
