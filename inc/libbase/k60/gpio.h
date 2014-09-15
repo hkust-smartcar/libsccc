@@ -192,6 +192,11 @@ public:
 	void EnsureGpi();
 	void EnsureGpo();
 
+	bool IsOutput() const
+	{
+		return m_is_gpo;
+	}
+
 private:
 	void Uninit();
 
