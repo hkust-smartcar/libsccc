@@ -117,12 +117,12 @@ class PllDividerCalc
 public:
 	void Calc(const uint32_t external_osc_khz, const uint32_t core_clock_khz);
 
-	int GetPrdiv() const
+	Uint GetPrdiv() const
 	{
 		return m_prdiv;
 	}
 
-	int GetVdiv() const
+	Uint GetVdiv() const
 	{
 		return m_vdiv;
 	}
@@ -133,15 +133,15 @@ public:
 	}
 
 private:
-	int m_prdiv;
-	int m_vdiv;
+	Uint m_prdiv;
+	Uint m_vdiv;
 	uint32_t m_core_clock;
 };
 
 void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 		const uint32_t core_clock_khz)
 {
-	int best_prdiv, best_vdiv;
+	Uint best_prdiv = 0, best_vdiv = 0;
 	Uint min_diff = static_cast<Uint>(-1);
 	for (Uint i = 0; i <= 0x18; ++i)
 	{
