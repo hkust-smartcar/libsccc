@@ -418,7 +418,7 @@ void SpiMaster::SetBaudRate(const uint32_t baud_rate_khz, uint32_t *reg)
 			8192, 16384, 32768};
 	const uint32_t bus_khz = ClockUtils::GetBusClockKhz();
 
-	Uint best_pbr_pos, best_br_pos;
+	Uint best_pbr_pos = 0, best_br_pos = 0;
 	Uint min_diff = static_cast<Uint>(-1);
 	for (Uint i = 0; i < sizeof(pbrs) / sizeof(Uint); ++i)
 	{
