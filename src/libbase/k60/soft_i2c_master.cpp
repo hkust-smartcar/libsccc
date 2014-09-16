@@ -1,0 +1,306 @@
+/*
+ * soft_i2c_master.cpp
+ *
+ * Author: Ming Tsang
+ * Copyright (c) 2014 HKUST SmartCar Team
+ */
+
+#include "libbase/k60/hardware.h"
+
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+
+#include <vector>
+
+#include "libbase/log.h"
+#include "libbase/k60/gpio.h"
+#include "libbase/k60/i2c_master_interface.h"
+#include "libbase/k60/misc_utils.h"
+#include "libbase/k60/soft_i2c_master.h"
+#include "libbase/k60/sys_tick.h"
+
+using namespace std;
+
+#define SEND_BYTE_GUARDED(x, ret) do { if (!SendByte_(x)) { Stop(); return ret; } } while (false)
+
+#define IS_I2C_HIGH(x) (!x.IsOutput())
+
+namespace libbase
+{
+namespace k60
+{
+
+namespace
+{
+
+Gpi::Config GetSclConfig(const SoftI2cMaster::Config &config)
+{
+	Gpi::Config gc;
+	gc.pin = config.scl_pin;
+	gc.config[Pin::Config::ConfigBit::kOpenDrain] = true;
+	return gc;
+}
+
+Gpi::Config GetSdaConfig(const SoftI2cMaster::Config &config)
+{
+	Gpi::Config gc;
+	gc.pin = config.sda_pin;
+	gc.config[Pin::Config::ConfigBit::kOpenDrain] = true;
+	return gc;
+}
+
+}
+
+inline void SoftI2cMaster::Delay()
+{
+	SysTick::DelayUs(m_delay_us);
+}
+
+SoftI2cMaster::SoftI2cMaster(const Config &config)
+		: m_delay_us(config.delay_us),
+		  m_scl(GetSclConfig(config)),
+		  m_sda(GetSdaConfig(config)),
+		  m_is_init(true)
+{}
+
+SoftI2cMaster::SoftI2cMaster(SoftI2cMaster &&rhs)
+		: SoftI2cMaster(nullptr)
+{
+	*this = std::move(rhs);
+}
+
+SoftI2cMaster::SoftI2cMaster(nullptr_t)
+		: m_delay_us(0),
+		  m_scl(nullptr),
+		  m_sda(nullptr),
+		  m_is_init(false)
+{}
+
+SoftI2cMaster::~SoftI2cMaster()
+{
+	Uninit();
+}
+
+SoftI2cMaster& SoftI2cMaster::operator=(SoftI2cMaster &&rhs)
+{
+	if (this != &rhs)
+	{
+		Uninit();
+		if (rhs)
+		{
+			rhs.m_is_init = false;
+
+			m_delay_us = rhs.m_delay_us;
+
+			m_scl = std::move(rhs.m_scl);
+			m_sda = std::move(rhs.m_sda);
+
+			m_is_init = true;
+		}
+	}
+	return *this;
+}
+
+void SoftI2cMaster::Uninit()
+{
+	if (m_is_init)
+	{
+		m_is_init = false;
+
+		m_scl = Gpio(nullptr);
+		m_sda = Gpio(nullptr);
+	}
+}
+
+void SoftI2cMaster::Start()
+{
+	if (!IS_I2C_HIGH(m_sda))
+	{
+		if (IS_I2C_HIGH(m_scl))
+		{
+			m_sda.EnsureGpi();
+			Delay();
+		}
+		else
+		{
+			m_sda.EnsureGpi();
+			//Delay();
+			m_scl.EnsureGpi();
+			Delay();
+		}
+	}
+	else
+	{
+		m_scl.EnsureGpi();
+		Delay();
+	}
+
+	m_sda.Clear();
+	Delay();
+	m_scl.Clear();
+	Delay();
+}
+
+void SoftI2cMaster::Stop()
+{
+	if (IS_I2C_HIGH(m_sda))
+	{
+		if (IS_I2C_HIGH(m_scl))
+		{
+			m_scl.Clear();
+			Delay();
+			m_sda.Clear();
+			//Delay();
+			m_scl.EnsureGpi();
+			Delay();
+		}
+		else
+		{
+			m_sda.Clear();
+			//Delay();
+			m_scl.EnsureGpi();
+			Delay();
+		}
+	}
+	else
+	{
+		m_scl.EnsureGpi();
+		Delay();
+	}
+
+	m_sda.EnsureGpi();
+	Delay();
+}
+
+// Assume SCL is low when being called
+bool SoftI2cMaster::SendByte_(const Byte byte)
+{
+	for (Uint i = 0; i < 8; ++i)
+	{
+		if ((byte >> (7 - i)) & 0x1)
+		{
+			m_sda.EnsureGpi();
+		}
+		else
+		{
+			m_sda.Clear();
+		}
+		m_scl.EnsureGpi();
+		Delay();
+		m_scl.Clear();
+		Delay();
+	}
+
+	m_sda.EnsureGpi();
+	//Delay();
+	m_scl.EnsureGpi();
+	Delay();
+	const bool ack = !m_sda.Get();
+	m_scl.Clear();
+	Delay();
+	// Pull SDA low in order to be consistent no matter ACK succeeded or not
+	m_sda.Clear();
+	Delay();
+	return ack;
+}
+
+// Assume SCL is low when being called
+Byte SoftI2cMaster::ReadByte_(const bool is_ack)
+{
+	m_sda.EnsureGpi();
+
+	Byte byte = 0;
+	for (Uint i = 0; i < 8; ++i)
+	{
+		m_scl.EnsureGpi();
+		Delay();
+		// Clock stretching
+		while (!m_scl.Get())
+		{}
+
+		byte |= m_sda.Get() << (7 - i);
+		m_scl.Clear();
+		Delay();
+	}
+
+	if (is_ack)
+	{
+		m_sda.Clear();
+	}
+	//Delay();
+	m_scl.EnsureGpi();
+	Delay();
+	m_scl.Clear();
+	Delay();
+	return byte;
+}
+
+bool SoftI2cMaster::GetByte(const Byte slave_addr, const Byte reg_addr,
+		Byte *out_byte)
+{
+	STATE_GUARD(SoftI2cMaster, false);
+
+	Start();
+	SEND_BYTE_GUARDED(slave_addr << 1, false);
+	SEND_BYTE_GUARDED(reg_addr, false);
+	Start();
+	SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, false);
+	*out_byte = ReadByte_(false);
+	Stop();
+	return true;
+}
+
+vector<Byte> SoftI2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
+		const uint8_t size)
+{
+	STATE_GUARD(SoftI2cMaster, {});
+
+	vector<Byte> bytes;
+	bytes.reserve(size);
+
+	Start();
+	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, {});
+	SEND_BYTE_GUARDED(reg_addr, {});
+	Start();
+	SEND_BYTE_GUARDED(((slave_addr << 1) & 0xFE) | 0x1, {});
+	for (uint8_t i = 0; i < size - 1; ++i)
+	{
+		bytes.push_back(ReadByte_(true));
+	}
+	bytes.push_back(ReadByte_(false));
+	Stop();
+	return bytes;
+}
+
+bool SoftI2cMaster::SendByte(const Byte slave_addr, const Byte reg_addr,
+		const Byte byte)
+{
+	STATE_GUARD(SoftI2cMaster, false);
+
+	Start();
+	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, false);
+	SEND_BYTE_GUARDED(reg_addr, false);
+	SEND_BYTE_GUARDED(byte, false);
+	Stop();
+	return true;
+}
+
+bool SoftI2cMaster::SendBytes(const Byte slave_addr, const Byte reg_addr,
+		const vector<Byte> &bytes)
+{
+	STATE_GUARD(SoftI2cMaster, false);
+
+	Start();
+	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, false);
+	SEND_BYTE_GUARDED(reg_addr, false);
+	for (size_t i = 0; i < bytes.size(); ++i)
+	{
+		SEND_BYTE_GUARDED(bytes[i], false);
+	}
+	Stop();
+	return true;
+}
+
+}
+}
