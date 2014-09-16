@@ -1,5 +1,5 @@
 /*
- * quad_decoder.h
+ * quad_decoder_interface.h
  * Generic quadrature decoder interface
  *
  * Author: Ming Tsang
@@ -17,7 +17,7 @@ namespace libbase
 namespace k60
 {
 
-class QuadDecoder
+class QuadDecoderInterface
 {
 public:
 	struct Config
@@ -28,7 +28,7 @@ public:
 		bool is_invert_b_polarity = false;
 	};
 
-	virtual ~QuadDecoder()
+	virtual ~QuadDecoderInterface()
 	{}
 
 	virtual operator bool() const = 0;

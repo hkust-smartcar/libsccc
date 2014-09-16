@@ -15,17 +15,17 @@
 #include <cstdint>
 
 #include "libbase/k60/gpio.h"
-#include "libbase/k60/quad_decoder.h"
+#include "libbase/k60/quad_decoder_interface.h"
 
 namespace libbase
 {
 namespace k60
 {
 
-class SoftQuadDecoder : public QuadDecoder
+class SoftQuadDecoder : public QuadDecoderInterface
 {
 public:
-	typedef QuadDecoder::Config Config;
+	typedef QuadDecoderInterface::Config Config;
 
 	explicit SoftQuadDecoder(const Config &config);
 	explicit SoftQuadDecoder(nullptr_t);

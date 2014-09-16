@@ -14,19 +14,19 @@
 
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
-#include "libbase/k60/quad_decoder.h"
+#include "libbase/k60/quad_decoder_interface.h"
 
 namespace libbase
 {
 namespace k60
 {
 
-class FtmQuadDecoder : public QuadDecoder
+class FtmQuadDecoder : public QuadDecoderInterface
 {
 public:
 	typedef std::function<void(FtmQuadDecoder *uart)> OnOverflowListener;
 
-	struct Config : public QuadDecoder::Config
+	struct Config : public QuadDecoderInterface::Config
 	{
 		enum struct EncodingMode
 		{
