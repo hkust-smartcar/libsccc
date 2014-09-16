@@ -27,6 +27,6 @@
 	#define LOG_DL(literal) printf("D " literal "\n")
 	#define LOG_VL(literal) printf("V " literal "\n")
 #else
-	#define LOG_DL(fmt, ...)
-	#define LOG_VL(fmt, ...)
+	#define LOG_DL(literal)
+	#define LOG_VL(literal)
 #endif /* DEBUG */
