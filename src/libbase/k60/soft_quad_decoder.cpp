@@ -11,7 +11,7 @@
 #include <functional>
 
 #include "libbase/k60/gpio.h"
-#include "libbase/k60/quad_decoder.h"
+#include "libbase/k60/quad_decoder_interface.h"
 #include "libbase/k60/soft_quad_decoder.h"
 
 namespace libbase
