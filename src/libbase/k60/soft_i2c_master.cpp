@@ -14,11 +14,11 @@
 #include <vector>
 
 #include "libbase/log.h"
+#include "libbase/k60/dwt.h"
 #include "libbase/k60/gpio.h"
 #include "libbase/k60/i2c_master_interface.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/soft_i2c_master.h"
-#include "libbase/k60/sys_tick.h"
 
 using namespace std;
 
@@ -54,7 +54,7 @@ Gpi::Config GetSdaConfig(const SoftI2cMaster::Config &config)
 
 inline void SoftI2cMaster::Delay()
 {
-	SysTick::DelayUs(m_delay_us);
+	Dwt::DelayUs(m_delay_us);
 }
 
 SoftI2cMaster::SoftI2cMaster(const Config &config)
@@ -201,7 +201,7 @@ bool SoftI2cMaster::SendByte_(const Byte byte)
 	Delay();
 	// Pull SDA low in order to be consistent no matter ACK succeeded or not
 	m_sda.Clear();
-	Delay();
+	//Delay();
 	return ack;
 }
 
