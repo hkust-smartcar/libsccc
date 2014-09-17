@@ -21,10 +21,14 @@ namespace k60
 class SysTickDelay : public Delay
 {
 public:
-	void DelayUs(const uint16_t us) override
-	{
-		libbase::k60::SysTick::DelayUs(us);
-	}
+	SysTickDelay();
+
+	void DelayUs(const uint16_t us) override;
+
+private:
+	inline void DelayCount(const uint32_t count);
+
+	libbase::k60::SysTick m_sys_tick;
 };
 
 }
