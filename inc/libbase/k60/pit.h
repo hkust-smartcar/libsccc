@@ -29,7 +29,7 @@ public:
 		// [0 - 3]
 		uint8_t channel;
 		// Arbitrary default count
-		uint32_t count = 10000;
+		uint32_t count;
 		OnPitTriggerListener isr;
 		bool is_enable = true;
 	};
