@@ -8,6 +8,7 @@
 #include "libbase/k60/hardware.h"
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 
 #include <algorithm>
