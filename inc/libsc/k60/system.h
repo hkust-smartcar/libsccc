@@ -12,8 +12,8 @@
 #include "libbase/k60/mcg.h"
 #include "libbase/k60/watchdog.h"
 
-#include "libsc/k60/pit_timer.h"
-#include "libsc/k60/sys_tick_delay.h"
+#include "libsc/k60/sys_tick_timer.h"
+#include "libsc/k60/dwt_delay.h"
 
 namespace libsc
 {
@@ -70,8 +70,8 @@ private:
 	// Watchdog is currently broken
 	//libbase::k60::Watchdog m_watchdog;
 
-	SysTickDelay m_delay;
-	PitTimer m_timer;
+	DwtDelay m_delay;
+	SysTickTimer m_timer;
 
 	static System *m_instance;
 };
