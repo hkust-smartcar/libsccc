@@ -437,13 +437,16 @@ void Adc::Uninit()
 {
 	if (m_name != Name::kDisable)
 	{
+		const Name name = m_name;
 		m_name = Name::kDisable;
 
 		if (IsActive())
 		{
 			StopConvert();
 		}
-		PINOUT::UnregPin(m_name);
+		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kAdc0,
+				AdcUtils::GetModule(name)), false);
+		PINOUT::UnregPin(name);
 	}
 }
 
