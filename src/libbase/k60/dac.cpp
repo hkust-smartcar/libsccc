@@ -103,12 +103,13 @@ void Dac::Uninit()
 {
 	if (m_name != Name::kDisable)
 	{
+		const Name name = m_name;
 		m_name = Name::kDisable;
 
 		SetData(0);
 		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kDac0,
-				DacUtils::GetModule(m_name)), false);
-		PINOUT::UnregPin(m_name);
+				DacUtils::GetModule(name)), false);
+		PINOUT::UnregPin(name);
 	}
 }
 

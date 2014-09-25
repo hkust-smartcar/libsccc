@@ -191,11 +191,12 @@ void Pin::Uninit()
 {
 	if (m_name != Name::kDisable)
 	{
+		const Name name = m_name;
 		m_name = Name::kDisable;
 
-		MEM_MAPS[PinUtils::GetPort(m_name)]
-				->PCR[PinUtils::GetPinNumber(m_name)] = 0 | PORT_PCR_MUX(0);
-		PINOUT::UnregPin(m_name);
+		MEM_MAPS[PinUtils::GetPort(name)]
+				->PCR[PinUtils::GetPinNumber(name)] = 0 | PORT_PCR_MUX(0);
+		PINOUT::UnregPin(name);
 	}
 }
 
