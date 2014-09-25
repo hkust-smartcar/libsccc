@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <cstdio>
 
-#include <log.h>
+#include <libbase/log.h>
 
 #include "libsc/k60/system.h"
 #include "libsc/k60/timer.h"
