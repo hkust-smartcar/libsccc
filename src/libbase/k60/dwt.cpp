@@ -28,11 +28,21 @@ void Dwt::DelayUs(const uint16_t us)
 		return;
 	}
 
-	SET_BIT(DWT->CTRL, DWT_CTRL_CYCCNTENA_Pos);
+	SET_BIT(CoreDebug->DEMCR, CoreDebug_DEMCR_TRCENA_Pos);
+	CLEAR_BIT(DWT->CTRL, DWT_CTRL_CYCCNTENA_Pos);
 	const uint32_t count = ClockUtils::GetCoreTickPerUs(us);
 	DWT->CYCCNT = 0;
-	while (DWT->CYCCNT < count)
-	{}
+	SET_BIT(DWT->CTRL, DWT_CTRL_CYCCNTENA_Pos);
+	uint32_t store = 0;
+	uint32_t curr = 0;
+	while (store + curr < count)
+	{
+		if (curr > DWT->CYCCNT)
+		{
+			store += curr;
+		}
+		curr = DWT->CYCCNT;
+	}
 }
 
 }
