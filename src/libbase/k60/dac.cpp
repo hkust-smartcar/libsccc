@@ -43,6 +43,8 @@ Dac::Dac(const Config &config)
 		return;
 	}
 
+	m_name = config.module;
+
 	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kDac0,
 			DacUtils::GetModule(m_name)), true);
 	InitC0Reg(config);
