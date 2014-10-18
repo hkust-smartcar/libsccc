@@ -105,6 +105,7 @@ FtmPwm::Config GetPwmConfig(const uint8_t id, const uint16_t period,
 	config.pin = GetPin(id);
 	config.period = period;
 	config.pos_width = high_time;
+	config.alignment = FtmPwm::Config::Alignment::kEdge;
 	return config;
 }
 
