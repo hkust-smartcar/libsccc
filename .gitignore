@@ -1,27 +1,9 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
+# Ignore all sub-dirs but inc/ and src/
+*/*
+!inc/*
+!src/*
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-
-#
-build/*
-data/*
-*.map
-*.elf
-WTF/*
-test/*
-
+# Ignore additional files in root dir
 # Eclipse
-.settings/*
-.cproject
 .project
-/2014
+.cproject
