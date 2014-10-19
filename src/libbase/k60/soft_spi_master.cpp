@@ -1,8 +1,8 @@
 /*
  * soft_spi_master.cpp
  *
- *  Created on: Aug 23, 2014
- *      Author: ming
+ * Author: Ming Tsang
+ * Copyright (c) 2014 HKUST SmartCar Team
  */
 
 #include "libbase/k60/hardware.h"

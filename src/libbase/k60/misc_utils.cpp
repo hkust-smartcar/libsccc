@@ -1,8 +1,8 @@
 /*
  * misc_utils.cpp
  *
- *  Created on: Jul 12, 2014
- *      Author: ming
+ * Author: Ming Tsang
+ * Copyright (c) 2014 HKUST SmartCar Team
  */
 
 #include <cstdint>

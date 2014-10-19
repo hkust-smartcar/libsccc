@@ -1,8 +1,8 @@
 /*
  * assert.c
  *
- *  Created on: Aug 29, 2014
- *      Author: ming
+ * Author: Ming Tsang
+ * Copyright (c) 2014 HKUST SmartCar Team
  */
 
 #include <assert.h>
