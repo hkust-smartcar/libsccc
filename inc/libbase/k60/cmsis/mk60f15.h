@@ -39,6 +39,11 @@
 #if !defined(MK60F15_H_)
 #define MK60F15_H_                               /**< Symbol preventing repeated inclusion */
 
+#include <stdint.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Memory map major version (memory maps with equal major version number are
  * compatible) */
 #define MCU_MEM_MAP_VERSION 0x0100u
@@ -204,8 +209,8 @@ typedef enum IRQn {
 #define __Vendor_SysTickConfig         0         /**< Set to 1 if different SysTick Config is used */
 #define __FPU_PRESENT                  1         /**< FPU present or not */
 
-#include "core_cm4.h"                  /* Core Peripheral Access Layer */
-#include "system_MK60F15.h"            /* Device specific configuration file */
+#include "libbase/cmsis/core_cm4.h"                  /* Core Peripheral Access Layer */
+//#include "system_MK60F15.h"            /* Device specific configuration file */
 
 /**
  * @}
