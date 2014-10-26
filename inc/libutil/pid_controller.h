@@ -4,10 +4,10 @@
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
-#ifndef LIBUTIL_PID_CONTROLLER_H_
-#define LIBUTIL_PID_CONTROLLER_H_
+#pragma once
 
 #include <cstdint>
 
@@ -131,4 +131,4 @@ private:
 
 }
 
-#endif /* LIBUTIL_PID_CONTROLLER_H_ */
+#include "pid_controller.tcc"
