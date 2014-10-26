@@ -4,6 +4,7 @@
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cstdint>
@@ -38,7 +39,7 @@ typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 	const InputType error = m_setpoint - current_val;
 
 	m_p = m_kp * error;
-	m_accumulated_error += error;
+	m_accumulated_error += error * time_diff;
 	m_i = m_ki * m_accumulated_error;
 	if (m_i_limit > 0.0f)
 	{
