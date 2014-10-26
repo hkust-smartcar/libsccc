@@ -67,7 +67,7 @@ public:
 		m_i_limit = value;
 	}
 
-	void Restart()
+	void Reset()
 	{
 		m_accumulated_error = 0;
 		ResetTime();
