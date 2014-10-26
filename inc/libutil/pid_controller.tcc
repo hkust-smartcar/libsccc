@@ -57,11 +57,7 @@ typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 	m_i = m_ki * m_accumulated_error;
 	if (m_i_limit > 0.0f)
 	{
-		const float clamp_i = libutil::Clamp<float>(-m_i_limit, m_i, m_i_limit);
-#ifdef LIBUTIL_DEBUG_PID_CONTROLLER
-		LOG_D("I clamped: orig(%f), now(%f)", m_i, clamp_i);
-#endif
-		m_i = clamp_i;
+		m_i = libutil::Clamp<float>(-m_i_limit, m_i, m_i_limit);
 	}
 	const float slope = (error - m_prev_error) / time_diff;
 	m_d = m_kd * slope;
