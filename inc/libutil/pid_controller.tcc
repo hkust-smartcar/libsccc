@@ -7,6 +7,8 @@
  * Refer to LICENSE for details
  */
 
+#pragma once
+
 #include <cstdint>
 #include <cstdio>
 
