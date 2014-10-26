@@ -67,6 +67,12 @@ public:
 		m_i_limit = value;
 	}
 
+	void SetOutputBound(const float min, const max)
+	{
+		m_min_o = min;
+		m_max_o = max;
+	}
+
 	void Reset()
 	{
 		m_accumulated_error = 0;
@@ -123,7 +129,10 @@ private:
 	float m_i;
 	float m_d;
 
+	float m_min_o;
+	float m_max_o;
 	float m_i_limit;
+
 	float m_accumulated_error;
 	InputType m_prev_error;
 	libsc::k60::Timer::TimerInt m_prev_time;

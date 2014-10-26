@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <cfloat>
 #include <cstdint>
 #include <cstdio>
 
@@ -26,10 +27,21 @@ template<typename T, typename U>
 PidController<T, U>::PidController(const InputType setpoint, const float kp,
 		const float ki, const float kd)
 		: m_setpoint(setpoint),
-		  m_kp(kp), m_ki(ki), m_kd(kd),
-		  m_p(0.0f), m_i(0.0f), m_d(0.0f),
-		  m_i_limit(0.0f), m_accumulated_error(0.0f),
-		  m_prev_error(0), m_prev_time(libsc::k60::System::Time())
+		  m_kp(kp),
+		  m_ki(ki),
+		  m_kd(kd),
+
+		  m_p(0.0f),
+		  m_i(0.0f),
+		  m_d(0.0f),
+
+		  m_min_o(FLT_MIN),
+		  m_max_o(FLT_MAX),
+		  m_i_limit(0.0f),
+
+		  m_accumulated_error(0.0f),
+		  m_prev_error(0),
+		  m_prev_time(libsc::k60::System::Time())
 {}
 
 template<typename T, typename U>
@@ -56,7 +68,7 @@ typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 
 	m_prev_error = error;
 	m_prev_time = time;
-	return m_p + m_i + m_d;
+	return libutil::Clamp<float>(m_min_o, m_p + m_i + m_d, m_max_o);
 }
 
 }
