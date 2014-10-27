@@ -10,11 +10,7 @@
 #pragma once
 
 #include <cstdint>
-
 #include <type_traits>
-
-#include "libsc/k60/system.h"
-#include "libsc/k60/timer.h"
 
 namespace libutil
 {
