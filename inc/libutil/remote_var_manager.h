@@ -36,7 +36,7 @@ public:
 	public:
 		enum Type
 		{
-			INTEGER,
+			INT,
 			REAL
 		};
 
