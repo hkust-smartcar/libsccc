@@ -57,6 +57,11 @@ void SimpleBuzzer::SetBeep(const bool is_beep)
 	m_pin.Set(is_beep);
 }
 
+bool SimpleBuzzer::GetBeep() const
+{
+	return m_pin.Get();
+}
+
 #else
 SimpleBuzzer::SimpleBuzzer(const uint8_t)
 		: m_pin(nullptr)

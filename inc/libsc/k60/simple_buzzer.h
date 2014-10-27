@@ -23,6 +23,7 @@ public:
 	explicit SimpleBuzzer(const uint8_t id);
 
 	void SetBeep(const bool is_beep);
+	bool GetBeep() const;
 
 private:
 	libbase::k60::Gpo m_pin;
