@@ -54,7 +54,7 @@ typename IncrementalPidController<T, U>::OutputType IncrementalPidController<T, 
 	m_prev_error[0] = error;
 
 	m_prev_output += m_p + m_i + m_d;
-	m_prev_output = libutil::Clamp<float>(m_min_o, m_prev_output, m_max_o);
+	m_prev_output = libutil::Clamp<OutputType>(m_min_o, m_prev_output, m_max_o);
 	return m_prev_output;
 }
 

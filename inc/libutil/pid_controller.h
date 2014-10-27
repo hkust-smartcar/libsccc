@@ -67,7 +67,7 @@ public:
 		m_i_limit = value;
 	}
 
-	void SetOutputBound(const float min, const max)
+	void SetOutputBound(const OutputType min, OutputType max)
 	{
 		m_min_o = min;
 		m_max_o = max;
@@ -129,8 +129,8 @@ private:
 	float m_i;
 	float m_d;
 
-	float m_min_o;
-	float m_max_o;
+	OutputType m_min_o;
+	OutputType m_max_o;
 	float m_i_limit;
 
 	float m_accumulated_error;

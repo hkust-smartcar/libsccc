@@ -62,7 +62,7 @@ typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 
 	m_prev_error = error;
 	m_prev_time = time;
-	return libutil::Clamp<float>(m_min_o, m_p + m_i + m_d, m_max_o);
+	return libutil::Clamp<OutputType>(m_min_o, m_p + m_i + m_d, m_max_o);
 }
 
 }
