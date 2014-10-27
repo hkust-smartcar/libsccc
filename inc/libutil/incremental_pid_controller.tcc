@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <cfloat>
 #include <cstdint>
 #include <cstdio>
 #include <algorithm>
@@ -33,6 +34,9 @@ IncrementalPidController<T, U>::IncrementalPidController(
 		  m_i(0.0f),
 		  m_d(0.0f),
 
+		  m_min_o(FLT_MIN),
+		  m_max_o(FLT_MAX),
+
 		  m_prev_error{0, 0}
 {}
 
@@ -47,7 +51,7 @@ typename IncrementalPidController<T, U>::OutputType IncrementalPidController<T, 
 
 	std::swap(m_prev_error[0], m_prev_error[1]);
 	m_prev_error[0] = error;
-	return m_p + m_i + m_d;
+	return libutil::Clamp<float>(m_min_o, m_p + m_i + m_d, m_max_o);
 }
 
 }

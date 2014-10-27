@@ -60,7 +60,13 @@ public:
 	void SetILimit(const float)
 	{}
 
-	void Restart()
+	void SetOutputBound(const float min, const max)
+	{
+		m_min_o = min;
+		m_max_o = max;
+	}
+
+	void Reset()
 	{}
 
 	void ResetTime()
@@ -110,6 +116,9 @@ private:
 	float m_p;
 	float m_i;
 	float m_d;
+
+	float m_min_o;
+	float m_max_o;
 
 	InputType m_prev_error[2];
 };
