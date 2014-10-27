@@ -1,6 +1,6 @@
 /*
  * pid_controller.tcc
- * Generic PID controller
+ * Generic poitional PID controller
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
