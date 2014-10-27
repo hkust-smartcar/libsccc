@@ -13,8 +13,6 @@
 #include <cstdint>
 #include <cstdio>
 
-#include <libbase/log.h>
-
 #include "libsc/k60/system.h"
 #include "libsc/k60/timer.h"
 #include "libutil/misc.h"
