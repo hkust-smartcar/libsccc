@@ -9,10 +9,6 @@
 
 #pragma once
 
-#include <cfloat>
-#include <cstdint>
-#include <cstdio>
-
 #include "libsc/k60/system.h"
 #include "libsc/k60/timer.h"
 #include "libutil/misc.h"
@@ -24,17 +20,7 @@ namespace libutil
 template<typename InT_, typename OutT_>
 PositionalPidController<InT_, OutT_>::PositionalPidController(const InT setpoint,
 		const float kp, const float ki, const float kd)
-		: m_setpoint(setpoint),
-		  m_kp(kp),
-		  m_ki(ki),
-		  m_kd(kd),
-
-		  m_p(0.0f),
-		  m_i(0.0f),
-		  m_d(0.0f),
-
-		  m_min_o(FLT_MIN),
-		  m_max_o(FLT_MAX),
+		: PidController<InT_, OutT_>(setpoint, kp, ki, kd),
 		  m_i_limit(0.0f),
 
 		  m_accumulated_error(0.0f),
@@ -43,27 +29,33 @@ PositionalPidController<InT_, OutT_>::PositionalPidController(const InT setpoint
 {}
 
 template<typename InT_, typename OutT_>
-typename PositionalPidController<InT_, OutT_>::OutT
-PositionalPidController<InT_, OutT_>::Calc(
-		const libsc::k60::Timer::TimerInt time, const InT current_val)
+void PositionalPidController<InT_, OutT_>::OnCalc(const InT error)
 {
-	const float time_diff = libsc::k60::Timer::TimeDiff(time, m_prev_time)
-			/ 1000.0f;
-	const InT error = m_setpoint - current_val;
+	using namespace libsc::k60;
 
-	m_p = m_kp * error;
+	const Timer::TimerInt time = System::Time();
+	const float time_diff = Timer::TimeDiff(System::Time(), m_prev_time)
+			/ 1000.0f;
+
+	const float p = this->GetKp() * error;
 	m_accumulated_error += error * time_diff;
-	m_i = m_ki * m_accumulated_error;
+	float i = this->GetKi() * m_accumulated_error;
 	if (m_i_limit > 0.0f)
 	{
-		m_i = libutil::Clamp<float>(-m_i_limit, m_i, m_i_limit);
+		i = libutil::Clamp<float>(-m_i_limit, i, m_i_limit);
 	}
 	const float slope = (error - m_prev_error) / time_diff;
-	m_d = m_kd * slope;
+	const float d = this->GetKd() * slope;
 
 	m_prev_error = error;
 	m_prev_time = time;
-	return libutil::Clamp<OutT>(m_min_o, m_p + m_i + m_d, m_max_o);
+	this->UpdatePid(p, i, d);
+}
+
+template<typename InT_, typename OutT_>
+OutT_ PositionalPidController<InT_, OutT_>::GetControlOut()
+{
+	return this->GetP() + this->GetI() + this->GetD();
 }
 
 }
