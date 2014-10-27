@@ -37,7 +37,8 @@ IncrementalPidController<T, U>::IncrementalPidController(
 		  m_min_o(FLT_MIN),
 		  m_max_o(FLT_MAX),
 
-		  m_prev_error{0, 0}
+		  m_prev_error{0, 0},
+		  m_prev_output(0.0f)
 {}
 
 template<typename T, typename U>
@@ -51,7 +52,10 @@ typename IncrementalPidController<T, U>::OutputType IncrementalPidController<T, 
 
 	std::swap(m_prev_error[0], m_prev_error[1]);
 	m_prev_error[0] = error;
-	return libutil::Clamp<float>(m_min_o, m_p + m_i + m_d, m_max_o);
+
+	m_prev_output += m_p + m_i + m_d;
+	m_prev_output = libutil::Clamp<float>(m_min_o, m_prev_output, m_max_o);
+	return m_prev_output;
 }
 
 }

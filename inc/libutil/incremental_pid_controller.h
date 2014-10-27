@@ -121,6 +121,7 @@ private:
 	float m_max_o;
 
 	InputType m_prev_error[2];
+	OutputType m_prev_output;
 };
 
 }
