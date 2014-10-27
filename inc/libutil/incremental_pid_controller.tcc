@@ -4,11 +4,13 @@
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
+
+#pragma once
 
 #include <cstdint>
 #include <cstdio>
-
 #include <algorithm>
 
 #include "libsc/k60/system.h"
@@ -23,8 +25,14 @@ template<typename T, typename U>
 IncrementalPidController<T, U>::IncrementalPidController(
 		const InputType setpoint, const float kp, const float ki, const float kd)
 		: m_setpoint(setpoint),
-		  m_kp(kp), m_ki(ki), m_kd(kd),
-		  m_p(0.0f), m_i(0.0f), m_d(0.0f),
+		  m_kp(kp),
+		  m_ki(ki),
+		  m_kd(kd),
+
+		  m_p(0.0f),
+		  m_i(0.0f),
+		  m_d(0.0f),
+
 		  m_prev_error{0, 0}
 {}
 
