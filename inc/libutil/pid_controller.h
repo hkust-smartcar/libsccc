@@ -19,25 +19,24 @@
 namespace libutil
 {
 
-template<typename T, typename U>
+template<typename InT_, typename OutT_>
 class PidController
 {
 public:
-	typedef typename std::enable_if<std::is_signed<T>::value>::type TMustBeSigned;
-	typedef T InputType;
-	typedef U OutputType;
+	typedef typename std::enable_if<std::is_signed<InT_>::value>::type TMustBeSigned;
+	typedef InT_ InT;
+	typedef OutT_ OutT;
 
-	PidController(const InputType setpoint, const float kp, const float ki,
+	PidController(const InT setpoint, const float kp, const float ki,
 			const float kd);
 
-	OutputType Calc(const libsc::k60::Timer::TimerInt time,
-			const InputType current_val);
-	OutputType Calc(const InputType current_val)
+	OutT Calc(const libsc::k60::Timer::TimerInt time, const InT current_val);
+	OutT Calc(const InT current_val)
 	{
 		return Calc(libsc::k60::System::Time(), current_val);
 	}
 
-	void SetSetpoint(const InputType setpoint)
+	void SetSetpoint(const InT setpoint)
 	{
 		m_setpoint = setpoint;
 	}
@@ -67,7 +66,7 @@ public:
 		m_i_limit = value;
 	}
 
-	void SetOutputBound(const OutputType min, OutputType max)
+	void SetOutputBound(const OutT min, OutT max)
 	{
 		m_min_o = min;
 		m_max_o = max;
@@ -84,7 +83,7 @@ public:
 		m_prev_time = libsc::k60::System::Time();
 	}
 
-	InputType GetSetpoint() const
+	InT GetSetpoint() const
 	{
 		return m_setpoint;
 	}
@@ -120,7 +119,7 @@ public:
 	}
 
 private:
-	InputType m_setpoint;
+	InT m_setpoint;
 	float m_kp;
 	float m_ki;
 	float m_kd;
@@ -129,12 +128,12 @@ private:
 	float m_i;
 	float m_d;
 
-	OutputType m_min_o;
-	OutputType m_max_o;
+	OutT m_min_o;
+	OutT m_max_o;
 	float m_i_limit;
 
 	float m_accumulated_error;
-	InputType m_prev_error;
+	InT m_prev_error;
 	libsc::k60::Timer::TimerInt m_prev_time;
 };
 

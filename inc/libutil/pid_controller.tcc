@@ -21,8 +21,8 @@
 namespace libutil
 {
 
-template<typename T, typename U>
-PidController<T, U>::PidController(const InputType setpoint, const float kp,
+template<typename InT_, typename OutT_>
+PidController<InT_, OutT_>::PidController(const InT setpoint, const float kp,
 		const float ki, const float kd)
 		: m_setpoint(setpoint),
 		  m_kp(kp),
@@ -42,13 +42,13 @@ PidController<T, U>::PidController(const InputType setpoint, const float kp,
 		  m_prev_time(libsc::k60::System::Time())
 {}
 
-template<typename T, typename U>
-typename PidController<T, U>::OutputType PidController<T, U>::Calc(
-		const libsc::k60::Timer::TimerInt time, const InputType current_val)
+template<typename InT_, typename OutT_>
+typename PidController<InT_, OutT_>::OutT PidController<InT_, OutT_>::Calc(
+		const libsc::k60::Timer::TimerInt time, const InT current_val)
 {
 	const float time_diff = libsc::k60::Timer::TimeDiff(time, m_prev_time)
 			/ 1000.0f;
-	const InputType error = m_setpoint - current_val;
+	const InT error = m_setpoint - current_val;
 
 	m_p = m_kp * error;
 	m_accumulated_error += error * time_diff;
@@ -62,7 +62,7 @@ typename PidController<T, U>::OutputType PidController<T, U>::Calc(
 
 	m_prev_error = error;
 	m_prev_time = time;
-	return libutil::Clamp<OutputType>(m_min_o, m_p + m_i + m_d, m_max_o);
+	return libutil::Clamp<OutT>(m_min_o, m_p + m_i + m_d, m_max_o);
 }
 
 }

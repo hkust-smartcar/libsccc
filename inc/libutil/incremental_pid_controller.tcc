@@ -22,9 +22,9 @@
 namespace libutil
 {
 
-template<typename T, typename U>
-IncrementalPidController<T, U>::IncrementalPidController(
-		const InputType setpoint, const float kp, const float ki, const float kd)
+template<typename InT_, typename OutT_>
+IncrementalPidController<InT_, OutT_>::IncrementalPidController(
+		const InT setpoint, const float kp, const float ki, const float kd)
 		: m_setpoint(setpoint),
 		  m_kp(kp),
 		  m_ki(ki),
@@ -41,11 +41,11 @@ IncrementalPidController<T, U>::IncrementalPidController(
 		  m_prev_output(0.0f)
 {}
 
-template<typename T, typename U>
-typename IncrementalPidController<T, U>::OutputType IncrementalPidController<T, U>::Calc(
-		const InputType current_val)
+template<typename InT_, typename OutT_>
+typename IncrementalPidController<InT_, OutT_>::OutT
+IncrementalPidController<InT_, OutT_>::Calc(const InT current_val)
 {
-	const InputType error = m_setpoint - current_val;
+	const InT error = m_setpoint - current_val;
 	m_p = m_kp * (error - m_prev_error[0]);
 	m_i = m_ki * error;
 	m_d = m_kd * (error - 2 * m_prev_error[0] + m_prev_error[1]);
@@ -54,7 +54,7 @@ typename IncrementalPidController<T, U>::OutputType IncrementalPidController<T, 
 	m_prev_error[0] = error;
 
 	m_prev_output += m_p + m_i + m_d;
-	m_prev_output = libutil::Clamp<OutputType>(m_min_o, m_prev_output, m_max_o);
+	m_prev_output = libutil::Clamp<OutT>(m_min_o, m_prev_output, m_max_o);
 	return m_prev_output;
 }
 
