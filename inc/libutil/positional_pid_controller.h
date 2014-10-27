@@ -1,5 +1,5 @@
 /*
- * pid_controller.h
+ * positional_pid_controller.h
  * Generic poitional PID controller
  *
  * Author: Ming Tsang
@@ -20,14 +20,14 @@ namespace libutil
 {
 
 template<typename InT_, typename OutT_>
-class PidController
+class PositionalPidController
 {
 public:
 	typedef typename std::enable_if<std::is_signed<InT_>::value>::type TMustBeSigned;
 	typedef InT_ InT;
 	typedef OutT_ OutT;
 
-	PidController(const InT setpoint, const float kp, const float ki,
+	PositionalPidController(const InT setpoint, const float kp, const float ki,
 			const float kd);
 
 	OutT Calc(const libsc::k60::Timer::TimerInt time, const InT current_val);
@@ -139,4 +139,4 @@ private:
 
 }
 
-#include "pid_controller.tcc"
+#include "positional_pid_controller.tcc"

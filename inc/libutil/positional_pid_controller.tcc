@@ -1,5 +1,5 @@
 /*
- * pid_controller.tcc
+ * positional_pid_controller.tcc
  * Generic poitional PID controller
  *
  * Author: Ming Tsang
@@ -16,14 +16,14 @@
 #include "libsc/k60/system.h"
 #include "libsc/k60/timer.h"
 #include "libutil/misc.h"
-#include "libutil/pid_controller.h"
+#include "libutil/positional_pid_controller.h"
 
 namespace libutil
 {
 
 template<typename InT_, typename OutT_>
-PidController<InT_, OutT_>::PidController(const InT setpoint, const float kp,
-		const float ki, const float kd)
+PositionalPidController<InT_, OutT_>::PositionalPidController(const InT setpoint,
+		const float kp, const float ki, const float kd)
 		: m_setpoint(setpoint),
 		  m_kp(kp),
 		  m_ki(ki),
@@ -43,7 +43,8 @@ PidController<InT_, OutT_>::PidController(const InT setpoint, const float kp,
 {}
 
 template<typename InT_, typename OutT_>
-typename PidController<InT_, OutT_>::OutT PidController<InT_, OutT_>::Calc(
+typename PositionalPidController<InT_, OutT_>::OutT
+PositionalPidController<InT_, OutT_>::Calc(
 		const libsc::k60::Timer::TimerInt time, const InT current_val)
 {
 	const float time_diff = libsc::k60::Timer::TimeDiff(time, m_prev_time)
