@@ -16,8 +16,8 @@
 
 #include "libsc/k60/system.h"
 #include "libsc/k60/timer.h"
+#include "libutil/incremental_pid_controller.h"
 #include "libutil/misc.h"
-#include "libutil/pid_controller.h"
 
 namespace libutil
 {
