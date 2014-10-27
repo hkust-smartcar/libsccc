@@ -80,8 +80,7 @@ public:
 		friend class RemoteVarManager;
 	};
 
-	explicit RemoteVarManager(libsc::k60::UartDevice *uart,
-			const size_t var_count);
+	RemoteVarManager(libsc::k60::UartDevice *uart, const size_t var_count);
 	~RemoteVarManager();
 
 	Var* Register(const std::string &name, const Var::Type type);
