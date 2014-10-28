@@ -10,6 +10,7 @@
 
 #include <cfloat>
 #include <limits>
+#include <type_traits>
 
 #include "libutil/pid_controller.h"
 #include "libutil/misc.h"
@@ -31,7 +32,9 @@ PidController<InT_, OutT_>::PidController(const InT setpoint, const float kp,
 
 		  m_min_o(std::numeric_limits<OutT>::min()),
 		  m_max_o(std::numeric_limits<OutT>::max())
-{}
+{
+	static_assert(std::is_signed<InT_>::value, "Input type must be signed");
+}
 
 template<typename InT_, typename OutT_>
 OutT_ PidController<InT_, OutT_>::Calc(const InT current_val)

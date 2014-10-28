@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include <type_traits>
-
 namespace libutil
 {
 
@@ -17,8 +15,6 @@ template<typename InT_, typename OutT_>
 class PidController
 {
 public:
-	typedef typename std::enable_if<std::is_signed<InT_>::value>::type
-			InTMustBeSigned;
 	typedef InT_ InT;
 	typedef OutT_ OutT;
 
