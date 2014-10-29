@@ -33,7 +33,8 @@ namespace libsc
 namespace k60
 {
 
-#ifdef LIBSC_USE_MOTOR
+#if defined(LIBSC_USE_MOTOR) && defined(LIBSC_MOTOR0_PWM) \
+		&& defined(LIBSC_MOTOR0_DIR)
 
 namespace
 {
@@ -135,8 +136,8 @@ DirMotor::DirMotor(const Config &config)
 {
 	LOG_DL("Configured not to use DirMotor");
 }
-void DirMotor::OnSetPower(const uint16_t power) {}
-void DirMotor::OnSetClockwise(const bool flag) {}
+void DirMotor::OnSetPower(const uint16_t) {}
+void DirMotor::OnSetClockwise(const bool) {}
 
 #endif
 
