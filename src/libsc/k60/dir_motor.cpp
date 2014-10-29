@@ -117,51 +117,28 @@ Gpo::Config GetDirConfig(const uint8_t id)
 DirMotor::DirMotor(const Config &config)
 		: Motor(config),
 		  m_pwm(GetFtmPwmConfig(config.id)),
-		  m_dir(GetDirConfig(config.id)),
-		  m_power(0),
-		  m_is_clockwise(true)
+		  m_dir(GetDirConfig(config.id))
 {}
 
-void DirMotor::SetPower(const uint16_t power)
+void DirMotor::OnSetPower(const uint16_t power)
 {
-	const uint16_t real_power = libutil::Clamp<Uint>(0,
-			power * GetMultiplier() / 100, 1000);
-	if (m_power == real_power)
-	{
-		return;
-	}
-
-	m_pwm.SetPosWidth(PwmUtils::GetPosWidth(PERIOD, real_power));
-	m_power = real_power;
-	return;
+	m_pwm.SetPosWidth(PwmUtils::GetPosWidth(PERIOD, power));
 }
 
-void DirMotor::AddPower(const int16_t power)
+void DirMotor::OnSetClockwise(const bool flag)
 {
-	SetPower(libutil::Clamp<int>(0, m_power + power, 1000));
-}
-
-void DirMotor::SetClockwise(const bool flag)
-{
-	if (m_is_clockwise == flag)
-	{
-		return;
-	}
-
 	m_dir.Set(!(flag ^ LIBSC_DIR_MOTOR_CW_LEVEL));
-	m_is_clockwise = flag;
 }
 
 #else
 DirMotor::DirMotor(const Config &config)
 		: Motor(config),
-		  m_pwm(nullptr), m_dir(nullptr), m_power(0), m_is_clockwise(false)
+		  m_pwm(nullptr), m_dir(nullptr)
 {
 	LOG_DL("Configured not to use DirMotor");
 }
-void DirMotor::SetPower(const uint16_t) {}
-void DirMotor::AddPower(const int16_t) {}
-void DirMotor::SetClockwise(const bool) {}
+void DirMotor::OnSetPower(const uint16_t power) {}
+void DirMotor::OnSetClockwise(const bool flag) {}
 
 #endif
 

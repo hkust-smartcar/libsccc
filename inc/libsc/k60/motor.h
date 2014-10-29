@@ -1,8 +1,7 @@
 /*
  * motor.h
- * DC Motor
  *
- * Author: Ming Tsang
+ * Author: Harrison Ng, Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
@@ -32,9 +31,12 @@ public:
 	 *
 	 * @param power
 	 */
-	virtual void SetPower(const uint16_t power) = 0;
-	virtual void AddPower(const int16_t power) = 0;
-	virtual uint16_t GetPower() const = 0;
+	void SetPower(const uint16_t power);
+	void AddPower(const int16_t power);
+	uint16_t GetPower() const
+	{
+		return m_power;
+	}
 
 	/**
 	 * Clockwise (top view):
@@ -44,13 +46,20 @@ public:
 	 *
 	 * @param flag
 	 */
-	virtual void SetClockwise(const bool flag) = 0;
-	virtual bool IsClockwise() const = 0;
+	void SetClockwise(const bool flag);
+	bool IsClockwise() const
+	{
+		return m_is_clockwise;
+	}
 
 protected:
-	Motor(const Config &config)
-			: m_multiplier(config.multiplier)
-	{}
+	/**
+	 * Construct a Motor, deriving class must init in a way that the motor is
+	 * stalled and clockwise
+	 *
+	 * @param config
+	 */
+	explicit Motor(const Config &config);
 	~Motor()
 	{}
 
@@ -60,7 +69,13 @@ protected:
 	}
 
 private:
+	virtual void OnSetPower(const uint16_t power) = 0;
+	virtual void OnSetClockwise(const bool flag) = 0;
+
 	const uint8_t m_multiplier;
+
+	uint16_t m_power;
+	bool m_is_clockwise;
 };
 
 }

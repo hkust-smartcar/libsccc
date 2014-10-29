@@ -30,25 +30,12 @@ public:
 
 	DirMotor(const Config &config);
 
-	void SetPower(const uint16_t power) override;
-	void AddPower(const int16_t power) override;
-	uint16_t GetPower() const override
-	{
-		return m_power;
-	}
-
-	void SetClockwise(const bool flag) override;
-	bool IsClockwise() const override
-	{
-		return m_is_clockwise;
-	}
-
 private:
+	void OnSetPower(const uint16_t power) override;
+	void OnSetClockwise(const bool flag) override;
+
 	libbase::k60::FtmPwm m_pwm;
 	libbase::k60::Gpo m_dir;
-
-	uint16_t m_power;
-	bool m_is_clockwise;
 };
 
 }
