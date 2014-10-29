@@ -17,6 +17,11 @@
 
 using namespace libbase::k60;
 
+// Default to active high
+#ifndef LIBSC_BUZZER_ACIVE_LEVEL
+	#define LIBSC_BUZZER_ACIVE_LEVEL 1
+#endif
+
 namespace libsc
 {
 namespace k60
@@ -49,18 +54,17 @@ Gpo::Config GetGpoConfig(const uint8_t id)
 }
 
 SimpleBuzzer::SimpleBuzzer(const Config &config)
-		: m_pin(GetGpoConfig(config.id)),
-		  m_is_active_high(config.is_active_high)
+		: m_pin(GetGpoConfig(config.id))
 {}
 
 void SimpleBuzzer::SetBeep(const bool is_beep)
 {
-	m_pin.Set(is_beep ^ m_is_active_high);
+	m_pin.Set(!(is_beep ^ LIBSC_BUZZER_ACIVE_LEVEL));
 }
 
 bool SimpleBuzzer::GetBeep() const
 {
-	return !(m_pin.Get() ^ m_is_active_high);
+	return !(m_pin.Get() ^ LIBSC_BUZZER_ACIVE_LEVEL);
 }
 
 #else

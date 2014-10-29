@@ -19,6 +19,7 @@
 #define LIBSC_BUTTON1 libbase::k60::Pin::Name::kPtb23
 
 #define LIBSC_BUZZER0 libbase::k60::Pin::Name::kPta7
+#define LIBSC_BUZZER_ACIVE_LEVEL 0
 
 #define LIBSC_JOYSTICK0_UP libbase::k60::Pin::Name::kPtc7
 #define LIBSC_JOYSTICK0_DOWN libbase::k60::Pin::Name::kPtc6
