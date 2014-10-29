@@ -1,9 +1,10 @@
 /*
- * motor.cpp
+ * dir_motor.cpp
  * DC Motor
  *
  * Author: Harrison Ng, Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cassert>
@@ -17,11 +18,15 @@
 #include "libbase/k60/pwm_utils.h"
 
 #include "libsc/config.h"
-#include "libsc/k60/motor.h"
+#include "libsc/k60/dir_motor.h"
 #include "libutil/misc.h"
 
 // 10 kHz
 #define PERIOD 100000
+
+#ifndef LIBSC_DIR_MOTOR_CW_LEVEL
+	#define LIBSC_DIR_MOTOR_CW_LEVEL 1
+#endif
 
 using namespace libbase::k60;
 
@@ -102,26 +107,25 @@ Gpo::Config GetDirConfig(const uint8_t id)
 {
 	Gpo::Config config;
 	config.pin = GetDirPin(id);
+	// CW by default
+	config.is_high = LIBSC_DIR_MOTOR_CW_LEVEL;
 	return config;
 }
 
 }
 
-Motor::Motor(const uint8_t id, const bool is_invert, const uint8_t multiplier)
-		: m_is_clockwise_high(is_invert),
-		  m_multiplier(multiplier),
-		  m_pwm(GetFtmPwmConfig(id)),
-		  m_dir(GetDirConfig(id)),
+DirMotor::DirMotor(const Config &config)
+		: Motor(config),
+		  m_pwm(GetFtmPwmConfig(config.id)),
+		  m_dir(GetDirConfig(config.id)),
 		  m_power(0),
 		  m_is_clockwise(true)
-{
-	m_dir.Set(m_is_clockwise_high);
-}
+{}
 
-void Motor::SetPower(const uint16_t power)
+void DirMotor::SetPower(const uint16_t power)
 {
 	const uint16_t real_power = libutil::Clamp<Uint>(0,
-			power * m_multiplier / 100, 1000);
+			power * GetMultiplier() / 100, 1000);
 	if (m_power == real_power)
 	{
 		return;
@@ -132,32 +136,32 @@ void Motor::SetPower(const uint16_t power)
 	return;
 }
 
-void Motor::AddPower(const int16_t power)
+void DirMotor::AddPower(const int16_t power)
 {
 	SetPower(libutil::Clamp<int>(0, m_power + power, 1000));
 }
 
-void Motor::SetClockwise(const bool flag)
+void DirMotor::SetClockwise(const bool flag)
 {
 	if (m_is_clockwise == flag)
 	{
 		return;
 	}
 
-	m_dir.Set(!(flag ^ m_is_clockwise_high));
+	m_dir.Set(!(flag ^ LIBSC_DIR_MOTOR_CW_LEVEL));
 	m_is_clockwise = flag;
 }
 
 #else
-Motor::Motor(const uint8_t, const bool, const uint8_t)
-		: m_is_clockwise_high(false), m_multiplier(0), m_pwm(nullptr),
-		  m_dir(nullptr), m_power(0), m_is_clockwise(false)
+DirMotor::DirMotor(const Config &config)
+		: Motor(config),
+		  m_pwm(nullptr), m_dir(nullptr), m_power(0), m_is_clockwise(false)
 {
-	LOG_DL("Configured not to use Motor");
+	LOG_DL("Configured not to use DirMotor");
 }
-void Motor::SetPower(const uint16_t) {}
-void Motor::AddPower(const int16_t) {}
-void Motor::SetClockwise(const bool) {}
+void DirMotor::SetPower(const uint16_t) {}
+void DirMotor::AddPower(const int16_t) {}
+void DirMotor::SetClockwise(const bool) {}
 
 #endif
 
