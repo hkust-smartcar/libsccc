@@ -13,13 +13,11 @@
 #include "libbase/log.h"
 #include "libbase/k60/ftm_pwm.h"
 #include "libbase/k60/gpio.h"
-#include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pwm_utils.h"
 
 #include "libsc/config.h"
 #include "libsc/k60/dir_motor.h"
-#include "libutil/misc.h"
 
 // 10 kHz
 #define PERIOD 100000
