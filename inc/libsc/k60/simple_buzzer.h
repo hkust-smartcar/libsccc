@@ -20,13 +20,20 @@ namespace k60
 class SimpleBuzzer
 {
 public:
-	explicit SimpleBuzzer(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+		bool is_active_high;
+	};
+
+	explicit SimpleBuzzer(const Config &config);
 
 	void SetBeep(const bool is_beep);
 	bool GetBeep() const;
 
 private:
 	libbase::k60::Gpo m_pin;
+	bool m_is_active_high;
 };
 
 }

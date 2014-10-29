@@ -48,27 +48,29 @@ Gpo::Config GetGpoConfig(const uint8_t id)
 
 }
 
-SimpleBuzzer::SimpleBuzzer(const uint8_t id)
-		: m_pin(GetGpoConfig(id))
+SimpleBuzzer::SimpleBuzzer(const Config &config)
+		: m_pin(GetGpoConfig(config.id)),
+		  m_is_active_high(config.is_active_high)
 {}
 
 void SimpleBuzzer::SetBeep(const bool is_beep)
 {
-	m_pin.Set(is_beep);
+	m_pin.Set(is_beep ^ m_is_active_high);
 }
 
 bool SimpleBuzzer::GetBeep() const
 {
-	return m_pin.Get();
+	return !(m_pin.Get() ^ m_is_active_high);
 }
 
 #else
-SimpleBuzzer::SimpleBuzzer(const uint8_t)
+SimpleBuzzer::SimpleBuzzer(const Config&)
 		: m_pin(nullptr)
 {
 	LOG_DL("Configured not to use SimpleBuzzer");
 }
 void SimpleBuzzer::SetBeep(const bool) {}
+bool SimpleBuzzer::GetBeep() const { return false; }
 
 #endif /* LIBSC_USE_BUZZER */
 
