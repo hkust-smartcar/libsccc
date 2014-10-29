@@ -39,6 +39,10 @@ extern const int kGuardK602014Camera;
 extern const int kGuardK602014Ccd;
 #define LIBSC_GUARD_VAR kGuardK602014Ccd
 
+#elif defined(K60_2014_INNO)
+extern const int kGuardK602014Inno;
+#define LIBSC_GUARD_VAR kGuardK602014Inno
+
 #elif defined(K60_2014_MAGNETIC)
 extern const int kGuardK602014Magnetic;
 #define LIBSC_GUARD_VAR kGuardK602014Magnetic

@@ -31,6 +31,9 @@ const int kGuardK602014Camera = 0;
 #elif defined(K60_2014_CCD)
 const int kGuardK602014Ccd = 0;
 
+#elif defined(K60_2014_INNO)
+const int kGuardK602014Inno = 0;
+
 #elif defined(K60_2014_MAGNETIC)
 const int kGuardK602014Magnetic = 0;
 

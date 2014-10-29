@@ -29,6 +29,9 @@
 #elif defined(K60_2014_CCD)
 #include "libsc/k60/config/2014_ccd.h"
 
+#elif defined(K60_2014_INNO)
+#include "libsc/k60/config/2014_inno.h"
+
 #elif defined(K60_2014_MAGNETIC)
 #include "libsc/k60/config/2014_magnetic.h"
 
