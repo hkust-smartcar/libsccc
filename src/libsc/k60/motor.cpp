@@ -107,21 +107,16 @@ Gpo::Config GetDirConfig(const uint8_t id)
 
 }
 
-Motor::Motor(const uint8_t id, const bool is_clockwise_high,
-		const uint8_t multiplier)
-		: m_is_clockwise_high(is_clockwise_high),
+Motor::Motor(const uint8_t id, const bool is_invert, const uint8_t multiplier)
+		: m_is_clockwise_high(is_invert),
 		  m_multiplier(multiplier),
 		  m_pwm(GetFtmPwmConfig(id)),
 		  m_dir(GetDirConfig(id)),
 		  m_power(0),
 		  m_is_clockwise(true)
 {
-	m_dir.Set(is_clockwise_high);
+	m_dir.Set(m_is_clockwise_high);
 }
-
-Motor::Motor(const uint8_t id, const bool is_clockwise_high)
-		: Motor(id, is_clockwise_high, 100)
-{}
 
 void Motor::SetPower(const uint16_t power)
 {
@@ -154,13 +149,12 @@ void Motor::SetClockwise(const bool flag)
 }
 
 #else
-Motor::Motor(const uint8_t, const bool)
+Motor::Motor(const uint8_t, const bool, const uint8_t)
 		: m_is_clockwise_high(false), m_multiplier(0), m_pwm(nullptr),
 		  m_dir(nullptr), m_power(0), m_is_clockwise(false)
 {
 	LOG_DL("Configured not to use Motor");
 }
-Motor::Motor(const uint8_t, const bool, const uint8_t) : Motor(0, false) {}
 void Motor::SetPower(const uint16_t) {}
 void Motor::AddPower(const int16_t) {}
 void Motor::SetClockwise(const bool) {}

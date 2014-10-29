@@ -25,13 +25,16 @@ public:
 	 * Construct a DC motor
 	 *
 	 * @param id
-	 * @param is_clockwise_high Whether to pull high while rotating clockwise
+	 * @param is_invert Say you've installed the motor the other way round,
+	 * you'll need to invert it then
 	 * @param multiplier A multiplier in percentage to compensate the power
 	 * output, [0, 200]
+	 * @see SetClockwise()
 	 */
-	Motor(const uint8_t id, const bool is_clockwise_high,
-			const uint8_t multiplier);
-	Motor(const uint8_t id, const bool is_clockwise_high);
+	Motor(const uint8_t id, const bool is_invert, const uint8_t multiplier);
+	Motor(const uint8_t id, const bool is_invert)
+			: Motor(id, is_invert, 100)
+	{}
 
 	/**
 	 * Set the motor power percentage, [0, 100] * 10 (i.e., 84 => 8.4%)
