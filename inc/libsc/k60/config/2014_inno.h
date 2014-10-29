@@ -9,7 +9,7 @@
 #pragma once
 
 #define LIBSC_USE_BUTTON 2
-#define LIBSC_USE_BUZZER 1
+//#define LIBSC_USE_BUZZER 1
 //#define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_SERVO 1
