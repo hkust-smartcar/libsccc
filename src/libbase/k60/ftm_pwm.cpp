@@ -124,6 +124,46 @@ void CvCalc::Calc(const uint32_t pos_width,
 	m_cv = ticks >> prescaler;
 }
 
+class DeadtimeCalc
+{
+public:
+	void Calc(const uint32_t ns);
+
+	uint8_t GetPrescaler() const
+	{
+		return m_prescaler;
+	}
+
+	uint8_t GetValue() const
+	{
+		return m_value;
+	}
+
+private:
+	uint8_t m_prescaler;
+	uint8_t m_value;
+};
+
+void DeadtimeCalc::Calc(const uint32_t ns)
+{
+	const uint32_t ticks = ClockUtils::GetBusTickPerNs(ns);
+	if (ticks <= 63)
+	{
+		m_prescaler = 0;
+		m_value = ticks;
+	}
+	else if (ticks <= 252)
+	{
+		m_prescaler = 2;
+		m_value = (ticks + 3) >> 2;
+	}
+	else
+	{
+		m_prescaler = 3;
+		m_value = (ticks + 15) >> 4;
+	}
+}
+
 }
 
 FtmPwm::FtmPwm(const Config &config)
@@ -189,6 +229,7 @@ FtmPwm::FtmPwm(const Config &config)
 		InitCounter(mc.GetMod());
 		InitScReg(config, mc.GetPrescaler());
 		InitConfReg(config);
+		InitDeadtime(config);
 	}
 	else
 	{
@@ -342,6 +383,40 @@ void FtmPwm::InitConfReg(const Config&)
 	reg |= FTM_CONF_BDMMODE(1);
 
 	MEM_MAPS[m_module]->CONF = reg;
+}
+
+void FtmPwm::InitDeadtime(const Config &config)
+{
+	if (!config.is_insert_deadtime)
+	{
+		return;
+	}
+
+	DeadtimeCalc dc;
+	dc.Calc(config.deadtime_ns);
+
+	uint32_t reg = 0;
+	reg |= FTM_DEADTIME_DTPS(dc.GetPrescaler());
+	reg |= FTM_DEADTIME_DTVAL(dc.GetValue());
+
+	const uint32_t curr_reg = MEM_MAPS[m_module]->DEADTIME
+			& (FTM_DEADTIME_DTPS_MASK | FTM_DEADTIME_DTVAL_MASK);
+	if (curr_reg != 0 && reg != curr_reg)
+	{
+		LOG_E("Trying to set deadtime for the same module %d again",
+				m_module);
+		assert(false);
+	}
+
+	// We use the larger of the two to play safe. If everything's right,
+	// curr_reg should either be 0 or == reg
+	if (reg >= curr_reg)
+	{
+		MEM_MAPS[m_module]->DEADTIME = reg;
+	}
+
+	const Uint shift = (m_channel >> 1) * 8 + FTM_COMBINE_DTEN0_SHIFT;
+	SET_BIT(MEM_MAPS[m_module]->COMBINE, shift);
 }
 
 void FtmPwm::Uninit()

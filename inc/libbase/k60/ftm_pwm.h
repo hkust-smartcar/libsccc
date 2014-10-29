@@ -39,6 +39,18 @@ public:
 		 * determine the "safe" state
 		 */
 		bool is_active_high = true;
+
+		/**
+		 * Deadtime insertion, notice that this flag is shared by two
+		 * neightboring channels (n & n+1)
+		 */
+		bool is_insert_deadtime = false;
+		/**
+		 * Length of the deadtime, notice that this value is shared among ALL
+		 * channels inside the same FTM module. If @a is_insert_deadtime is
+		 * false, this value will be ignored
+		 */
+		uint32_t deadtime_ns;
 	};
 
 	explicit FtmPwm(const Config &config);
@@ -72,6 +84,7 @@ private:
 	void InitChannel(const Config &config, const uint16_t cv);
 	void InitScReg(const Config &config, const uint8_t prescaler);
 	void InitConfReg(const Config &config);
+	void InitDeadtime(const Config &config);
 
 	void Uninit();
 
