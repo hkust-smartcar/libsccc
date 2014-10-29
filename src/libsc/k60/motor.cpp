@@ -8,6 +8,9 @@
 
 #include <cstdint>
 
+#include "libbase/log.h"
+
+#include "libsc/config.h"
 #include "libsc/k60/motor.h"
 #include "libutil/misc.h"
 
@@ -15,6 +18,8 @@ namespace libsc
 {
 namespace k60
 {
+
+#ifdef LIBSC_USE_MOTOR
 
 Motor::Motor(const Config &config)
 		: m_multiplier(config.multiplier),
@@ -50,6 +55,18 @@ void Motor::SetClockwise(const bool flag)
 	OnSetClockwise(flag);
 	m_is_clockwise = flag;
 }
+
+#else
+Motor::Motor(const Config&)
+		: m_multiplier(100), m_power(0), m_is_clockwise(true)
+{
+	LOG_DL("Configured not to use Motor");
+}
+void Motor::SetPower(const uint16_t) {}
+void Motor::AddPower(const int16_t) {}
+void Motor::SetClockwise(const bool) {}
+
+#endif
 
 }
 }
