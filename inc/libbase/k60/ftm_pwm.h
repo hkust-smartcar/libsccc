@@ -47,8 +47,9 @@ public:
 		bool is_insert_deadtime = false;
 		/**
 		 * Length of the deadtime, notice that this value is shared among ALL
-		 * channels inside the same FTM module. If @a is_insert_deadtime is
-		 * false, this value will be ignored
+		 * channels inside the same FTM module. If @a is_insert_deadtime is true,
+		 * this value must be the same as other channels in the same FTM module.
+		 * If @a is_insert_deadtime is otherwise, this value will be ignored
 		 */
 		uint32_t deadtime_ns;
 	};
