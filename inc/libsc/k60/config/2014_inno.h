@@ -12,6 +12,7 @@
 //#define LIBSC_USE_BUZZER 1
 //#define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_LED 4
+#define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
 
@@ -31,6 +32,10 @@
 #define LIBSC_LED1 libbase::k60::Pin::Name::kPte11
 #define LIBSC_LED2 libbase::k60::Pin::Name::kPte10
 #define LIBSC_LED3 libbase::k60::Pin::Name::kPte9
+
+#define LIBSC_MOTOR0_PWMA libbase::k60::Pin::Name::kPtc1
+#define LIBSC_MOTOR0_PWMB libbase::k60::Pin::Name::kPtc2
+#define LIBSC_MOTOR0_DEADTIME 1000
 
 #define LIBSC_SERVO0 libbase::k60::Pin::Name::kPta10
 
