@@ -88,6 +88,7 @@ private:
 	void InitDeadtime(const Config &config);
 
 	void Uninit();
+	void UninitDeadtime();
 
 	void SetReadOnlyReg(const bool flag);
 	void SetCv(const uint16_t cv);

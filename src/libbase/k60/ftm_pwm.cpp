@@ -164,6 +164,11 @@ void DeadtimeCalc::Calc(const uint32_t ns)
 	}
 }
 
+inline Uint GetDeadtimeEnableShift(const Uint ch)
+{
+	return (ch >> 1) * 8 + FTM_COMBINE_DTEN0_SHIFT;
+}
+
 }
 
 FtmPwm::FtmPwm(const Config &config)
@@ -403,8 +408,7 @@ void FtmPwm::InitDeadtime(const Config &config)
 			& (FTM_DEADTIME_DTPS_MASK | FTM_DEADTIME_DTVAL_MASK);
 	if (curr_reg != 0 && reg != curr_reg)
 	{
-		LOG_E("Trying to set deadtime for the same module %d again",
-				m_module);
+		LOG_E("Trying to set deadtime for the same module %d again", m_module);
 		assert(false);
 	}
 
@@ -415,8 +419,7 @@ void FtmPwm::InitDeadtime(const Config &config)
 		MEM_MAPS[m_module]->DEADTIME = reg;
 	}
 
-	const Uint shift = (m_channel >> 1) * 8 + FTM_COMBINE_DTEN0_SHIFT;
-	SET_BIT(MEM_MAPS[m_module]->COMBINE, shift);
+	SET_BIT(MEM_MAPS[m_module]->COMBINE, GetDeadtimeEnableShift(m_channel));
 }
 
 void FtmPwm::Uninit()
@@ -429,9 +432,39 @@ void FtmPwm::Uninit()
 		MEM_MAPS[m_module]->CONTROLS[m_channel].CnSC = 0;
 		SetReadOnlyReg(true);
 
+		UninitDeadtime();
+
 		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kFtm0, m_module),
 				false);
 		g_instances[m_module][m_channel] = nullptr;
+	}
+}
+
+void FtmPwm::UninitDeadtime()
+{
+	bool is_all_free = true;
+	bool is_pair_free = true;
+	const uint8_t pair_ch = (m_channel & 0x1) ? (m_channel & ~0x1)
+			: (m_channel + 1);
+	for (Uint i = 0; i < PINOUT::GetFtmChannelCount(); ++i)
+	{
+		if (g_instances[m_module][i] && i != m_channel)
+		{
+			is_all_free = false;
+			if (i == pair_ch)
+			{
+				is_pair_free = false;
+			}
+		}
+	}
+	if (is_all_free)
+	{
+		MEM_MAPS[m_module]->DEADTIME &= ~(FTM_DEADTIME_DTPS_MASK
+				| FTM_DEADTIME_DTVAL_MASK);
+	}
+	if (is_pair_free)
+	{
+		CLEAR_BIT(MEM_MAPS[m_module]->COMBINE, GetDeadtimeEnableShift(m_channel));
 	}
 }
 
