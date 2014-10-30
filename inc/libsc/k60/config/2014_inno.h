@@ -36,6 +36,7 @@
 #define LIBSC_MOTOR0_PWMA libbase::k60::Pin::Name::kPtc1
 #define LIBSC_MOTOR0_PWMB libbase::k60::Pin::Name::kPtc2
 #define LIBSC_MOTOR0_DEADTIME 1000
+#define LIBSC_ALTERNATE_MOTOR_CW_PWM 1
 
 #define LIBSC_SERVO0 libbase::k60::Pin::Name::kPta10
 
