@@ -476,7 +476,10 @@ void FtmPwm::SetReadOnlyReg(const bool flag)
 	}
 	else
 	{
-		SET_BIT(MEM_MAPS[m_module]->MODE, FTM_MODE_WPDIS_SHIFT);
+		if (GET_BIT(MEM_MAPS[m_module]->FMS, FTM_FMS_WPEN_SHIFT))
+		{
+			SET_BIT(MEM_MAPS[m_module]->MODE, FTM_MODE_WPDIS_SHIFT);
+		}
 	}
 }
 
