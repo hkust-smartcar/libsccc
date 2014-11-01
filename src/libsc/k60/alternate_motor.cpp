@@ -177,7 +177,9 @@ void AlternateMotor::OnSetClockwise(const bool flag)
 #else
 AlternateMotor::AlternateMotor(const Config &config)
 		: Motor(config),
-		  m_pwm_a(nullptr), m_pwm_b(nullptr)
+		  m_pwms({FtmPwm(nullptr), FtmPwm(nullptr)}),
+		  m_active_pwm(nullptr),
+		  m_pos_width(0)
 {
 	LOG_DL("Configured not to use AlternateMotor");
 }
