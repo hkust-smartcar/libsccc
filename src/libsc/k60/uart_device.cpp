@@ -1,9 +1,9 @@
 /*
  * uart_device.cpp
- * UART device abstraction
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cstdint>
@@ -128,12 +128,19 @@ Uart::Config GetUartConfig(const uint8_t id,
 UartDevice::UartDevice(const uint8_t id, const Uart::Config::BaudRate baud_rate)
 		: m_rx_buf{new RxBuffer}, m_listener(nullptr),
 		  m_tx_buf(14), m_is_tx_idle(true),
-		  m_uart(GetUartConfig(id, baud_rate,
-				  std::bind(&UartDevice::OnTxEmpty, this, placeholders::_1),
-				  std::bind(&UartDevice::OnRxFull, this, placeholders::_1)))
-{}
+		  m_uart(nullptr)
+{
+	Uart::Config uc = GetUartConfig(id, baud_rate,
+			std::bind(&UartDevice::OnTxEmpty, this, placeholders::_1),
+			std::bind(&UartDevice::OnRxFull, this, placeholders::_1));
+	OnConfigUart(&uc);
+	m_uart = Uart(uc);
+}
 
 UartDevice::~UartDevice()
+{}
+
+void UartDevice::OnConfigUart(Uart::Config*)
 {}
 
 inline void UartDevice::EnableTx()

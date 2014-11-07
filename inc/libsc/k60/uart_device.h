@@ -1,9 +1,10 @@
 /*
  * uart_device.h
- * UART device abstraction
+ * Generic class for UART devices, also handles Tx and Rx buffering
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -34,7 +35,7 @@ public:
 
 	UartDevice(const uint8_t id,
 			const libbase::k60::Uart::Config::BaudRate baud_rate);
-	~UartDevice();
+	virtual ~UartDevice();
 
 	/**
 	 * Send a string through UART. A copy will be queued
@@ -105,6 +106,9 @@ public:
 	{
 		m_uart.SetLoopMode(flag);
 	}
+
+protected:
+	virtual void OnConfigUart(libbase::k60::Uart::Config *config);
 
 private:
 	struct RxBuffer;
