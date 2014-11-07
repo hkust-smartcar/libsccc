@@ -131,7 +131,7 @@ Uart::Uart(const Config &config)
 
 	g_instances[m_module] = this;
 	InitBaudRate(config.baud_rate);
-	InitPin(config.tx_pin, config.rx_pin);
+	InitPin(config);
 
 	InitC1Reg(config);
 	InitFifo(config);
@@ -301,17 +301,17 @@ void Uart::InitBaudRate(const Config::BaudRate br)
 	uart_ptr->C4 |= brfa;
 }
 
-void Uart::InitPin(const Pin::Name tx_pin, const Pin::Name rx_pin)
+void Uart::InitPin(const Config &config)
 {
 	Pin::Config tx_config, rx_config;
-	tx_config.pin = tx_pin;
-	rx_config.pin = rx_pin;
+	tx_config.pin = config.tx_pin;
+	rx_config.pin = config.rx_pin;
 	if (m_module == 0)
 	{
-		tx_config.mux = (tx_pin == Pin::Name::kPta2)
+		tx_config.mux = (config.tx_pin == Pin::Name::kPta2)
 				? Pin::Config::MuxControl::kAlt2
 						: Pin::Config::MuxControl::kAlt3;
-		rx_config.mux = (rx_pin == Pin::Name::kPta1)
+		rx_config.mux = (config.rx_pin == Pin::Name::kPta1)
 				? Pin::Config::MuxControl::kAlt2
 						: Pin::Config::MuxControl::kAlt3;
 	}
@@ -320,6 +320,8 @@ void Uart::InitPin(const Pin::Name tx_pin, const Pin::Name rx_pin)
 		tx_config.mux = Pin::Config::MuxControl::kAlt3;
 		rx_config.mux = Pin::Config::MuxControl::kAlt3;
 	}
+	tx_config.config = config.tx_config;
+	rx_config.config = config.rx_config;
 
 	m_tx = Pin(tx_config);
 	m_rx = Pin(rx_config);

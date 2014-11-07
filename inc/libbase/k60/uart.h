@@ -58,7 +58,9 @@ public:
 		};
 
 		Pin::Name tx_pin;
+		std::bitset<Pin::Config::ConfigBit::kSize> tx_config;
 		Pin::Name rx_pin;
+		std::bitset<Pin::Config::ConfigBit::kSize> rx_config;
 		BaudRate baud_rate;
 		std::bitset<ConfigBit::kSize> config;
 
@@ -129,7 +131,7 @@ private:
 
 	bool InitModule(const Pin::Name tx_pin, const Pin::Name rx_pin);
 	void InitBaudRate(const Config::BaudRate br);
-	void InitPin(const Pin::Name tx_pin, const Pin::Name rx_pin);
+	void InitPin(const Config &config);
 	void InitC1Reg(const Config &config);
 	void InitFifo(const Config &config);
 	void InitInterrupt(const Config &config);
