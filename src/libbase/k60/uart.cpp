@@ -402,14 +402,13 @@ void Uart::SetLoopMode(const bool flag)
 {
 	STATE_GUARD(Uart, VOID);
 
-	UART_Type* uart_ptr = MEM_MAPS[m_module];
 	if (flag)
 	{
-		SET_BIT(uart_ptr->C1, UART_C1_LOOPS_SHIFT);
+		SET_BIT(MEM_MAPS[m_module]->C1, UART_C1_LOOPS_SHIFT);
 	}
 	else
 	{
-		CLEAR_BIT(uart_ptr->C1, UART_C1_LOOPS_SHIFT);
+		CLEAR_BIT(MEM_MAPS[m_module]->C1, UART_C1_LOOPS_SHIFT);
 	}
 }
 
