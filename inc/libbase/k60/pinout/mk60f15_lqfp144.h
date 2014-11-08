@@ -10,6 +10,16 @@
 
 #pragma once
 
+// These macros are here to support conditional inclution only, DO NOT use
+// directly
+#define PINOUT_PIN_COUNT 144
+#define PINOUT_FTM_COUNT 4
+#define PINOUT_FTM_CHANNEL_COUNT 8
+#define PINOUT_PORT_COUNT 5
+#define PINOUT_PORT_PIN_COUNT 32
+#define PINOUT_SPI_COUNT 3
+#define PINOUT_UART_COUNT 6
+
 #include <bitset>
 
 #include "libbase/k60/adc.h"
@@ -67,12 +77,12 @@ public:
 
 	static constexpr Uint GetFtmCount()
 	{
-		return 4;
+		return PINOUT_FTM_COUNT;
 	}
 
 	static constexpr Uint GetFtmChannelCount()
 	{
-		return 8;
+		return PINOUT_FTM_CHANNEL_COUNT;
 	}
 
 	static constexpr Uint GetPinCount()
@@ -82,26 +92,26 @@ public:
 
 	static constexpr Uint GetPortCount()
 	{
-		return 5;
+		return PINOUT_PORT_COUNT;
 	}
 
 	static constexpr Uint GetPortPinCount()
 	{
-		return 32;
+		return PINOUT_PORT_PIN_COUNT;
 	}
 
 	static constexpr Uint GetSpiCount()
 	{
-		return 3;
+		return PINOUT_SPI_COUNT;
 	}
 
 	static constexpr Uint GetUartCount()
 	{
-		return 6;
+		return PINOUT_UART_COUNT;
 	}
 
 private:
-	static constexpr Uint kPinCount = 144;
+	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;
 
 	Mk60f15Lqfp144();
 
