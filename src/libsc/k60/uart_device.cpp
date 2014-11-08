@@ -125,22 +125,32 @@ Uart::Config GetUartConfig(const uint8_t id,
 
 }
 
+UartDevice::UartConfigBuilder::UartConfigBuilder(const uint8_t id,
+		const Uart::Config::BaudRate baud_rate, UartDevice *uart)
+		: m_config(GetUartConfig(id, baud_rate,
+				std::bind(&UartDevice::OnTxEmpty, uart, placeholders::_1),
+				std::bind(&UartDevice::OnRxFull, uart, placeholders::_1)))
+{}
+
+Uart::Config UartDevice::UartConfigBuilder::Build() const
+{
+	return m_config;
+}
+
 UartDevice::UartDevice(const uint8_t id, const Uart::Config::BaudRate baud_rate)
+		: UartDevice(UartConfigBuilder(id, baud_rate, this))
+{}
+
+UartDevice::UartDevice(const UartConfigBuilder &builder)
 		: m_rx_buf{new RxBuffer}, m_listener(nullptr),
 		  m_tx_buf(14), m_is_tx_idle(true),
-		  m_uart(nullptr)
+		  m_uart(builder.Build())
 {
-	Uart::Config uc = GetUartConfig(id, baud_rate,
-			std::bind(&UartDevice::OnTxEmpty, this, placeholders::_1),
-			std::bind(&UartDevice::OnRxFull, this, placeholders::_1));
-	OnConfigUart(&uc);
-	m_uart = Uart(uc);
+	m_uart.SetEnableRxIrq(true);
+	m_uart.SetEnableTxIrq(true);
 }
 
 UartDevice::~UartDevice()
-{}
-
-void UartDevice::OnConfigUart(Uart::Config*)
 {}
 
 inline void UartDevice::EnableTx()

@@ -108,7 +108,20 @@ public:
 	}
 
 protected:
-	virtual void OnConfigUart(libbase::k60::Uart::Config *config);
+	class UartConfigBuilder
+	{
+	public:
+		UartConfigBuilder(const uint8_t id,
+				const libbase::k60::Uart::Config::BaudRate baud_rate,
+				UartDevice *uart);
+
+		virtual libbase::k60::Uart::Config Build() const;
+
+	private:
+		libbase::k60::Uart::Config m_config;
+	};
+
+	explicit UartDevice(const UartConfigBuilder &builder);
 
 private:
 	struct RxBuffer;

@@ -17,12 +17,19 @@ namespace libsc
 namespace k60
 {
 
-void JyMcuBt106::OnConfigUart(Uart::Config *config)
+JyMcuBt106::JyMcuBt106(const uint8_t id,
+		const Uart::Config::BaudRate baud_rate)
+		: UartDevice(UartConfigBuilder(id, baud_rate, this))
+{}
+
+Uart::Config JyMcuBt106::UartConfigBuilder::Build() const
 {
+	Uart::Config config = UartDevice::UartConfigBuilder::Build();
 	// On this board, there's a diode connected to the Tx pin, preventing the
 	// module to correctly send data to the MCU
-	config->rx_config[Pin::Config::kPullEnable] = true;
-	config->rx_config[Pin::Config::kPullUp] = true;
+	config.rx_config[Pin::Config::kPullEnable] = true;
+	config.rx_config[Pin::Config::kPullUp] = true;
+	return config;
 }
 
 }

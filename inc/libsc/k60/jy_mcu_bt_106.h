@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include "libbase/k60/uart.h"
 
 #include "libsc/k60/uart_device.h"
@@ -20,10 +22,18 @@ namespace k60
 
 class JyMcuBt106 : public UartDevice
 {
-protected:
-	using UartDevice::UartDevice;
+public:
+	JyMcuBt106(const uint8_t id,
+			const libbase::k60::Uart::Config::BaudRate baud_rate);
 
-	void OnConfigUart(libbase::k60::Uart::Config *config) override;
+protected:
+	class UartConfigBuilder : public UartDevice::UartConfigBuilder
+	{
+	public:
+		using UartDevice::UartConfigBuilder::UartConfigBuilder;
+
+		virtual libbase::k60::Uart::Config Build() const override;
+	};
 };
 
 }
