@@ -115,6 +115,12 @@ public:
 		return m_rx_fifo_size;
 	}
 
+	/**
+	 * Enable Tx/Rx interrupt, by default they are both disabled after
+	 * initialization and required programmer to explicitly enable them
+	 *
+	 * @param flag
+	 */
 	void SetEnableTxIrq(const bool flag);
 	void SetEnableRxIrq(const bool flag);
 

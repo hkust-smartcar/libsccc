@@ -415,18 +415,19 @@ void Uart::SetLoopMode(const bool flag)
 
 void Uart::SetInterrupt(const bool tx_flag, const bool rx_flag)
 {
+	// If we init the interrupt here, Tx isr will be called immediately which
+	// may not be intended
+	SetEnableTxIrq(false);
+	SetEnableRxIrq(false);
+
 	if (tx_flag || rx_flag)
 	{
 		SetIsr(EnumAdvance(UART0_RX_TX_IRQn, m_module << 1), IrqHandler);
-		SetEnableTxIrq(tx_flag);
-		SetEnableRxIrq(rx_flag);
 		EnableIrq(EnumAdvance(UART0_RX_TX_IRQn, m_module << 1));
 	}
 	else
 	{
 		DisableIrq(EnumAdvance(UART0_RX_TX_IRQn, m_module << 1));
-		SetEnableTxIrq(false);
-		SetEnableRxIrq(false);
 		SetIsr(EnumAdvance(UART0_RX_TX_IRQn, m_module << 1), nullptr);
 	}
 }
