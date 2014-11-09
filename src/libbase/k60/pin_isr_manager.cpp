@@ -139,13 +139,14 @@ __ISR void PinIsrManager::PortIrqHandler()
 	PinData *pin_data = PinIsrManager::GetInstance()->m_pin_data[port];
 	for (int i = 0; i < PINOUT::GetPortPinCount(); ++i)
 	{
-		if (pin_data[i].pin && pin_data[i].pin->IsInterruptRequested())
+		const Pin::Name pin = PinUtils::GetPin(port, i);
+		if (Pin::IsInterruptRequested(pin))
 		{
-			pin_data[i].pin->ConsumeInterrupt();
-			if (pin_data[i].isr)
+			if (pin_data[i].pin && pin_data[i].isr)
 			{
-				pin_data[i].isr(PinUtils::GetPin(port, i));
+				pin_data[i].isr(pin);
 			}
+			Pin::ConsumeInterrupt(pin);
 		}
 	}
 }
