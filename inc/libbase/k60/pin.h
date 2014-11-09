@@ -265,6 +265,9 @@ public:
 	bool IsInterruptRequested() const;
 	void ConsumeInterrupt();
 
+	static bool IsInterruptRequested(const Pin::Name pin);
+	static void ConsumeInterrupt(const Pin::Name pin);
+
 private:
 	void Uninit();
 

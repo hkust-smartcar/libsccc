@@ -222,16 +222,26 @@ bool Pin::IsInterruptRequested() const
 {
 	STATE_GUARD(Pin, false);
 
-	return GET_BIT(MEM_MAPS[PinUtils::GetPort(m_name)]->ISFR,
-			PinUtils::GetPinNumber(m_name));
+	return IsInterruptRequested(m_name);
 }
 
 void Pin::ConsumeInterrupt()
 {
 	STATE_GUARD(Pin, VOID);
 
-	SET_BIT(MEM_MAPS[PinUtils::GetPort(m_name)]->ISFR,
-			PinUtils::GetPinNumber(m_name));
+	ConsumeInterrupt(m_name);
+}
+
+bool Pin::IsInterruptRequested(const Pin::Name pin)
+{
+	return GET_BIT(MEM_MAPS[PinUtils::GetPort(pin)]->ISFR,
+			PinUtils::GetPinNumber(pin));
+}
+
+void Pin::ConsumeInterrupt(const Pin::Name pin)
+{
+	SET_BIT(MEM_MAPS[PinUtils::GetPort(pin)]->ISFR,
+			PinUtils::GetPinNumber(pin));
 }
 
 }
