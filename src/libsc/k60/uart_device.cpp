@@ -353,7 +353,7 @@ void UartDevice::SendStr(string&&) {}
 void UartDevice::SendBuffer(const Byte*, const size_t) {}
 void UartDevice::SendBuffer(unique_ptr<Byte[]>&&, const size_t) {}
 void UartDevice::SendBuffer(vector<Byte>&&) {}
-void UartDevice::EnableRx(OnReceiveListener) {}
+void UartDevice::EnableRx(const OnReceiveListener&) {}
 void UartDevice::DisableRx() {}
 bool UartDevice::PeekChar(char*) { return false; }
 
