@@ -17,6 +17,7 @@
 // These macros are here to support conditional inclution only, DO NOT use
 // directly
 #define PINOUT_PIN_COUNT 144
+#define PINOUT_ADC_COUNT 2
 #define PINOUT_FTM_COUNT 3
 #define PINOUT_FTM_CHANNEL_COUNT 8
 #define PINOUT_PORT_COUNT 5
@@ -77,6 +78,11 @@ public:
 	static void UnregPin(const Dac::Name pin)
 	{
 		GetInstance()->UnregPin_(pin);
+	}
+
+	static constexpr Uint GetAdcCount()
+	{
+		return PINOUT_ADC_COUNT;
 	}
 
 	static constexpr Uint GetFtmCount()
