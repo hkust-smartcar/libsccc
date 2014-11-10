@@ -9,9 +9,10 @@
 
 #include <bitset>
 
+#include "libbase/k60/pinout/mk60d10_lqfp144.h"
+
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
-#include "libbase/k60/pinout/mk60d10_lqfp144.h"
 
 namespace libbase
 {
