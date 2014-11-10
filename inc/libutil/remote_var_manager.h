@@ -66,7 +66,7 @@ public:
 
 		void SetReal(const float val)
 		{
-			m_val = *reinterpret_cast<const float*>(&val);
+			m_val = *reinterpret_cast<const uint32_t*>(&val);
 		}
 
 	private:
