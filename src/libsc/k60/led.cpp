@@ -92,12 +92,12 @@ void Led::Switch()
 }
 
 #else
-Led::Led(const uint8_t id)
+Led::Led(const uint8_t)
 		: m_pin(nullptr)
 {
 	LOG_DL("Configured not to use Led");
 }
-void Led::SetEnable(const bool flag) {}
+void Led::SetEnable(const bool) {}
 void Led::Switch() {}
 
 #endif
