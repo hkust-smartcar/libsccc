@@ -238,10 +238,10 @@ int GetPinId(const Dac::Name pin)
 	switch (pin)
 	{
 	case Dac::Name::kDac0:
-		return 38;
+		return 37;
 
 	case Dac::Name::kDac1:
-		return 39;
+		return 38;
 
 	default:
 		assert(false);
