@@ -30,8 +30,6 @@
 using namespace libutil;
 using namespace std;
 
-#define ADC_COUNT 2
-
 namespace libbase
 {
 namespace k60
@@ -40,9 +38,19 @@ namespace k60
 namespace
 {
 
-constexpr ADC_Type* MEM_MAPS[ADC_COUNT] = {ADC0, ADC1};
+constexpr ADC_Type* MEM_MAPS[PINOUT::GetAdcCount()] =
+{
+	ADC0,
+	ADC1,
+#if PINOUT_ADC_COUNT > 2
+	ADC2,
+#endif
+#if PINOUT_ADC_COUNT > 3
+	ADC3,
+#endif
+};
 
-Adc* g_instances[ADC_COUNT] = {};
+Adc* g_instances[PINOUT::GetAdcCount()] = {};
 
 Uint GetClockDivider(const Uint target_clock_khz)
 {

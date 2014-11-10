@@ -111,11 +111,29 @@ int GetPinId(const Adc::Name pin)
 	{
 		return (Uint)pin - (Uint)Adc::Name::kAdc1Ad4A;
 	}
-	else if (pin == Adc::Name::kAdc0DAd1)
+	else if (pin == Adc::Name::kAdc2Ad16)
+	{
+		return 10;
+	}
+	else if (pin == Adc::Name::kAdc2Ad17)
+	{
+		return 11;
+	}
+	else if (pin == Adc::Name::kAdc3Ad16)
+	{
+		return 13;
+	}
+	else if (pin == Adc::Name::kAdc3Ad17)
+	{
+		return 14;
+	}
+	else if (pin == Adc::Name::kAdc2DAd2|| pin == Adc::Name::kAdc2DAd0
+			|| pin == Adc::Name::kAdc3DAd3 || pin == Adc::Name::kAdc0DAd1)
 	{
 		return 22;
 	}
-	else if (pin == Adc::Name::kAdc1DAd1)
+	else if (pin == Adc::Name::kAdc3DAd2 || pin == Adc::Name::kAdc3DAd0
+			|| pin == Adc::Name::kAdc2DAd3 || pin == Adc::Name::kAdc1DAd1)
 	{
 		return 24;
 	}
@@ -157,6 +175,22 @@ int GetPinId(const Adc::Name pin)
 	{
 		return 45;
 	}
+	else if (pin == Adc::Name::kAdc3Ad5B)
+	{
+		return 46;
+	}
+	else if (pin == Adc::Name::kAdc3Ad4B)
+	{
+		return 47;
+	}
+	else if (pin == Adc::Name::kAdc3Ad7A)
+	{
+		return 48;
+	}
+	else if (pin == Adc::Name::kAdc3Ad6A)
+	{
+		return 57;
+	}
 	else if (pin == Adc::Name::kAdc0Ad10)
 	{
 		return 58;
@@ -165,15 +199,45 @@ int GetPinId(const Adc::Name pin)
 	{
 		return 59;
 	}
+	else if (pin == Adc::Name::kAdc3Ad5A)
+	{
+		return 60;
+	}
+	else if (pin == Adc::Name::kAdc3Ad4A)
+	{
+		return 61;
+	}
+	else if (pin == Adc::Name::kAdc3Ad15)
+	{
+		return 62;
+	}
 	else if (pin == Adc::Name::kAdc1Ad17)
 	{
 		return 68;
 	}
-	else if (pin == Adc::Name::kAdc0Ad8 || pin == Adc::Name::kAdc1Ad8)
+	else if (pin == Adc::Name::kAdc2Ad15)
+	{
+		return 76;
+	}
+	else if (pin == Adc::Name::kAdc2Ad14)
+	{
+		return 77;
+	}
+	else if (pin == Adc::Name::kAdc2Ad13)
+	{
+		return 78;
+	}
+	else if (pin == Adc::Name::kAdc2Ad12)
+	{
+		return 79;
+	}
+	else if (pin == Adc::Name::kAdc0Ad8 || pin == Adc::Name::kAdc1Ad8
+			|| pin == Adc::Name::kAdc2Ad8 || pin == Adc::Name::kAdc3Ad8)
 	{
 		return 80;
 	}
-	else if (pin == Adc::Name::kAdc0Ad9 || pin == Adc::Name::kAdc1Ad9)
+	else if (pin == Adc::Name::kAdc0Ad9 || pin == Adc::Name::kAdc1Ad9
+			|| pin == Adc::Name::kAdc2Ad9 || pin == Adc::Name::kAdc3Ad9)
 	{
 		return 81;
 	}
@@ -197,6 +261,14 @@ int GetPinId(const Adc::Name pin)
 	else if (pin == Adc::Name::kAdc1Ad15)
 	{
 		return 91;
+	}
+	else if (pin == Adc::Name::kAdc2Ad4A)
+	{
+		return 98;
+	}
+	else if (pin == Adc::Name::kAdc2Ad5A)
+	{
+		return 99;
 	}
 	else if (pin == Adc::Name::kAdc0Ad14)
 	{
