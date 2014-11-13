@@ -84,6 +84,8 @@
 #define LIBSC_MOTOR1_PWM libbase::k60::Pin::Name::kPtd7
 #define LIBSC_MOTOR1_DIR libbase::k60::Pin::Name::kPte7
 
+#define LIBSC_DIR_MOTOR_CW_LEVEL 0
+
 #define LIBSC_SERVO0 libbase::k60::Pin::Name::kPta10
 #define LIBSC_SERVO0_SOFT_PWM_PIT_CHANNEL 1
 
