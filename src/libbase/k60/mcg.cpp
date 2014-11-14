@@ -82,9 +82,13 @@
 #if MK60DZ10 || MK60D10
 	#define PRDIV_MAX 0x18
 	#define VDIV_BASE 24
+	#define MIN_PLL_REF_KHZ 2000
+	#define MAX_PLL_REF_KHZ 4000
 #elif MK60F15
 	#define PRDIV_MAX 0x7
 	#define VDIV_BASE 16
+	#define MIN_PLL_REF_KHZ 8000
+	#define MAX_PLL_REF_KHZ 16000
 #endif
 
 #if MK60DZ10 || MK60D10
@@ -173,6 +177,13 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 	Uint min_diff = static_cast<Uint>(-1);
 	for (Uint i = 0; i <= PRDIV_MAX; ++i)
 	{
+		const uint32_t pll_ref_khz = external_osc_khz / (i + 1);
+		if (pll_ref_khz < MIN_PLL_REF_KHZ || pll_ref_khz > MAX_PLL_REF_KHZ)
+		{
+			// PLL reference freq not valid
+			continue;
+		}
+
 		for (Uint j = 0; j <= 0x1F; ++j)
 		{
 			const uint32_t this_clock = external_osc_khz * (j + VDIV_BASE)
