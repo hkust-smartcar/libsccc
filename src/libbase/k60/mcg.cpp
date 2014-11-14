@@ -193,7 +193,7 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 	m_prdiv = best_prdiv;
 	m_vdiv = best_vdiv;
 
-	m_core_clock = (uint64_t)(external_osc_khz * 1000) * (m_vdiv + 24)
+	m_core_clock = (uint64_t)(external_osc_khz * 1000) * (m_vdiv + VDIV_BASE)
 			/ (m_prdiv + 1);
 }
 
