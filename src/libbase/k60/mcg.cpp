@@ -222,6 +222,11 @@ void Mcg::Init()
 	calc.Calc(config.external_oscillator_khz, config.core_clock_khz);
 	InitClocks(config, calc.GetCoreClock());
 
+#if MK60F15
+	// Select PLL0 clock source
+	CLEAR_BIT(MCG->C11, MCG_C11_PLLCS_SHIFT);
+#endif
+
 	// Then configure C5[PRDIV] to generate correct PLL reference frequency
 	MCG->C5 |= _MCG_C5_PRDIV0(calc.GetPrdiv());
 
