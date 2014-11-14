@@ -5,7 +5,10 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
+ 
+#include <cstdint>
 
+#include "libbase/k60/pin.h"
 #include "libbase/k60/uart.h"
 
 #include "libsc/k60/jy_mcu_bt_106.h"
