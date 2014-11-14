@@ -67,6 +67,7 @@
 #define FLL_MAX_FREQ 39062
 #define FLL_MIN_FREQ 31250
 
+#define MAX_CORE_CLOCK 100000000
 #define MAX_BUS_CLOCK 50000000
 #define MAX_FLEXBUS_CLOCK 50000000
 #define MAX_FLASH_CLOCK 25000000
@@ -173,6 +174,14 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 }
 
 uint32_t Mcg::m_core_clock = 0;
+
+Mcg::Config::Config()
+		: external_oscillator_khz(0),
+		  core_clock_khz(MAX_CORE_CLOCK / 1000),
+		  bus_clock_khz(MAX_BUS_CLOCK / 1000),
+		  flexbus_clock_khz(MAX_FLEXBUS_CLOCK / 1000),
+		  flash_clock_khz(MAX_FLEXBUS_CLOCK / 1000)
+{}
 
 void Mcg::Init()
 {
