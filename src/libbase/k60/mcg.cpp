@@ -186,8 +186,11 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 
 		for (Uint j = 0; j <= 0x1F; ++j)
 		{
-			const uint32_t this_clock = external_osc_khz * (j + VDIV_BASE)
-					/ (i + 1);
+			uint32_t this_clock = external_osc_khz * (j + VDIV_BASE) / (i + 1);
+#if MK60F15
+			// K60 120/150 parts have an additional /2 at the output of VCO
+			this_clock >>= 1;
+#endif
 			const Uint this_diff = abs((int32_t)(this_clock - core_clock_khz));
 			if (this_diff < min_diff)
 			{
@@ -208,6 +211,9 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 
 	m_core_clock = (uint64_t)(external_osc_khz * 1000) * (m_vdiv + VDIV_BASE)
 			/ (m_prdiv + 1);
+#if MK60F15
+	m_core_clock >>= 1;
+#endif
 }
 
 }
