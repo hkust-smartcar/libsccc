@@ -101,12 +101,6 @@ St7735r::St7735r(const bool is_revert)
 
 		  m_bg_color(0)
 {
-#ifdef LIBSC_USE_LCD_HW_SPI
-	spi_init(SpiUtils::GetSpiModule<LIBSC_LCD_SCLK, LIBSC_LCD_MOSI, LIBSC_LCD_MISO, LIBSC_LCD_CS>(),
-			SpiUtils::GetSpiPcs<LIBSC_LCD_SCLK, LIBSC_LCD_MOSI, LIBSC_LCD_MISO, LIBSC_LCD_CS>(),
-			MASTER, SPI_MOSI_FLAG, 12000000u);
-#endif
-
 	Clear();
 	SEND_COMMAND(CMD_SW_RESET);
 	System::DelayMs(10);
