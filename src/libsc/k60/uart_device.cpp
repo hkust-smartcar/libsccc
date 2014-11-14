@@ -341,6 +341,10 @@ void UartDevice::OnRxFull(Uart *uart)
 struct UartDevice::RxBuffer
 {};
 
+UartDevice::UartConfigBuilder::UartConfigBuilder(const uint8_t,
+		const Uart::Config::BaudRate, UartDevice*)
+{}
+
 UartDevice::UartDevice(const uint8_t, const Uart::Config::BaudRate)
 		: m_tx_buf(0), m_is_tx_idle(true), m_uart(nullptr)
 {
