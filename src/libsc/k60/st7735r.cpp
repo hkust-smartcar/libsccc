@@ -92,8 +92,16 @@ St7735r::St7735r(const bool is_revert)
 	SEND_COMMAND(ST7735R_SLPOUT);
 	System::DelayMs(120);
 
+	uint8_t madctl_reg = 0;
+	if (!is_revert)
+	{
+		madctl_reg |= 0xC0;
+	}
+#ifdef LIBSC_ST7735R_BGR_PANEL
+	madctl_reg |= 0x08;
+#endif
 	SEND_COMMAND(ST7735R_MADCTL);
-	SEND_DATA(is_revert ? 0x08 : 0xC8);
+	SEND_DATA(madctl_reg);
 
 	// 16-bit
 	SEND_COMMAND(ST7735R_COLMOD);
