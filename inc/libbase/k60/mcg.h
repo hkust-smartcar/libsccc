@@ -21,6 +21,8 @@ class Mcg
 public:
 	struct Config
 	{
+		Config();
+
 		uint32_t external_oscillator_khz;
 		uint32_t core_clock_khz;
 		uint32_t bus_clock_khz;
