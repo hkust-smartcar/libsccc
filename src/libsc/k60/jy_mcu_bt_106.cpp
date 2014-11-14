@@ -5,7 +5,7 @@
  * Copyright (c) 2014 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
- 
+
 #include <cstdint>
 
 #include "libbase/k60/pin.h"
@@ -19,6 +19,8 @@ namespace libsc
 {
 namespace k60
 {
+
+#ifdef LIBSC_USE_UART
 
 JyMcuBt106::JyMcuBt106(const uint8_t id,
 		const Uart::Config::BaudRate baud_rate)
@@ -34,6 +36,8 @@ Uart::Config JyMcuBt106::UartConfigBuilder::Build() const
 	config.rx_config[Pin::Config::kPullUp] = true;
 	return config;
 }
+
+#endif
 
 }
 }
