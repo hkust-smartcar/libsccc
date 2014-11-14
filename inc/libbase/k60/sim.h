@@ -67,6 +67,7 @@ public:
 		kPortC,
 		kPortD,
 		kPortE,
+		kRegFile,
 		kRng,
 		kRtc,
 		kSdhc,

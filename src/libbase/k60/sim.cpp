@@ -249,6 +249,10 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 		SetClockGateBit(SIM->SCGC5, SIM_SCGC5_PORTE_SHIFT, flag);
 		break;
 
+	case ClockGate::kRegFile:
+		SetClockGateBit(SIM->SCGC5, SIM_SCGC5_REGFILE_SHIFT, flag);
+		break;
+
 	case ClockGate::kRng:
 #ifdef MK60DZ10
 		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_RNGB_SHIFT, flag);
