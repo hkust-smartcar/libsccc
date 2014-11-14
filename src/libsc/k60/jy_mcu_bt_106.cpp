@@ -10,6 +10,7 @@
 
 #include "libbase/k60/uart.h"
 
+#include "libsc/config.h"
 #include "libsc/k60/jy_mcu_bt_106.h"
 
 using namespace libbase::k60;
