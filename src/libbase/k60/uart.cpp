@@ -292,8 +292,8 @@ void Uart::InitBaudRate(const Config::BaudRate br)
 	assert(sbr <= 0x1FFF);
 
 	UART_Type* uart_ptr = MEM_MAPS[m_module];
-	uart_ptr->BDH = (sbr >> 8) & 0x1F;
-	uart_ptr->BDL = sbr & 0xFF;
+	uart_ptr->BDH = UART_BDH_SBR(sbr >> 8);
+	uart_ptr->BDL = UART_BDL_SBR(sbr);
 
 	float null;
 	const int brfa = roundf(modf(target, &null) * 32);
