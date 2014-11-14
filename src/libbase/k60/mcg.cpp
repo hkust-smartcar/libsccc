@@ -67,9 +67,35 @@
 #define FLL_MAX_FREQ 39062
 #define FLL_MIN_FREQ 31250
 
-#define MAX_BUS_CLOCK 50000000
-#define MAX_FLEXBUS_CLOCK 50000000
-#define MAX_FLASH_CLOCK 25000000
+#if MK60DZ10
+	#define _MCG_C2_RANGE0 MCG_C2_RANGE
+	#define _MCG_C5_PRDIV0 MCG_C5_PRDIV
+	#define _MCG_C6_VDIV0 MCG_C6_VDIV
+	#define _MCG_S_LOCK0_SHIFT MCG_S_LOCK_SHIFT
+#else
+	#define _MCG_C2_RANGE0 MCG_C2_RANGE0
+	#define _MCG_C5_PRDIV0 MCG_C5_PRDIV0
+	#define _MCG_C6_VDIV0 MCG_C6_VDIV0
+	#define _MCG_S_LOCK0_SHIFT MCG_S_LOCK0_SHIFT
+#endif
+
+#if MK60DZ10 || MK60D10
+	#define PRDIV_MAX 0x18
+	#define VDIV_BASE 24
+#elif MK60F15
+	#define PRDIV_MAX 0x7
+	#define VDIV_BASE 16
+#endif
+
+#if MK60DZ10 || MK60D10
+	#define MAX_BUS_CLOCK 50000000
+	#define MAX_FLEXBUS_CLOCK 50000000
+	#define MAX_FLASH_CLOCK 25000000
+#elif MK60F15
+	#define MAX_BUS_CLOCK 75000000
+	#define MAX_FLEXBUS_CLOCK 50000000
+	#define MAX_FLASH_CLOCK 25000000
+#endif
 
 namespace libbase
 {
@@ -143,11 +169,12 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 {
 	Uint best_prdiv = 0, best_vdiv = 0;
 	Uint min_diff = static_cast<Uint>(-1);
-	for (Uint i = 0; i <= 0x18; ++i)
+	for (Uint i = 0; i <= PRDIV_MAX; ++i)
 	{
 		for (Uint j = 0; j <= 0x1F; ++j)
 		{
-			const uint32_t this_clock = external_osc_khz * (j + 24) / (i + 1);
+			const uint32_t this_clock = external_osc_khz * (j + VDIV_BASE)
+					/ (i + 1);
 			const Uint this_diff = abs((int32_t)(this_clock - core_clock_khz));
 			if (this_diff < min_diff)
 			{
@@ -186,7 +213,7 @@ void Mcg::Init()
 	InitClocks(config, calc.GetCoreClock());
 
 	// Then configure C5[PRDIV] to generate correct PLL reference frequency
-	MCG->C5 |= MCG_C5_PRDIV(calc.GetPrdiv());
+	MCG->C5 |= _MCG_C5_PRDIV0(calc.GetPrdiv());
 
 	// Then, FBE must transition either directly to PBE mode or first through
 	// BLPE mode and then to PBE mode
@@ -201,7 +228,11 @@ void Mcg::Init()
 void Mcg::InitFbe(const Config &config)
 {
 	uint8_t c2_reg = 0;
-	c2_reg |= MCG_C2_RANGE(2);
+#if MK60F15
+	// Reset with a loss of OSC clock
+	SET_BIT(c2_reg, MCG_C2_LOCRE0_SHIFT);
+#endif
+	c2_reg |= _MCG_C2_RANGE0(2);
 	MCG->C2 = c2_reg;
 
 	uint8_t c1_reg = 0;
@@ -256,7 +287,7 @@ void Mcg::InitPbe(const Config&, const uint8_t vdiv)
 
 	uint8_t c6_reg = 0;
 	SET_BIT(c6_reg, MCG_C6_PLLS_SHIFT);
-	c6_reg |= MCG_C6_VDIV(vdiv);
+	c6_reg |= _MCG_C6_VDIV0(vdiv);
 	MCG->C6 = c6_reg;
 
 	// Clear C2[LP] to 0 here to switch to PBE mode
@@ -268,7 +299,7 @@ void Mcg::InitPbe(const Config&, const uint8_t vdiv)
 	{}
 
 	// Then loop until S[LOCK] is set, indicating that the PLL has acquired lock
-	while (!GET_BIT(MCG->S, MCG_S_LOCK_SHIFT))
+	while (!GET_BIT(MCG->S, _MCG_S_LOCK0_SHIFT))
 	{}
 }
 
