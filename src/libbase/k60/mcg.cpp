@@ -233,13 +233,15 @@ void Mcg::Init()
 	calc.Calc(config.external_oscillator_khz, config.core_clock_khz);
 	InitClocks(config, calc.GetCoreClock());
 
+	// Then configure C5[PRDIV] to generate correct PLL reference frequency
+	MCG->C5 |= _MCG_C5_PRDIV0(calc.GetPrdiv());
 #if MK60F15
 	// Select PLL0 clock source
 	CLEAR_BIT(MCG->C11, MCG_C11_PLLCS_SHIFT);
+	// Select the external reference clock from OSC0 as the reference clock to
+	// the PLL
+	CLEAR_BIT(MCG->C5, MCG_C5_PLLREFSEL0_SHIFT);
 #endif
-
-	// Then configure C5[PRDIV] to generate correct PLL reference frequency
-	MCG->C5 |= _MCG_C5_PRDIV0(calc.GetPrdiv());
 
 	// Then, FBE must transition either directly to PBE mode or first through
 	// BLPE mode and then to PBE mode
