@@ -327,8 +327,6 @@ int GetPinId(const Dac::Name pin)
 
 }
 
-Mk60f15Lqfp144 *Mk60f15Lqfp144::m_instance = nullptr;
-
 Mk60f15Lqfp144::Mk60f15Lqfp144()
 {}
 

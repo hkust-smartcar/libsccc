@@ -28,42 +28,42 @@ class Mk60f15Lqfp144
 public:
 	static bool RegPin(const Uint pin)
 	{
-		return GetInstance()->RegPin_(pin);
+		return Get().RegPin_(pin);
 	}
 
 	static bool RegPin(const Pin::Name pin)
 	{
-		return GetInstance()->RegPin_(pin);
+		return Get().RegPin_(pin);
 	}
 
 	static bool RegPin(const Adc::Name pin)
 	{
-		return GetInstance()->RegPin_(pin);
+		return Get().RegPin_(pin);
 	}
 
 	static bool RegPin(const Dac::Name pin)
 	{
-		return GetInstance()->RegPin_(pin);
+		return Get().RegPin_(pin);
 	}
 
 	static void UnregPin(const Uint pin)
 	{
-		GetInstance()->UnregPin_(pin);
+		Get().UnregPin_(pin);
 	}
 
 	static void UnregPin(const Pin::Name pin)
 	{
-		GetInstance()->UnregPin_(pin);
+		Get().UnregPin_(pin);
 	}
 
 	static void UnregPin(const Adc::Name pin)
 	{
-		GetInstance()->UnregPin_(pin);
+		Get().UnregPin_(pin);
 	}
 
 	static void UnregPin(const Dac::Name pin)
 	{
-		GetInstance()->UnregPin_(pin);
+		Get().UnregPin_(pin);
 	}
 
 	static constexpr Uint GetAdcCount()
@@ -117,13 +117,10 @@ private:
 
 	Mk60f15Lqfp144();
 
-	static Mk60f15Lqfp144* GetInstance()
+	static Mk60f15Lqfp144& Get()
 	{
-		if (!m_instance)
-		{
-			m_instance = new Mk60f15Lqfp144;
-		}
-		return m_instance;
+		static Mk60f15Lqfp144 inst;
+		return inst;
 	}
 
 	bool RegPin_(const Uint pin);
@@ -136,8 +133,6 @@ private:
 	void UnregPin_(const Dac::Name pin);
 
 	std::bitset<kPinCount> m_is_pins_active;
-
-	static Mk60f15Lqfp144 *m_instance;
 };
 
 }
