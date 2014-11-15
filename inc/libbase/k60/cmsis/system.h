@@ -12,13 +12,6 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
-
-/**
- * System Clock Frequency (Core Clock & System Clock)
- */
-extern uint32_t g_system_core_clock;
-
 /**
  * Setup the microcontroller system. This function should be used only after
  * reset
