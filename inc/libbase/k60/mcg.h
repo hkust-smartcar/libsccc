@@ -3,6 +3,7 @@
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -30,23 +31,31 @@ public:
 		uint32_t flash_clock_khz;
 	};
 
-	static void Init();
+	static Mcg& Get()
+	{
+		static Mcg inst;
+		return inst;
+	}
 
-	static uint32_t GetCoreClock()
+	void Init();
+
+	uint32_t GetCoreClock()
 	{
 		return m_core_clock;
 	}
 
 private:
+	Mcg();
+
 	__attribute__((__weak__))
 	static Config GetMcgConfig();
 
-	static void InitFbe(const Config &config);
-	static void InitPbe(const Config &config, const uint8_t vdiv);
-	static void InitPee(const Config &config);
-	static void InitClocks(const Config &config, const uint32_t core_clock);
+	void InitFbe(const Config &config);
+	void InitPbe(const Config &config, const uint8_t vdiv);
+	void InitPee(const Config &config);
+	void InitClocks(const Config &config, const uint32_t core_clock);
 
-	static uint32_t m_core_clock;
+	uint32_t m_core_clock;
 };
 
 }

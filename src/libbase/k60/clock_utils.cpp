@@ -3,6 +3,7 @@
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include "libbase/k60/hardware.h"
@@ -27,14 +28,14 @@ uint32_t GetBusClock_()
 			>> SIM_CLKDIV1_OUTDIV1_SHIFT) + 1;
 	const Uint bus_div = ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV2_MASK)
 			>> SIM_CLKDIV1_OUTDIV2_SHIFT) + 1;
-	return Mcg::GetCoreClock() * core_div / bus_div;
+	return Mcg::Get().GetCoreClock() * core_div / bus_div;
 }
 
 }
 
 uint32_t ClockUtils::GetCoreClock()
 {
-	return Mcg::GetCoreClock();
+	return Mcg::Get().GetCoreClock();
 }
 
 uint32_t ClockUtils::GetCoreClockKhz()

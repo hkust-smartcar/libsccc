@@ -3,6 +3,7 @@
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 /*
  * The FreeRTOS source code is licensed by a *modified* GNU General Public
@@ -173,14 +174,16 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 
 }
 
-uint32_t Mcg::m_core_clock = 0;
-
 Mcg::Config::Config()
 		: external_oscillator_khz(0),
 		  core_clock_khz(MAX_CORE_CLOCK / 1000),
 		  bus_clock_khz(MAX_BUS_CLOCK / 1000),
 		  flexbus_clock_khz(MAX_FLEXBUS_CLOCK / 1000),
 		  flash_clock_khz(MAX_FLEXBUS_CLOCK / 1000)
+{}
+
+Mcg::Mcg()
+		: m_core_clock(0)
 {}
 
 void Mcg::Init()
@@ -354,10 +357,10 @@ __attribute__((__weak__)) Mcg::Config Mcg::GetMcgConfig()
 
 void LibbaseK60McgInit()
 {
-	libbase::k60::Mcg::Init();
+	libbase::k60::Mcg::Get().Init();
 }
 
 uint32_t LibbaseK60McgGetCoreClock()
 {
-	return libbase::k60::Mcg::GetCoreClock();
+	return libbase::k60::Mcg::Get().GetCoreClock();
 }
