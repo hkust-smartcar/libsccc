@@ -592,6 +592,38 @@ Ftm::Name Mk60f15Lqfp144::GetFtm(const Pin::Name pin)
 	case Pin::Name::kPtb19:
 		return Ftm::Name::kFtm2Ch1;
 
+	case Pin::Name::kPte5:
+	case Pin::Name::kPtd0:
+		return Ftm::Name::kFtm3Ch0;
+
+	case Pin::Name::kPte6:
+	case Pin::Name::kPtd1:
+		return Ftm::Name::kFtm3Ch1;
+
+	case Pin::Name::kPte7:
+	case Pin::Name::kPtd2:
+		return Ftm::Name::kFtm3Ch2;
+
+	case Pin::Name::kPte8:
+	case Pin::Name::kPtd3:
+		return Ftm::Name::kFtm3Ch3;
+
+	case Pin::Name::kPte9:
+	case Pin::Name::kPtc8:
+		return Ftm::Name::kFtm3Ch4;
+
+	case Pin::Name::kPte10:
+	case Pin::Name::kPtc9:
+		return Ftm::Name::kFtm3Ch5;
+
+	case Pin::Name::kPte11:
+	case Pin::Name::kPtc10:
+		return Ftm::Name::kFtm3Ch6;
+
+	case Pin::Name::kPte12:
+	case Pin::Name::kPtc11:
+		return Ftm::Name::kFtm3Ch7;
+
 	default:
 		return Ftm::Name::kDisable;
 	}
