@@ -21,6 +21,8 @@ namespace libbase
 namespace k60
 {
 
+#if __FPU_PRESENT
+
 Fpu::Fpu()
 {}
 
@@ -73,10 +75,17 @@ Fpu::Config Fpu::GetFpuConfig()
 	return {};
 }
 
+#else
+void Fpu::Init() {}
+
+#endif
+
 }
 }
 
 void LibbaseK60FpuInit()
 {
+#if __FPU_PRESENT
 	libbase::k60::Fpu::Get().Init();
+#endif
 }
