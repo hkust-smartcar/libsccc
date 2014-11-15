@@ -92,8 +92,7 @@ $(info MCU sub-family = MK60D10)
 else ifeq ($(SCCC_MCU),MK60F15)
 CPPFLAGS+=-DMK60F15=1
 CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4
-#CCFLAGS+=-mfpu=fpv4-sp-d16 -mfloat-abi=hard
-CCFLAGS+=-msoft-float -mfloat-abi=soft
+CCFLAGS+=-mfpu=fpv4-sp-d16 -mfloat-abi=hard
 $(info MCU sub-family = MK60F15)
 
 else
