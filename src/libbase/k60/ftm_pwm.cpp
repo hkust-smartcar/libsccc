@@ -291,7 +291,7 @@ FtmPwm& FtmPwm::operator=(FtmPwm &&rhs)
 
 bool FtmPwm::InitModule(const Pin::Name pin)
 {
-	const Ftm::Name ftm = FtmUtils::GetFtmName(pin);
+	const Ftm::Name ftm = PINOUT::GetFtm(pin);
 	if (ftm == Ftm::Name::kDisable)
 	{
 		return false;

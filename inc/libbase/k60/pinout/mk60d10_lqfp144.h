@@ -18,6 +18,7 @@
 
 #include "libbase/k60/adc.h"
 #include "libbase/k60/dac.h"
+#include "libbase/k60/ftm.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 
@@ -110,6 +111,7 @@ public:
 	}
 
 	static Adc::Name GetAdc(const Pin::Name pin);
+	static Ftm::Name GetFtm(const Pin::Name pin);
 
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;
