@@ -38,6 +38,10 @@
 #ifndef __CORE_CMINSTR_H
 #define __CORE_CMINSTR_H
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 
 /* ##########################  Core Instruction Access  ######################### */
 /** \defgroup CMSIS_Core_InstructionInterface CMSIS Core Instruction Interface
@@ -447,7 +451,7 @@ __attribute__( ( always_inline ) ) __STATIC_INLINE int32_t __REVSH(int32_t value
  */
 __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __ROR(uint32_t op1, uint32_t op2)
 {
-  return (op1 >> op2) | (op1 << (32 - op2)); 
+  return (op1 >> op2) | (op1 << (32 - op2));
 }
 
 
@@ -683,5 +687,9 @@ __attribute__( ( always_inline ) ) __STATIC_INLINE uint8_t __CLZ(uint32_t value)
 #endif
 
 /*@}*/ /* end of group CMSIS_Core_InstructionInterface */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __CORE_CMINSTR_H */
