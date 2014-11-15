@@ -13,8 +13,8 @@
 extern "C" {
 #endif
 
-void LibbaseK60McgInit();
-uint32_t LibbaseK60McgGetCoreClock();
+void LibbaseK60McgInit(void);
+uint32_t LibbaseK60McgGetCoreClock(void);
 
 #ifdef __cplusplus
 }
