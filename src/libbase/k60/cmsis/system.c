@@ -31,11 +31,6 @@
 #include "libbase/k60/mcg_c.h"
 #include "libbase/k60/vectors.h"
 
-/**
- * XXX deprecated
- */
-int bus_clk_khz;
-
 /* Flash configuration field */
 __attribute__((__section__(".cfmconfig")))
 const uint8_t _cfm[0x10] =
@@ -80,12 +75,6 @@ void SystemInit(void)
 #if __FPU_USED
 	LibbaseK60FpuInit();
 #endif
-
-	const int core_div = ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV1_MASK)
-			>> SIM_CLKDIV1_OUTDIV1_SHIFT) + 1;
-	const int bus_div = ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV2_MASK)
-			>> SIM_CLKDIV1_OUTDIV2_SHIFT) + 1;
-	bus_clk_khz = LibbaseK60McgGetCoreClock() * core_div / bus_div / 1000;
 
 	InitVectorTable();
 }
