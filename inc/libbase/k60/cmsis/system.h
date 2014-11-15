@@ -1,12 +1,12 @@
 /*
- * system_mk60dz10.h
+ * system.h
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
-#ifndef __SYSTEM_MK60DZ10_H
-#define __SYSTEM_MK60DZ10_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,5 +28,3 @@ void SystemInit(void);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /*__SYSTEM_MK60DZ10_H */

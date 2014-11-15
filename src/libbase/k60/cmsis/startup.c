@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "libbase/k60/cmsis/system_mk60dz10.h"
+#include "libbase/k60/cmsis/system.h"
 #include "libbase/k60/watchdog_c.h"
 #include "libbase/syscall.h"
 
