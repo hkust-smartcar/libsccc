@@ -15,6 +15,7 @@
 #include "libbase/k60/ftm.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
+#include "libbase/k60/pin_utils.h"
 
 namespace libbase
 {
@@ -470,6 +471,24 @@ Ftm::Name Mk60d10Lqfp144::GetFtm(const Pin::Name pin)
 
 	default:
 		return Ftm::Name::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mk60d10Lqfp144::GetFtmMux(const Pin::Name pin)
+{
+	const Uint port = PinUtils::GetPort(pin);
+	switch (port)
+	{
+	case 0:
+	case 1:
+		return Pin::Config::MuxControl::kAlt3;
+
+	case 2:
+	case 3:
+		return Pin::Config::MuxControl::kAlt4;
+
+	default:
+		return Pin::Config::MuxControl::kGpio;
 	}
 }
 

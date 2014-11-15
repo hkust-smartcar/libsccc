@@ -306,21 +306,7 @@ void FtmPwm::InitPin(const Pin::Name pin)
 {
 	Pin::Config config;
 	config.pin = pin;
-	if (((int)pin >= (int)Pin::Name::kPta0 && (int)pin <= (int)Pin::Name::kPta13)
-			|| (int)pin == (int)Pin::Name::kPtb0
-			|| (int)pin == (int)Pin::Name::kPtb1
-			|| (int)pin == (int)Pin::Name::kPtb18
-			|| (int)pin == (int)Pin::Name::kPtb19)
-	{
-		config.mux = Pin::Config::MuxControl::kAlt3;
-	}
-	else if (((int)pin >= (int)Pin::Name::kPtc1
-					&& (int)pin <= (int)Pin::Name::kPtc4)
-			|| ((int)pin >= (int)Pin::Name::kPtd4
-					&& (int)pin <= (int)Pin::Name::kPtd7))
-	{
-		config.mux = Pin::Config::MuxControl::kAlt4;
-	}
+	config.mux = PINOUT::GetFtmMux(pin);
 
 	m_pin = Pin(config);
 }
