@@ -109,6 +109,8 @@ public:
 		return PINOUT_UART_COUNT;
 	}
 
+	static Adc::Name GetAdc(const Pin::Name pin);
+
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;
 

@@ -13,6 +13,7 @@
 #include "libbase/k60/pinout/mk60f15_lqfp144.h"
 
 #include "libbase/k60/misc_utils.h"
+#include "libbase/k60/adc.h"
 #include "libbase/k60/pin.h"
 
 namespace libbase
@@ -387,6 +388,153 @@ void Mk60f15Lqfp144::UnregPin_(const Adc::Name pin)
 void Mk60f15Lqfp144::UnregPin_(const Dac::Name pin)
 {
 	UnregPin_((Uint)GetPinId(pin));
+}
+
+Adc::Name Mk60f15Lqfp144::GetAdc(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta6:
+		return Adc::Name::kAdc3Ad6A;
+
+	case Pin::Name::kPta7:
+		return Adc::Name::kAdc0Ad10;
+
+	case Pin::Name::kPta8:
+		return Adc::Name::kAdc0Ad11;
+
+	case Pin::Name::kPta9:
+		return Adc::Name::kAdc3Ad5A;
+
+	case Pin::Name::kPta10:
+		return Adc::Name::kAdc3Ad4A;
+
+	case Pin::Name::kPta11:
+		return Adc::Name::kAdc3Ad15;
+
+	case Pin::Name::kPta17:
+		return Adc::Name::kAdc1Ad17;
+
+	case Pin::Name::kPta26:
+		return Adc::Name::kAdc2Ad15;
+
+	case Pin::Name::kPta27:
+		return Adc::Name::kAdc2Ad14;
+
+	case Pin::Name::kPta28:
+		return Adc::Name::kAdc2Ad13;
+
+	case Pin::Name::kPta29:
+		return Adc::Name::kAdc2Ad12;
+
+	case Pin::Name::kPtb0:
+		return Adc::Name::kAdc0Ad8;
+
+	case Pin::Name::kPtb1:
+		return Adc::Name::kAdc0Ad9;
+
+	case Pin::Name::kPtb2:
+		return Adc::Name::kAdc0Ad12;
+
+	case Pin::Name::kPtb3:
+		return Adc::Name::kAdc0Ad13;
+
+	case Pin::Name::kPtb4:
+		return Adc::Name::kAdc1Ad10;
+
+	case Pin::Name::kPtb5:
+		return Adc::Name::kAdc1Ad11;
+
+	case Pin::Name::kPtb6:
+		return Adc::Name::kAdc1Ad12;
+
+	case Pin::Name::kPtb7:
+		return Adc::Name::kAdc1Ad13;
+
+	case Pin::Name::kPtb10:
+		return Adc::Name::kAdc1Ad14;
+
+	case Pin::Name::kPtb11:
+		return Adc::Name::kAdc1Ad15;
+
+	case Pin::Name::kPtb20:
+		return Adc::Name::kAdc2Ad4A;
+
+	case Pin::Name::kPtb21:
+		return Adc::Name::kAdc2Ad5A;
+
+	case Pin::Name::kPtc0:
+		return Adc::Name::kAdc0Ad14;
+
+	case Pin::Name::kPtc1:
+		return Adc::Name::kAdc0Ad15;
+
+	case Pin::Name::kPtc2:
+		return Adc::Name::kAdc0Ad4B;
+
+	case Pin::Name::kPtc8:
+		return Adc::Name::kAdc1Ad4B;
+
+	case Pin::Name::kPtc9:
+		return Adc::Name::kAdc1Ad5B;
+
+	case Pin::Name::kPtc10:
+		return Adc::Name::kAdc1Ad6B;
+
+	case Pin::Name::kPtc11:
+		return Adc::Name::kAdc1Ad7B;
+
+	case Pin::Name::kPtd1:
+		return Adc::Name::kAdc0Ad5B;
+
+	case Pin::Name::kPtd5:
+		return Adc::Name::kAdc0Ad6B;
+
+	case Pin::Name::kPtd6:
+		return Adc::Name::kAdc0Ad7B;
+
+	case Pin::Name::kPte0:
+		return Adc::Name::kAdc1Ad4A;
+
+	case Pin::Name::kPte1:
+		return Adc::Name::kAdc1Ad5A;
+
+	case Pin::Name::kPte2:
+		return Adc::Name::kAdc1Ad6A;
+
+	case Pin::Name::kPte3:
+		return Adc::Name::kAdc1Ad7A;
+
+	case Pin::Name::kPte8:
+		return Adc::Name::kAdc2Ad16;
+
+	case Pin::Name::kPte9:
+		return Adc::Name::kAdc2Ad17;
+
+	case Pin::Name::kPte11:
+		return Adc::Name::kAdc3Ad16;
+
+	case Pin::Name::kPte12:
+		return Adc::Name::kAdc3Ad17;
+
+	case Pin::Name::kPte24:
+		return Adc::Name::kAdc0Ad17;
+
+	case Pin::Name::kPte25:
+		return Adc::Name::kAdc0Ad18;
+
+	case Pin::Name::kPte26:
+		return Adc::Name::kAdc3Ad5B;
+
+	case Pin::Name::kPte27:
+		return Adc::Name::kAdc3Ad4B;
+
+	case Pin::Name::kPte28:
+		return Adc::Name::kAdc3Ad7A;
+
+	default:
+		return Adc::Name::kDisable;
+	}
 }
 
 }
