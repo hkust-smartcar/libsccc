@@ -33,6 +33,7 @@
 #include <stdint.h>
 
 #include "libbase/k60/cmsis/system_mk60dz10.h"
+#include "libbase/k60/fpu_c.h"
 #include "libbase/k60/mcg_c.h"
 #include "libbase/k60/vectors.h"
 
@@ -82,6 +83,9 @@ const uint8_t _cfm[0x10] =
 void SystemInit(void)
 {
 	LibbaseK60McgInit();
+#if __FPU_USED
+	LibbaseK60FpuInit();
+#endif
 
 	const int core_div = ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV1_MASK)
 			>> SIM_CLKDIV1_OUTDIV1_SHIFT) + 1;

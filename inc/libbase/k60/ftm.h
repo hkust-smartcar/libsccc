@@ -8,6 +8,7 @@
 #pragma once
 
 #include "libbase/k60/pin.h"
+#include "libbase/k60/pinout_macros.h"
 
 namespace libbase
 {
@@ -34,7 +35,18 @@ public:
 		kFtm2Ch0 = 16,
 		kFtm2Ch1,
 
-		kDisable = 24
+#if PINOUT_FTM_COUNT > 3
+		kFtm3Ch0 = 24,
+		kFtm3Ch1,
+		kFtm3Ch2,
+		kFtm3Ch3,
+		kFtm3Ch4,
+		kFtm3Ch5,
+		kFtm3Ch6,
+		kFtm3Ch7,
+#endif
+
+		kDisable = 32
 	};
 };
 

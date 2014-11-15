@@ -34,7 +34,15 @@ namespace k60
 namespace
 {
 
-constexpr FTM_Type* MEM_MAPS[PINOUT::GetFtmCount()] = {FTM0, FTM1, FTM2};
+constexpr FTM_Type* MEM_MAPS[PINOUT::GetFtmCount()] =
+{
+	FTM0,
+	FTM1,
+	FTM2,
+#if PINOUT_FTM_COUNT > 3
+	FTM3,
+#endif
+};
 
 FtmPwm* g_instances[PINOUT::GetFtmCount()][PINOUT::GetFtmChannelCount()] = {};
 
@@ -291,7 +299,7 @@ FtmPwm& FtmPwm::operator=(FtmPwm &&rhs)
 
 bool FtmPwm::InitModule(const Pin::Name pin)
 {
-	const Ftm::Name ftm = FtmUtils::GetFtmName(pin);
+	const Ftm::Name ftm = PINOUT::GetFtm(pin);
 	if (ftm == Ftm::Name::kDisable)
 	{
 		return false;
@@ -306,21 +314,7 @@ void FtmPwm::InitPin(const Pin::Name pin)
 {
 	Pin::Config config;
 	config.pin = pin;
-	if (((int)pin >= (int)Pin::Name::kPta0 && (int)pin <= (int)Pin::Name::kPta13)
-			|| (int)pin == (int)Pin::Name::kPtb0
-			|| (int)pin == (int)Pin::Name::kPtb1
-			|| (int)pin == (int)Pin::Name::kPtb18
-			|| (int)pin == (int)Pin::Name::kPtb19)
-	{
-		config.mux = Pin::Config::MuxControl::kAlt3;
-	}
-	else if (((int)pin >= (int)Pin::Name::kPtc1
-					&& (int)pin <= (int)Pin::Name::kPtc4)
-			|| ((int)pin >= (int)Pin::Name::kPtd4
-					&& (int)pin <= (int)Pin::Name::kPtd7))
-	{
-		config.mux = Pin::Config::MuxControl::kAlt4;
-	}
+	config.mux = PINOUT::GetFtmMux(pin);
 
 	m_pin = Pin(config);
 }

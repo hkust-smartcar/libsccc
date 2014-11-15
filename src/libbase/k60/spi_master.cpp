@@ -120,7 +120,11 @@ SpiMaster::SpiMaster(const Config &config)
 	m_is_init = true;
 	g_instances[m_module] = this;
 
+#if MK60DZ10 || MK60D10
 	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0, m_module), true);
+#elif MK60F15
+	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kDspi0, m_module), true);
+#endif
 	InitPin(config);
 	InitMcrReg(config);
 	InitCtarReg(config);
@@ -484,8 +488,13 @@ void SpiMaster::Uninit()
 		m_is_init = false;
 
 		SetHalt(true);
+#if MK60DZ10 || MK60D10
 		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0, m_module),
 				false);
+#elif MK60F15
+		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kDspi0, m_module),
+				false);
+#endif
 		g_instances[m_module] = nullptr;
 	}
 }

@@ -34,6 +34,7 @@ public:
 		kK60
 	};
 
+#if MK60DZ10 || MK60D10
 	enum struct ClockGate
 	{
 		kAdc0,
@@ -85,6 +86,68 @@ public:
 		kUsbOtg,
 		kVref,
 	};
+
+#elif MK60F15
+	enum struct ClockGate
+	{
+		kAdc0,
+		kAdc1,
+		kAdc2,
+		kAdc3,
+		kCmp,
+		kCmt,
+		kCrc,
+		kDac0,
+		kDac1,
+		kDma,
+		kDmaMux0,
+		kDmaMux1,
+		kDspi0,
+		kDspi1,
+		kDspi2,
+		kEsdhc,
+		kEthernet,
+		kExtWatchdog,
+		kFlexBus,
+		kFlexCan0,
+		kFlexCan1,
+		kFtm0,
+		kFtm1,
+		kFtm2,
+		kFtm3,
+		kIic0,
+		kIic1,
+		kLlwu,
+		kLptimer,
+		kMpu,
+		kNfc,
+		kOsc1,
+		kPdb,
+		kPit,
+		kPortA,
+		kPortB,
+		kPortC,
+		kPortD,
+		kPortE,
+		kPortF,
+		kRegFile,
+		kRng,
+		kRtc,
+		kSai0,
+		kSai1,
+		kTsi,
+		kUart0,
+		kUart1,
+		kUart2,
+		kUart3,
+		kUart4,
+		kUart5,
+		kUsbDcd,
+		kUsbFs,
+		kUsbHs,
+		kVref,
+	};
+#endif
 
 	static uint32_t GetRamBytes();
 	static Uint GetRamKBytes()

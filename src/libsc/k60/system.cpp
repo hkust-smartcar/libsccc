@@ -21,6 +21,7 @@ System *System::m_instance = nullptr;
 
 System::System()
 		: //m_watchdog(GetWatchdogConfig()),
+		  m_delay(),
 		  m_timer()
 {}
 

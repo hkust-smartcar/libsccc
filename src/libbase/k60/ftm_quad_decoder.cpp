@@ -123,10 +123,10 @@ FtmQuadDecoder& FtmQuadDecoder::operator=(FtmQuadDecoder &&rhs)
 
 bool FtmQuadDecoder::InitModule(const Pin::Name a_pin, const Pin::Name b_pin)
 {
-	const Ftm::Name a_ftm = FtmUtils::GetFtmName(a_pin);
+	const Ftm::Name a_ftm = PINOUT::GetFtm(a_pin);
 	const int a_module = FtmUtils::GetFtmModule(a_ftm);
 
-	const Ftm::Name b_ftm = FtmUtils::GetFtmName(b_pin);
+	const Ftm::Name b_ftm = PINOUT::GetFtm(b_pin);
 	const int b_module = FtmUtils::GetFtmModule(b_ftm);
 
 	if (a_module == b_module && a_ftm != Ftm::Name::kDisable)

@@ -8,6 +8,7 @@
 
 #include <cstdint>
 
+#include "libbase/k60/pin.h"
 #include "libbase/k60/uart.h"
 
 #include "libsc/config.h"

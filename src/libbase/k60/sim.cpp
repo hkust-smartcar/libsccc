@@ -22,6 +22,22 @@
 using libutil::String;
 using namespace std;
 
+#if MK60DZ10 || MK60D10
+	#define _SIM_SCGC6_DMAMUX0_SHIFT SIM_SCGC6_DMAMUX_SHIFT
+	#define _SIM_SCGC6_SPI0_SHIFT SIM_SCGC6_SPI0_SHIFT
+	#define _SIM_SCGC6_SPI1_SHIFT SIM_SCGC6_SPI1_SHIFT
+	#define _SIM_SCGC3_SPI2_SHIFT SIM_SCGC3_SPI2_SHIFT
+	#define _SIM_SCGC4_I2C0_SHIFT SIM_SCGC4_I2C0_SHIFT
+	#define _SIM_SCGC4_I2C1_SHIFT SIM_SCGC4_I2C1_SHIFT
+#elif MK60F15
+	#define _SIM_SCGC6_DMAMUX0_SHIFT SIM_SCGC6_DMAMUX0_SHIFT
+	#define _SIM_SCGC6_SPI0_SHIFT SIM_SCGC6_DSPI0_SHIFT
+	#define _SIM_SCGC6_SPI1_SHIFT SIM_SCGC6_DSPI1_SHIFT
+	#define _SIM_SCGC3_SPI2_SHIFT SIM_SCGC3_DSPI2_SHIFT
+	#define _SIM_SCGC4_I2C0_SHIFT SIM_SCGC4_IIC0_SHIFT
+	#define _SIM_SCGC4_I2C1_SHIFT SIM_SCGC4_IIC1_SHIFT
+#endif
+
 namespace libbase
 {
 namespace k60
@@ -133,6 +149,16 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_ADC1_SHIFT, flag);
 		break;
 
+#if MK60F15
+	case ClockGate::kAdc2:
+		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_ADC2_SHIFT, flag);
+		break;
+
+	case ClockGate::kAdc3:
+		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_ADC3_SHIFT, flag);
+		break;
+#endif
+
 	case ClockGate::kCmp:
 		SetClockGateBit(SIM->SCGC4, SIM_SCGC4_CMP_SHIFT, flag);
 		break;
@@ -157,9 +183,23 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 		SetClockGateBit(SIM->SCGC7, SIM_SCGC7_DMA_SHIFT, flag);
 		break;
 
+#if MK60DZ10 || MK60D10
 	case ClockGate::kDmaMux:
-		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_DMAMUX_SHIFT, flag);
+#elif MK60F15
+	case ClockGate::kDmaMux0:
+#endif
+		SetClockGateBit(SIM->SCGC6, _SIM_SCGC6_DMAMUX0_SHIFT, flag);
 		break;
+
+#if MK60F15
+	case ClockGate::kDmaMux1:
+		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_DMAMUX1_SHIFT, flag);
+		break;
+
+	case ClockGate::kEsdhc:
+		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_ESDHC_SHIFT, flag);
+		break;
+#endif
 
 	case ClockGate::kEthernet:
 		SetClockGateBit(SIM->SCGC2, SIM_SCGC2_ENET_SHIFT, flag);
@@ -181,9 +221,11 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_FLEXCAN1_SHIFT, flag);
 		break;
 
+#if MK60DZ10 || MK60D10
 	case ClockGate::kFlash:
 		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_FTFL_SHIFT, flag);
 		break;
+#endif
 
 	case ClockGate::kFtm0:
 		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_FTM0_SHIFT, flag);
@@ -197,17 +239,33 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_FTM2_SHIFT, flag);
 		break;
 
+#if MK60F15
+	case ClockGate::kFtm3:
+		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_FTM3_SHIFT, flag);
+		break;
+#endif
+
+#if MK60DZ10 || MK60D10
 	case ClockGate::kI2c0:
-		SetClockGateBit(SIM->SCGC4, SIM_SCGC4_I2C0_SHIFT, flag);
+#elif MK60F15
+	case ClockGate::kIic0:
+#endif
+		SetClockGateBit(SIM->SCGC4, _SIM_SCGC4_I2C0_SHIFT, flag);
 		break;
 
+#if MK60DZ10 || MK60D10
 	case ClockGate::kI2c1:
-		SetClockGateBit(SIM->SCGC4, SIM_SCGC4_I2C1_SHIFT, flag);
+#elif MK60F15
+	case ClockGate::kIic1:
+#endif
+		SetClockGateBit(SIM->SCGC4, _SIM_SCGC4_I2C1_SHIFT, flag);
 		break;
 
+#if MK60DZ10 || MK60D10
 	case ClockGate::kI2s:
 		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_I2S_SHIFT, flag);
 		break;
+#endif
 
 	case ClockGate::kLlwu:
 		SetClockGateBit(SIM->SCGC4, SIM_SCGC4_LLWU_SHIFT, flag);
@@ -220,6 +278,16 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 	case ClockGate::kMpu:
 		SetClockGateBit(SIM->SCGC7, SIM_SCGC7_MPU_SHIFT, flag);
 		break;
+
+#if MK60F15
+	case ClockGate::kNfc:
+		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_NFC_SHIFT, flag);
+		break;
+
+	case ClockGate::kOsc1:
+		SetClockGateBit(SIM->SCGC1, SIM_SCGC1_OSC1_SHIFT, flag);
+		break;
+#endif
 
 	case ClockGate::kPdb:
 		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_PDB_SHIFT, flag);
@@ -249,6 +317,12 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 		SetClockGateBit(SIM->SCGC5, SIM_SCGC5_PORTE_SHIFT, flag);
 		break;
 
+#if MK60F15
+	case ClockGate::kPortF:
+		SetClockGateBit(SIM->SCGC5, SIM_SCGC5_PORTF_SHIFT, flag);
+		break;
+#endif
+
 	case ClockGate::kRegFile:
 		SetClockGateBit(SIM->SCGC5, SIM_SCGC5_REGFILE_SHIFT, flag);
 		break;
@@ -265,20 +339,44 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_RTC_SHIFT, flag);
 		break;
 
+#if MK60F15
+	case ClockGate::kSai0:
+		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_SAI0_SHIFT, flag);
+		break;
+
+	case ClockGate::kSai1:
+		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_SAI1_SHIFT, flag);
+		break;
+#endif
+
+#ifdef MK60DZ10
 	case ClockGate::kSdhc:
 		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_SDHC_SHIFT, flag);
 		break;
+#endif
 
+#if MK60DZ10 || MK60D10
 	case ClockGate::kSpi0:
-		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_SPI0_SHIFT, flag);
+#elif MK60F15
+	case ClockGate::kDspi0:
+#endif
+		SetClockGateBit(SIM->SCGC6, _SIM_SCGC6_SPI0_SHIFT, flag);
 		break;
 
+#if MK60DZ10 || MK60D10
 	case ClockGate::kSpi1:
-		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_SPI1_SHIFT, flag);
+#elif MK60F15
+	case ClockGate::kDspi1:
+#endif
+		SetClockGateBit(SIM->SCGC6, _SIM_SCGC6_SPI1_SHIFT, flag);
 		break;
 
+#if MK60DZ10 || MK60D10
 	case ClockGate::kSpi2:
-		SetClockGateBit(SIM->SCGC3, SIM_SCGC3_SPI2_SHIFT, flag);
+#elif MK60F15
+	case ClockGate::kDspi2:
+#endif
+		SetClockGateBit(SIM->SCGC3, _SIM_SCGC3_SPI2_SHIFT, flag);
 		break;
 
 	case ClockGate::kTsi:
@@ -313,9 +411,21 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_USBDCD_SHIFT, flag);
 		break;
 
+#if MK60F15
+	case ClockGate::kUsbFs:
+		SetClockGateBit(SIM->SCGC4, SIM_SCGC4_USBFS_SHIFT, flag);
+		break;
+
+	case ClockGate::kUsbHs:
+		SetClockGateBit(SIM->SCGC6, SIM_SCGC6_USBHS_SHIFT, flag);
+		break;
+#endif
+
+#if MK60DZ10 || MK60D10
 	case ClockGate::kUsbOtg:
 		SetClockGateBit(SIM->SCGC4, SIM_SCGC4_USBOTG_SHIFT, flag);
 		break;
+#endif
 
 	case ClockGate::kVref:
 		SetClockGateBit(SIM->SCGC4, SIM_SCGC4_VREF_SHIFT, flag);

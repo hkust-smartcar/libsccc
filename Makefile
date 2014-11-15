@@ -56,20 +56,20 @@ CCFLAGS+=-Wall -Wextra
 
 ifeq ($(SCCC_BUILD),DEBUG)
 BIN_SUFFIX:=$(BIN_SUFFIX)-d
-CPPFLAGS+=-DDEBUG
+CPPFLAGS+=-DDEBUG=1
 CCFLAGS+=-O0 -g3
 $(info Build = DEBUG)
 
 else ifeq ($(SCCC_BUILD),RELEASE)
 BIN_SUFFIX:=$(BIN_SUFFIX)-r
-CPPFLAGS+=-DRELEASE -DNDEBUG
+CPPFLAGS+=-DRELEASE=1 -DNDEBUG
 CCFLAGS+=-O2 -g0
 $(info Build = RELEASE)
 
 else
 $(warning Unknown build type, defaulting to DEBUG (set SCCC_BUILD))
 BIN_SUFFIX:=$(BIN_SUFFIX)-d
-CPPFLAGS+=-DDEBUG
+CPPFLAGS+=-DDEBUG=1
 CCFLAGS+=-O0 -g3
 $(info Build = DEBUG)
 
@@ -78,16 +78,22 @@ endif
 include MakeConfig.inc
 
 ifeq ($(SCCC_MCU),MK60DZ10)
-CPPFLAGS+=-DMK60DZ10
+CPPFLAGS+=-DMK60DZ10=1
 CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4
 CCFLAGS+=-msoft-float -mfloat-abi=soft
 $(info MCU sub-family = MK60DZ10)
 
 else ifeq ($(SCCC_MCU),MK60D10)
-CPPFLAGS+=-DMK60D10
+CPPFLAGS+=-DMK60D10=1
 CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4
 CCFLAGS+=-msoft-float -mfloat-abi=soft
 $(info MCU sub-family = MK60D10)
+
+else ifeq ($(SCCC_MCU),MK60F15)
+CPPFLAGS+=-DMK60F15=1
+CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4
+CCFLAGS+=-mfpu=fpv4-sp-d16 -mfloat-abi=hard
+$(info MCU sub-family = MK60F15)
 
 else
 $(error Missing/Unknown MCU identifier '$(SCCC_MCU)' (set SCCC_MCU))
@@ -122,6 +128,20 @@ SRC_FILES:=$(SRC_FILES) $(call rwildcard,$(SRC_PATH),*.cpp)
 
 else ifdef UNIX
 SRC_FILES:=$(shell find $(SRC_PATH) -type f -name *.c -o -name *.S -o -name *.cpp)
+
+endif
+
+not_contain=$(foreach v,$2,$(if $(findstring $1,$v),,$v))
+SRC_FILES:=$(call not_contain,/pinout/,$(SRC_FILES))
+
+ifeq ($(SCCC_MCU),MK60DZ10)
+SRC_FILES+=$(SRC_PATH)/libbase/k60/pinout/mk60d10_lqfp144.cpp
+
+else ifeq ($(SCCC_MCU),MK60D10)
+SRC_FILES+=$(SRC_PATH)/libbase/k60/pinout/mk60d10_lqfp144.cpp
+
+else ifeq ($(SCCC_MCU),MK60F15)
+SRC_FILES+=$(SRC_PATH)/libbase/k60/pinout/mk60f15_lqfp144.cpp
 
 endif
 

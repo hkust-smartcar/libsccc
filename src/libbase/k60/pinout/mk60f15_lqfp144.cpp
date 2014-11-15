@@ -1,15 +1,16 @@
 /*
- * mk60d10_lqfp144.cpp
+ * mk60f15_lqfp144.cpp
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cassert>
 
 #include <bitset>
 
-#include "libbase/k60/pinout/mk60d10_lqfp144.h"
+#include "libbase/k60/pinout/mk60f15_lqfp144.h"
 
 #include "libbase/k60/adc.h"
 #include "libbase/k60/ftm.h"
@@ -113,11 +114,29 @@ int GetPinId(const Adc::Name pin)
 	{
 		return (Uint)pin - (Uint)Adc::Name::kAdc1Ad4A;
 	}
-	else if (pin == Adc::Name::kAdc0DAd1)
+	else if (pin == Adc::Name::kAdc2Ad16)
+	{
+		return 10;
+	}
+	else if (pin == Adc::Name::kAdc2Ad17)
+	{
+		return 11;
+	}
+	else if (pin == Adc::Name::kAdc3Ad16)
+	{
+		return 13;
+	}
+	else if (pin == Adc::Name::kAdc3Ad17)
+	{
+		return 14;
+	}
+	else if (pin == Adc::Name::kAdc2DAd2|| pin == Adc::Name::kAdc2DAd0
+			|| pin == Adc::Name::kAdc3DAd3 || pin == Adc::Name::kAdc0DAd1)
 	{
 		return 22;
 	}
-	else if (pin == Adc::Name::kAdc1DAd1)
+	else if (pin == Adc::Name::kAdc3DAd2 || pin == Adc::Name::kAdc3DAd0
+			|| pin == Adc::Name::kAdc2DAd3 || pin == Adc::Name::kAdc1DAd1)
 	{
 		return 24;
 	}
@@ -159,6 +178,22 @@ int GetPinId(const Adc::Name pin)
 	{
 		return 45;
 	}
+	else if (pin == Adc::Name::kAdc3Ad5B)
+	{
+		return 46;
+	}
+	else if (pin == Adc::Name::kAdc3Ad4B)
+	{
+		return 47;
+	}
+	else if (pin == Adc::Name::kAdc3Ad7A)
+	{
+		return 48;
+	}
+	else if (pin == Adc::Name::kAdc3Ad6A)
+	{
+		return 57;
+	}
 	else if (pin == Adc::Name::kAdc0Ad10)
 	{
 		return 58;
@@ -167,15 +202,45 @@ int GetPinId(const Adc::Name pin)
 	{
 		return 59;
 	}
+	else if (pin == Adc::Name::kAdc3Ad5A)
+	{
+		return 60;
+	}
+	else if (pin == Adc::Name::kAdc3Ad4A)
+	{
+		return 61;
+	}
+	else if (pin == Adc::Name::kAdc3Ad15)
+	{
+		return 62;
+	}
 	else if (pin == Adc::Name::kAdc1Ad17)
 	{
 		return 68;
 	}
-	else if (pin == Adc::Name::kAdc0Ad8 || pin == Adc::Name::kAdc1Ad8)
+	else if (pin == Adc::Name::kAdc2Ad15)
+	{
+		return 76;
+	}
+	else if (pin == Adc::Name::kAdc2Ad14)
+	{
+		return 77;
+	}
+	else if (pin == Adc::Name::kAdc2Ad13)
+	{
+		return 78;
+	}
+	else if (pin == Adc::Name::kAdc2Ad12)
+	{
+		return 79;
+	}
+	else if (pin == Adc::Name::kAdc0Ad8 || pin == Adc::Name::kAdc1Ad8
+			|| pin == Adc::Name::kAdc2Ad8 || pin == Adc::Name::kAdc3Ad8)
 	{
 		return 80;
 	}
-	else if (pin == Adc::Name::kAdc0Ad9 || pin == Adc::Name::kAdc1Ad9)
+	else if (pin == Adc::Name::kAdc0Ad9 || pin == Adc::Name::kAdc1Ad9
+			|| pin == Adc::Name::kAdc2Ad9 || pin == Adc::Name::kAdc3Ad9)
 	{
 		return 81;
 	}
@@ -199,6 +264,14 @@ int GetPinId(const Adc::Name pin)
 	else if (pin == Adc::Name::kAdc1Ad15)
 	{
 		return 91;
+	}
+	else if (pin == Adc::Name::kAdc2Ad4A)
+	{
+		return 98;
+	}
+	else if (pin == Adc::Name::kAdc2Ad5A)
+	{
+		return 99;
 	}
 	else if (pin == Adc::Name::kAdc0Ad14)
 	{
@@ -254,12 +327,12 @@ int GetPinId(const Dac::Name pin)
 
 }
 
-Mk60d10Lqfp144 *Mk60d10Lqfp144::m_instance = nullptr;
+Mk60f15Lqfp144 *Mk60f15Lqfp144::m_instance = nullptr;
 
-Mk60d10Lqfp144::Mk60d10Lqfp144()
+Mk60f15Lqfp144::Mk60f15Lqfp144()
 {}
 
-bool Mk60d10Lqfp144::RegPin_(const Uint pin)
+bool Mk60f15Lqfp144::RegPin_(const Uint pin)
 {
 	if (pin >= GetPinCount())
 	{
@@ -278,22 +351,22 @@ bool Mk60d10Lqfp144::RegPin_(const Uint pin)
 	}
 }
 
-bool Mk60d10Lqfp144::RegPin_(const Pin::Name pin)
+bool Mk60f15Lqfp144::RegPin_(const Pin::Name pin)
 {
 	return RegPin_((Uint)GetPinId(pin));
 }
 
-bool Mk60d10Lqfp144::RegPin_(const Adc::Name pin)
+bool Mk60f15Lqfp144::RegPin_(const Adc::Name pin)
 {
 	return RegPin_((Uint)GetPinId(pin));
 }
 
-bool Mk60d10Lqfp144::RegPin_(const Dac::Name pin)
+bool Mk60f15Lqfp144::RegPin_(const Dac::Name pin)
 {
 	return RegPin_((Uint)GetPinId(pin));
 }
 
-void Mk60d10Lqfp144::UnregPin_(const Uint pin)
+void Mk60f15Lqfp144::UnregPin_(const Uint pin)
 {
 	if (pin >= GetPinCount())
 	{
@@ -304,33 +377,57 @@ void Mk60d10Lqfp144::UnregPin_(const Uint pin)
 	m_is_pins_active[pin] = false;
 }
 
-void Mk60d10Lqfp144::UnregPin_(const Pin::Name pin)
+void Mk60f15Lqfp144::UnregPin_(const Pin::Name pin)
 {
 	UnregPin_((Uint)GetPinId(pin));
 }
 
-void Mk60d10Lqfp144::UnregPin_(const Adc::Name pin)
+void Mk60f15Lqfp144::UnregPin_(const Adc::Name pin)
 {
 	UnregPin_((Uint)GetPinId(pin));
 }
 
-void Mk60d10Lqfp144::UnregPin_(const Dac::Name pin)
+void Mk60f15Lqfp144::UnregPin_(const Dac::Name pin)
 {
 	UnregPin_((Uint)GetPinId(pin));
 }
 
-Adc::Name Mk60d10Lqfp144::GetAdc(const Pin::Name pin)
+Adc::Name Mk60f15Lqfp144::GetAdc(const Pin::Name pin)
 {
 	switch (pin)
 	{
+	case Pin::Name::kPta6:
+		return Adc::Name::kAdc3Ad6A;
+
 	case Pin::Name::kPta7:
 		return Adc::Name::kAdc0Ad10;
 
 	case Pin::Name::kPta8:
 		return Adc::Name::kAdc0Ad11;
 
+	case Pin::Name::kPta9:
+		return Adc::Name::kAdc3Ad5A;
+
+	case Pin::Name::kPta10:
+		return Adc::Name::kAdc3Ad4A;
+
+	case Pin::Name::kPta11:
+		return Adc::Name::kAdc3Ad15;
+
 	case Pin::Name::kPta17:
 		return Adc::Name::kAdc1Ad17;
+
+	case Pin::Name::kPta26:
+		return Adc::Name::kAdc2Ad15;
+
+	case Pin::Name::kPta27:
+		return Adc::Name::kAdc2Ad14;
+
+	case Pin::Name::kPta28:
+		return Adc::Name::kAdc2Ad13;
+
+	case Pin::Name::kPta29:
+		return Adc::Name::kAdc2Ad12;
 
 	case Pin::Name::kPtb0:
 		return Adc::Name::kAdc0Ad8;
@@ -361,6 +458,12 @@ Adc::Name Mk60d10Lqfp144::GetAdc(const Pin::Name pin)
 
 	case Pin::Name::kPtb11:
 		return Adc::Name::kAdc1Ad15;
+
+	case Pin::Name::kPtb20:
+		return Adc::Name::kAdc2Ad4A;
+
+	case Pin::Name::kPtb21:
+		return Adc::Name::kAdc2Ad5A;
 
 	case Pin::Name::kPtc0:
 		return Adc::Name::kAdc0Ad14;
@@ -404,18 +507,39 @@ Adc::Name Mk60d10Lqfp144::GetAdc(const Pin::Name pin)
 	case Pin::Name::kPte3:
 		return Adc::Name::kAdc1Ad7A;
 
+	case Pin::Name::kPte8:
+		return Adc::Name::kAdc2Ad16;
+
+	case Pin::Name::kPte9:
+		return Adc::Name::kAdc2Ad17;
+
+	case Pin::Name::kPte11:
+		return Adc::Name::kAdc3Ad16;
+
+	case Pin::Name::kPte12:
+		return Adc::Name::kAdc3Ad17;
+
 	case Pin::Name::kPte24:
 		return Adc::Name::kAdc0Ad17;
 
 	case Pin::Name::kPte25:
 		return Adc::Name::kAdc0Ad18;
 
+	case Pin::Name::kPte26:
+		return Adc::Name::kAdc3Ad5B;
+
+	case Pin::Name::kPte27:
+		return Adc::Name::kAdc3Ad4B;
+
+	case Pin::Name::kPte28:
+		return Adc::Name::kAdc3Ad7A;
+
 	default:
 		return Adc::Name::kDisable;
 	}
 }
 
-Ftm::Name Mk60d10Lqfp144::GetFtm(const Pin::Name pin)
+Ftm::Name Mk60f15Lqfp144::GetFtm(const Pin::Name pin)
 {
 	switch (pin)
 	{
@@ -469,14 +593,47 @@ Ftm::Name Mk60d10Lqfp144::GetFtm(const Pin::Name pin)
 	case Pin::Name::kPtb19:
 		return Ftm::Name::kFtm2Ch1;
 
+	case Pin::Name::kPte5:
+	case Pin::Name::kPtd0:
+		return Ftm::Name::kFtm3Ch0;
+
+	case Pin::Name::kPte6:
+	case Pin::Name::kPtd1:
+		return Ftm::Name::kFtm3Ch1;
+
+	case Pin::Name::kPte7:
+	case Pin::Name::kPtd2:
+		return Ftm::Name::kFtm3Ch2;
+
+	case Pin::Name::kPte8:
+	case Pin::Name::kPtd3:
+		return Ftm::Name::kFtm3Ch3;
+
+	case Pin::Name::kPte9:
+	case Pin::Name::kPtc8:
+		return Ftm::Name::kFtm3Ch4;
+
+	case Pin::Name::kPte10:
+	case Pin::Name::kPtc9:
+		return Ftm::Name::kFtm3Ch5;
+
+	case Pin::Name::kPte11:
+	case Pin::Name::kPtc10:
+		return Ftm::Name::kFtm3Ch6;
+
+	case Pin::Name::kPte12:
+	case Pin::Name::kPtc11:
+		return Ftm::Name::kFtm3Ch7;
+
 	default:
 		return Ftm::Name::kDisable;
 	}
 }
 
-Pin::Config::MuxControl Mk60d10Lqfp144::GetFtmMux(const Pin::Name pin)
+Pin::Config::MuxControl Mk60f15Lqfp144::GetFtmMux(const Pin::Name pin)
 {
 	const Uint port = PinUtils::GetPort(pin);
+	const Uint pin_num = PinUtils::GetPinNumber(pin);
 	switch (port)
 	{
 	case 0:
@@ -484,8 +641,20 @@ Pin::Config::MuxControl Mk60d10Lqfp144::GetFtmMux(const Pin::Name pin)
 		return Pin::Config::MuxControl::kAlt3;
 
 	case 2:
+		if (pin_num <= 4)
+		{
+			return Pin::Config::MuxControl::kAlt4;
+		}
+		else
+		{
+			return Pin::Config::MuxControl::kAlt3;
+		}
+
 	case 3:
 		return Pin::Config::MuxControl::kAlt4;
+
+	case 4:
+		return Pin::Config::MuxControl::kAlt6;
 
 	default:
 		return Pin::Config::MuxControl::kGpio;

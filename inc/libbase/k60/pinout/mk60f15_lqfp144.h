@@ -1,15 +1,11 @@
 /*
- * mk60d10_lqfp144.h
+ * mk60f15_lqfp144.h
  * Pinout for:
- * MK60DN256VLQ10
- * MK60DX256VLQ10
- * MK60DN512VLQ10
- * MK60DN256VMD10
- * MK60DX256VMD10
- * MK60DN512VMD10
+ * MK60FX512VLQ15
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -27,7 +23,7 @@ namespace libbase
 namespace k60
 {
 
-class Mk60d10Lqfp144
+class Mk60f15Lqfp144
 {
 public:
 	static bool RegPin(const Uint pin)
@@ -117,13 +113,13 @@ public:
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;
 
-	Mk60d10Lqfp144();
+	Mk60f15Lqfp144();
 
-	static Mk60d10Lqfp144* GetInstance()
+	static Mk60f15Lqfp144* GetInstance()
 	{
 		if (!m_instance)
 		{
-			m_instance = new Mk60d10Lqfp144;
+			m_instance = new Mk60f15Lqfp144;
 		}
 		return m_instance;
 	}
@@ -139,7 +135,7 @@ private:
 
 	std::bitset<kPinCount> m_is_pins_active;
 
-	static Mk60d10Lqfp144 *m_instance;
+	static Mk60f15Lqfp144 *m_instance;
 };
 
 }

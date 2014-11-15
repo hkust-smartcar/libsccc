@@ -14,6 +14,7 @@
 
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
+#include "libbase/k60/pinout_macros.h"
 
 namespace libbase
 {
@@ -45,6 +46,28 @@ public:
 		kAdc1Ad18, kAdc1Ad19, kAdc1Ad20, kAdc1Ad21, kAdc1Ad22,
 		kAdc1Ad23, kAdc1Ad24, kAdc1Ad25, kAdc1Ad26, kAdc1Ad27,
 		kAdc1Ad28, kAdc1Ad29, kAdc1Ad30, kAdc1Ad31,
+
+#if PINOUT_ADC_COUNT > 2
+		kAdc2DAd0 = 72, kAdc2DAd1, kAdc2DAd2, kAdc2DAd3,
+		kAdc2Ad4A, kAdc2Ad5A, kAdc2Ad6A, kAdc2Ad7A,
+		kAdc2Ad4B, kAdc2Ad5B, kAdc2Ad6B, kAdc2Ad7B,
+		kAdc2Ad8, kAdc2Ad9, kAdc2Ad10, kAdc2Ad11, kAdc2Ad12,
+		kAdc2Ad13, kAdc2Ad14, kAdc2Ad15, kAdc2Ad16, kAdc2Ad17,
+		kAdc2Ad18, kAdc2Ad19, kAdc2Ad20, kAdc2Ad21, kAdc2Ad22,
+		kAdc2Ad23, kAdc2Ad24, kAdc2Ad25, kAdc2Ad26, kAdc2Ad27,
+		kAdc2Ad28, kAdc2Ad29, kAdc2Ad30, kAdc2Ad31,
+#endif
+
+#if PINOUT_ADC_COUNT > 3
+		kAdc3DAd0 = 108, kAdc3DAd1, kAdc3DAd2, kAdc3DAd3,
+		kAdc3Ad4A, kAdc3Ad5A, kAdc3Ad6A, kAdc3Ad7A,
+		kAdc3Ad4B, kAdc3Ad5B, kAdc3Ad6B, kAdc3Ad7B,
+		kAdc3Ad8, kAdc3Ad9, kAdc3Ad10, kAdc3Ad11, kAdc3Ad12,
+		kAdc3Ad13, kAdc3Ad14, kAdc3Ad15, kAdc3Ad16, kAdc3Ad17,
+		kAdc3Ad18, kAdc3Ad19, kAdc3Ad20, kAdc3Ad21, kAdc3Ad22,
+		kAdc3Ad23, kAdc3Ad24, kAdc3Ad25, kAdc3Ad26, kAdc3Ad27,
+		kAdc3Ad28, kAdc3Ad29, kAdc3Ad30, kAdc3Ad31,
+#endif
 
 		kDisable
 	};

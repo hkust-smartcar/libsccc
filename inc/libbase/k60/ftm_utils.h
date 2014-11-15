@@ -20,8 +20,6 @@ namespace k60
 class FtmUtils
 {
 public:
-	static Ftm::Name GetFtmName(const Pin::Name pin);
-
 	static Uint GetFtmModule(const Ftm::Name pin)
 	{
 		return static_cast<Uint>(pin) / PINOUT::GetFtmChannelCount();
