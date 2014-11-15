@@ -47,7 +47,12 @@ public:
 private:
 	Mcg();
 
-	__attribute__((__weak__))
+	/**
+	 * Get the Config object used during initialization, to be implemented by
+	 * user
+	 *
+	 * @return
+	 */
 	static Config GetMcgConfig();
 
 	void InitFbe(const Config &config);

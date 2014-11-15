@@ -341,17 +341,6 @@ void Mcg::InitClocks(const Config &config, const uint32_t core_clock)
 	SIM->CLKDIV1 = reg;
 }
 
-__attribute__((__weak__)) Mcg::Config Mcg::GetMcgConfig()
-{
-	Mcg::Config config;
-	config.external_oscillator_khz = 50000;
-	config.core_clock_khz = 100000;
-	config.bus_clock_khz = 50000;
-	config.flexbus_clock_khz = 50000;
-	config.flash_clock_khz = 25000;
-	return config;
-}
-
 }
 }
 
