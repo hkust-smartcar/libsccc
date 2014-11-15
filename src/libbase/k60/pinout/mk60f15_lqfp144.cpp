@@ -661,5 +661,44 @@ Pin::Config::MuxControl Mk60f15Lqfp144::GetFtmMux(const Pin::Name pin)
 	}
 }
 
+Ftm::QdName Mk60f15Lqfp144::GetFtmQd(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta8:
+	case Pin::Name::kPta12:
+	case Pin::Name::kPtb0:
+		return Ftm::QdName::kFtm1QdPha;
+
+	case Pin::Name::kPta9:
+	case Pin::Name::kPta13:
+	case Pin::Name::kPtb1:
+		return Ftm::QdName::kFtm1QdPhb;
+
+	case Pin::Name::kPta10:
+	case Pin::Name::kPtb18:
+		return Ftm::QdName::kFtm2QdPha;
+
+	case Pin::Name::kPta11:
+	case Pin::Name::kPtb19:
+		return Ftm::QdName::kFtm2QdPhb;
+
+	default:
+		return Ftm::QdName::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mk60f15Lqfp144::GetFtmQdMux(const Pin::Name pin)
+{
+	if (pin == Pin::Name::kPta12 || pin == Pin::Name::kPta13)
+	{
+		return Pin::Config::MuxControl::kAlt7;
+	}
+	else
+	{
+		return Pin::Config::MuxControl::kAlt6;
+	}
+}
+
 }
 }

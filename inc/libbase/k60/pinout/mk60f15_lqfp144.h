@@ -109,6 +109,8 @@ public:
 	static Adc::Name GetAdc(const Pin::Name pin);
 	static Ftm::Name GetFtm(const Pin::Name pin);
 	static Pin::Config::MuxControl GetFtmMux(const Pin::Name pin);
+	static Ftm::QdName GetFtmQd(const Pin::Name pin);
+	static Pin::Config::MuxControl GetFtmQdMux(const Pin::Name pin);
 
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;

@@ -29,6 +29,16 @@ public:
 	{
 		return static_cast<Uint>(pin) % PINOUT::GetFtmChannelCount();
 	}
+
+	static Uint GetFtmModule(const Ftm::QdName pin)
+	{
+		return static_cast<Uint>(pin) >> 1;
+	}
+
+	static Uint GetFtmPhase(const Ftm::QdName pin)
+	{
+		return static_cast<Uint>(pin) % 2;
+	}
 };
 
 }

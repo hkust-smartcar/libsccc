@@ -48,6 +48,22 @@ public:
 
 		kDisable = 32
 	};
+
+	enum struct QdName
+	{
+		kFtm0QdPha = 0,
+		kFtm0QdPhb,
+		kFtm1QdPha,
+		kFtm1QdPhb,
+		kFtm2QdPha,
+		kFtm2QdPhb,
+#if PINOUT_FTM_COUNT > 3
+		kFtm3QdPha,
+		kFtm3QdPhb,
+#endif
+
+		kDisable
+	};
 };
 
 }
