@@ -34,7 +34,15 @@ namespace k60
 namespace
 {
 
-constexpr FTM_Type* MEM_MAPS[PINOUT::GetFtmCount()] = {FTM0, FTM1, FTM2};
+constexpr FTM_Type* MEM_MAPS[PINOUT::GetFtmCount()] =
+{
+	FTM0,
+	FTM1,
+	FTM2,
+#if PINOUT_FTM_COUNT > 3
+	FTM3,
+#endif
+};
 
 FtmPwm* g_instances[PINOUT::GetFtmCount()][PINOUT::GetFtmChannelCount()] = {};
 
