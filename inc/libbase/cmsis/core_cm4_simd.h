@@ -37,6 +37,8 @@
 
 #if defined ( __ICCARM__ )
  #pragma system_include  /* treat file as system include file for MISRA check */
+#elif defined ( __GNUC__ )
+ #pragma GCC system_header
 #endif
 
 #ifndef __CORE_CM4_SIMD_H

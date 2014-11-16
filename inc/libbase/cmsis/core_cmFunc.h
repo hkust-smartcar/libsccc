@@ -35,6 +35,12 @@
    ---------------------------------------------------------------------------*/
 
 
+#if defined ( __ICCARM__ )
+ #pragma system_include  /* treat file as system include file for MISRA check */
+#elif defined ( __GNUC__ )
+ #pragma GCC system_header
+#endif
+
 #ifndef __CORE_CMFUNC_H
 #define __CORE_CMFUNC_H
 
