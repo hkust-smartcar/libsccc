@@ -37,15 +37,10 @@ extern "C" {
 #endif
 
 #include "libbase/k60/hardware.h"
-
 #include "libbase/k60/misc_utils_c.h"
 
-/* Interrupt vector table type definition */
+/* Interrupt handler type definition */
 typedef void (*tIsrFunc)(void);
-typedef struct {
-	void * __ptr;
-	tIsrFunc __fun[0x77];
-} tVectorTable;
 
 typedef void (*HardFaultHandler)(void);
 extern HardFaultHandler g_hard_fault_handler;
