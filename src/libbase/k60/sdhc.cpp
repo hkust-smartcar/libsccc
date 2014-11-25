@@ -68,43 +68,44 @@ sdhc::sdhc() {
 	SET_BIT(MEM_MAP->SYSCTL,SDHC_SYSCTL_RSTA_SHIFT);
 
 	/*Init All Pins - Open Drain Mode to avoid Bus contention*/
-	d1 = Pin(getD1Config());
-	d0 = Pin(getD0Config());
-	clk = Pin(getClkConfig());
-	cmd = Pin(getCmdConfig());
-	d3 = Pin(getD3Config());
-	d2 = Pin(getD2Config());
+	mD1 = Pin(getD1Config());
+	mD0 = Pin(getD0Config());
+	mClk = Pin(getClkConfig());
+	mCmd = Pin(getCmdConfig());
+	mD3 = Pin(getD3Config());
+	mD2 = Pin(getD2Config());
 
 	/*System Control Register - Send 80 Clocks to SDHC*/
 	SET_BIT(MEM_MAP->SYSCTL, SDHC_SYSCTL_INITA_SHIFT);
 
 	/*Send broadcast command CMD3, then enter standby mode.*/
-	sendCMD(CMD3);
+	CMD cmd = constructCMD(CMD3);
+	sendCMD(cmd);
 	/*Addressed type commands are used from this point.
 	 * In this mode, the CMD/DAT I/O pads will turn to push-pull mode*/
 	Pin::Config cfg = getD1Config();
 	cfg.config = Pin::Config::kPullUp;
-	d1 = Pin(cfg);
+	mD1 = Pin(cfg);
 
 	cfg = getD0Config();
 	cfg.config =  Pin::Config::kPullUp;
-	d0 = Pin(cfg);
+	mD0 = Pin(cfg);
 
 	cfg = getClkConfig();
 	cfg.config =  Pin::Config::kPullUp;
-	clk = Pin(getClkConfig());
+	mClk = Pin(getClkConfig());
 
 	cfg = getCmdConfig();
 	cfg.config =  Pin::Config::kPullUp;
-	cmd = Pin(getCmdConfig());
+	mCmd = Pin(getCmdConfig());
 
 	cfg = getD3Config();
 	cfg.config =  Pin::Config::kPullUp;
-	d3 = Pin(cfg);
+	mD3 = Pin(cfg);
 
 	cfg = getD2Config();
 	cfg.config =  Pin::Config::kPullUp;
-	d2 = Pin(cfg);
+	mD2 = Pin(cfg);
 }
 
 sdhc::~sdhc() {
@@ -137,11 +138,24 @@ void sdhc::cardReset(){
 	/*Send 80 clocks to card*/
 	SET_BIT(MEM_MAP->SYSCTL, SDHC_SYSCTL_INITA_SHIFT);
 	/*send CMD0/CMD52 to card to reset card*/
-	sendCMD(CMD0);
+	CMD cmd = constructCMD(CMD0);
+	sendCMD(cmd);
 	/*V oltage V alidation*/
 }
 
-uint32_t sendCMD(CMD cmd, uint32_t cmdArgs)
+CMD sdhc::constructCMD(CMDINDEX cmdindex){
+	CMD cmd;
+	switch(cmdindex){
+	case CMD0:
+		cmd = {cmdindex};
+		break;
+	default:
+		break;
+	}
+	return cmd;
+}
+
+uint32_t sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
 {
 	/*WORD wCmd; // 32-bit integer to make up the data to write into Transfer Type register, it is recommended to implement in a bit-field manner*/
 	uint32_t wCmd = SDHC_XFERTYP_CMDINX(cmd.cmdindex);
@@ -162,8 +176,8 @@ uint32_t sendCMD(CMD cmd, uint32_t cmdArgs)
 			if (cmd.AC12EN) SET_BIT(MEM_MAP->XFERTYP, SDHC_XFERTYP_AC12EN_SHIFT);
 		}
 	}
-	//make sure PRSSTAT[CDIHB0] bit is NOT set, so that CMDARG is not write protected.
-	while (MEM_MAP->PRSSTAT & SDHC_PRSSTAT_CIHB_MASK) {};
+	//make sure PRSSTAT[CDIHB] bit is NOT set, so that CMDARG is not write protected.
+	while (GET_BIT(MEM_MAP->PRSSTAT, SDHC_PRSSTAT_CIHB_SHIFT) || GET_BIT(MEM_MAP->PRSSTAT, SDHC_PRSSTAT_CDIHB_SHIFT)) {};
 	// configure the command argument
 	MEM_MAP->CMDARG |= cmdArgs;
 	// set Transfer Type register as wCmd value to issue the command

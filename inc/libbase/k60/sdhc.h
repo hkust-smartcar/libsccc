@@ -79,9 +79,9 @@ struct CMD{
 	uint32_t CCCEN;
 	uint32_t RSPTYP;
 	uint32_t DTDSEL;
-	bool MBT; // multi-block transfer
-	bool FBN; //finite block number
-	bool AC12EN; //if cauto12 command is to use
+	uint32_t MBT; // multi-block transfer
+	uint32_t FBN; //finite block number
+	uint32_t AC12EN; //if cauto12 command is to use
 
 };
 class sdhc {
@@ -97,15 +97,16 @@ public:
 	virtual ~sdhc();
 	bool cardDetect();
 	void cardReset();
-	uint32_t sendCMD(CMDINDEX, uint32_t cmdArgs = 0);
+	CMD constructCMD(CMDINDEX cmdindex);
+	uint32_t sendCMD(CMD& cmd, uint32_t cmdArgs=0);
 
 private:
-	Pin d1; //4-bit mode: DAT1 line or interrupt detect
-	Pin d0; //DAT0 line or busy-state detect
-	Pin clk; //Generated clock used to drive the MMC, SD, SDIO or CE-ATA cards.
-	Pin cmd; //Send commands to and receive responses from the card.
-	Pin d3; //4-/8-bit mode: DAT3 line or configured as card detection pin
-	Pin d2; //4-/8-bit mode: DAT2 line or read wait
+	Pin mD1; //4-bit mode: DAT1 line or interrupt detect
+	Pin mD0; //DAT0 line or busy-state detect
+	Pin mClk; //Generated clock used to drive the MMC, SD, SDIO or CE-ATA cards.
+	Pin mCmd; //Send commands to and receive responses from the card.
+	Pin mD3; //4-/8-bit mode: DAT3 line or configured as card detection pin
+	Pin mD2; //4-/8-bit mode: DAT2 line or read wait
 
 	bool cardInserted;
 
