@@ -75,6 +75,13 @@ sdhc::sdhc() {
 	mD3 = Pin(getD3Config());
 	mD2 = Pin(getD2Config());
 
+	/* Enable IRQ requests */
+	MEM_MAP->IRQSTAT = 0xFFFF;
+	MEM_MAP->IRQSTATEN = 	  SDHC_IRQSTATEN_DEBESEN_MASK | SDHC_IRQSTATEN_DCESEN_MASK | SDHC_IRQSTATEN_DTOESEN_MASK
+			| SDHC_IRQSTATEN_CIESEN_MASK | SDHC_IRQSTATEN_CEBESEN_MASK | SDHC_IRQSTATEN_CCESEN_MASK | SDHC_IRQSTATEN_CTOESEN_MASK
+			| SDHC_IRQSTATEN_BRRSEN_MASK | SDHC_IRQSTATEN_BWRSEN_MASK | SDHC_IRQSTATEN_CRMSEN_MASK
+			| SDHC_IRQSTATEN_TCSEN_MASK | SDHC_IRQSTATEN_CCSEN_MASK;
+
 	/*System Control Register - Send 80 Clocks to SDHC*/
 	SET_BIT(MEM_MAP->SYSCTL, SDHC_SYSCTL_INITA_SHIFT);
 
@@ -145,9 +152,67 @@ void sdhc::cardReset(){
 
 CMD sdhc::constructCMD(CMDINDEX cmdindex){
 	CMD cmd;
+	/*CMD {cmdindex, CMDTYP, DPSEL, CICEN, CCCEN,  RSPTYP, DTDSEL, MSBSEL, BCEN, AC12EN};*/
 	switch(cmdindex){
 	case CMD0:
-		cmd = {cmdindex};
+	case CMD1:
+	case CMD4:
+	case CMD15:
+		cmd = {cmdindex, NORMAL, 0, 0, 0, NORESPONSE, 0,0,0,0};
+		break;
+	case CMD2:
+	case CMD9:
+	case CMD10:
+		cmd = {cmdindex, NORMAL, 0, 0, 1, RL136, 0,0,0,0};
+		break;
+	case CMD3:
+	case CMD6:
+	case CMD8:
+	case CMD11:
+	case CMD13:
+	case CMD16:
+	case CMD17:
+	case CMD20:
+		//case ACMD22:
+		//case ACMD23:
+	case CMD24:
+	case CMD26:
+	case CMD27:
+	case CMD30:
+	case CMD32:
+	case CMD33:
+	case CMD34:
+	case CMD35:
+	case CMD36:
+	case CMD37:
+	case CMD40:
+	//case ACMD51:
+	case CMD52:
+	case CMD53:
+	case CMD55:
+		cmd = {cmdindex, NORMAL, 0, 1, 1, RL48, 0,0,0,0};
+		break;
+	case CMD5:
+	case CMD39:
+	//case ACMD41:
+		cmd = {cmdindex, NORMAL, 0, 0, 0, RL48, 0,0,0,0};
+		break;
+	case CMD7:
+	case CMD28:
+	case CMD29:
+	case CMD38:
+	case CMD42:
+	case CMD56:
+	case CMD60:
+	case CMD61:
+				cmd = {cmdindex, NORMAL, 0, 1, 1, RL48CHECKBUSY, 0, 0,0,0};
+				break;
+	case CMD12:
+		cmd = {cmdindex, ABORT, 0, 1, 1, RL48CHECKBUSY, 0, 0,0,0};
+		break;
+	case CMD18:
+	case CMD25:
+		cmd = {cmdindex, NORMAL, 0, 1, 1, RL48, 0,0,0,1};
 		break;
 	default:
 		break;
@@ -161,20 +226,20 @@ uint32_t* sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
 	uint32_t wCmd = SDHC_XFERTYP_CMDINX(cmd.cmdindex);
 
 	/*set CMDTYP, DPSEL, CICEN, CCCEN, RSTTYP, DTDSEL accorind to the command index;*/
-	wCmd |= SDHC_XFERTYP_CMDTYP(cmd.CMDTYP);
-	if(cmd.DPSEL) SET_BIT(wCmd, SDHC_XFERTYP_DPSEL_SHIFT);
-	if(cmd.CICEN) SET_BIT(wCmd, SDHC_XFERTYP_CICEN_SHIFT);
-	if(cmd.CCCEN) SET_BIT(wCmd, SDHC_XFERTYP_CCCEN_SHIFT);
-	if(cmd.RSPTYP) wCmd |= SDHC_XFERTYP_RSPTYP(cmd.RSPTYP);
-	if(cmd.DTDSEL) SET_BIT(wCmd, SDHC_XFERTYP_DTDSEL_SHIFT);
+	wCmd |= SDHC_XFERTYP_CMDTYP(cmd.cmdtyp);
+	if(cmd.dpsel) SET_BIT(wCmd, SDHC_XFERTYP_DPSEL_SHIFT);
+	if(cmd.cicen) SET_BIT(wCmd, SDHC_XFERTYP_CICEN_SHIFT);
+	if(cmd.cccen) SET_BIT(wCmd, SDHC_XFERTYP_CCCEN_SHIFT);
+	if(cmd.rsptyp) wCmd |= SDHC_XFERTYP_RSPTYP(cmd.rsptyp);
+	if(cmd.dtdsel) SET_BIT(wCmd, SDHC_XFERTYP_DTDSEL_SHIFT);
 
 	//	if (internal DMA is used) wCmd |= 0x1; //internal dma not implemented
 	//Check multi-block transfer
-	if (cmd.MSBSEL) {
+	if (cmd.msbsel) {
 		SET_BIT(wCmd, SDHC_XFERTYP_MSBSEL_SHIFT);
-		if (cmd.BCEN) {
+		if (cmd.bcen) {
 			SET_BIT(wCmd, SDHC_XFERTYP_BCEN_SHIFT);
-			if (cmd.AC12EN) SET_BIT(wCmd, SDHC_XFERTYP_AC12EN_SHIFT);
+			if (cmd.ac12en) SET_BIT(wCmd, SDHC_XFERTYP_AC12EN_SHIFT);
 		}
 	}
 	//make sure PRSSTAT[CDIHB] bit is NOT set, so that CMDARG is not write protected.
@@ -203,9 +268,9 @@ uint32_t* sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
 			//	Response received
 		}
 		//	if (any error bits are set) report error;
-//		write 1 to clear CC bit and all Command Error bits;
+		//		write 1 to clear CC bit and all Command Error bits;
 		SET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT);
-		return MEM_MAP->CMDRSP;
+//		return MEM_MAP->CMDRSP;
 	}
 
 }

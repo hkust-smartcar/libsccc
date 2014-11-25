@@ -22,7 +22,7 @@ enum RSPTYP{
 	NORESPONSE = 0x0, //	No response
 	RL136 = 0x1, //	Response length 136
 	RL48 = 0x2, //	Response length 48
-	RL48CB = 0x3, //	Response length 48, check busy after response
+	RL48CHECKBUSY = 0x3, //	Response length 48, check busy after response
 };
 enum CMDINDEX{
 	CMD0 = 0,
@@ -46,7 +46,7 @@ enum CMDINDEX{
 	CMD18,
 	CMD19,
 	CMD20,
-	/*CMD21, 22, 23 Reservered*/
+	/*CMD21~23 Reservered*/
 	CMD24 = 24,
 	CMD25,
 	CMD26,
@@ -79,15 +79,15 @@ enum CMDINDEX{
 };
 struct CMD{
 	CMDINDEX cmdindex;
-	CMDTYP CMDTYP; //CMD Type
-	uint32_t DPSEL; //Data Present Select
-	uint32_t CICEN; //Command Index Check Enable
-	uint32_t CCCEN; //Command CRC Check Enable
-	RSPTYP RSPTYP; //Response Type Select
-	uint32_t DTDSEL; //Data Transfer Direction Select
-	uint32_t MSBSEL; // multi-block transfer
-	uint32_t BCEN; //finite block number
-	uint32_t AC12EN; //if Auto CMD12 is to use
+	CMDTYP cmdtyp; //CMD Type
+	uint32_t dpsel; //Data Present Select
+	uint32_t cicen; //Command Index Check Enable
+	uint32_t cccen; //Command CRC Check Enable
+	RSPTYP rsptyp; //Response Type Select
+	uint32_t dtdsel; //Data Transfer Direction Select
+	uint32_t msbsel; // multi-block transfer
+	uint32_t bcen; //finite block number
+	uint32_t ac12en; //if Auto CMD12 is to use
 
 };
 class sdhc {
