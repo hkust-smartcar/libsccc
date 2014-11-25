@@ -12,6 +12,8 @@
 #include "libbase/k60/sdhc.h"
 #include "libbase/misc_utils_c.h"
 #include "libbase/k60/pin.h"
+#include "libsc/k60/system.h"
+#include "libbase/k60/mcg.h"
 
 namespace libbase {
 namespace k60 {
@@ -21,6 +23,9 @@ Pin::Config sdhc::getD1Config(){
 	Pin::Config d1_config;
 	d1_config.pin = Pin::Name::kPte0;
 	d1_config.mux = Pin::Config::MuxControl::kAlt4;
+	d1_config.config.set(Pin::Config::ConfigBit::kHighDriveStrength);
+	d1_config.config.set(Pin::Config::ConfigBit::kPullEnable);
+	d1_config.config.set(Pin::Config::ConfigBit::kPullUp);
 	return d1_config;
 }
 
@@ -28,6 +33,9 @@ Pin::Config sdhc::getD0Config(){
 	Pin::Config d0_config;
 	d0_config.pin = Pin::Name::kPte1;
 	d0_config.mux = Pin::Config::MuxControl::kAlt4;
+	d0_config.config.set(Pin::Config::ConfigBit::kHighDriveStrength);
+	d0_config.config.set(Pin::Config::ConfigBit::kPullEnable);
+	d0_config.config.set(Pin::Config::ConfigBit::kPullUp);
 	return d0_config;
 }
 
@@ -35,7 +43,7 @@ Pin::Config sdhc::getClkConfig(){
 	Pin::Config clk_config;
 	clk_config.pin = Pin::Name::kPte2;
 	clk_config.mux = Pin::Config::MuxControl::kAlt4;
-	clk_config.config = Pin::Config::kOpenDrain;
+	clk_config.config.set(Pin::Config::ConfigBit::kHighDriveStrength);
 	return clk_config;
 }
 
@@ -43,6 +51,9 @@ Pin::Config sdhc::getCmdConfig(){
 	Pin::Config cmd_config;
 	cmd_config.pin = Pin::Name::kPte3;
 	cmd_config.mux = Pin::Config::MuxControl::kAlt4;
+	cmd_config.config.set(Pin::Config::ConfigBit::kHighDriveStrength);
+	cmd_config.config.set(Pin::Config::ConfigBit::kPullEnable);
+	cmd_config.config.set(Pin::Config::ConfigBit::kPullUp);
 	return cmd_config;
 }
 
@@ -50,6 +61,9 @@ Pin::Config sdhc::getD3Config(){
 	Pin::Config d3_config;
 	d3_config.pin = Pin::Name::kPte4;
 	d3_config.mux = Pin::Config::MuxControl::kAlt4;
+	d3_config.config.set(Pin::Config::ConfigBit::kHighDriveStrength);
+	d3_config.config.set(Pin::Config::ConfigBit::kPullEnable);
+	d3_config.config.set(Pin::Config::ConfigBit::kPullUp);
 	return d3_config;
 }
 
@@ -57,7 +71,54 @@ Pin::Config sdhc::getD2Config(){
 	Pin::Config d2_config;
 	d2_config.pin = Pin::Name::kPte5;
 	d2_config.mux = Pin::Config::MuxControl::kAlt4;
+	d2_config.config.set(Pin::Config::ConfigBit::kHighDriveStrength);
+	d2_config.config.set(Pin::Config::ConfigBit::kPullEnable);
+	d2_config.config.set(Pin::Config::ConfigBit::kPullUp);
 	return d2_config;
+}
+
+void sdhc::SDHC_set_baudrate(uint32_t baudrate)
+{
+	uint32_t clock = Mcg::Get().GetCoreClock();
+	uint32_t pres, div, min, minpres = 0x80, mindiv = 0x0F;
+	int32_t  val;
+
+    /* Find closest setting */
+    min = (uint32_t)-1;
+    for (pres = 2; pres <= 256; pres <<= 1)
+    {
+        for (div = 1; div <= 16; div++)
+        {
+            val = pres * div * baudrate - clock;
+            if (val >= 0)
+            {
+                if (min > val)
+                {
+                    min = val;
+                    minpres = pres;
+                    mindiv = div;
+                }
+            }
+        }
+    }
+
+    /* Disable ESDHC clocks */
+    MEM_MAP->SYSCTL &= (~ SDHC_SYSCTL_SDCLKEN_MASK);
+
+    /* Change dividers */
+    div = MEM_MAP->SYSCTL & (~ (SDHC_SYSCTL_DTOCV_MASK | SDHC_SYSCTL_SDCLKFS_MASK | SDHC_SYSCTL_DVS_MASK));
+    MEM_MAP->SYSCTL = div | (SDHC_SYSCTL_DTOCV(0x0E) | SDHC_SYSCTL_SDCLKFS(minpres >> 1) | SDHC_SYSCTL_DVS(mindiv - 1));
+
+    /* Wait for stable clock */
+    while (0 == (MEM_MAP->PRSSTAT & SDHC_PRSSTAT_SDSTB_MASK))
+    {
+        /* Workaround... */
+    	libsc::k60::System::DelayMs(10);
+    };
+
+    /* Enable ESDHC clocks */
+    MEM_MAP->SYSCTL |= SDHC_SYSCTL_SDCLKEN_MASK;
+    MEM_MAP->IRQSTAT |= SDHC_IRQSTAT_DTOE_MASK;
 }
 
 
@@ -68,6 +129,8 @@ sdhc::sdhc() {
 	Sim::SetEnableClockGate(Sim::ClockGate::kSdhc, true);
 	/*Software Reset For ALL*/
 	SET_BIT(MEM_MAP->SYSCTL,SDHC_SYSCTL_RSTA_SHIFT);
+
+	SDHC_set_baudrate(400000);
 
 	/*Init All Pins - Open Drain Mode to avoid Bus contention*/
 	mD1 = Pin(getD1Config());
@@ -92,29 +155,26 @@ sdhc::sdhc() {
 	sendCMD(cmd);
 	/*Addressed type commands are used from this point.
 	 * In this mode, the CMD/DAT I/O pads will turn to push-pull mode*/
-	Pin::Config cfg = getD1Config();
-	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
-	mD1 = Pin(cfg);
-
-	cfg = getD0Config();
-	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
-	mD0 = Pin(cfg);
-
-	cfg = getClkConfig();
-	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
-	mClk = Pin(getClkConfig());
-
-	cfg = getCmdConfig();
-	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
-	mCmd = Pin(getCmdConfig());
-
-	cfg = getD3Config();
-	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
-	mD3 = Pin(cfg);
-
-	cfg = getD2Config();
-	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
-	mD2 = Pin(cfg);
+//	Reinit causing hard fault
+//	Pin::Config cfg = getD1Config();
+//	mD1 = Pin(cfg);
+//
+//	cfg = getD0Config();
+//	mD0 = Pin(cfg);
+//
+//	cfg = getClkConfig();
+//	mClk = Pin(getClkConfig());
+//
+//	cfg = getCmdConfig();
+//	mCmd = Pin(getCmdConfig());
+//
+//	cfg = getD3Config();
+//	mD3 = Pin(cfg);
+//
+//	cfg = getD2Config();
+//	mD2 = Pin(cfg);
+	constructCMD(CMD0);
+	sendCMD(cmd);
 }
 
 sdhc::~sdhc() {
@@ -274,6 +334,7 @@ CMDRESPONSE sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
 		//	Response not received within 64 SDCLK cycles
 //		MEM_MAP->IRQSTAT |= SDHC_IRQSTAT_CTOE_MASK | SDHC_IRQSTAT_CIE_MASK | SDHC_IRQSTAT_CEBE_MASK | SDHC_IRQSTAT_CCE_MASK | SDHC_IRQSTAT_CC_MASK;
 		assert("Timeout - Response not received within 64 SDCLK cycles");
+		MEM_MAP->IRQSTAT |= SDHC_IRQSTAT_CTOE_MASK;
 		res = TIMEOUT;
 	}
 
@@ -288,7 +349,7 @@ CMDRESPONSE sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
 	}
 
 	//write 1 to clear CC bit and all Command Error bits;
-	MEM_MAP->IRQSTAT |= (SDHC_IRQSTAT_CC_MASK | SDHC_IRQSTAT_CTOE_MASK);
+	MEM_MAP->IRQSTAT |= SDHC_IRQSTAT_CC_MASK;
 
 	return res;
 

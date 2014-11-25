@@ -106,6 +106,7 @@ public:
 	Pin::Config getCmdConfig();
 	Pin::Config getD3Config();
 	Pin::Config getD2Config();
+	void SDHC_set_baudrate(uint32_t);
 
 	sdhc();
 	virtual ~sdhc();
