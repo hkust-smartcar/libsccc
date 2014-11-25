@@ -12,11 +12,17 @@
 
 namespace libbase {
 namespace k60 {
-enum CMDTYPE{
-	bc, /*Broadcast command type*/
-	bcr, /*Broadcast command type*/
-	ac, /*Address command type*/
-	adtc /*Address command type*/
+enum CMDTYP{
+	NORMAL,
+	SUSPEND,
+	RESUME,
+	ABORT
+};
+enum RSPTYP{
+	NORESPONSE = 0x0, //	No response
+	RL136 = 0x1, //	Response length 136
+	RL48 = 0x2, //	Response length 48
+	RL48CB = 0x3, //	Response length 48, check busy after response
 };
 enum CMDINDEX{
 	CMD0 = 0,
@@ -73,15 +79,15 @@ enum CMDINDEX{
 };
 struct CMD{
 	CMDINDEX cmdindex;
-	uint32_t CMDTYP;
-	uint32_t DPSEL;
-	uint32_t CICEN;
-	uint32_t CCCEN;
-	uint32_t RSPTYP;
-	uint32_t DTDSEL;
-	uint32_t MBT; // multi-block transfer
-	uint32_t FBN; //finite block number
-	uint32_t AC12EN; //if cauto12 command is to use
+	CMDTYP CMDTYP; //CMD Type
+	uint32_t DPSEL; //Data Present Select
+	uint32_t CICEN; //Command Index Check Enable
+	uint32_t CCCEN; //Command CRC Check Enable
+	RSPTYP RSPTYP; //Response Type Select
+	uint32_t DTDSEL; //Data Transfer Direction Select
+	uint32_t MSBSEL; // multi-block transfer
+	uint32_t BCEN; //finite block number
+	uint32_t AC12EN; //if Auto CMD12 is to use
 
 };
 class sdhc {
@@ -98,7 +104,7 @@ public:
 	bool cardDetect();
 	void cardReset();
 	CMD constructCMD(CMDINDEX cmdindex);
-	uint32_t sendCMD(CMD& cmd, uint32_t cmdArgs=0);
+	uint32_t* sendCMD(CMD& cmd, uint32_t cmdArgs=0);
 
 private:
 	Pin mD1; //4-bit mode: DAT1 line or interrupt detect

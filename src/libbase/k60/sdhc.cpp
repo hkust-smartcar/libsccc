@@ -155,23 +155,24 @@ CMD sdhc::constructCMD(CMDINDEX cmdindex){
 	return cmd;
 }
 
-uint32_t sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
+uint32_t* sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
 {
 	/*WORD wCmd; // 32-bit integer to make up the data to write into Transfer Type register, it is recommended to implement in a bit-field manner*/
 	uint32_t wCmd = SDHC_XFERTYP_CMDINX(cmd.cmdindex);
 
 	/*set CMDTYP, DPSEL, CICEN, CCCEN, RSTTYP, DTDSEL accorind to the command index;*/
+	wCmd |= SDHC_XFERTYP_CMDTYP(cmd.CMDTYP);
 	if(cmd.DPSEL) SET_BIT(wCmd, SDHC_XFERTYP_DPSEL_SHIFT);
 	if(cmd.CICEN) SET_BIT(wCmd, SDHC_XFERTYP_CICEN_SHIFT);
 	if(cmd.CCCEN) SET_BIT(wCmd, SDHC_XFERTYP_CCCEN_SHIFT);
-	if(cmd.RSPTYP) SET_BIT(wCmd,SDHC_XFERTYP_RSPTYP_SHIFT);
+	if(cmd.RSPTYP) wCmd |= SDHC_XFERTYP_RSPTYP(cmd.RSPTYP);
 	if(cmd.DTDSEL) SET_BIT(wCmd, SDHC_XFERTYP_DTDSEL_SHIFT);
 
 	//	if (internal DMA is used) wCmd |= 0x1; //internal dma not implemented
 	//Check multi-block transfer
-	if (cmd.MBT) {
+	if (cmd.MSBSEL) {
 		SET_BIT(wCmd, SDHC_XFERTYP_MSBSEL_SHIFT);
-		if (cmd.FBN) {
+		if (cmd.BCEN) {
 			SET_BIT(wCmd, SDHC_XFERTYP_BCEN_SHIFT);
 			if (cmd.AC12EN) SET_BIT(wCmd, SDHC_XFERTYP_AC12EN_SHIFT);
 		}
@@ -204,7 +205,7 @@ uint32_t sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
 		//	if (any error bits are set) report error;
 //		write 1 to clear CC bit and all Command Error bits;
 		SET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT);
-
+		return MEM_MAP->CMDRSP;
 	}
 
 }
