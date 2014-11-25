@@ -6,7 +6,7 @@
  */
 //#include "libbase/k60/hardware.h"
 #include "libbase/k60/pin.h"
-
+#include "libbase/log.h"
 #ifndef SDHC_H_
 #define SDHC_H_
 

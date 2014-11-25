@@ -10,10 +10,11 @@
 #include "libbase/k60/sim.h"
 #include "libbase/k60/sdhc.h"
 #include "libbase/misc_utils_c.h"
+#include "libbase/k60/pin.h"
 
 namespace libbase {
 namespace k60 {
-SDHC_Type* MEM_MAP;
+SDHC_Type* MEM_MAP = SDHC;
 
 Pin::Config sdhc::getD1Config(){
 	Pin::Config d1_config;
@@ -251,27 +252,32 @@ uint32_t* sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
 
 
 	//wait_for_response(cmd_index)
-	while(MEM_MAP->CMDRSP[0])
-	{
+	while((MEM_MAP->IRQSTAT & (SDHC_IRQSTAT_CIE_MASK | SDHC_IRQSTAT_CEBE_MASK | SDHC_IRQSTAT_CCE_MASK | SDHC_IRQSTAT_CC_MASK)) == 0);
+
 		// wait until Command Complete bit is set
-		while(~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT));
+		while(~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT)){
+			if(GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CTOE_SHIFT) ){
+				//	Response not received within 64 SDCLK cycles
+				assert("Timeout - Response not received within 64 SDCLK cycles");
+			}
+		}
 		//	read IRQ Status register and check if any error bits about Command are set
+		if(MEM_MAP->IRQSTAT & (SDHC_IRQSTAT_AC12E_MASK | SDHC_IRQSTAT_DEBE_MASK | SDHC_IRQSTAT_DCE_MASK | SDHC_IRQSTAT_DTOE_MASK | SDHC_IRQSTAT_CIE_MASK | SDHC_IRQSTAT_CEBE_MASK | SDHC_IRQSTAT_CCE_MASK | SDHC_IRQSTAT_CTOE_MASK)){
+			assert("Error");
+		}
 		if(~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT) && ~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CTOE_SHIFT) ){
 			//Response No meaning
 			assert("x");
 		}
-		if(GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CTOE_SHIFT) ){
-			//	Response not received within 64 SDCLK cycles
-			assert("Response not received");
-		}
+
 		if(GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT) && ~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CTOE_SHIFT) ){
 			//	Response received
+			LOG_D("Response received\n");
 		}
 		//	if (any error bits are set) report error;
 		//		write 1 to clear CC bit and all Command Error bits;
 		SET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT);
 //		return MEM_MAP->CMDRSP;
-	}
 
 }
 
