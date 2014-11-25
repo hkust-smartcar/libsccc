@@ -77,6 +77,12 @@ enum CMDINDEX{
 	CMD61,
 	/*CMD62~63 Reserved*/
 };
+enum CMDRESPONSE{
+	NOMEANING = 0,
+	TIMEOUT,
+	ERROR,
+	RESPONSERECEIVED
+};
 struct CMD{
 	CMDINDEX cmdindex;
 	CMDTYP cmdtyp; //CMD Type
@@ -88,8 +94,10 @@ struct CMD{
 	uint32_t msbsel; // multi-block transfer
 	uint32_t bcen; //finite block number
 	uint32_t ac12en; //if Auto CMD12 is to use
+	uint32_t response[4];
 
 };
+
 class sdhc {
 public:
 	Pin::Config getD1Config();
@@ -104,7 +112,7 @@ public:
 	bool cardDetect();
 	void cardReset();
 	CMD constructCMD(CMDINDEX cmdindex);
-	uint32_t* sendCMD(CMD& cmd, uint32_t cmdArgs=0);
+	CMDRESPONSE sendCMD(CMD& cmd, uint32_t cmdArgs=0);
 
 private:
 	Pin mD1; //4-bit mode: DAT1 line or interrupt detect

@@ -6,6 +6,7 @@
  */
 #include <cstdint>
 #include <cassert>
+#include <bitset>
 #include "libbase/k60/hardware.h"
 #include "libbase/k60/sim.h"
 #include "libbase/k60/sdhc.h"
@@ -92,27 +93,27 @@ sdhc::sdhc() {
 	/*Addressed type commands are used from this point.
 	 * In this mode, the CMD/DAT I/O pads will turn to push-pull mode*/
 	Pin::Config cfg = getD1Config();
-	cfg.config = Pin::Config::kPullUp;
+	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
 	mD1 = Pin(cfg);
 
 	cfg = getD0Config();
-	cfg.config =  Pin::Config::kPullUp;
+	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
 	mD0 = Pin(cfg);
 
 	cfg = getClkConfig();
-	cfg.config =  Pin::Config::kPullUp;
+	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
 	mClk = Pin(getClkConfig());
 
 	cfg = getCmdConfig();
-	cfg.config =  Pin::Config::kPullUp;
+	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
 	mCmd = Pin(getCmdConfig());
 
 	cfg = getD3Config();
-	cfg.config =  Pin::Config::kPullUp;
+	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
 	mD3 = Pin(cfg);
 
 	cfg = getD2Config();
-	cfg.config =  Pin::Config::kPullUp;
+	cfg.config.set(Pin::Config::ConfigBit::kPullUp);
 	mD2 = Pin(cfg);
 }
 
@@ -159,7 +160,7 @@ CMD sdhc::constructCMD(CMDINDEX cmdindex){
 	case CMD1:
 	case CMD4:
 	case CMD15:
-		cmd = {cmdindex, NORMAL, 0, 0, 0, NORESPONSE, 0,0,0,0};
+		cmd = {cmdindex, NORMAL, 0, 0, 0, NORESPONSE, 0,0,0,0,0};
 		break;
 	case CMD2:
 	case CMD9:
@@ -187,7 +188,7 @@ CMD sdhc::constructCMD(CMDINDEX cmdindex){
 	case CMD36:
 	case CMD37:
 	case CMD40:
-	//case ACMD51:
+		//case ACMD51:
 	case CMD52:
 	case CMD53:
 	case CMD55:
@@ -195,7 +196,7 @@ CMD sdhc::constructCMD(CMDINDEX cmdindex){
 		break;
 	case CMD5:
 	case CMD39:
-	//case ACMD41:
+		//case ACMD41:
 		cmd = {cmdindex, NORMAL, 0, 0, 0, RL48, 0,0,0,0};
 		break;
 	case CMD7:
@@ -206,8 +207,8 @@ CMD sdhc::constructCMD(CMDINDEX cmdindex){
 	case CMD56:
 	case CMD60:
 	case CMD61:
-				cmd = {cmdindex, NORMAL, 0, 1, 1, RL48CHECKBUSY, 0, 0,0,0};
-				break;
+		cmd = {cmdindex, NORMAL, 0, 1, 1, RL48CHECKBUSY, 0, 0,0,0};
+		break;
 	case CMD12:
 		cmd = {cmdindex, ABORT, 0, 1, 1, RL48CHECKBUSY, 0, 0,0,0};
 		break;
@@ -221,8 +222,9 @@ CMD sdhc::constructCMD(CMDINDEX cmdindex){
 	return cmd;
 }
 
-uint32_t* sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
+CMDRESPONSE sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
 {
+	CMDRESPONSE res = RESPONSERECEIVED;
 	/*WORD wCmd; // 32-bit integer to make up the data to write into Transfer Type register, it is recommended to implement in a bit-field manner*/
 	uint32_t wCmd = SDHC_XFERTYP_CMDINX(cmd.cmdindex);
 
@@ -254,30 +256,41 @@ uint32_t* sdhc::sendCMD(CMD& cmd, uint32_t cmdArgs)
 	//wait_for_response(cmd_index)
 	while((MEM_MAP->IRQSTAT & (SDHC_IRQSTAT_CIE_MASK | SDHC_IRQSTAT_CEBE_MASK | SDHC_IRQSTAT_CCE_MASK | SDHC_IRQSTAT_CC_MASK)) == 0);
 
-		// wait until Command Complete bit is set
-		while(~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT)){
-			if(GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CTOE_SHIFT) ){
-				//	Response not received within 64 SDCLK cycles
-				assert("Timeout - Response not received within 64 SDCLK cycles");
-			}
-		}
-		//	read IRQ Status register and check if any error bits about Command are set
-		if(MEM_MAP->IRQSTAT & (SDHC_IRQSTAT_AC12E_MASK | SDHC_IRQSTAT_DEBE_MASK | SDHC_IRQSTAT_DCE_MASK | SDHC_IRQSTAT_DTOE_MASK | SDHC_IRQSTAT_CIE_MASK | SDHC_IRQSTAT_CEBE_MASK | SDHC_IRQSTAT_CCE_MASK | SDHC_IRQSTAT_CTOE_MASK)){
-			assert("Error");
-		}
-		if(~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT) && ~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CTOE_SHIFT) ){
-			//Response No meaning
-			assert("x");
-		}
+	// wait until Command Complete bit is set
+//	while(~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT));
 
-		if(GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT) && ~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CTOE_SHIFT) ){
-			//	Response received
-			LOG_D("Response received\n");
-		}
-		//	if (any error bits are set) report error;
-		//		write 1 to clear CC bit and all Command Error bits;
-		SET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT);
-//		return MEM_MAP->CMDRSP;
+	//Check if any error bits about Command are set at complete
+	if((MEM_MAP->IRQSTAT & (SDHC_IRQSTAT_CC_MASK | SDHC_IRQSTAT_AC12E_MASK | SDHC_IRQSTAT_DEBE_MASK | SDHC_IRQSTAT_DCE_MASK | SDHC_IRQSTAT_DTOE_MASK | SDHC_IRQSTAT_CIE_MASK | SDHC_IRQSTAT_CEBE_MASK | SDHC_IRQSTAT_CCE_MASK | SDHC_IRQSTAT_CTOE_MASK)) != SDHC_IRQSTAT_CC_MASK){
+		assert("Error");
+		res = ERROR;
+	}
+	if(~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT) && ~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CTOE_SHIFT) ){
+		//Response No meaning
+		assert("x");
+		res = NOMEANING;
+	}
+
+	if(GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CTOE_SHIFT) ){
+		//	Response not received within 64 SDCLK cycles
+//		MEM_MAP->IRQSTAT |= SDHC_IRQSTAT_CTOE_MASK | SDHC_IRQSTAT_CIE_MASK | SDHC_IRQSTAT_CEBE_MASK | SDHC_IRQSTAT_CCE_MASK | SDHC_IRQSTAT_CC_MASK;
+		assert("Timeout - Response not received within 64 SDCLK cycles");
+		res = TIMEOUT;
+	}
+
+	if(GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CC_SHIFT) && ~GET_BIT(MEM_MAP->IRQSTAT, SDHC_IRQSTAT_CTOE_SHIFT) ){
+		//	Response received
+		LOG_D("Response received\n");
+		cmd.response[0] = MEM_MAP->CMDRSP[0];
+		cmd.response[1] = MEM_MAP->CMDRSP[1];
+		cmd.response[2] = MEM_MAP->CMDRSP[2];
+		cmd.response[3] = MEM_MAP->CMDRSP[3];
+		res = RESPONSERECEIVED;
+	}
+
+	//write 1 to clear CC bit and all Command Error bits;
+	MEM_MAP->IRQSTAT |= (SDHC_IRQSTAT_CC_MASK | SDHC_IRQSTAT_CTOE_MASK);
+
+	return res;
 
 }
 
