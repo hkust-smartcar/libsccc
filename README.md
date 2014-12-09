@@ -1,12 +1,13 @@
 libsccc
 ==============
 
-libsccc (previously libsmartcarcpp) is the library being used among the HKUST SmartCar Team
+libsccc (previously libsmartcarcpp) is the library being used among the HKUST SmartCar Team.  
+Master is the stable branch. Current developments are being done mainly on [fauxstess-cupcake](https://github.com/hkust-smartcar/libsccc/tree/fauxstess-cupcake), but also various other branches.  
 
 ## What's Inside
 libbase: K60 peripheral library  
-lisc: High-level component library based on libbase  
-libutil: Useful utilities  
+libsc: High-level component library based on libbase  
+libutil: Useful utilities
 
 ## Dependency
 None
