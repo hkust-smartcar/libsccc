@@ -82,7 +82,7 @@ void Mpu6050::Update(){
 	int j;
 	for(int i = 0; i < data.size(); i+=2){
 		if(i>=0 && i<=5){
-			j = (int) i/2;
+			j = i/2;
 			m_raw_acc[j] = data[i] << 8 | data[i+1];
 			m_acc[j] = m_raw_acc[j] * 1 / GetAccelScaleFactor();
 		}
@@ -90,9 +90,9 @@ void Mpu6050::Update(){
 			m_raw_temp = data[i] << 8 | data[i+1];
 		}
 		if(i>=8 && i<=13){
-			j = i - 8;
-			m_raw_gyro[j/2] = data[i] << 8 | data[i+1];
-			m_omega[j/2] = m_raw_gyro[j/2] * 1 / GetGyroScaleFactor();
+			j = (i - 8)/2;
+			m_raw_gyro[j] = data[i] << 8 | data[i+1];
+			m_omega[j] = m_raw_gyro[j] * 1 / GetGyroScaleFactor();
 		}
 	}
 }
