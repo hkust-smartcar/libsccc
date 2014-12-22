@@ -84,15 +84,16 @@ void Mpu6050::Update(){
 		if(i>=0 && i<=5){
 			j = i/2;
 			m_raw_acc[j] = data[i] << 8 | data[i+1];
-			m_acc[j] = m_raw_acc[j] * 1 / GetAccelScaleFactor();
+			m_acc[j] = (float) m_raw_acc[j] * 1 / GetAccelScaleFactor();
 		}
 		if(i==6){
 			m_raw_temp = data[i] << 8 | data[i+1];
+			m_temp = (float) m_raw_temp / 340 + 36.53;
 		}
 		if(i>=8 && i<=13){
 			j = (i - 8)/2;
 			m_raw_gyro[j] = data[i] << 8 | data[i+1];
-			m_omega[j] = m_raw_gyro[j] * 1 / GetGyroScaleFactor();
+			m_omega[j] = (float) m_raw_gyro[j] * 1 / GetGyroScaleFactor();
 		}
 	}
 }
@@ -105,8 +106,8 @@ float* Mpu6050::GetOmega(){
 	return m_omega;
 }
 
-float Mpu6050::GetRawTemp(){
-	return m_raw_temp;
+float Mpu6050::GetCelsius(){
+	return m_temp;
 }
 
 
