@@ -144,7 +144,9 @@ Mpu6050::Mpu6050(const Config&)
 		: m_i2c(nullptr), m_raw_temp(0), m_temp(0),
 		  m_gyro_range(Config::Range::kSmall),
 		  m_accel_range(Config::Range::kSmall)
-{}
+{
+	LOG_DL("Configured not to use Mpu6050");
+}
 Mpu6050::~Mpu6050() {}
 void Mpu6050::Update() {}
 
