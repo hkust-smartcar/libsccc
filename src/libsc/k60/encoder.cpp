@@ -110,10 +110,10 @@ FtmQuadDecoder::Config GetQuadDecoderConfig(const uint8_t id)
 
 }
 
-Encoder::Encoder(const uint8_t id)
-		: m_id(id),
+Encoder::Encoder(const Config &config)
+		: m_id(config.id),
 		  m_count(0),
-		  m_quad_decoder(GetQuadDecoderConfig(m_id))
+		  m_quad_decoder(GetQuadDecoderConfig(config.id))
 {}
 
 void Encoder::Update()
@@ -124,7 +124,7 @@ void Encoder::Update()
 }
 
 #else
-Encoder::Encoder(const uint8_t)
+Encoder::Encoder(const Config&)
 		: m_id(0), m_count(0)
 {
 	LOG_DL("Configured not to use Encoder");
