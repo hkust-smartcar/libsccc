@@ -39,8 +39,8 @@ private:
 	float m_acc[3];
 	float m_omega[3];
 	float m_temp;
-	Byte GYRO_CONFIG;
-	Byte ACCEL_CONFIG;
+	Byte m_gyro_config;
+	Byte m_accel_config;
 
 	float GetGyroScaleFactor();
 	float GetAccelScaleFactor();

@@ -53,44 +53,44 @@ Mpu6050::Mpu6050():
 
 	//Register 27 - GYRO_CONFIG: FS_SEL[1:0] << 3;
 	//FS_SEL=0, ± 250 °/s; FS_SEL=1, ± 500 °/s; FS_SEL=2, ± 1000 °/s; FS_SEL=3, ± 2000 °/s;
-	GYRO_CONFIG = 2 << 3;
-	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG,GYRO_CONFIG);
+	m_gyro_config = 2 << 3;
+	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG,m_gyro_config);
 
 	//Register 28 - ACCEL_CONFIG: AFS_SEL[1:0] << 3;
 	//AFS_SEL=0, ±2g; AFS_SEL=1, ±4g; AFS_SEL=2, ±8g; AFS_SEL=3, ±16g;
-	ACCEL_CONFIG = 2 << 3;
-	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG,ACCEL_CONFIG);
+	m_accel_config = 2 << 3;
+	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG,m_accel_config);
 }
 
 Mpu6050::~Mpu6050() {
 }
 
 float Mpu6050::GetGyroScaleFactor(){
-	if(GYRO_CONFIG == 0x0){
+	if(m_gyro_config == 0x0){
 		return 131.0f;
 	}
-	if(GYRO_CONFIG == (1 << 3)){
+	if(m_gyro_config == (1 << 3)){
 		return 65.5f;
 	}
-	if(GYRO_CONFIG == (2 << 3)){
+	if(m_gyro_config == (2 << 3)){
 		return 32.8f;
 	}
-	if(GYRO_CONFIG == (3 << 3)){
+	if(m_gyro_config == (3 << 3)){
 		return 16.4f;
 	}
 }
 
 float Mpu6050::GetAccelScaleFactor(){
-	if(ACCEL_CONFIG == 0x0){
+	if(m_accel_config == 0x0){
 		return 16384.0f;
 	}
-	if(ACCEL_CONFIG == (1 << 3)){
+	if(m_accel_config == (1 << 3)){
 		return 8192.0f;
 	}
-	if(ACCEL_CONFIG == (2 << 3)){
+	if(m_accel_config == (2 << 3)){
 		return 4096.0f;
 	}
-	if(ACCEL_CONFIG == (3 << 3)){
+	if(m_accel_config == (3 << 3)){
 		return 2048.0f;
 	}
 }
