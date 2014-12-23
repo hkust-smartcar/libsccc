@@ -25,6 +25,7 @@ SoftI2cMaster::Config Mpu6050::GetI2CConfig(){
 	config.sda_pin = LIBSC_MPU6050_SDA;
 	return config;
 }
+
 Mpu6050::Mpu6050():
 	m_i2c(GetI2CConfig())
 {
@@ -57,13 +58,13 @@ float Mpu6050::GetGyroScaleFactor(){
 	if(GYRO_CONFIG == 0x0){
 		return 131.0f;
 	}
-	if(GYRO_CONFIG == 1 << 3){
+	if(GYRO_CONFIG == (1 << 3)){
 		return 65.5f;
 	}
-	if(GYRO_CONFIG == 2 << 3){
+	if(GYRO_CONFIG == (2 << 3)){
 		return 32.8f;
 	}
-	if(GYRO_CONFIG == 3 << 3){
+	if(GYRO_CONFIG == (3 << 3)){
 		return 16.4f;
 	}
 }
@@ -72,13 +73,13 @@ float Mpu6050::GetAccelScaleFactor(){
 	if(ACCEL_CONFIG == 0x0){
 		return 16384.0f;
 	}
-	if(ACCEL_CONFIG == 1 << 3){
+	if(ACCEL_CONFIG == (1 << 3)){
 		return 8192.0f;
 	}
-	if(ACCEL_CONFIG == 2 << 3){
+	if(ACCEL_CONFIG == (2 << 3)){
 		return 4096.0f;
 	}
-	if(ACCEL_CONFIG == 3 << 3){
+	if(ACCEL_CONFIG == (3 << 3)){
 		return 2048.0f;
 	}
 }

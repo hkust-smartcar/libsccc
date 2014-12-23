@@ -43,5 +43,5 @@
 #define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtd7
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtd6
 
-#define LIBSC_MPU6050_SCL libbase::k60::Pin::Name::kPte0
-#define LIBSC_MPU6050_SDA libbase::k60::Pin::Name::kPte1
+#define LIBSC_MPU6050_SCL libbase::k60::Pin::Name::kPtb0
+#define LIBSC_MPU6050_SDA libbase::k60::Pin::Name::kPtb1
