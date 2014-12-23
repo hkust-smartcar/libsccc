@@ -43,8 +43,10 @@ SoftI2cMaster::Config GetI2CConfig()
 
 }
 
-Mpu6050::Mpu6050()
-		: m_i2c(GetI2CConfig())
+Mpu6050::Mpu6050(const Config &config)
+		: m_i2c(GetI2CConfig()),
+		  m_gyro_range(config.gyro_range),
+		  m_accel_range(config.accel_range)
 {
 	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, 0x00);
 
@@ -59,15 +61,14 @@ Mpu6050::Mpu6050()
 
 	//Register 27 - GYRO_CONFIG: FS_SEL[1:0] << 3;
 	//FS_SEL=0, ± 250 °/s; FS_SEL=1, ± 500 °/s; FS_SEL=2, ± 1000 °/s; FS_SEL=3, ± 2000 °/s;
-	m_gyro_config = 2 << 3;
-	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG,
-			m_gyro_config);
+	uint8_t gyro_config = static_cast<int>(m_gyro_range) << 3;
+	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG, gyro_config);
 
 	//Register 28 - ACCEL_CONFIG: AFS_SEL[1:0] << 3;
 	//AFS_SEL=0, ±2g; AFS_SEL=1, ±4g; AFS_SEL=2, ±8g; AFS_SEL=3, ±16g;
-	m_accel_config = 2 << 3;
+	uint8_t accel_config = static_cast<int>(m_accel_range) << 3;
 	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG,
-			m_accel_config);
+			accel_config);
 }
 
 Mpu6050::~Mpu6050() {
@@ -75,50 +76,40 @@ Mpu6050::~Mpu6050() {
 
 float Mpu6050::GetGyroScaleFactor()
 {
-	if (m_gyro_config == 0x0)
+	switch (m_gyro_range)
 	{
-		return 131.0f;
-	}
-	else if (m_gyro_config == (1 << 3))
-	{
-		return 65.5f;
-	}
-	else if (m_gyro_config == (2 << 3))
-	{
-		return 32.8f;
-	}
-	else if (m_gyro_config == (3 << 3))
-	{
-		return 16.4f;
-	}
-	else
-	{
+	default:
 		LOG_EL("Mpu6050 Gyro in illegal state");
+	case Config::Range::kSmall:
+		return 131.0f;
+
+	case Config::Range::kMid:
+		return 65.5f;
+
+	case Config::Range::kLarge:
+		return 32.8f;
+
+	case Config::Range::kExtreme:
 		return 16.4f;
 	}
 }
 
 float Mpu6050::GetAccelScaleFactor()
 {
-	if (m_accel_config == 0x0)
+	switch (m_accel_range)
 	{
-		return 16384.0f;
-	}
-	else if (m_accel_config == (1 << 3))
-	{
-		return 8192.0f;
-	}
-	else if (m_accel_config == (2 << 3))
-	{
-		return 4096.0f;
-	}
-	else if (m_accel_config == (3 << 3))
-	{
-		return 2048.0f;
-	}
-	else
-	{
+	default:
 		LOG_EL("Mpu6050 Accel in illegal state");
+	case Config::Range::kSmall:
+		return 16384.0f;
+
+	case Config::Range::kMid:
+		return 8192.0f;
+
+	case Config::Range::kLarge:
+		return 4096.0f;
+
+	case Config::Range::kExtreme:
 		return 2048.0f;
 	}
 }
@@ -165,9 +156,10 @@ float Mpu6050::GetCelsius()
 }
 
 #else
-Mpu6050::Mpu6050()
-		: m_i2c(nullptr), m_raw_temp(0), m_temp(0), m_gyro_config(0),
-		  m_accel_config(0)
+Mpu6050::Mpu6050(const Config&)
+		: m_i2c(nullptr), m_raw_temp(0), m_temp(0),
+		  m_gyro_range(Config::Range::kSmall),
+		  m_accel_range(Config::Range::kSmall)
 {}
 Mpu6050::~Mpu6050() {}
 void Mpu6050::Update() {}

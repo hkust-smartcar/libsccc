@@ -24,7 +24,23 @@ namespace k60
 class Mpu6050
 {
 public:
-	Mpu6050();
+	struct Config
+	{
+		enum struct Range
+		{
+			kSmall = 0,
+			kMid,
+			kLarge,
+			kExtreme,
+		};
+
+		// kSmall -> kExtreme = ±250°/s, ±500°/s, ±1000°/s, ±2000°/s
+		Range gyro_range;
+		// kSmall -> kExtreme = ±2g, ±4g, ±8g, ±16g
+		Range accel_range;
+	};
+
+	explicit Mpu6050(const Config &config);
 	~Mpu6050();
 
 	void Update();
@@ -40,8 +56,9 @@ private:
 	std::array<float, 3> m_acc;
 	std::array<float, 3> m_omega;
 	float m_temp;
-	Byte m_gyro_config;
-	Byte m_accel_config;
+
+	Config::Range m_gyro_range;
+	Config::Range m_accel_range;
 
 	float GetGyroScaleFactor();
 	float GetAccelScaleFactor();
