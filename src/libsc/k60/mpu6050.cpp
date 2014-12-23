@@ -1,8 +1,9 @@
 /*
- * Mpu6050.cpp
+ * mpu6050.cpp
  *
- *  Created on: Dec 23, 2014
- *      Author: harrison
+ * Author: Harrison Ng
+ * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include "libbase/k60/hardware.h"
