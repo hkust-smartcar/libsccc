@@ -92,7 +92,7 @@ float Mpu6050::GetGyroScaleFactor()
 	else
 	{
 		LOG_EL("Mpu6050 Gyro in illegal state");
-		return 1.0f;
+		return 16.4f;
 	}
 }
 
@@ -117,7 +117,7 @@ float Mpu6050::GetAccelScaleFactor()
 	else
 	{
 		LOG_EL("Mpu6050 Accel in illegal state");
-		return 1.0f;
+		return 2048.0f;
 	}
 }
 
