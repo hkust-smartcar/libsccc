@@ -21,8 +21,12 @@
 using namespace libbase::k60;
 using namespace std;
 
-namespace libsc {
-namespace k60 {
+namespace libsc
+{
+namespace k60
+{
+
+#ifdef LIBSC_USE_MPU6050
 
 namespace
 {
@@ -129,6 +133,18 @@ float Mpu6050::GetCelsius(){
 	return m_temp;
 }
 
+#else
+Mpu6050::Mpu6050()
+		: m_i2c(nullptr), m_raw_temp(0), m_temp(0), m_gyro_config(0),
+		  m_accel_config(0)
+{}
+Mpu6050::~Mpu6050() {}
+void Mpu6050::Update() {}
+float* Mpu6050::GetAcc() { return nullptr; }
+float* Mpu6050::GetOmega() { return nullptr; }
+float Mpu6050::GetCelsius() { return 0.0f; }
+
+#endif /* LIBSC_USE_MPU6050 */
 
 } /* namespace k60 */
 } /* namespace libsc */
