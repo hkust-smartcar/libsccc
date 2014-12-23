@@ -71,9 +71,6 @@ Mpu6050::Mpu6050(const Config &config)
 			accel_config);
 }
 
-Mpu6050::~Mpu6050()
-{}
-
 float Mpu6050::GetGyroScaleFactor()
 {
 	switch (m_gyro_range)

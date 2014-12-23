@@ -41,7 +41,6 @@ public:
 	};
 
 	explicit Mpu6050(const Config &config);
-	~Mpu6050();
 
 	void Update();
 
