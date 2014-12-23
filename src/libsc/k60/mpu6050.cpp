@@ -4,14 +4,17 @@
  *  Created on: Dec 23, 2014
  *      Author: harrison
  */
+
 #include "libbase/k60/hardware.h"
 
 #include <cstdint>
 #include <vector>
 
+#include "libbase/k60/soft_i2c_master.h"
+
 #include "libsc/config.h"
 #include "libsc/device_h/mpu6050.h"
-#include "libbase/k60/soft_i2c_master.h"
+#include "libsc/k60/mpu6050.h"
 #include "libutil/misc.h"
 
 using namespace libbase::k60;

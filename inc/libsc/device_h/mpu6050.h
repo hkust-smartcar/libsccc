@@ -375,39 +375,3 @@ THE SOFTWARE.
 #define MPU6050_DMP_MEMORY_BANKS        8
 #define MPU6050_DMP_MEMORY_BANK_SIZE    256
 #define MPU6050_DMP_MEMORY_CHUNK_SIZE   16
-
-#include "libbase/k60/soft_i2c_master.h"
-
-using namespace libbase::k60;
-
-namespace libsc {
-namespace k60 {
-
-class Mpu6050 {
-public:
-	SoftI2cMaster::Config GetI2CConfig();
-	Mpu6050();
-	virtual ~Mpu6050();
-	void Update();
-	float* GetAcc();
-	float* GetOmega();
-	float GetCelsius();
-private:
-	libbase::k60::SoftI2cMaster m_i2c;
-	int16_t m_raw_acc[3];
-	int16_t m_raw_gyro[3];
-	int16_t m_raw_temp;
-	float m_acc[3];
-	float m_omega[3];
-	float m_temp;
-	Byte GYRO_CONFIG;
-	Byte ACCEL_CONFIG;
-
-	float GetGyroScaleFactor();
-	float GetAccelScaleFactor();
-
-};
-
-} /* namespace k60 */
-} /* namespace libsc */
-
