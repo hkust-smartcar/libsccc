@@ -376,9 +376,6 @@ THE SOFTWARE.
 #define MPU6050_DMP_MEMORY_BANK_SIZE    256
 #define MPU6050_DMP_MEMORY_CHUNK_SIZE   16
 
-#ifndef MPU6050_H_
-#define MPU6050_H_
-
 #include "libbase/k60/soft_i2c_master.h"
 
 using namespace libbase::k60;
@@ -413,6 +410,4 @@ private:
 
 } /* namespace k60 */
 } /* namespace libsc */
-
-#endif /* MPU6050_H_ */
 
