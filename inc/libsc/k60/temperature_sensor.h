@@ -4,6 +4,7 @@
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -20,7 +21,12 @@ namespace k60
 class TemperatureSensor
 {
 public:
-	explicit TemperatureSensor(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+	};
+
+	explicit TemperatureSensor(const Config &config);
 
 	void UpdateTemperature();
 

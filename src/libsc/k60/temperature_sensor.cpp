@@ -4,6 +4,7 @@
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cstdint>
@@ -53,8 +54,9 @@ GpoConfig GetGpoConfig(const uint8_t id)
 
 }
 
-TemperatureSensor::TemperatureSensor(const uint8_t id)
-		: m_pin(GetGpoConfig(id)), m_temperature(0.0f)
+TemperatureSensor::TemperatureSensor(const Config &config)
+		: m_pin(GetGpoConfig(config.id)),
+		  m_temperature(0.0f)
 {}
 
 void TemperatureSensor::UpdateTemperature()
@@ -145,7 +147,7 @@ uint8_t TemperatureSensor::ReceiveByte()
 
 #else
 
-TemperatureSensor::TemperatureSensor(const uint8_t)
+TemperatureSensor::TemperatureSensor(const Config&)
 		: m_pin(nullptr), m_temperature(0.0f)
 {
 	LOG_DL("Configured not to use TemperatureSensor");
