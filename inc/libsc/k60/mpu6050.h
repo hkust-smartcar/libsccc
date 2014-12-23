@@ -21,7 +21,8 @@ class Mpu6050
 {
 public:
 	Mpu6050();
-	virtual ~Mpu6050();
+	~Mpu6050();
+
 	void Update();
 	float* GetAcc();
 	float* GetOmega();
