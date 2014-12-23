@@ -27,7 +27,7 @@ public:
 		uint8_t id;
 	};
 
-	AlternateMotor(const Config &config);
+	explicit AlternateMotor(const Config &config);
 
 private:
 	void OnSetPower(const uint16_t power) override;

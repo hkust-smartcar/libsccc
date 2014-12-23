@@ -28,7 +28,7 @@ public:
 		uint8_t id;
 	};
 
-	DirMotor(const Config &config);
+	explicit DirMotor(const Config &config);
 
 private:
 	void OnSetPower(const uint16_t power) override;
