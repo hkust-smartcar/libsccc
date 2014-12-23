@@ -21,7 +21,12 @@ namespace k60
 class TowerProMg995 : public Servo
 {
 public:
-	explicit TowerProMg995(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+	};
+
+	explicit TowerProMg995(const Config &config);
 };
 
 }

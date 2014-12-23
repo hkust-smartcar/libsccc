@@ -113,12 +113,11 @@ FtmPwm::Config GetPwmConfig(const uint8_t id, const uint16_t period,
 
 }
 
-Servo::Servo(const uint8_t id, const uint16_t period,
-		const uint16_t pos_width_min, const uint16_t pos_width_max)
-		: m_pos_width_min(pos_width_min),
-		  m_pos_width_diff(pos_width_max - pos_width_min),
-		  m_pwm(GetPwmConfig(id, period,
-				  (pos_width_max - pos_width_min) / 2 + pos_width_min)),
+Servo::Servo(const Config &config)
+		: m_pos_width_min(config.min_pos_width),
+		  m_pos_width_diff(config.max_pos_width - config.min_pos_width),
+		  m_pwm(GetPwmConfig(config.id, config.period,
+				  m_pos_width_diff / 2 + m_pos_width_min)),
 		  m_degree(900)
 {}
 
@@ -137,7 +136,7 @@ void Servo::SetDegree(const uint16_t degree)
 }
 
 #else
-Servo::Servo(const uint8_t, const uint16_t, const uint16_t, const uint16_t)
+Servo::Servo(const Config&)
 		: m_pos_width_min(0), m_pos_width_diff(0), m_degree(0)
 {
 	LOG_DL("Configured not to use Servo");

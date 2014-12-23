@@ -20,7 +20,12 @@ namespace k60
 class FutabaS3010 : public Servo
 {
 public:
-	explicit FutabaS3010(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+	};
+
+	explicit FutabaS3010(const Config &config);
 };
 
 }
