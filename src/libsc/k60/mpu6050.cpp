@@ -12,6 +12,7 @@
 #include <array>
 #include <vector>
 
+#include "libbase/log.h"
 #include "libbase/k60/soft_i2c_master.h"
 
 #include "libsc/config.h"
@@ -70,36 +71,55 @@ Mpu6050::Mpu6050():
 Mpu6050::~Mpu6050() {
 }
 
-float Mpu6050::GetGyroScaleFactor(){
-	if(m_gyro_config == 0x0){
+float Mpu6050::GetGyroScaleFactor()
+{
+	if (m_gyro_config == 0x0)
+	{
 		return 131.0f;
 	}
-	if(m_gyro_config == (1 << 3)){
+	else if (m_gyro_config == (1 << 3))
+	{
 		return 65.5f;
 	}
-	if(m_gyro_config == (2 << 3)){
+	else if (m_gyro_config == (2 << 3))
+	{
 		return 32.8f;
 	}
-	if(m_gyro_config == (3 << 3)){
+	else if (m_gyro_config == (3 << 3))
+	{
 		return 16.4f;
 	}
+	else
+	{
+		LOG_EL("Mpu6050 Gyro in illegal state");
+		return 1.0f;
+	}
 }
 
-float Mpu6050::GetAccelScaleFactor(){
-	if(m_accel_config == 0x0){
+float Mpu6050::GetAccelScaleFactor()
+{
+	if (m_accel_config == 0x0)
+	{
 		return 16384.0f;
 	}
-	if(m_accel_config == (1 << 3)){
+	else if (m_accel_config == (1 << 3))
+	{
 		return 8192.0f;
 	}
-	if(m_accel_config == (2 << 3)){
+	else if (m_accel_config == (2 << 3))
+	{
 		return 4096.0f;
 	}
-	if(m_accel_config == (3 << 3)){
+	else if (m_accel_config == (3 << 3))
+	{
 		return 2048.0f;
 	}
+	else
+	{
+		LOG_EL("Mpu6050 Accel in illegal state");
+		return 1.0f;
+	}
 }
-
 
 void Mpu6050::Update(){
 	vector<Byte> data = m_i2c.GetBytes(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_XOUT_H, 14);
