@@ -14,14 +14,11 @@
 #include "libbase/k60/gpio.h"
 
 #include "libsc/config.h"
+#include "libsc/device_h/ds18b20.h"
 #include "libsc/k60/ds18b20.h"
 #include "libsc/k60/system.h"
 
 using namespace libbase::k60;
-
-#define CMD_SKIP 0xCC
-#define CMD_CONVERT_T 0x44
-#define CMD_READ_SP 0xBE
 
 namespace libsc
 {
@@ -63,12 +60,12 @@ void Ds18b20::UpdateTemperature()
 {
 	if (Init())
 	{
-		SendByte(CMD_SKIP);
-		SendByte(CMD_CONVERT_T);
+		SendByte(DS18B20_SKIP);
+		SendByte(DS18B20_CONVERT_T);
 		if (Init())
 		{
-			SendByte(CMD_SKIP);
-			SendByte(CMD_READ_SP);
+			SendByte(DS18B20_SKIP);
+			SendByte(DS18B20_READ_SP);
 			uint16_t data = ReceiveByte();
 			data |= ReceiveByte() << 8;
 
