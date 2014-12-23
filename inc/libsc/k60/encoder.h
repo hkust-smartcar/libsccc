@@ -46,8 +46,6 @@ public:
 	}
 
 private:
-	const uint8_t m_id;
-
 	int32_t m_count;
 
 #ifdef LIBSC_USE_ENCODER
