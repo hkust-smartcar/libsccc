@@ -155,7 +155,7 @@ Joystick::State Joystick::GetState() const
 }
 
 #else
-Joystick::Joystick(const uint8_t)
+Joystick::Joystick(const Config&)
 		: m_pins{Gpi(nullptr), Gpi(nullptr), Gpi(nullptr), Gpi(nullptr),
 				  Gpi(nullptr)}
 {
