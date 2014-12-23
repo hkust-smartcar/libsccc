@@ -20,7 +20,6 @@ namespace k60
 class Mpu6050
 {
 public:
-	SoftI2cMaster::Config GetI2CConfig();
 	Mpu6050();
 	virtual ~Mpu6050();
 	void Update();

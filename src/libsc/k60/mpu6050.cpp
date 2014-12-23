@@ -23,11 +23,18 @@ using namespace std;
 
 namespace libsc {
 namespace k60 {
-SoftI2cMaster::Config Mpu6050::GetI2CConfig(){
+
+namespace
+{
+
+SoftI2cMaster::Config GetI2CConfig()
+{
 	SoftI2cMaster::Config config;
 	config.scl_pin = LIBSC_MPU6050_SCL;
 	config.sda_pin = LIBSC_MPU6050_SDA;
 	return config;
+}
+
 }
 
 Mpu6050::Mpu6050():
