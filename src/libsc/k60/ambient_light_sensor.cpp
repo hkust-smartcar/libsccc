@@ -65,8 +65,8 @@ Adc::Config GetAdcConfig(const uint8_t id)
 
 }
 
-AmbientLightSensor::AmbientLightSensor(const uint8_t id)
-		: m_pin(GetAdcConfig(id))
+AmbientLightSensor::AmbientLightSensor(const Config &config)
+		: m_pin(GetAdcConfig(config.id))
 {}
 
 uint16_t AmbientLightSensor::GetLux()
@@ -78,7 +78,7 @@ uint16_t AmbientLightSensor::GetLux()
 }
 
 #else
-AmbientLightSensor::AmbientLightSensor(const uint8_t)
+AmbientLightSensor::AmbientLightSensor(const Config&)
 		: m_pin(nullptr)
 {
 	LOG_DL("Configured not to use AmbientLightSensor");

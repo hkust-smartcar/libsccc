@@ -20,7 +20,12 @@ namespace k60
 class AmbientLightSensor
 {
 public:
-	explicit AmbientLightSensor(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+	};
+
+	explicit AmbientLightSensor(const Config &config);
 
 	uint16_t GetLux();
 
