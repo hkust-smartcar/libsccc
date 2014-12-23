@@ -9,6 +9,7 @@
 #include "libbase/k60/hardware.h"
 
 #include <cstdint>
+#include <array>
 #include <vector>
 
 #include "libbase/k60/soft_i2c_master.h"
@@ -121,11 +122,13 @@ void Mpu6050::Update(){
 	}
 }
 
-float* Mpu6050::GetAcc(){
+const array<float, 3>& Mpu6050::GetAcc()
+{
 	return m_acc;
 }
 
-float* Mpu6050::GetOmega(){
+const array<float, 3>& Mpu6050::GetOmega()
+{
 	return m_omega;
 }
 
@@ -140,8 +143,8 @@ Mpu6050::Mpu6050()
 {}
 Mpu6050::~Mpu6050() {}
 void Mpu6050::Update() {}
-float* Mpu6050::GetAcc() { return nullptr; }
-float* Mpu6050::GetOmega() { return nullptr; }
+const array<float, 3>& Mpu6050::GetAcc() { return m_acc; }
+const array<float, 3>& Mpu6050::GetOmega() { return m_omega; }
 float Mpu6050::GetCelsius() { return 0.0f; }
 
 #endif /* LIBSC_USE_MPU6050 */

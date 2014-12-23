@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cstdint>
+#include <array>
 
 #include "libbase/k60/soft_i2c_master.h"
 #include "libbase/misc_types.h"
@@ -27,8 +28,8 @@ public:
 	~Mpu6050();
 
 	void Update();
-	float* GetAcc();
-	float* GetOmega();
+	const std::array<float, 3>& GetAcc();
+	const std::array<float, 3>& GetOmega();
 	float GetCelsius();
 
 private:
@@ -36,8 +37,8 @@ private:
 	int16_t m_raw_acc[3];
 	int16_t m_raw_gyro[3];
 	int16_t m_raw_temp;
-	float m_acc[3];
-	float m_omega[3];
+	std::array<float, 3> m_acc;
+	std::array<float, 3> m_omega;
 	float m_temp;
 	Byte m_gyro_config;
 	Byte m_accel_config;
