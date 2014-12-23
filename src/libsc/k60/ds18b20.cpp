@@ -1,6 +1,6 @@
 /*
- * temperature_sensor.cpp
- * DS18B20 temperature sensor
+ * ds18b20.h
+ * DS18B20 digital thermometer
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
@@ -14,8 +14,8 @@
 #include "libbase/k60/gpio.h"
 
 #include "libsc/config.h"
+#include "libsc/k60/ds18b20.h"
 #include "libsc/k60/system.h"
-#include "libsc/k60/temperature_sensor.h"
 
 using namespace libbase::k60;
 
@@ -54,12 +54,12 @@ GpoConfig GetGpoConfig(const uint8_t id)
 
 }
 
-TemperatureSensor::TemperatureSensor(const Config &config)
+Ds18b20::Ds18b20(const Config &config)
 		: m_pin(GetGpoConfig(config.id)),
 		  m_temperature(0.0f)
 {}
 
-void TemperatureSensor::UpdateTemperature()
+void Ds18b20::UpdateTemperature()
 {
 	if (Init())
 	{
@@ -96,7 +96,7 @@ void TemperatureSensor::UpdateTemperature()
 	}
 }
 
-bool TemperatureSensor::Init()
+bool Ds18b20::Init()
 {
 	m_pin.Set(false);
 	System::DelayUs(480);
@@ -112,7 +112,7 @@ bool TemperatureSensor::Init()
 	return true;
 }
 
-void TemperatureSensor::SendByte(const uint8_t byte)
+void Ds18b20::SendByte(const uint8_t byte)
 {
 	for (int i = 0; i < 8; ++i)
 	{
@@ -132,7 +132,7 @@ void TemperatureSensor::SendByte(const uint8_t byte)
 	}
 }
 
-uint8_t TemperatureSensor::ReceiveByte()
+uint8_t Ds18b20::ReceiveByte()
 {
 	uint8_t product = 0;
 	for (int i = 0; i < 8; ++i)
@@ -147,12 +147,12 @@ uint8_t TemperatureSensor::ReceiveByte()
 
 #else
 
-TemperatureSensor::TemperatureSensor(const Config&)
+Ds18b20::Ds18b20(const Config&)
 		: m_pin(nullptr), m_temperature(0.0f)
 {
-	LOG_DL("Configured not to use TemperatureSensor");
+	LOG_DL("Configured not to use Ds18b20");
 }
-void TemperatureSensor::UpdateTemperature() {}
+void Ds18b20::UpdateTemperature() {}
 
 #endif /* LIBSC_USE_TEMPERATURE_SENSOR */
 
