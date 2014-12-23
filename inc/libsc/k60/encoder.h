@@ -26,7 +26,7 @@ namespace k60
 class Encoder
 {
 public:
-	struct Config : public Motor::Config
+	struct Config
 	{
 		uint8_t id;
 	};
