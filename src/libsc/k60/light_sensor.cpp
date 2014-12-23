@@ -1,9 +1,9 @@
 /*
  * light_sensor.cpp
- * Light sensor
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cassert>
@@ -59,7 +59,7 @@ inline Pin::Name GetPin(const uint8_t id)
 #endif
 
 Gpi::Config GetGpiConfig(const uint8_t id,
-		const LightSensor::OnDetectListener &listener)
+		const Gpi::OnGpiEventListener &listener)
 {
 	Gpi::Config config;
 	config.pin = GetPin(id);
@@ -67,25 +67,28 @@ Gpi::Config GetGpiConfig(const uint8_t id,
 	if (listener)
 	{
 		config.interrupt = Pin::Config::Interrupt::kRising;
-		config.isr = [&listener, id](Gpi*)
-				{
-					listener(id);
-				};
+		config.isr = listener;
 	}
 	return config;
 }
 
 }
 
-LightSensor::LightSensor(const uint8_t id, const OnDetectListener &listener)
-		: m_pin(nullptr), m_isr(listener)
+LightSensor::LightSensor(const Config &config)
+		: m_isr(config.listener),
+		  m_pin(nullptr)
 {
-	m_pin = Gpi(GetGpiConfig(id, m_isr));
+	Gpi::OnGpiEventListener listener;
+	if (config.listener)
+	{
+		const uint8_t id = config.id;
+		listener = [this, id](Gpi*)
+				{
+					m_isr(id);
+				};
+	}
+	m_pin = Gpi(GetGpiConfig(config.id, listener));
 }
-
-LightSensor::LightSensor(const uint8_t id)
-		: LightSensor(id, nullptr)
-{}
 
 bool LightSensor::IsDetected() const
 {
@@ -93,10 +96,7 @@ bool LightSensor::IsDetected() const
 }
 
 #else
-LightSensor::LightSensor(const uint8_t, const OnDetectListener&)
-		: LightSensor(0)
-{}
-LightSensor::LightSensor(const uint8_t)
+LightSensor::LightSensor(const Config&)
 		: m_pin(nullptr)
 {
 	LOG_DL("Configured not to use LightSensor");

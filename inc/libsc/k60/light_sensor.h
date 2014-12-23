@@ -1,9 +1,9 @@
 /*
  * light_sensor.h
- * Light sensor
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -24,14 +24,19 @@ class LightSensor
 public:
 	typedef std::function<void(const uint8_t id)> OnDetectListener;
 
-	LightSensor(const uint8_t id, const OnDetectListener &listener);
-	explicit LightSensor(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+		OnDetectListener listener;
+	};
+
+	explicit LightSensor(const Config &config);
 
 	bool IsDetected() const;
 
 private:
-	libbase::k60::Gpi m_pin;
 	OnDetectListener m_isr;
+	libbase::k60::Gpi m_pin;
 };
 
 }
