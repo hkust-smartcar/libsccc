@@ -74,11 +74,7 @@ Gpo::Config GetDcConfig()
 
 }
 
-St7735r::St7735r()
-		: St7735r(false)
-{}
-
-St7735r::St7735r(const bool is_revert)
+St7735r::St7735r(const Config &config)
 		: m_spi(GetSpiConfig()),
 		  m_rst(GetRstConfig()),
 		  m_dc(GetDcConfig()),
@@ -93,7 +89,7 @@ St7735r::St7735r(const bool is_revert)
 	System::DelayMs(120);
 
 	uint8_t madctl_reg = 0;
-	if (!is_revert)
+	if (!config.is_revert)
 	{
 		madctl_reg |= 0xC0;
 	}
@@ -302,12 +298,11 @@ void St7735r::Send(const bool is_cmd, const uint8_t data)
 }
 
 #else
-St7735r::St7735r()
+St7735r::St7735r(const Config&)
 		: m_spi(nullptr), m_rst(nullptr), m_dc(nullptr), m_bg_color(0)
 {
 	LOG_DL("Configured not to use St7735r(LCD)");
 }
-St7735r::St7735r(const bool) : St7735r() {}
 void St7735r::Clear() {}
 void St7735r::DrawPixel(const uint8_t, const uint8_t, const uint8_t,
 		const uint8_t, const uint16_t) {}

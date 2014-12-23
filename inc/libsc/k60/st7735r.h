@@ -3,6 +3,7 @@
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -21,13 +22,17 @@ namespace k60
 class St7735r
 {
 public:
+	struct Config
+	{
+		bool is_revert = false;
+	};
+
 	static constexpr uint8_t kW = 128;
 	static constexpr uint8_t kH = 160;
 	static constexpr uint8_t kFontW = 8;
 	static constexpr uint8_t kFontH = 16;
 
-	St7735r();
-	explicit St7735r(const bool is_revert);
+	explicit St7735r(const Config &config);
 
 	void Clear();
 	void Clear(const uint16_t color)
