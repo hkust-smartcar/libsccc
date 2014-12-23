@@ -77,8 +77,8 @@ Gpo::Config GetGpoConfig(const uint8_t id)
 
 }
 
-Led::Led(const uint8_t id)
-		: m_pin(GetGpoConfig(id))
+Led::Led(const Config &config)
+		: m_pin(GetGpoConfig(config.id))
 {}
 
 void Led::SetEnable(const bool flag)
@@ -92,7 +92,7 @@ void Led::Switch()
 }
 
 #else
-Led::Led(const uint8_t)
+Led::Led(const Config&)
 		: m_pin(nullptr)
 {
 	LOG_DL("Configured not to use Led");

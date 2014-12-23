@@ -19,7 +19,12 @@ namespace k60
 class Led
 {
 public:
-	explicit Led(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+	};
+
+	explicit Led(const Config &config);
 
 	void SetEnable(const bool flag);
 	void Switch();
