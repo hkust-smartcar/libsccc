@@ -19,7 +19,13 @@ namespace k60
 class Button
 {
 public:
-	explicit Button(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+		bool is_active_low;
+	};
+
+	explicit Button(const Config &config);
 
 	bool IsDown() const;
 	bool IsUp() const
@@ -29,6 +35,7 @@ public:
 
 private:
 	libbase::k60::Gpi m_pin;
+	bool m_is_active_low;
 };
 
 }
