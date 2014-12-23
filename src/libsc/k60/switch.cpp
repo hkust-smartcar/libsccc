@@ -1,9 +1,9 @@
 /*
  * switch.cpp
- * Switch
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cassert>
@@ -86,18 +86,19 @@ Gpi::Config GetGpiConfig(const uint8_t id)
 
 }
 
-Switch::Switch(const uint8_t id)
-		: m_pin(GetGpiConfig(id))
+Switch::Switch(const Config &config)
+		: m_pin(GetGpiConfig(config.id)),
+		  m_is_active_low(config.is_active_low)
 {}
 
 bool Switch::IsOn() const
 {
-	return m_pin.Get();
+	return (m_pin.Get() ^ m_is_active_low);
 }
 
 #else
-Switch::Switch(const uint8_t)
-		: m_pin(nullptr)
+Switch::Switch(const Config&)
+		: m_pin(nullptr), m_is_active_low(false)
 {
 	LOG_DL("Configured not to use Switch");
 }
