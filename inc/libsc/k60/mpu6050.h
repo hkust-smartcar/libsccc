@@ -49,6 +49,9 @@ public:
 	float GetCelsius();
 
 private:
+	float GetGyroScaleFactor();
+	float GetAccelScaleFactor();
+
 	libbase::k60::SoftI2cMaster m_i2c;
 	std::array<float, 3> m_acc;
 	std::array<float, 3> m_omega;
@@ -56,9 +59,6 @@ private:
 
 	Config::Range m_gyro_range;
 	Config::Range m_accel_range;
-
-	float GetGyroScaleFactor();
-	float GetAccelScaleFactor();
 };
 
 } /* namespace k60 */

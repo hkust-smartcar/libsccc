@@ -71,8 +71,8 @@ Mpu6050::Mpu6050(const Config &config)
 			accel_config);
 }
 
-Mpu6050::~Mpu6050() {
-}
+Mpu6050::~Mpu6050()
+{}
 
 float Mpu6050::GetGyroScaleFactor()
 {
@@ -122,7 +122,7 @@ void Mpu6050::Update()
 	int16_t raw_gyro[3];
 	for (size_t i = 0; i < data.size(); i += 2)
 	{
-		if (i >= 0 && i <= 5)
+		if (i <= 5)
 		{
 			const int j = i / 2;
 			raw_acc[j] = data[i] << 8 | data[i + 1];
