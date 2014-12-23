@@ -142,21 +142,6 @@ void Mpu6050::Update()
 	}
 }
 
-const array<float, 3>& Mpu6050::GetAcc()
-{
-	return m_acc;
-}
-
-const array<float, 3>& Mpu6050::GetOmega()
-{
-	return m_omega;
-}
-
-float Mpu6050::GetCelsius()
-{
-	return m_temp;
-}
-
 #else
 Mpu6050::Mpu6050(const Config&)
 		: m_i2c(nullptr), m_raw_temp(0), m_temp(0),
@@ -165,9 +150,6 @@ Mpu6050::Mpu6050(const Config&)
 {}
 Mpu6050::~Mpu6050() {}
 void Mpu6050::Update() {}
-const array<float, 3>& Mpu6050::GetAcc() { return m_acc; }
-const array<float, 3>& Mpu6050::GetOmega() { return m_omega; }
-float Mpu6050::GetCelsius() { return 0.0f; }
 
 #endif /* LIBSC_USE_MPU6050 */
 

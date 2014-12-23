@@ -44,9 +44,21 @@ public:
 	~Mpu6050();
 
 	void Update();
-	const std::array<float, 3>& GetAcc();
-	const std::array<float, 3>& GetOmega();
-	float GetCelsius();
+
+	const std::array<float, 3>& GetAcc()
+	{
+		return m_acc;
+	}
+
+	const std::array<float, 3>& GetOmega()
+	{
+		return m_omega;
+	}
+
+	float GetCelsius()
+	{
+		return m_temp;
+	}
 
 private:
 	float GetGyroScaleFactor();
