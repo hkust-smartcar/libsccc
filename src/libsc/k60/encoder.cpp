@@ -119,7 +119,6 @@ void Encoder::Update()
 {
 	m_count = m_quad_decoder.GetCount();
 	m_quad_decoder.ResetCount();
-	return;
 }
 
 #else
