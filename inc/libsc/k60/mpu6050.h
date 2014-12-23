@@ -50,9 +50,6 @@ public:
 
 private:
 	libbase::k60::SoftI2cMaster m_i2c;
-	int16_t m_raw_acc[3];
-	int16_t m_raw_gyro[3];
-	int16_t m_raw_temp;
 	std::array<float, 3> m_acc;
 	std::array<float, 3> m_omega;
 	float m_temp;

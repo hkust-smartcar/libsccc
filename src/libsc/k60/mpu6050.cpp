@@ -118,24 +118,26 @@ void Mpu6050::Update()
 {
 	const vector<Byte> &data = m_i2c.GetBytes(MPU6050_DEFAULT_ADDRESS,
 			MPU6050_RA_ACCEL_XOUT_H, 14);
+	int16_t raw_acc[3];
+	int16_t raw_gyro[3];
 	for (size_t i = 0; i < data.size(); i += 2)
 	{
 		if (i >= 0 && i <= 5)
 		{
-			int j = i / 2;
-			m_raw_acc[j] = data[i] << 8 | data[i + 1];
-			m_acc[j] = (float) m_raw_acc[j] / GetAccelScaleFactor();
+			const int j = i / 2;
+			raw_acc[j] = data[i] << 8 | data[i + 1];
+			m_acc[j] = (float)raw_acc[j] / GetAccelScaleFactor();
 		}
 		else if (i == 6)
 		{
-			m_raw_temp = data[i] << 8 | data[i + 1];
-			m_temp = (float) m_raw_temp / 340 + 36.53;
+			const int16_t raw_temp = data[i] << 8 | data[i + 1];
+			m_temp = (float)raw_temp / 340 + 36.53;
 		}
 		else
 		{
-			int j = (i - 8) / 2;
-			m_raw_gyro[j] = data[i] << 8 | data[i + 1];
-			m_omega[j] = (float) m_raw_gyro[j] / GetGyroScaleFactor();
+			const int j = (i - 8) / 2;
+			raw_gyro[j] = data[i] << 8 | data[i + 1];
+			m_omega[j] = (float)raw_gyro[j] / GetGyroScaleFactor();
 		}
 	}
 }
