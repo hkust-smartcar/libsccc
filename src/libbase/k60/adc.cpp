@@ -376,6 +376,28 @@ uint16_t Adc::GetResult()
 	return result;
 }
 
+float Adc::GetResultF()
+{
+	// we can't predivide 3.3 and the resolution because the number is too small
+	// i.e., precision problem
+	const float multiplied = GetResult() * 3.3f;
+	switch (m_config.resolution)
+	{
+	case Config::Resolution::k8Bit:
+		return multiplied / 0x00FF;
+
+	case Config::Resolution::k10Bit:
+		return multiplied / 0x03FF;
+
+	case Config::Resolution::k12Bit:
+		return multiplied / 0x0FFF;
+
+	default:
+	case Config::Resolution::k16Bit:
+		return multiplied / 0xFFFF;
+	}
+}
+
 bool Adc::PeekResult(uint16_t *out_val)
 {
 	STATE_GUARD(Adc, false);

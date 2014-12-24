@@ -137,12 +137,19 @@ public:
 	void StopConvert();
 
 	/**
-	 * Return the result of a single conversion. If a conversion has not been
-	 * started yet, it will be started automatically (through StartConvert()).
+	 * Return the raw result of a single conversion. If a conversion has not
+	 * been started yet, it will be started automatically (through StartConvert())
 	 *
-	 * @return The result
+	 * @return
 	 */
 	uint16_t GetResult();
+	/**
+	 * Return the divided result of a single conversion. If a conversion has not
+	 * been started yet, it will be started automatically (through StartConvert())
+	 *
+	 * @return The result, [0.0, 3.3]
+	 */
+	float GetResultF();
 	bool PeekResult(uint16_t *out_val);
 
 	bool IsActive() const;
