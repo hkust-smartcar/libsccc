@@ -8,6 +8,7 @@
 
 #pragma once
 
+#define LIBSC_USE_BATTERY_METER 1
 #define LIBSC_USE_BUTTON 2
 //#define LIBSC_USE_BUZZER 1
 //#define LIBSC_USE_JOYSTICK 1
@@ -15,6 +16,8 @@
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
+
+#define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc1Ad17
 
 #define LIBSC_BUTTON0 libbase::k60::Pin::Name::kPtc0
 #define LIBSC_BUTTON1 libbase::k60::Pin::Name::kPtb23
