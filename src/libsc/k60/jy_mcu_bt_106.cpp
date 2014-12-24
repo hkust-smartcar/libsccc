@@ -1,5 +1,6 @@
 /*
  * jy_mcu_bt_106.cpp
+ * JY-MCU BT Board v1.06
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
@@ -21,24 +22,26 @@ namespace libsc
 namespace k60
 {
 
-#ifdef LIBSC_USE_UART
-
-JyMcuBt106::JyMcuBt106(const uint8_t id,
-		const Uart::Config::BaudRate baud_rate)
-		: UartDevice(UartConfigBuilder(id, baud_rate, this))
-{}
-
-Uart::Config JyMcuBt106::UartConfigBuilder::Build() const
+namespace
 {
-	Uart::Config config = UartDevice::UartConfigBuilder::Build();
+
+UartDevice::Config GetUartDeviceConfig(const JyMcuBt106::Config &config)
+{
+	UartDevice::Config product;
+	product.id = config.id;
+	product.baud_rate = config.baud_rate;
 	// On this board, there's a diode connected to the Tx pin, preventing the
 	// module to correctly send data to the MCU
-	config.rx_config[Pin::Config::kPullEnable] = true;
-	config.rx_config[Pin::Config::kPullUp] = true;
-	return config;
+	product.rx_config[Pin::Config::kPullEnable] = true;
+	product.rx_config[Pin::Config::kPullUp] = true;
+	return product;
 }
 
-#endif
+}
+
+JyMcuBt106::JyMcuBt106(const Config &config)
+		: UartDevice(GetUartDeviceConfig(config))
+{}
 
 }
 }

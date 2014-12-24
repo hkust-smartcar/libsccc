@@ -108,43 +108,30 @@ inline Pin::Name GetRxPin(const uint8_t id)
 
 #endif
 
-Uart::Config GetUartConfig(const uint8_t id,
-		const Uart::Config::BaudRate baud_rate,
+Uart::Config GetUartConfig(const UartDevice::Config &config,
 		const Uart::OnTxEmptyListener &tx_isr,
 		const Uart::OnRxFullListener &rx_isr)
 {
-	Uart::Config config;
-	config.tx_pin = GetTxPin(id);
-	config.rx_pin = GetRxPin(id);
-	config.baud_rate = baud_rate;
-	config.config.set(Uart::Config::ConfigBit::kFifo);
-	config.tx_isr = tx_isr;
-	config.rx_isr = rx_isr;
-	return config;
+	Uart::Config product;
+	product.tx_pin = GetTxPin(config.id);
+	product.tx_config = config.tx_config;
+	product.rx_pin = GetRxPin(config.id);
+	product.rx_config = config.rx_config;
+	product.baud_rate = config.baud_rate;
+	product.config.set(Uart::Config::ConfigBit::kFifo);
+	product.tx_isr = tx_isr;
+	product.rx_isr = rx_isr;
+	return product;
 }
 
 }
 
-UartDevice::UartConfigBuilder::UartConfigBuilder(const uint8_t id,
-		const Uart::Config::BaudRate baud_rate, UartDevice *uart)
-		: m_config(GetUartConfig(id, baud_rate,
-				std::bind(&UartDevice::OnTxEmpty, uart, placeholders::_1),
-				std::bind(&UartDevice::OnRxFull, uart, placeholders::_1)))
-{}
-
-Uart::Config UartDevice::UartConfigBuilder::Build() const
-{
-	return m_config;
-}
-
-UartDevice::UartDevice(const uint8_t id, const Uart::Config::BaudRate baud_rate)
-		: UartDevice(UartConfigBuilder(id, baud_rate, this))
-{}
-
-UartDevice::UartDevice(const UartConfigBuilder &builder)
+UartDevice::UartDevice(const Config &config)
 		: m_rx_buf{new RxBuffer}, m_listener(nullptr),
 		  m_tx_buf(14), m_is_tx_idle(true),
-		  m_uart(builder.Build())
+		  m_uart(GetUartConfig(config,
+				std::bind(&UartDevice::OnTxEmpty, this, placeholders::_1),
+				std::bind(&UartDevice::OnRxFull, this, placeholders::_1)))
 {
 	m_uart.SetEnableRxIrq(true);
 	m_uart.SetEnableTxIrq(true);
@@ -341,11 +328,7 @@ void UartDevice::OnRxFull(Uart *uart)
 struct UartDevice::RxBuffer
 {};
 
-UartDevice::UartConfigBuilder::UartConfigBuilder(const uint8_t,
-		const Uart::Config::BaudRate, UartDevice*)
-{}
-
-UartDevice::UartDevice(const uint8_t, const Uart::Config::BaudRate)
+UartDevice::UartDevice(const Config&)
 		: m_tx_buf(0), m_is_tx_idle(true), m_uart(nullptr)
 {
 	LOG_DL("Configured not to use UartDevice");
