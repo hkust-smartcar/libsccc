@@ -137,7 +137,7 @@ template<Uint port>
 __ISR void PinIsrManager::PortIrqHandler()
 {
 	PinData *pin_data = PinIsrManager::GetInstance()->m_pin_data[port];
-	for (int i = 0; i < PINOUT::GetPortPinCount(); ++i)
+	for (Uint i = 0; i < PINOUT::GetPortPinCount(); ++i)
 	{
 		const Pin::Name pin = PinUtils::GetPin(port, i);
 		if (Pin::IsInterruptRequested(pin))
