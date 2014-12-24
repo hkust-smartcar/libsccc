@@ -390,11 +390,14 @@ void Mcg::InitClocks(const Config &config, const uint32_t core_clock)
 	}
 	assert(flash_div > 0);
 
-	uint32_t reg = 0;
-	reg |= SIM_CLKDIV1_OUTDIV2(std::min<Uint>(bus_div - 1, 0xF));
-	reg |= SIM_CLKDIV1_OUTDIV3(std::min<Uint>(flexbus_div - 1, 0xF));
-	reg |= SIM_CLKDIV1_OUTDIV4(std::min<Uint>(flash_div - 1, 0xF));
-	SIM->CLKDIV1 = reg;
+//	uint32_t reg = 0;
+//	reg |= SIM_CLKDIV1_OUTDIV2(std::min<Uint>(bus_div - 1, 0xF));
+//	reg |= SIM_CLKDIV1_OUTDIV3(std::min<Uint>(flexbus_div - 1, 0xF));
+//	reg |= SIM_CLKDIV1_OUTDIV4(std::min<Uint>(flash_div - 1, 0xF));
+//	SIM->CLKDIV1 = reg;
+	SetSysDividers(0, std::min<Uint>(bus_div - 1, 0xF),
+			std::min<Uint>(flexbus_div - 1, 0xF),
+			std::min<Uint>(flash_div - 1, 0xF));
 }
 
 }
