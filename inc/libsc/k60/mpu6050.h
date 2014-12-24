@@ -44,9 +44,9 @@ public:
 
 	void Update();
 
-	const std::array<float, 3>& GetAcc()
+	const std::array<float, 3>& GetAccel()
 	{
-		return m_acc;
+		return m_accel;
 	}
 
 	const std::array<float, 3>& GetOmega()
@@ -64,7 +64,7 @@ private:
 	float GetAccelScaleFactor();
 
 	libbase::k60::SoftI2cMaster m_i2c;
-	std::array<float, 3> m_acc;
+	std::array<float, 3> m_accel;
 	std::array<float, 3> m_omega;
 	float m_temp;
 

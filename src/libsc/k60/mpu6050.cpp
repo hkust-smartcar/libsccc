@@ -115,15 +115,15 @@ void Mpu6050::Update()
 {
 	const vector<Byte> &data = m_i2c.GetBytes(MPU6050_DEFAULT_ADDRESS,
 			MPU6050_RA_ACCEL_XOUT_H, 14);
-	int16_t raw_acc[3];
+	int16_t raw_accel[3];
 	int16_t raw_gyro[3];
 	for (size_t i = 0; i < data.size(); i += 2)
 	{
 		if (i <= 5)
 		{
 			const int j = i / 2;
-			raw_acc[j] = data[i] << 8 | data[i + 1];
-			m_acc[j] = (float)raw_acc[j] / GetAccelScaleFactor();
+			raw_accel[j] = data[i] << 8 | data[i + 1];
+			m_accel[j] = (float)raw_accel[j] / GetAccelScaleFactor();
 		}
 		else if (i == 6)
 		{
