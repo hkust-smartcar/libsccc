@@ -27,6 +27,7 @@ public:
 	struct Config
 	{
 		uint8_t id;
+		bool is_active_low;
 		OnDetectListener listener;
 	};
 
@@ -37,6 +38,7 @@ public:
 private:
 	OnDetectListener m_isr;
 	libbase::k60::Gpi m_pin;
+	bool m_is_active_low;
 };
 
 }
