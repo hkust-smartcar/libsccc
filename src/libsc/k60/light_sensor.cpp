@@ -66,9 +66,25 @@ Gpi::Config GetGpiConfig(const LightSensor::Config &config,
 	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
 	if (listener)
 	{
-		product.interrupt = (config.is_active_low
-				? Pin::Config::Interrupt::kRising
-				: Pin::Config::Interrupt::kFalling);
+		switch (config.listener_trigger)
+		{
+		default:
+		case LightSensor::Config::Trigger::kBright:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kFalling
+					: Pin::Config::Interrupt::kRising);
+			break;
+
+		case LightSensor::Config::Trigger::kDark:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kRising
+					: Pin::Config::Interrupt::kFalling);
+			break;
+
+		case LightSensor::Config::Trigger::kBoth:
+			product.interrupt = Pin::Config::Interrupt::kBoth;
+			break;
+		}
 		product.isr = listener;
 	}
 	return product;
@@ -77,8 +93,7 @@ Gpi::Config GetGpiConfig(const LightSensor::Config &config,
 }
 
 LightSensor::LightSensor(const Config &config)
-		: m_isr(config.listener),
-		  m_pin(nullptr),
+		: m_pin(nullptr),
 		  m_is_active_low(config.is_active_low)
 {
 	Gpi::OnGpiEventListener listener;
@@ -93,7 +108,7 @@ LightSensor::LightSensor(const Config &config)
 	m_pin = Gpi(GetGpiConfig(config, listener));
 }
 
-bool LightSensor::IsDetected() const
+bool LightSensor::IsBright() const
 {
 	return (m_pin.Get() ^ m_is_active_low);
 }
@@ -104,7 +119,7 @@ LightSensor::LightSensor(const Config&)
 {
 	LOG_DL("Configured not to use LightSensor");
 }
-bool LightSensor::IsDetected() const { return false; }
+bool LightSensor::IsBright() const { return false; }
 
 #endif
 

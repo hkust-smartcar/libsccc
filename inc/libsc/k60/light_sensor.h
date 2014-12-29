@@ -22,23 +22,36 @@ namespace k60
 class LightSensor
 {
 public:
-	typedef std::function<void(const uint8_t id)> OnDetectListener;
+	typedef std::function<void(const uint8_t id)> Listener;
 
 	struct Config
 	{
+		enum struct Trigger
+		{
+			kBright,
+			kDark,
+			kBoth,
+		};
+
 		uint8_t id;
 		bool is_active_low;
-		OnDetectListener listener;
+		Listener listener;
+		/// When to trigger the listener, ignored is @a listener is not set
+		Trigger listener_trigger;
 	};
 
 	explicit LightSensor(const Config &config);
 
-	bool IsDetected() const;
+	bool IsBright() const;
+	bool IsDark() const
+	{
+		return !IsBright();
+	}
 
 private:
-	OnDetectListener m_isr;
 	libbase::k60::Gpi m_pin;
 	bool m_is_active_low;
+	Listener m_isr;
 };
 
 }
