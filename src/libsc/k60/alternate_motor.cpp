@@ -121,7 +121,7 @@ FtmPwm::Config GetFtmPwmAConfig(const uint8_t id)
 	config.pin = GetPwmAPin(id);
 	config.period = PERIOD;
 	config.pos_width = 0;
-	config.precision = Pwm::Config::Precision::KNs;
+	config.precision = Pwm::Config::Precision::kNs;
 	config.alignment = FtmPwm::Config::Alignment::kCenter;
 	config.is_insert_deadtime = true;
 	config.deadtime_ns = GetDeadtime(id);
@@ -134,7 +134,7 @@ FtmPwm::Config GetFtmPwmBConfig(const uint8_t id)
 	config.pin = GetPwmBPin(id);
 	config.period = PERIOD;
 	config.pos_width = 0;
-	config.precision = Pwm::Config::Precision::KNs;
+	config.precision = Pwm::Config::Precision::kNs;
 	config.alignment = FtmPwm::Config::Alignment::kCenter;
 	config.is_insert_deadtime = true;
 	config.deadtime_ns = GetDeadtime(id);

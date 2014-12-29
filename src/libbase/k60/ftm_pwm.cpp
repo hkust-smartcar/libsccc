@@ -79,7 +79,7 @@ void ModCalc::Calc(const uint32_t period, const Pwm::Config::Precision precision
 		ticks = ClockUtils::GetBusTickPerUs(period);
 		break;
 
-	case Pwm::Config::Precision::KNs:
+	case Pwm::Config::Precision::kNs:
 		ticks = ClockUtils::GetBusTickPerNs(period);
 		break;
 	}
@@ -124,7 +124,7 @@ void CvCalc::Calc(const uint32_t pos_width,
 		ticks = ClockUtils::GetBusTickPerUs(pos_width);
 		break;
 
-	case Pwm::Config::Precision::KNs:
+	case Pwm::Config::Precision::kNs:
 		ticks = ClockUtils::GetBusTickPerNs(pos_width);
 		break;
 	}

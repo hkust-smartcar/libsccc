@@ -24,7 +24,7 @@ public:
 		enum struct Precision
 		{
 			kUs,
-			KNs,
+			kNs,
 		};
 
 		Pin::Name pin;
