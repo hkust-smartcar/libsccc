@@ -71,7 +71,7 @@ public:
 		bool is_tx_irq_threshold_percentage = false;
 
 		OnRxFullListener rx_isr;
-		/// The # bytes in the Tx buffer needed to fire the interrupt
+		/// The # bytes in the Rx buffer needed to fire the interrupt
 		uint8_t rx_irq_threshold = 1;
 		/// To treat rx_irq_threshold as a percentage of Rx buffer size
 		bool is_rx_irq_threshold_percentage = false;
