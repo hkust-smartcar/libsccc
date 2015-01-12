@@ -122,6 +122,8 @@ Uart::Config GetUartConfig(const UartDevice::Config &config,
 	product.tx_isr = tx_isr;
 	product.rx_isr = rx_isr;
 	product.rx_irq_threshold = config.rx_irq_threshold;
+	product.is_rx_irq_threshold_percentage =
+			config.is_rx_irq_threshold_percentage;
 	return product;
 }
 

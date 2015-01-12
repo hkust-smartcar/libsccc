@@ -39,7 +39,14 @@ public:
 	{
 		uint8_t id;
 		libbase::k60::Uart::Config::BaudRate baud_rate;
+		/**
+		 * The # bytes in the Rx buffer needed to fire the interrupt. This will
+		 * affect how often new bytes are pushed to the internal buffer, or your
+		 * listener being triggered, depending on the config
+		 */
 		uint8_t rx_irq_threshold;
+		/// To treat rx_irq_threshold as a percentage of Rx buffer size
+		bool is_rx_irq_threshold_percentage = false;
 		std::bitset<libbase::k60::Pin::Config::ConfigBit::kSize> tx_config;
 		std::bitset<libbase::k60::Pin::Config::ConfigBit::kSize> rx_config;
 	};
