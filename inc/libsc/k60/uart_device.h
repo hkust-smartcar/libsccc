@@ -39,6 +39,7 @@ public:
 	{
 		uint8_t id;
 		libbase::k60::Uart::Config::BaudRate baud_rate;
+		uint8_t rx_irq_threshold;
 		std::bitset<libbase::k60::Pin::Config::ConfigBit::kSize> tx_config;
 		std::bitset<libbase::k60::Pin::Config::ConfigBit::kSize> rx_config;
 	};

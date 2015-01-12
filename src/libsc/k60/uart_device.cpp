@@ -121,6 +121,7 @@ Uart::Config GetUartConfig(const UartDevice::Config &config,
 	product.config.set(Uart::Config::ConfigBit::kFifo);
 	product.tx_isr = tx_isr;
 	product.rx_isr = rx_isr;
+	product.rx_irq_threshold = config.rx_irq_threshold;
 	return product;
 }
 
