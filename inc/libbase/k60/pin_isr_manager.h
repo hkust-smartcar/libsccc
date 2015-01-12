@@ -34,7 +34,7 @@ public:
 private:
 	struct PinData
 	{
-		libbase::k60::Pin *pin = nullptr;
+		Pin *pin = nullptr;
 		OnPinIrqListener isr = nullptr;
 	};
 
