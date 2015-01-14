@@ -464,22 +464,53 @@ void Adc::EnableInterrupt()
 	const Uint module = AdcUtils::GetModule(m_name);
 
 	g_instances[module] = this;
-	SetIsr(EnumAdvance(ADC0_IRQn, module), IrqHandler);
-	EnableIrq(EnumAdvance(ADC0_IRQn, module));
+	if (module < 2)
+	{
+		SetIsr(EnumAdvance(ADC0_IRQn, module), IrqHandler);
+		EnableIrq(EnumAdvance(ADC0_IRQn, module));
+	}
+#if PINOUT_ADC_COUNT >= 2
+	else if (module < 4)
+	{
+		SetIsr(EnumAdvance(ADC2_IRQn, module - 2), IrqHandler);
+		EnableIrq(EnumAdvance(ADC2_IRQn, module - 2));
+	}
+#endif
 	SET_BIT(MEM_MAPS[module]->SC1[0], ADC_SC1_AIEN_SHIFT);
 }
 
 void Adc::DisableInterrupt(const Uint module)
 {
 	CLEAR_BIT(MEM_MAPS[module]->SC1[0], ADC_SC1_AIEN_SHIFT);
-	DisableIrq(EnumAdvance(ADC0_IRQn, module));
-	SetIsr(EnumAdvance(ADC0_IRQn, module), nullptr);
+	if (module < 2)
+	{
+		DisableIrq(EnumAdvance(ADC0_IRQn, module));
+		SetIsr(EnumAdvance(ADC0_IRQn, module), nullptr);
+	}
+#if PINOUT_ADC_COUNT >= 2
+	else if (module < 4)
+	{
+		DisableIrq(EnumAdvance(ADC2_IRQn, module - 2));
+		SetIsr(EnumAdvance(ADC2_IRQn, module - 2), nullptr);
+	}
+#endif
 	g_instances[module] = nullptr;
 }
 
 __ISR void Adc::IrqHandler()
 {
-	const Uint module = GetActiveIrq() - ADC0_IRQn;
+	Uint module = 0;
+	if (module < 2)
+	{
+		module = GetActiveIrq() - ADC0_IRQn;
+	}
+#if PINOUT_ADC_COUNT >= 2
+	else if (module < 4)
+	{
+		module = GetActiveIrq() - ADC2_IRQn;
+	}
+#endif
+
 	Adc *const that = g_instances[module];
 	if (!that || !(*that))
 	{
