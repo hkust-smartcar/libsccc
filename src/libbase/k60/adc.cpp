@@ -469,7 +469,7 @@ void Adc::EnableInterrupt()
 		SetIsr(EnumAdvance(ADC0_IRQn, module), IrqHandler);
 		EnableIrq(EnumAdvance(ADC0_IRQn, module));
 	}
-#if PINOUT_ADC_COUNT >= 2
+#if PINOUT_ADC_COUNT > 2
 	else if (module < 4)
 	{
 		SetIsr(EnumAdvance(ADC2_IRQn, module - 2), IrqHandler);
@@ -487,7 +487,7 @@ void Adc::DisableInterrupt(const Uint module)
 		DisableIrq(EnumAdvance(ADC0_IRQn, module));
 		SetIsr(EnumAdvance(ADC0_IRQn, module), nullptr);
 	}
-#if PINOUT_ADC_COUNT >= 2
+#if PINOUT_ADC_COUNT > 2
 	else if (module < 4)
 	{
 		DisableIrq(EnumAdvance(ADC2_IRQn, module - 2));
@@ -504,7 +504,7 @@ __ISR void Adc::IrqHandler()
 	{
 		module = GetActiveIrq() - ADC0_IRQn;
 	}
-#if PINOUT_ADC_COUNT >= 2
+#if PINOUT_ADC_COUNT > 2
 	else if (module < 4)
 	{
 		module = GetActiveIrq() - ADC2_IRQn;
