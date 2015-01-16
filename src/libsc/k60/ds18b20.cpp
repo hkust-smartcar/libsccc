@@ -123,7 +123,7 @@ void Ds18b20::SendByte(const uint8_t byte)
 		else
 		{
 			System::DelayUs(60);
-			m_pin.Set(true);
+			m_pin.EnsureGpi();
 		}
 		System::DelayUs(1);
 	}
