@@ -20,7 +20,10 @@
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/soft_i2c_master.h"
 
+#include "libsc/k60/system.h"
+
 using namespace std;
+using namespace libsc::k60;
 
 #define SEND_BYTE_GUARDED(x, ret) do { if (!SendByte_(x)) { Stop(); return ret; } } while (false)
 
@@ -58,7 +61,8 @@ inline void SoftI2cMaster::Delay()
 }
 
 SoftI2cMaster::SoftI2cMaster(const Config &config)
-		: m_delay_us(config.delay_us),
+		: m_scl_low_timeout(config.scl_low_timeout),
+		  m_delay_us(config.delay_us),
 		  m_scl(GetSclConfig(config)),
 		  m_sda(GetSdaConfig(config)),
 		  m_is_init(true)
@@ -71,7 +75,8 @@ SoftI2cMaster::SoftI2cMaster(SoftI2cMaster &&rhs)
 }
 
 SoftI2cMaster::SoftI2cMaster(nullptr_t)
-		: m_delay_us(0),
+		: m_scl_low_timeout(0),
+		  m_delay_us(0),
 		  m_scl(nullptr),
 		  m_sda(nullptr),
 		  m_is_init(false)
@@ -206,7 +211,7 @@ bool SoftI2cMaster::SendByte_(const Byte byte)
 }
 
 // Assume SCL is low when being called
-Byte SoftI2cMaster::ReadByte_(const bool is_ack)
+bool SoftI2cMaster::ReadByte_(const bool is_ack, Byte *out_byte)
 {
 	m_sda.EnsureGpi();
 
@@ -215,9 +220,20 @@ Byte SoftI2cMaster::ReadByte_(const bool is_ack)
 	{
 		m_scl.EnsureGpi();
 		Delay();
+
+		// TODO libbase should not depends on libsc
+		const Timer::TimerInt start = System::Time();
+		const Timer::TimerInt max = (m_scl_low_timeout * m_delay_us + 999)
+				/ 1000;
 		// Clock stretching
 		while (!m_scl.Get())
-		{}
+		{
+			if (Timer::TimeDiff(System::Time(), start) >= max)
+			{
+				LOG_DL("i2c scl timeout");
+				return false;
+			}
+		}
 
 		byte |= m_sda.Get() << (7 - i);
 		m_scl.Clear();
@@ -233,7 +249,8 @@ Byte SoftI2cMaster::ReadByte_(const bool is_ack)
 	Delay();
 	m_scl.Clear();
 	Delay();
-	return byte;
+	*out_byte = byte;
+	return true;
 }
 
 bool SoftI2cMaster::GetByte(const Byte slave_addr, const Byte reg_addr,
@@ -246,9 +263,16 @@ bool SoftI2cMaster::GetByte(const Byte slave_addr, const Byte reg_addr,
 	SEND_BYTE_GUARDED(reg_addr, false);
 	Start();
 	SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, false);
-	*out_byte = ReadByte_(false);
-	Stop();
-	return true;
+	if (!ReadByte_(false, out_byte))
+	{
+		Stop();
+		return false;
+	}
+	else
+	{
+		Stop();
+		return true;
+	}
 }
 
 vector<Byte> SoftI2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
@@ -266,9 +290,19 @@ vector<Byte> SoftI2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
 	SEND_BYTE_GUARDED(((slave_addr << 1) & 0xFE) | 0x1, {});
 	for (uint8_t i = 0; i < size - 1; ++i)
 	{
-		bytes.push_back(ReadByte_(true));
+		Byte byte;
+		if (!ReadByte_(true, &byte))
+		{
+			Stop();
+			return bytes;
+		}
+		bytes.push_back(byte);
 	}
-	bytes.push_back(ReadByte_(false));
+	Byte byte;
+	if (ReadByte_(true, &byte))
+	{
+		bytes.push_back(byte);
+	}
 	Stop();
 	return bytes;
 }

@@ -57,10 +57,11 @@ private:
 	void Start();
 	void Stop();
 	bool SendByte_(const Byte byte);
-	Byte ReadByte_(const bool is_ack);
+	bool ReadByte_(const bool is_ack, Byte *out_byte);
 
 	inline void Delay();
 
+	uint16_t m_scl_low_timeout;
 	uint32_t m_delay_us;
 
 	Gpio m_scl;
