@@ -4,6 +4,7 @@
  *
  * Author: Ming Tsang
  * Copyright (c) 2014 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #ifndef LIBSC_2014_CAMERA_H_
@@ -14,79 +15,60 @@
  * define LIBSC_USE_UART to 2 when there are two UART devices connected. Comment
  * out the specific defines instead of defining them to 0 for unused devices
  */
-#define LIBSC_USE_UART 1
-// Support 2 encoders only when using FTM
-//#define LIBSC_USE_ENCODER 2
-//#define LIBSC_USE_ENCODER_FTM
+#define LIBSC_USE_BUTTON 1
+//#define LIBSC_USE_CAMERA 1
+#define LIBSC_USE_ENCODER 2
+#define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_LCD 1
-#define LIBSC_USE_LCD_HW_SPI
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 2
-#define LIBSC_USE_CAMERA 1
-#define LIBSC_USE_JOYSTICK 1
-#define LIBSC_USE_BUTTON 1
 #define LIBSC_USE_MPU6050 1
-#define LIBSC_USE_K60_ENCODERS 1
-
 #define LIBSC_USE_TEMPERATURE_SENSOR 0
-#define LIBSC_TEMPERATURE0 PTC2
+#define LIBSC_USE_UART 1
 
-#ifdef LIBSC_USE_ENCODER_FTM
-#define LIBSC_ENCODER0_OUT PTB0
-#define LIBSC_ENCODER0_VCC PTB1
-#define LIBSC_ENCODER1_OUT PTB18
-#define LIBSC_ENCODER1_VCC PTB19
+#define LIBSC_ACCELEROMETER_RX libbase::k60::Adc::Name::kAdc0Ad17
 
-#else
-#define LIBSC_ENCODER0 PTB18
+#define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc1Ad4B
 
-#endif
+#define LIBSC_BUTTON0 libbase::k60::Pin::Name::kPtc10
 
-#define LIBSC_LED0 PTE9
-#define LIBSC_LED1 PTE10
-#define LIBSC_LED2 PTE11
-#define LIBSC_LED3 PTE12
-#define LIBSC_MOTOR0_PWM PTD7
-#define LIBSC_MOTOR0_DIR PTE7
-#define LIBSC_MOTOR1_PWM PTD6
-#define LIBSC_MOTOR1_DIR PTE6
+//#define LIBSC_CAMERA_SDA PTB17
+//#define LIBSC_CAMERA_SCL PTB16
+//#define LIBSC_CAMERA_PCLK PTB2
+//#define LIBSC_CAMERA_HREF PTB7
+//#define LIBSC_CAMERA_VSYNC PTB4
+//#define LIBSC_CAMERA_DMA_SRC_ADDR PTD8
+//#define LIBSC_CAMERA_DMA_CH 0
 
-#define LIBSC_CAMERA_SDA PTB17
-#define LIBSC_CAMERA_SCL PTB16
-#define LIBSC_CAMERA_PCLK PTB2
-#define LIBSC_CAMERA_HREF PTB7
-#define LIBSC_CAMERA_VSYNC PTB4
-#define LIBSC_CAMERA_DMA_SRC_ADDR PTD8
-#define LIBSC_CAMERA_DMA_CH 0
+#define LIBSC_ENCODER0_QDA libbase::k60::Pin::Name::kPtb0
+#define LIBSC_ENCODER0_QDB libbase::k60::Pin::Name::kPtb1
+#define LIBSC_ENCODER1_QDA libbase::k60::Pin::Name::kPtb18
+#define LIBSC_ENCODER1_QDB libbase::k60::Pin::Name::kPtb19
 
-#ifdef LIBSC_USE_LCD_HW_SPI
-#define LIBSC_LCD_RST PTA13
-	#define LIBSC_LCD_DC PTA17
-	#define LIBSC_LCD_CS PTA14
-	// Connect SOUT pin with SDAT
-	#define LIBSC_LCD_MOSI PTA16
-	// MISO pin is not used (one way transfer) but is needed to get the SPI info
-	#define LIBSC_LCD_MISO PTA17
-	#define LIBSC_LCD_SCLK PTA15
-#else
-	#define LIBSC_LCD_RST PTA13
-	#define LIBSC_LCD_DC PTA17
-	#define LIBSC_LCD_CS PTA14
-	#define LIBSC_LCD_SDAT PTA16
-	#define LIBSC_LCD_SCLK PTA15
-#endif
+#define LIBSC_JOYSTICK0_UP libbase::k60::Pin::Name::kPtc6
+#define LIBSC_JOYSTICK0_DOWN libbase::k60::Pin::Name::kPtc5
+#define LIBSC_JOYSTICK0_LEFT libbase::k60::Pin::Name::kPtc8
+#define LIBSC_JOYSTICK0_RIGHT libbase::k60::Pin::Name::kPtc7
+#define LIBSC_JOYSTICK0_SELECT libbase::k60::Pin::Name::kPtc9
 
-#define LIBSC_VR ADC1_SE4b
+#define LIBSC_LCD_RST libbase::k60::Pin::Name::kPta13
+#define LIBSC_LCD_DC libbase::k60::Pin::Name::kPta17
+#define LIBSC_LCD_CS libbase::k60::Pin::Name::kPta14
+#define LIBSC_LCD_SDAT libbase::k60::Pin::Name::kPta16
+#define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPta15
 
-#define RXADC ADC0_SE17
+#define LIBSC_LED0 libbase::k60::Pin::Name::kPte9
+#define LIBSC_LED1 libbase::k60::Pin::Name::kPte10
+#define LIBSC_LED2 libbase::k60::Pin::Name::kPte11
+#define LIBSC_LED3 libbase::k60::Pin::Name::kPte12
 
+#define LIBSC_MOTOR0_PWM libbase::k60::Pin::Name::kPtd7
+#define LIBSC_MOTOR0_DIR libbase::k60::Pin::Name::kPte7
+#define LIBSC_MOTOR1_PWM libbase::k60::Pin::Name::kPtd6
+#define LIBSC_MOTOR1_DIR libbase::k60::Pin::Name::kPte6
 
-#define LIBSC_JOYSTICK0_UP PTC6
-#define LIBSC_JOYSTICK0_DOWN PTC5
-#define LIBSC_JOYSTICK0_LEFT PTC8
-#define LIBSC_JOYSTICK0_RIGHT PTC7
-#define LIBSC_JOYSTICK0_SELECT PTC9
+#define LIBSC_DIR_MOTOR_CW_LEVEL 0
 
-#define LIBSC_BUTTON0 PTC10
+#define LIBSC_TEMPERATURE0 libbase::k60::Pin::Name::kPtc2
 
 #endif /* LIBSC_2014_CAMERA_H_ */
