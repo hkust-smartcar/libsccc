@@ -27,12 +27,18 @@ namespace k60
 class Encoder
 {
 public:
+#if LIBSC_USE_SOFT_ENCODER
+	typedef libbase::k60::SoftQuadDecoder QuadDecoder;
+
+#else
+	typedef libbase::k60::FtmQuadDecoder QuadDecoder;
+
+#endif // LIBSC_USE_SOFT_ENCODER
+
 	struct Config
 	{
 		uint8_t id;
 	};
-
-	explicit Encoder(const Config &config);
 
 	void Update();
 
@@ -46,18 +52,28 @@ public:
 		return m_count;
 	}
 
+protected:
+	/**
+	 * Use to initialize the encoder in possibly a polymorphic way, notice that
+	 * Initializer::config is stored as a reference only
+	 */
+	struct Initializer
+	{
+		explicit Initializer(const Config &config)
+				: config(config)
+		{}
+
+		virtual QuadDecoder::Config GetQuadDecoderConfig() const;
+
+		const Config &config;
+	};
+
+	explicit Encoder(const Initializer &initializer);
+
 private:
 	int32_t m_count;
 
-#ifdef LIBSC_USE_ENCODER
-#ifdef LIBSC_USE_SOFT_ENCODER
-	libbase::k60::SoftQuadDecoder m_quad_decoder;
-
-#else
-	libbase::k60::FtmQuadDecoder m_quad_decoder;
-
-#endif // LIBSC_USE_SOFT_ENCODER
-#endif // LIBSC_USE_ENCODER
+	QuadDecoder m_quad_decoder;
 };
 
 }
