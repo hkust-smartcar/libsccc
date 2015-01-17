@@ -3,7 +3,7 @@
  * Generic poitional PID controller
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
