@@ -1,9 +1,9 @@
 /*
  * joystick.cpp
- * Joystick
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cassert>
@@ -28,21 +28,54 @@ namespace
 {
 
 #if LIBSC_USE_JOYSTICK == 1
-#define GetUpPin(x) LIBSC_JOYSTICK0_UP
-#define GetDownPin(x) LIBSC_JOYSTICK0_DOWN
-#define GetLeftPin(x) LIBSC_JOYSTICK0_LEFT
-#define GetRightPin(x) LIBSC_JOYSTICK0_RIGHT
-#define GetSelectPin(x) LIBSC_JOYSTICK0_SELECT
+inline Pin::Name GetUpPin(const uint8_t id)
+{
+	if (id != 0)
+	{
+		assert(false);
+	}
+	return LIBSC_JOYSTICK0_UP;
+}
+
+inline Pin::Name GetDownPin(const uint8_t id)
+{
+	if (id != 0)
+	{
+		assert(false);
+	}
+	return LIBSC_JOYSTICK0_DOWN;
+}
+
+inline Pin::Name GetLeftPin(const uint8_t id)
+{
+	if (id != 0)
+	{
+		assert(false);
+	}
+	return LIBSC_JOYSTICK0_LEFT;
+}
+
+inline Pin::Name GetRightPin(const uint8_t id)
+{
+	if (id != 0)
+	{
+		assert(false);
+	}
+	return LIBSC_JOYSTICK0_RIGHT;
+}
+
+inline Pin::Name GetSelectPin(const uint8_t id)
+{
+	if (id != 0)
+	{
+		assert(false);
+	}
+	return LIBSC_JOYSTICK0_SELECT;
+}
 
 #endif
 
-#if LIBSC_USE_JOYSTICK == 1 && defined(__GNUC__)
-#define UNUSED __attribute__((__unused__))
-#else
-#define UNUSED
-#endif
-
-Gpi::Config GetUpGpiConfig(const uint8_t id UNUSED)
+Gpi::Config GetUpGpiConfig(const uint8_t id)
 {
 	Gpi::Config config;
 	config.pin = GetUpPin(id);
@@ -50,7 +83,7 @@ Gpi::Config GetUpGpiConfig(const uint8_t id UNUSED)
 	return config;
 }
 
-Gpi::Config GetDownGpiConfig(const uint8_t id UNUSED)
+Gpi::Config GetDownGpiConfig(const uint8_t id)
 {
 	Gpi::Config config;
 	config.pin = GetDownPin(id);
@@ -58,7 +91,7 @@ Gpi::Config GetDownGpiConfig(const uint8_t id UNUSED)
 	return config;
 }
 
-Gpi::Config GetLeftGpiConfig(const uint8_t id UNUSED)
+Gpi::Config GetLeftGpiConfig(const uint8_t id)
 {
 	Gpi::Config config;
 	config.pin = GetLeftPin(id);
@@ -66,7 +99,7 @@ Gpi::Config GetLeftGpiConfig(const uint8_t id UNUSED)
 	return config;
 }
 
-Gpi::Config GetRightGpiConfig(const uint8_t id UNUSED)
+Gpi::Config GetRightGpiConfig(const uint8_t id)
 {
 	Gpi::Config config;
 	config.pin = GetRightPin(id);
@@ -74,7 +107,7 @@ Gpi::Config GetRightGpiConfig(const uint8_t id UNUSED)
 	return config;
 }
 
-Gpi::Config GetSelectGpiConfig(const uint8_t id UNUSED)
+Gpi::Config GetSelectGpiConfig(const uint8_t id)
 {
 	Gpi::Config config;
 	config.pin = GetSelectPin(id);
@@ -82,37 +115,36 @@ Gpi::Config GetSelectGpiConfig(const uint8_t id UNUSED)
 	return config;
 }
 
-#if LIBSC_USE_JOYSTICK == 1
-#pragma GCC diagnostic pop
-#endif
-
 }
 
-Joystick::Joystick(const uint8_t id)
-		: m_pins{Gpi(GetUpGpiConfig(id)), Gpi(GetDownGpiConfig(id)),
-				  Gpi(GetLeftGpiConfig(id)), Gpi(GetRightGpiConfig(id)),
-				  Gpi(GetSelectGpiConfig(id))}
+Joystick::Joystick(const Config &config)
+		: m_pins{Gpi(GetUpGpiConfig(config.id)),
+				Gpi(GetDownGpiConfig(config.id)),
+				Gpi(GetLeftGpiConfig(config.id)),
+				Gpi(GetRightGpiConfig(config.id)),
+				Gpi(GetSelectGpiConfig(config.id))},
+		  m_is_active_low(config.is_active_low)
 {}
 
 Joystick::State Joystick::GetState() const
 {
-	if (!m_pins[0].Get())
+	if (m_pins[0].Get() ^ m_is_active_low)
 	{
 		return State::UP;
 	}
-	else if (!m_pins[1].Get())
+	else if (m_pins[1].Get() ^ m_is_active_low)
 	{
 		return State::DOWN;
 	}
-	else if (!m_pins[2].Get())
+	else if (m_pins[2].Get() ^ m_is_active_low)
 	{
 		return State::LEFT;
 	}
-	else if (!m_pins[3].Get())
+	else if (m_pins[3].Get() ^ m_is_active_low)
 	{
 		return State::RIGHT;
 	}
-	else if (!m_pins[4].Get())
+	else if (m_pins[4].Get() ^ m_is_active_low)
 	{
 		return State::SELECT;
 	}
@@ -123,7 +155,7 @@ Joystick::State Joystick::GetState() const
 }
 
 #else
-Joystick::Joystick(const uint8_t)
+Joystick::Joystick(const Config&)
 		: m_pins{Gpi(nullptr), Gpi(nullptr), Gpi(nullptr), Gpi(nullptr),
 				  Gpi(nullptr)}
 {

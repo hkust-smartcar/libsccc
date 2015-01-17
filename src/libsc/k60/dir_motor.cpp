@@ -3,7 +3,7 @@
  * DC Motor
  *
  * Author: Harrison Ng, Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -97,7 +97,7 @@ FtmPwm::Config GetFtmPwmConfig(const uint8_t id)
 	config.pin = GetPwmPin(id);
 	config.period = PERIOD;
 	config.pos_width = 0;
-	config.precision = Pwm::Config::Precision::KNs;
+	config.precision = Pwm::Config::Precision::kNs;
 	config.alignment = FtmPwm::Config::Alignment::kCenter;
 	return config;
 }

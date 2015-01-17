@@ -6,7 +6,8 @@
  * current count by 4 in software mode, so there will be a maximum of +-3 error
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once

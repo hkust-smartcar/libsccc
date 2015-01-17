@@ -1,9 +1,9 @@
 /*
  * light_sensor.cpp
- * Light sensor
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cassert>
@@ -58,50 +58,68 @@ inline Pin::Name GetPin(const uint8_t id)
 
 #endif
 
-Gpi::Config GetGpiConfig(const uint8_t id,
-		const LightSensor::OnDetectListener &listener)
+Gpi::Config GetGpiConfig(const LightSensor::Config &config,
+		const Gpi::OnGpiEventListener &listener)
 {
-	Gpi::Config config;
-	config.pin = GetPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	Gpi::Config product;
+	product.pin = GetPin(config.id);
+	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
 	if (listener)
 	{
-		config.interrupt = Pin::Config::Interrupt::kRising;
-		config.isr = [&listener, id](Gpi*)
+		switch (config.listener_trigger)
+		{
+		default:
+		case LightSensor::Config::Trigger::kBright:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kFalling
+					: Pin::Config::Interrupt::kRising);
+			break;
+
+		case LightSensor::Config::Trigger::kDark:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kRising
+					: Pin::Config::Interrupt::kFalling);
+			break;
+
+		case LightSensor::Config::Trigger::kBoth:
+			product.interrupt = Pin::Config::Interrupt::kBoth;
+			break;
+		}
+		product.isr = listener;
+	}
+	return product;
+}
+
+}
+
+LightSensor::LightSensor(const Config &config)
+		: m_pin(nullptr),
+		  m_is_active_low(config.is_active_low)
+{
+	Gpi::OnGpiEventListener listener;
+	if (config.listener)
+	{
+		const uint8_t id = config.id;
+		listener = [this, id](Gpi*)
 				{
-					listener(id);
+					m_isr(id);
 				};
 	}
-	return config;
+	m_pin = Gpi(GetGpiConfig(config, listener));
 }
 
-}
-
-LightSensor::LightSensor(const uint8_t id, const OnDetectListener &listener)
-		: m_pin(nullptr), m_isr(listener)
+bool LightSensor::IsBright() const
 {
-	m_pin = Gpi(GetGpiConfig(id, m_isr));
-}
-
-LightSensor::LightSensor(const uint8_t id)
-		: LightSensor(id, nullptr)
-{}
-
-bool LightSensor::IsDetected() const
-{
-	return m_pin.Get();
+	return (m_pin.Get() ^ m_is_active_low);
 }
 
 #else
-LightSensor::LightSensor(const uint8_t, const OnDetectListener&)
-		: LightSensor(0)
-{}
-LightSensor::LightSensor(const uint8_t)
-		: m_pin(nullptr)
+LightSensor::LightSensor(const Config&)
+		: m_pin(nullptr), m_is_active_low(false)
 {
 	LOG_DL("Configured not to use LightSensor");
 }
-bool LightSensor::IsDetected() const { return false; }
+bool LightSensor::IsBright() const { return false; }
 
 #endif
 

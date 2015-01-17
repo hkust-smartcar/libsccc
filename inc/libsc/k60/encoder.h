@@ -5,7 +5,8 @@
  * emulation will pose a large overhead to the system
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -26,7 +27,18 @@ namespace k60
 class Encoder
 {
 public:
-	explicit Encoder(const uint8_t id);
+#if LIBSC_USE_SOFT_ENCODER
+	typedef libbase::k60::SoftQuadDecoder QuadDecoder;
+
+#else
+	typedef libbase::k60::FtmQuadDecoder QuadDecoder;
+
+#endif // LIBSC_USE_SOFT_ENCODER
+
+	struct Config
+	{
+		uint8_t id;
+	};
 
 	void Update();
 
@@ -40,20 +52,28 @@ public:
 		return m_count;
 	}
 
-private:
-	const uint8_t m_id;
+protected:
+	/**
+	 * Use to initialize the encoder in possibly a polymorphic way, notice that
+	 * Initializer::config is stored as a reference only
+	 */
+	struct Initializer
+	{
+		explicit Initializer(const Config &config)
+				: config(config)
+		{}
 
+		virtual QuadDecoder::Config GetQuadDecoderConfig() const;
+
+		const Config &config;
+	};
+
+	explicit Encoder(const Initializer &initializer);
+
+private:
 	int32_t m_count;
 
-#ifdef LIBSC_USE_ENCODER
-#ifdef LIBSC_USE_SOFT_ENCODER
-	libbase::k60::SoftQuadDecoder m_quad_decoder;
-
-#else
-	libbase::k60::FtmQuadDecoder m_quad_decoder;
-
-#endif // LIBSC_USE_SOFT_ENCODER
-#endif // LIBSC_USE_ENCODER
+	QuadDecoder m_quad_decoder;
 };
 
 }

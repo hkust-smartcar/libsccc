@@ -2,7 +2,8 @@
  * ftm_utils.h
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -20,8 +21,6 @@ namespace k60
 class FtmUtils
 {
 public:
-	static Ftm::Name GetFtmName(const Pin::Name pin);
-
 	static Uint GetFtmModule(const Ftm::Name pin)
 	{
 		return static_cast<Uint>(pin) / PINOUT::GetFtmChannelCount();
@@ -30,6 +29,16 @@ public:
 	static Uint GetFtmChannel(const Ftm::Name pin)
 	{
 		return static_cast<Uint>(pin) % PINOUT::GetFtmChannelCount();
+	}
+
+	static Uint GetFtmModule(const Ftm::QdName pin)
+	{
+		return static_cast<Uint>(pin) >> 1;
+	}
+
+	static Uint GetFtmPhase(const Ftm::QdName pin)
+	{
+		return static_cast<Uint>(pin) % 2;
 	}
 };
 

@@ -3,7 +3,8 @@
  * Config file for 2014 Gen 1 board
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #ifndef LIBSC_2014_H_

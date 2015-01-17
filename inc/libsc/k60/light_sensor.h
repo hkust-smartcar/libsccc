@@ -1,9 +1,9 @@
 /*
  * light_sensor.h
- * Light sensor
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -22,16 +22,36 @@ namespace k60
 class LightSensor
 {
 public:
-	typedef std::function<void(const uint8_t id)> OnDetectListener;
+	typedef std::function<void(const uint8_t id)> Listener;
 
-	LightSensor(const uint8_t id, const OnDetectListener &listener);
-	explicit LightSensor(const uint8_t id);
+	struct Config
+	{
+		enum struct Trigger
+		{
+			kBright,
+			kDark,
+			kBoth,
+		};
 
-	bool IsDetected() const;
+		uint8_t id;
+		bool is_active_low;
+		Listener listener;
+		/// When to trigger the listener, ignored is @a listener is not set
+		Trigger listener_trigger;
+	};
+
+	explicit LightSensor(const Config &config);
+
+	bool IsBright() const;
+	bool IsDark() const
+	{
+		return !IsBright();
+	}
 
 private:
 	libbase::k60::Gpi m_pin;
-	OnDetectListener m_isr;
+	bool m_is_active_low;
+	Listener m_isr;
 };
 
 }

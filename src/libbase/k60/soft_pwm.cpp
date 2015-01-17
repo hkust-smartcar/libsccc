@@ -2,7 +2,8 @@
  * soft_pwm.cpp
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cassert>
@@ -83,7 +84,7 @@ void SoftPwm::Setup(const uint32_t period, const uint32_t pos_width)
 		m_neg_count = ClockUtils::GetBusTickPerUs(m_neg_width);
 		break;
 
-	case Pwm::Config::Precision::KNs:
+	case Pwm::Config::Precision::kNs:
 		m_pos_count = ClockUtils::GetBusTickPerNs(m_pos_width);
 		m_neg_count = ClockUtils::GetBusTickPerNs(m_neg_width);
 		break;

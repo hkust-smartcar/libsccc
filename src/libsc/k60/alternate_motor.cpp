@@ -2,7 +2,7 @@
  * alternate_motor.cpp
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -121,7 +121,7 @@ FtmPwm::Config GetFtmPwmAConfig(const uint8_t id)
 	config.pin = GetPwmAPin(id);
 	config.period = PERIOD;
 	config.pos_width = 0;
-	config.precision = Pwm::Config::Precision::KNs;
+	config.precision = Pwm::Config::Precision::kNs;
 	config.alignment = FtmPwm::Config::Alignment::kCenter;
 	config.is_insert_deadtime = true;
 	config.deadtime_ns = GetDeadtime(id);
@@ -134,7 +134,7 @@ FtmPwm::Config GetFtmPwmBConfig(const uint8_t id)
 	config.pin = GetPwmBPin(id);
 	config.period = PERIOD;
 	config.pos_width = 0;
-	config.precision = Pwm::Config::Precision::KNs;
+	config.precision = Pwm::Config::Precision::kNs;
 	config.alignment = FtmPwm::Config::Alignment::kCenter;
 	config.is_insert_deadtime = true;
 	config.deadtime_ns = GetDeadtime(id);

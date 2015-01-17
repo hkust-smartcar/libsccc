@@ -1,16 +1,15 @@
 libsccc
 ==============
 
-libsccc (previously libsmartcarcpp) is the library being used among the HKUST SmartCar Team.  
-Master is the stable branch. Current developments are being done mainly on [fauxstess-cupcake](https://github.com/hkust-smartcar/libsccc/tree/fauxstess-cupcake), but also various other branches.  
+libsccc (previously libsmartcarcpp) is the library being used among the HKUST SmartCar Team
 
 ## What's Inside
-libbase: K60 peripheral library  
+libbase: Peripheral library for MK60D(Z)10, MK60F15(/12)  
 libsc: High-level component library based on libbase  
-libutil: Useful utilities
+libutil: Useful utilities  
 
 ## Dependency
 None
 
 ## Build
-GNU Make, [GNU Tools for ARM Embedded Processor](https://launchpad.net/gcc-arm-embedded)
+GNU Make 3.81+, [GNU Tools for ARM Embedded Processor 4.8+](https://launchpad.net/gcc-arm-embedded)

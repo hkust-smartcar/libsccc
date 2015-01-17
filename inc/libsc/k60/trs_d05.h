@@ -3,7 +3,8 @@
  * TRS-D05 RC servo
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -20,7 +21,12 @@ namespace k60
 class TrsD05 : public Servo
 {
 public:
-	explicit TrsD05(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+	};
+
+	explicit TrsD05(const Config &config);
 };
 
 }

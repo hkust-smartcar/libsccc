@@ -3,7 +3,8 @@
  * Phase A/B encoder
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cassert>
@@ -26,7 +27,7 @@ namespace libsc
 namespace k60
 {
 
-#ifdef LIBSC_USE_ENCODER
+#if LIBSC_USE_ENCODER
 
 namespace
 {
@@ -85,8 +86,8 @@ inline Pin::Name GetQdb(const uint8_t id)
 
 #endif // LIBSC_USE_ENCODER
 
-#ifdef LIBSC_USE_SOFT_ENCODER
-SoftQuadDecoder::Config GetQuadDecoderConfig(const uint8_t id)
+#if LIBSC_USE_SOFT_ENCODER
+inline SoftQuadDecoder::Config GetQuadDecoderConfig_(const uint8_t id)
 {
 	SoftQuadDecoder::Config config;
 	config.a_pin = GetQda(id);
@@ -95,12 +96,11 @@ SoftQuadDecoder::Config GetQuadDecoderConfig(const uint8_t id)
 }
 
 #else
-FtmQuadDecoder::Config GetQuadDecoderConfig(const uint8_t id)
+inline FtmQuadDecoder::Config GetQuadDecoderConfig_(const uint8_t id)
 {
 	FtmQuadDecoder::Config config;
 	config.a_pin = GetQda(id);
 	config.b_pin = GetQdb(id);
-	config.encoding_mode = FtmQuadDecoder::Config::EncodingMode::kPhaseAB;
 	config.a_filter_length = 1;
 	config.b_filter_length = 1;
 	return config;
@@ -110,22 +110,25 @@ FtmQuadDecoder::Config GetQuadDecoderConfig(const uint8_t id)
 
 }
 
-Encoder::Encoder(const uint8_t id)
-		: m_id(id),
-		  m_count(0),
-		  m_quad_decoder(GetQuadDecoderConfig(m_id))
+Encoder::QuadDecoder::Config Encoder::Initializer::GetQuadDecoderConfig() const
+{
+	return GetQuadDecoderConfig_(config.id);
+}
+
+Encoder::Encoder(const Initializer &initializer)
+		: m_count(0),
+		  m_quad_decoder(initializer.GetQuadDecoderConfig())
 {}
 
 void Encoder::Update()
 {
 	m_count = m_quad_decoder.GetCount();
 	m_quad_decoder.ResetCount();
-	return;
 }
 
 #else
-Encoder::Encoder(const uint8_t)
-		: m_id(0), m_count(0)
+Encoder::Encoder(const Initializer&)
+		: m_count(0), m_quad_decoder(nullptr)
 {
 	LOG_DL("Configured not to use Encoder");
 }

@@ -3,7 +3,7 @@
  * Generic class for UART devices, also handles Tx and Rx buffering
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -12,12 +12,14 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <bitset>
 #include <functional>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "libbase/k60/misc_utils.h"
+#include "libbase/k60/pin.h"
 #include "libbase/k60/uart.h"
 
 #include "libutil/dynamic_block_buffer.h"
@@ -33,8 +35,23 @@ public:
 	typedef std::function<void(const Byte *bytes,
 			const size_t size)> OnReceiveListener;
 
-	UartDevice(const uint8_t id,
-			const libbase::k60::Uart::Config::BaudRate baud_rate);
+	struct Config
+	{
+		uint8_t id;
+		libbase::k60::Uart::Config::BaudRate baud_rate;
+		/**
+		 * The # bytes in the Rx buffer needed to fire the interrupt. This will
+		 * affect how often new bytes are pushed to the internal buffer, or your
+		 * listener being triggered, depending on the config
+		 */
+		uint8_t rx_irq_threshold;
+		/// To treat rx_irq_threshold as a percentage of Rx buffer size
+		bool is_rx_irq_threshold_percentage = false;
+		std::bitset<libbase::k60::Pin::Config::ConfigBit::kSize> tx_config;
+		std::bitset<libbase::k60::Pin::Config::ConfigBit::kSize> rx_config;
+	};
+
+	explicit UartDevice(const Config &config);
 	virtual ~UartDevice();
 
 	/**
@@ -106,22 +123,6 @@ public:
 	{
 		m_uart.SetLoopMode(flag);
 	}
-
-protected:
-	class UartConfigBuilder
-	{
-	public:
-		UartConfigBuilder(const uint8_t id,
-				const libbase::k60::Uart::Config::BaudRate baud_rate,
-				UartDevice *uart);
-
-		virtual libbase::k60::Uart::Config Build() const;
-
-	private:
-		libbase::k60::Uart::Config m_config;
-	};
-
-	explicit UartDevice(const UartConfigBuilder &builder);
 
 private:
 	struct RxBuffer;

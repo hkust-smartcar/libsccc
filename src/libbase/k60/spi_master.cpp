@@ -2,7 +2,8 @@
  * spi_master.cpp
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include "libbase/k60/hardware.h"
@@ -120,7 +121,11 @@ SpiMaster::SpiMaster(const Config &config)
 	m_is_init = true;
 	g_instances[m_module] = this;
 
+#if MK60DZ10 || MK60D10
 	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0, m_module), true);
+#elif MK60F15
+	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kDspi0, m_module), true);
+#endif
 	InitPin(config);
 	InitMcrReg(config);
 	InitCtarReg(config);
@@ -484,8 +489,13 @@ void SpiMaster::Uninit()
 		m_is_init = false;
 
 		SetHalt(true);
+#if MK60DZ10 || MK60D10
 		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0, m_module),
 				false);
+#elif MK60F15
+		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kDspi0, m_module),
+				false);
+#endif
 		g_instances[m_module] = nullptr;
 	}
 }

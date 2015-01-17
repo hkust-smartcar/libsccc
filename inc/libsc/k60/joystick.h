@@ -1,9 +1,9 @@
 /*
  * joystick.h
- * Joystick
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -30,12 +30,19 @@ public:
 		SELECT,
 	};
 
-	explicit Joystick(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+		bool is_active_low;
+	};
+
+	explicit Joystick(const Config &config);
 
 	State GetState() const;
 
 private:
 	libbase::k60::Gpi m_pins[5];
+	bool m_is_active_low;
 };
 
 }

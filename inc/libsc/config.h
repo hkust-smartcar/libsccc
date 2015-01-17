@@ -3,7 +3,8 @@
  * To include the corresponding config file
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -34,6 +35,9 @@
 
 #elif defined(K60_2014_MAGNETIC)
 #include "libsc/k60/config/2014_magnetic.h"
+
+#elif defined(K60_VCAN_FX15DEV)
+#include "libsc/k60/config/vcan_fx15dev.h"
 
 #else
 #error Unknown board

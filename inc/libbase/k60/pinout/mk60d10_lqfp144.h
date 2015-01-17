@@ -9,7 +9,8 @@
  * MK60DN512VMD10
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -18,6 +19,7 @@
 
 #include "libbase/k60/adc.h"
 #include "libbase/k60/dac.h"
+#include "libbase/k60/ftm.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 
@@ -31,52 +33,57 @@ class Mk60d10Lqfp144
 public:
 	static bool RegPin(const Uint pin)
 	{
-		return GetInstance()->RegPin_(pin);
+		return Get().RegPin_(pin);
 	}
 
 	static bool RegPin(const Pin::Name pin)
 	{
-		return GetInstance()->RegPin_(pin);
+		return Get().RegPin_(pin);
 	}
 
 	static bool RegPin(const Adc::Name pin)
 	{
-		return GetInstance()->RegPin_(pin);
+		return Get().RegPin_(pin);
 	}
 
 	static bool RegPin(const Dac::Name pin)
 	{
-		return GetInstance()->RegPin_(pin);
+		return Get().RegPin_(pin);
 	}
 
 	static void UnregPin(const Uint pin)
 	{
-		GetInstance()->UnregPin_(pin);
+		Get().UnregPin_(pin);
 	}
 
 	static void UnregPin(const Pin::Name pin)
 	{
-		GetInstance()->UnregPin_(pin);
+		Get().UnregPin_(pin);
 	}
 
 	static void UnregPin(const Adc::Name pin)
 	{
-		GetInstance()->UnregPin_(pin);
+		Get().UnregPin_(pin);
 	}
 
 	static void UnregPin(const Dac::Name pin)
 	{
-		GetInstance()->UnregPin_(pin);
+		Get().UnregPin_(pin);
+	}
+
+	static constexpr Uint GetAdcCount()
+	{
+		return PINOUT_ADC_COUNT;
 	}
 
 	static constexpr Uint GetFtmCount()
 	{
-		return 3;
+		return PINOUT_FTM_COUNT;
 	}
 
 	static constexpr Uint GetFtmChannelCount()
 	{
-		return 8;
+		return PINOUT_FTM_CHANNEL_COUNT;
 	}
 
 	static constexpr Uint GetPinCount()
@@ -86,36 +93,39 @@ public:
 
 	static constexpr Uint GetPortCount()
 	{
-		return 5;
+		return PINOUT_PORT_COUNT;
 	}
 
 	static constexpr Uint GetPortPinCount()
 	{
-		return 32;
+		return PINOUT_PORT_PIN_COUNT;
 	}
 
 	static constexpr Uint GetSpiCount()
 	{
-		return 3;
+		return PINOUT_SPI_COUNT;
 	}
 
 	static constexpr Uint GetUartCount()
 	{
-		return 6;
+		return PINOUT_UART_COUNT;
 	}
 
+	static Adc::Name GetAdc(const Pin::Name pin);
+	static Ftm::Name GetFtm(const Pin::Name pin);
+	static Pin::Config::MuxControl GetFtmMux(const Pin::Name pin);
+	static Ftm::QdName GetFtmQd(const Pin::Name pin);
+	static Pin::Config::MuxControl GetFtmQdMux(const Pin::Name pin);
+
 private:
-	static constexpr Uint kPinCount = 144;
+	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;
 
 	Mk60d10Lqfp144();
 
-	static Mk60d10Lqfp144* GetInstance()
+	static Mk60d10Lqfp144& Get()
 	{
-		if (!m_instance)
-		{
-			m_instance = new Mk60d10Lqfp144;
-		}
-		return m_instance;
+		static Mk60d10Lqfp144 inst;
+		return inst;
 	}
 
 	bool RegPin_(const Uint pin);
@@ -128,8 +138,6 @@ private:
 	void UnregPin_(const Dac::Name pin);
 
 	std::bitset<kPinCount> m_is_pins_active;
-
-	static Mk60d10Lqfp144 *m_instance;
 };
 
 }

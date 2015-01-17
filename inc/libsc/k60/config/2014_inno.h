@@ -2,12 +2,13 @@
  * 2014_inno.h
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
 #pragma once
 
+#define LIBSC_USE_BATTERY_METER 1
 #define LIBSC_USE_BUTTON 2
 //#define LIBSC_USE_BUZZER 1
 //#define LIBSC_USE_JOYSTICK 1
@@ -15,6 +16,8 @@
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
+
+#define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc1Ad17
 
 #define LIBSC_BUTTON0 libbase::k60::Pin::Name::kPtc0
 #define LIBSC_BUTTON1 libbase::k60::Pin::Name::kPtb23
@@ -42,3 +45,6 @@
 
 #define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtd7
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtd6
+
+#define LIBSC_MPU6050_SCL libbase::k60::Pin::Name::kPtb0
+#define LIBSC_MPU6050_SDA libbase::k60::Pin::Name::kPtb1

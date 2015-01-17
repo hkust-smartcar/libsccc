@@ -11138,6 +11138,10 @@ typedef struct {
  */ /* end of group Backward_Compatibility_Symbols */
 
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif  /* #if !defined(MK60F15_H_) */
 
 /* MK60F15.h, eof. */

@@ -3,7 +3,7 @@
  * TowerPro MG995 RC servo
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -21,7 +21,12 @@ namespace k60
 class TowerProMg995 : public Servo
 {
 public:
-	explicit TowerProMg995(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+	};
+
+	explicit TowerProMg995(const Config &config);
 };
 
 }

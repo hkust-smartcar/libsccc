@@ -3,7 +3,8 @@
  * RC servo
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -23,6 +24,19 @@ namespace k60
 class Servo
 {
 public:
+	struct Config
+	{
+		uint8_t id;
+		// The period of the PWM signal, in us
+		uint16_t period;
+		// The min pos width of the PWM signal, in us
+		uint16_t min_pos_width;
+		// The max pos width of the PWM signal, in us
+		uint16_t max_pos_width;
+	};
+
+	explicit Servo(const Config &config);
+
 	/**
 	 * Set the degree(the servo turn in CCW), [0, 180] * 10 (i.e., 84 => 8.4°)
 	 *
@@ -33,18 +47,6 @@ public:
 	{
 		return m_degree;
 	}
-
-protected:
-	/**
-	 * Construct a RC Servo
-	 *
-	 * @param id
-	 * @param period The period of the PWM signal, in us
-	 * @param pos_width_min The min pos width of the PWM signal, in us
-	 * @param pos_width_max The max pos width of the PWM signal, in us
-	 */
-	Servo(const uint8_t id, const uint16_t period, const uint16_t pos_width_min,
-			const uint16_t pos_width_max);
 
 private:
 	const uint16_t m_pos_width_min;

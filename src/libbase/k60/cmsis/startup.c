@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "libbase/k60/cmsis/system_mk60dz10.h"
+#include "libbase/k60/cmsis/system.h"
 #include "libbase/k60/watchdog_c.h"
 #include "libbase/syscall.h"
 
@@ -181,20 +181,16 @@ void __thumb_startup(void)
 			"skip_sp:\n\t"
 			::"r"(addr));
 
-	//	zero-fill the .bss section
+	// zero-fill the .bss section
 	zero_fill_bss();
 	// SUPPORT_ROM_TO_RAM
 	__copy_rom_sections_to_ram();
 
 	SystemInit();
+	KeepSyscallSymbols();
 	__libc_init_array();
 
 	main();
-	while (1);
-}
-
-// Called in __libc_init_array()
-void _init(void)
-{
-	KeepSyscallSymbols();
+	while (1)
+	{}
 }

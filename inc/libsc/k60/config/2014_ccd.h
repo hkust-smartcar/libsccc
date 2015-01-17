@@ -3,7 +3,8 @@
  * Config file for 2014 CCD board
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -16,18 +17,17 @@
 #define LIBSC_USE_BUTTON 2
 #define LIBSC_USE_BUZZER 1
 #define LIBSC_USE_ENCODER 1
-//#define LIBSC_USE_SOFT_ENCODER
+//#define LIBSC_USE_SOFT_ENCODER 1
 #define LIBSC_USE_GYROSCOPE 1
 #define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_LCD 1
-//#define LIBSC_USE_LCD_HW_SPI
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_LIGHT_SENSOR 2
 #define LIBSC_USE_LINEAR_CCD 2
 #define LIBSC_NEGATE_LINEAR_CCD
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
-//#define LIBSC_USE_SOFT_SERVO_PWM
+//#define LIBSC_USE_SOFT_SERVO_PWM 1
 #define LIBSC_USE_SWITCH 5
 #define LIBSC_USE_UART 1
 
@@ -50,19 +50,12 @@
 #define LIBSC_JOYSTICK0_RIGHT libbase::k60::Pin::Name::kPtc7
 #define LIBSC_JOYSTICK0_SELECT libbase::k60::Pin::Name::kPtc9
 
-#ifdef LIBSC_USE_LCD_HW_SPI
-	#define LIBSC_LCD_RST libbase::k60::Pin::Name::kPta13
-	#define LIBSC_LCD_DC libbase::k60::Pin::Name::kPta17
-	#define LIBSC_LCD_CS libbase::k60::Pin::Name::kPta14
-	#define LIBSC_LCD_SDAT libbase::k60::Pin::Name::kPta16
-	#define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPta15
-#else
-	#define LIBSC_LCD_RST libbase::k60::Pin::Name::kPta13
-	#define LIBSC_LCD_DC libbase::k60::Pin::Name::kPta17
-	#define LIBSC_LCD_CS libbase::k60::Pin::Name::kPta14
-	#define LIBSC_LCD_SDAT libbase::k60::Pin::Name::kPta16
-	#define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPta15
-#endif
+#define LIBSC_LCD_RST libbase::k60::Pin::Name::kPta13
+#define LIBSC_LCD_DC libbase::k60::Pin::Name::kPta17
+#define LIBSC_LCD_CS libbase::k60::Pin::Name::kPta14
+#define LIBSC_LCD_SDAT libbase::k60::Pin::Name::kPta16
+#define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPta15
+#define LIBSC_ST7735R_BGR_PANEL 1
 
 #define LIBSC_LED0 libbase::k60::Pin::Name::kPtd0
 #define LIBSC_LED1 libbase::k60::Pin::Name::kPtd1

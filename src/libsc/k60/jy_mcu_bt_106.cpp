@@ -1,13 +1,18 @@
 /*
  * jy_mcu_bt_106.cpp
+ * JY-MCU BT Board v1.06
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
+#include <cstdint>
+
+#include "libbase/k60/pin.h"
 #include "libbase/k60/uart.h"
 
+#include "libsc/config.h"
 #include "libsc/k60/jy_mcu_bt_106.h"
 
 using namespace libbase::k60;
@@ -17,20 +22,26 @@ namespace libsc
 namespace k60
 {
 
-JyMcuBt106::JyMcuBt106(const uint8_t id,
-		const Uart::Config::BaudRate baud_rate)
-		: UartDevice(UartConfigBuilder(id, baud_rate, this))
-{}
-
-Uart::Config JyMcuBt106::UartConfigBuilder::Build() const
+namespace
 {
-	Uart::Config config = UartDevice::UartConfigBuilder::Build();
+
+UartDevice::Config GetUartDeviceConfig(const JyMcuBt106::Config &config)
+{
+	UartDevice::Config product;
+	product.id = config.id;
+	product.baud_rate = config.baud_rate;
 	// On this board, there's a diode connected to the Tx pin, preventing the
 	// module to correctly send data to the MCU
-	config.rx_config[Pin::Config::kPullEnable] = true;
-	config.rx_config[Pin::Config::kPullUp] = true;
-	return config;
+	product.rx_config[Pin::Config::kPullEnable] = true;
+	product.rx_config[Pin::Config::kPullUp] = true;
+	return product;
 }
+
+}
+
+JyMcuBt106::JyMcuBt106(const Config &config)
+		: UartDevice(GetUartDeviceConfig(config))
+{}
 
 }
 }

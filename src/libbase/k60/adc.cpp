@@ -2,7 +2,8 @@
  * adc.cpp
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include "libbase/k60/hardware.h"
@@ -30,8 +31,6 @@
 using namespace libutil;
 using namespace std;
 
-#define ADC_COUNT 2
-
 namespace libbase
 {
 namespace k60
@@ -40,9 +39,19 @@ namespace k60
 namespace
 {
 
-constexpr ADC_Type* MEM_MAPS[ADC_COUNT] = {ADC0, ADC1};
+constexpr ADC_Type* MEM_MAPS[PINOUT::GetAdcCount()] =
+{
+	ADC0,
+	ADC1,
+#if PINOUT_ADC_COUNT > 2
+	ADC2,
+#endif
+#if PINOUT_ADC_COUNT > 3
+	ADC3,
+#endif
+};
 
-Adc* g_instances[ADC_COUNT] = {};
+Adc* g_instances[PINOUT::GetAdcCount()] = {};
 
 Uint GetClockDivider(const Uint target_clock_khz)
 {
@@ -154,127 +163,8 @@ Adc& Adc::operator=(Adc &&rhs)
 
 bool Adc::InitModule(const Pin::Name pin)
 {
-	switch (pin)
-	{
-	case Pin::Name::kPta7:
-		m_name = Name::kAdc0Ad10;
-		return true;
-
-	case Pin::Name::kPta8:
-		m_name = Name::kAdc0Ad11;
-		return true;
-
-	case Pin::Name::kPta17:
-		m_name = Name::kAdc1Ad17;
-		return true;
-
-	case Pin::Name::kPtb0:
-		m_name = Name::kAdc0Ad8;
-		return true;
-
-	case Pin::Name::kPtb1:
-		m_name = Name::kAdc0Ad9;
-		return true;
-
-	case Pin::Name::kPtb2:
-		m_name = Name::kAdc0Ad12;
-		return true;
-
-	case Pin::Name::kPtb3:
-		m_name = Name::kAdc0Ad13;
-		return true;
-
-	case Pin::Name::kPtb4:
-		m_name = Name::kAdc1Ad10;
-		return true;
-
-	case Pin::Name::kPtb5:
-		m_name = Name::kAdc1Ad11;
-		return true;
-
-	case Pin::Name::kPtb6:
-		m_name = Name::kAdc1Ad12;
-		return true;
-
-	case Pin::Name::kPtb7:
-		m_name = Name::kAdc1Ad13;
-		return true;
-
-	case Pin::Name::kPtb10:
-		m_name = Name::kAdc1Ad14;
-		return true;
-
-	case Pin::Name::kPtb11:
-		m_name = Name::kAdc1Ad15;
-		return true;
-
-	case Pin::Name::kPtc0:
-		m_name = Name::kAdc0Ad14;
-		return true;
-
-	case Pin::Name::kPtc1:
-		m_name = Name::kAdc0Ad15;
-		return true;
-
-	case Pin::Name::kPtc2:
-		m_name = Name::kAdc0Ad4B;
-		return true;
-
-	case Pin::Name::kPtc8:
-		m_name = Name::kAdc1Ad4B;
-		return true;
-
-	case Pin::Name::kPtc9:
-		m_name = Name::kAdc1Ad5B;
-		return true;
-
-	case Pin::Name::kPtc10:
-		m_name = Name::kAdc1Ad6B;
-		return true;
-
-	case Pin::Name::kPtc11:
-		m_name = Name::kAdc1Ad7B;
-		return true;
-
-	case Pin::Name::kPtd1:
-		m_name = Name::kAdc0Ad5B;
-		return true;
-
-	case Pin::Name::kPtd5:
-		m_name = Name::kAdc0Ad6B;
-		return true;
-
-	case Pin::Name::kPtd6:
-		m_name = Name::kAdc0Ad7B;
-		return true;
-
-	case Pin::Name::kPte0:
-		m_name = Name::kAdc1Ad4A;
-		return true;
-
-	case Pin::Name::kPte1:
-		m_name = Name::kAdc1Ad5A;
-		return true;
-
-	case Pin::Name::kPte2:
-		m_name = Name::kAdc1Ad6A;
-		return true;
-
-	case Pin::Name::kPte3:
-		m_name = Name::kAdc1Ad7A;
-		return true;
-
-	case Pin::Name::kPte24:
-		m_name = Name::kAdc0Ad17;
-		return true;
-
-	case Pin::Name::kPte25:
-		m_name = Name::kAdc0Ad18;
-		return true;
-
-	default:
-		return false;
-	}
+	m_name = PINOUT::GetAdc(pin);
+	return (m_name != Adc::Name::kDisable);
 }
 
 bool Adc::InitModule(const Name adc)
@@ -487,6 +377,28 @@ uint16_t Adc::GetResult()
 	return result;
 }
 
+float Adc::GetResultF()
+{
+	// we can't predivide 3.3 and the resolution because the number is too small
+	// i.e., precision problem
+	const float multiplied = GetResult() * 3.3f;
+	switch (m_config.resolution)
+	{
+	case Config::Resolution::k8Bit:
+		return multiplied / 0x00FF;
+
+	case Config::Resolution::k10Bit:
+		return multiplied / 0x03FF;
+
+	case Config::Resolution::k12Bit:
+		return multiplied / 0x0FFF;
+
+	default:
+	case Config::Resolution::k16Bit:
+		return multiplied / 0xFFFF;
+	}
+}
+
 bool Adc::PeekResult(uint16_t *out_val)
 {
 	STATE_GUARD(Adc, false);
@@ -553,22 +465,53 @@ void Adc::EnableInterrupt()
 	const Uint module = AdcUtils::GetModule(m_name);
 
 	g_instances[module] = this;
-	SetIsr(EnumAdvance(ADC0_IRQn, module), IrqHandler);
-	EnableIrq(EnumAdvance(ADC0_IRQn, module));
+	if (module < 2)
+	{
+		SetIsr(EnumAdvance(ADC0_IRQn, module), IrqHandler);
+		EnableIrq(EnumAdvance(ADC0_IRQn, module));
+	}
+#if PINOUT_ADC_COUNT > 2
+	else if (module < 4)
+	{
+		SetIsr(EnumAdvance(ADC2_IRQn, module - 2), IrqHandler);
+		EnableIrq(EnumAdvance(ADC2_IRQn, module - 2));
+	}
+#endif
 	SET_BIT(MEM_MAPS[module]->SC1[0], ADC_SC1_AIEN_SHIFT);
 }
 
 void Adc::DisableInterrupt(const Uint module)
 {
 	CLEAR_BIT(MEM_MAPS[module]->SC1[0], ADC_SC1_AIEN_SHIFT);
-	DisableIrq(EnumAdvance(ADC0_IRQn, module));
-	SetIsr(EnumAdvance(ADC0_IRQn, module), nullptr);
+	if (module < 2)
+	{
+		DisableIrq(EnumAdvance(ADC0_IRQn, module));
+		SetIsr(EnumAdvance(ADC0_IRQn, module), nullptr);
+	}
+#if PINOUT_ADC_COUNT > 2
+	else if (module < 4)
+	{
+		DisableIrq(EnumAdvance(ADC2_IRQn, module - 2));
+		SetIsr(EnumAdvance(ADC2_IRQn, module - 2), nullptr);
+	}
+#endif
 	g_instances[module] = nullptr;
 }
 
 __ISR void Adc::IrqHandler()
 {
-	const Uint module = GetActiveIrq() - ADC0_IRQn;
+	Uint module = 0;
+	if (module < 2)
+	{
+		module = GetActiveIrq() - ADC0_IRQn;
+	}
+#if PINOUT_ADC_COUNT > 2
+	else if (module < 4)
+	{
+		module = GetActiveIrq() - ADC2_IRQn;
+	}
+#endif
+
 	Adc *const that = g_instances[module];
 	if (!that || !(*that))
 	{

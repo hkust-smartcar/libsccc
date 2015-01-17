@@ -2,7 +2,8 @@
  * mcg.cpp
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 /*
  * The FreeRTOS source code is licensed by a *modified* GNU General Public
@@ -67,9 +68,41 @@
 #define FLL_MAX_FREQ 39062
 #define FLL_MIN_FREQ 31250
 
-#define MAX_BUS_CLOCK 50000000
-#define MAX_FLEXBUS_CLOCK 50000000
-#define MAX_FLASH_CLOCK 25000000
+#if MK60DZ10
+	#define _MCG_C2_RANGE0 MCG_C2_RANGE
+	#define _MCG_C5_PRDIV0 MCG_C5_PRDIV
+	#define _MCG_C6_VDIV0 MCG_C6_VDIV
+	#define _MCG_S_LOCK0_SHIFT MCG_S_LOCK_SHIFT
+#else
+	#define _MCG_C2_RANGE0 MCG_C2_RANGE0
+	#define _MCG_C5_PRDIV0 MCG_C5_PRDIV0
+	#define _MCG_C6_VDIV0 MCG_C6_VDIV0
+	#define _MCG_S_LOCK0_SHIFT MCG_S_LOCK0_SHIFT
+#endif
+
+#if MK60DZ10 || MK60D10
+	#define PRDIV_MAX 0x18
+	#define VDIV_BASE 24
+	#define MIN_PLL_REF_KHZ 2000
+	#define MAX_PLL_REF_KHZ 4000
+#elif MK60F15
+	#define PRDIV_MAX 0x7
+	#define VDIV_BASE 16
+	#define MIN_PLL_REF_KHZ 8000
+	#define MAX_PLL_REF_KHZ 16000
+#endif
+
+#if MK60DZ10 || MK60D10
+	#define MAX_CORE_CLOCK 100000000
+	#define MAX_BUS_CLOCK 50000000
+	#define MAX_FLEXBUS_CLOCK 50000000
+	#define MAX_FLASH_CLOCK 25000000
+#elif MK60F15
+	#define MAX_CORE_CLOCK 150000000
+	#define MAX_BUS_CLOCK 75000000
+	#define MAX_FLEXBUS_CLOCK 50000000
+	#define MAX_FLASH_CLOCK 25000000
+#endif
 
 namespace libbase
 {
@@ -143,11 +176,22 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 {
 	Uint best_prdiv = 0, best_vdiv = 0;
 	Uint min_diff = static_cast<Uint>(-1);
-	for (Uint i = 0; i <= 0x18; ++i)
+	for (Uint i = 0; i <= PRDIV_MAX; ++i)
 	{
+		const uint32_t pll_ref_khz = external_osc_khz / (i + 1);
+		if (pll_ref_khz < MIN_PLL_REF_KHZ || pll_ref_khz > MAX_PLL_REF_KHZ)
+		{
+			// PLL reference freq not valid
+			continue;
+		}
+
 		for (Uint j = 0; j <= 0x1F; ++j)
 		{
-			const uint32_t this_clock = external_osc_khz * (j + 24) / (i + 1);
+			uint32_t this_clock = external_osc_khz * (j + VDIV_BASE) / (i + 1);
+#if MK60F15
+			// K60 120/150 parts have an additional /2 at the output of VCO
+			this_clock >>= 1;
+#endif
 			const Uint this_diff = abs((int32_t)(this_clock - core_clock_khz));
 			if (this_diff < min_diff)
 			{
@@ -166,13 +210,26 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 	m_prdiv = best_prdiv;
 	m_vdiv = best_vdiv;
 
-	m_core_clock = (uint64_t)(external_osc_khz * 1000) * (m_vdiv + 24)
+	m_core_clock = (uint64_t)(external_osc_khz * 1000) * (m_vdiv + VDIV_BASE)
 			/ (m_prdiv + 1);
+#if MK60F15
+	m_core_clock >>= 1;
+#endif
 }
 
 }
 
-uint32_t Mcg::m_core_clock = 0;
+Mcg::Config::Config()
+		: external_oscillator_khz(0),
+		  core_clock_khz(MAX_CORE_CLOCK / 1000),
+		  bus_clock_khz(MAX_BUS_CLOCK / 1000),
+		  flexbus_clock_khz(MAX_FLEXBUS_CLOCK / 1000),
+		  flash_clock_khz(MAX_FLEXBUS_CLOCK / 1000)
+{}
+
+Mcg::Mcg()
+		: m_core_clock(0)
+{}
 
 void Mcg::Init()
 {
@@ -186,7 +243,14 @@ void Mcg::Init()
 	InitClocks(config, calc.GetCoreClock());
 
 	// Then configure C5[PRDIV] to generate correct PLL reference frequency
-	MCG->C5 |= MCG_C5_PRDIV(calc.GetPrdiv());
+	MCG->C5 |= _MCG_C5_PRDIV0(calc.GetPrdiv());
+#if MK60F15
+	// Select PLL0 clock source
+	CLEAR_BIT(MCG->C11, MCG_C11_PLLCS_SHIFT);
+	// Select the external reference clock from OSC0 as the reference clock to
+	// the PLL
+	CLEAR_BIT(MCG->C5, MCG_C5_PLLREFSEL0_SHIFT);
+#endif
 
 	// Then, FBE must transition either directly to PBE mode or first through
 	// BLPE mode and then to PBE mode
@@ -201,7 +265,11 @@ void Mcg::Init()
 void Mcg::InitFbe(const Config &config)
 {
 	uint8_t c2_reg = 0;
-	c2_reg |= MCG_C2_RANGE(2);
+#if MK60F15
+	// Reset with a loss of OSC clock
+	SET_BIT(c2_reg, MCG_C2_LOCRE0_SHIFT);
+#endif
+	c2_reg |= _MCG_C2_RANGE0(2);
 	MCG->C2 = c2_reg;
 
 	uint8_t c1_reg = 0;
@@ -256,7 +324,7 @@ void Mcg::InitPbe(const Config&, const uint8_t vdiv)
 
 	uint8_t c6_reg = 0;
 	SET_BIT(c6_reg, MCG_C6_PLLS_SHIFT);
-	c6_reg |= MCG_C6_VDIV(vdiv);
+	c6_reg |= _MCG_C6_VDIV0(vdiv);
 	MCG->C6 = c6_reg;
 
 	// Clear C2[LP] to 0 here to switch to PBE mode
@@ -268,7 +336,7 @@ void Mcg::InitPbe(const Config&, const uint8_t vdiv)
 	{}
 
 	// Then loop until S[LOCK] is set, indicating that the PLL has acquired lock
-	while (!GET_BIT(MCG->S, MCG_S_LOCK_SHIFT))
+	while (!GET_BIT(MCG->S, _MCG_S_LOCK0_SHIFT))
 	{}
 }
 
@@ -322,22 +390,14 @@ void Mcg::InitClocks(const Config &config, const uint32_t core_clock)
 	}
 	assert(flash_div > 0);
 
-	uint32_t reg = 0;
-	reg |= SIM_CLKDIV1_OUTDIV2(std::min<Uint>(bus_div - 1, 0xF));
-	reg |= SIM_CLKDIV1_OUTDIV3(std::min<Uint>(flexbus_div - 1, 0xF));
-	reg |= SIM_CLKDIV1_OUTDIV4(std::min<Uint>(flash_div - 1, 0xF));
-	SIM->CLKDIV1 = reg;
-}
-
-__attribute__((__weak__)) Mcg::Config Mcg::GetMcgConfig()
-{
-	Mcg::Config config;
-	config.external_oscillator_khz = 50000;
-	config.core_clock_khz = 100000;
-	config.bus_clock_khz = 50000;
-	config.flexbus_clock_khz = 50000;
-	config.flash_clock_khz = 25000;
-	return config;
+//	uint32_t reg = 0;
+//	reg |= SIM_CLKDIV1_OUTDIV2(std::min<Uint>(bus_div - 1, 0xF));
+//	reg |= SIM_CLKDIV1_OUTDIV3(std::min<Uint>(flexbus_div - 1, 0xF));
+//	reg |= SIM_CLKDIV1_OUTDIV4(std::min<Uint>(flash_div - 1, 0xF));
+//	SIM->CLKDIV1 = reg;
+	SetSysDividers(0, std::min<Uint>(bus_div - 1, 0xF),
+			std::min<Uint>(flexbus_div - 1, 0xF),
+			std::min<Uint>(flash_div - 1, 0xF));
 }
 
 }
@@ -345,10 +405,10 @@ __attribute__((__weak__)) Mcg::Config Mcg::GetMcgConfig()
 
 void LibbaseK60McgInit()
 {
-	libbase::k60::Mcg::Init();
+	libbase::k60::Mcg::Get().Init();
 }
 
 uint32_t LibbaseK60McgGetCoreClock()
 {
-	return libbase::k60::Mcg::GetCoreClock();
+	return libbase::k60::Mcg::Get().GetCoreClock();
 }

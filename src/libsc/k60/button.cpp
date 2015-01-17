@@ -2,7 +2,8 @@
  * button.cpp
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cassert>
@@ -87,18 +88,19 @@ Gpi::Config GetGpiConfig(const uint8_t id)
 
 }
 
-Button::Button(const uint8_t id)
-		: m_pin(GetGpiConfig(id))
+Button::Button(const Config &config)
+		: m_pin(GetGpiConfig(config.id)),
+		  m_is_active_low(config.is_active_low)
 {}
 
 bool Button::IsDown() const
 {
-	return !m_pin.Get();
+	return (m_pin.Get() ^ m_is_active_low);
 }
 
 #else
-Button::Button(const uint8_t)
-		: m_pin(nullptr)
+Button::Button(const Config&)
+		: m_pin(nullptr), m_is_active_low(false)
 {
 	LOG_DL("Configured not to use Button");
 }

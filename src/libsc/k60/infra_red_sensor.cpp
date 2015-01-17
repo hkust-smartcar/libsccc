@@ -3,7 +3,8 @@
  * Infra-red sensor
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cassert>
@@ -59,7 +60,7 @@ inline Pin::Name GetPin(const uint8_t id)
 #endif
 
 Gpi::Config GetGpiConfig(const uint8_t id,
-		const InfraRedSensor::OnDetectListener &listener)
+		const Gpi::OnGpiEventListener &listener)
 {
 	Gpi::Config config;
 	config.pin = GetPin(id);
@@ -67,26 +68,28 @@ Gpi::Config GetGpiConfig(const uint8_t id,
 	if (listener)
 	{
 		config.interrupt = Pin::Config::Interrupt::kRising;
-		config.isr = [&listener](Gpi*)
-				{
-					listener(id);
-				};
+		config.isr = listener;
 	}
 	return config;
 }
 
 }
 
-InfraRedSensor::InfraRedSensor(const uint8_t id,
-		const OnDetectListener &listener)
-		: m_pin(nullptr), m_isr(listener)
+InfraRedSensor::InfraRedSensor(const Config &config)
+		: m_isr(config.listener),
+		  m_pin(nullptr)
 {
-	m_pin = Gpi(GetGpiConfig(id, m_isr));
+	Gpi::OnGpiEventListener listener;
+	if (config.listener)
+	{
+		const uint8_t id = config.id;
+		listener = [this, id](Gpi*)
+				{
+					m_isr(id);
+				};
+	}
+	m_pin = Gpi(GetGpiConfig(config.id, listener));
 }
-
-InfraRedSensor::InfraRedSensor(const uint8_t id)
-		: InfraRedSensor(id, nullptr)
-{}
 
 bool InfraRedSensor::IsDetected() const
 {
@@ -94,10 +97,7 @@ bool InfraRedSensor::IsDetected() const
 }
 
 #else
-InfraRedSensor::InfraRedSensor(const uint8_t, const OnDetectListener&)
-		: InfraRedSensor(0)
-{}
-InfraRedSensor::InfraRedSensor(const uint8_t)
+InfraRedSensor::InfraRedSensor(const Config&)
 		: m_pin(nullptr)
 {
 	LOG_DL("Configured not to use InfraRedSensor");

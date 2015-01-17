@@ -3,7 +3,8 @@
  * Manage ISR for ports
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include <cstring>
@@ -137,7 +138,7 @@ template<Uint port>
 __ISR void PinIsrManager::PortIrqHandler()
 {
 	PinData *pin_data = PinIsrManager::GetInstance()->m_pin_data[port];
-	for (int i = 0; i < PINOUT::GetPortPinCount(); ++i)
+	for (Uint i = 0; i < PINOUT::GetPortPinCount(); ++i)
 	{
 		const Pin::Name pin = PinUtils::GetPin(port, i);
 		if (Pin::IsInterruptRequested(pin))

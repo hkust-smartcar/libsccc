@@ -1,9 +1,10 @@
 /*
- * temperature_sensor.h
- * DS18B20 temperature sensor
+ * ds18b20.h
+ * DS18B20 digital thermometer
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -17,10 +18,15 @@ namespace libsc
 namespace k60
 {
 
-class TemperatureSensor
+class Ds18b20
 {
 public:
-	explicit TemperatureSensor(const uint8_t id);
+	struct Config
+	{
+		uint8_t id;
+	};
+
+	explicit Ds18b20(const Config &config);
 
 	void UpdateTemperature();
 

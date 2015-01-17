@@ -2,7 +2,8 @@
  * ftm_quad_decoder.cpp
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #include "libbase/k60/hardware.h"
@@ -123,13 +124,13 @@ FtmQuadDecoder& FtmQuadDecoder::operator=(FtmQuadDecoder &&rhs)
 
 bool FtmQuadDecoder::InitModule(const Pin::Name a_pin, const Pin::Name b_pin)
 {
-	const Ftm::Name a_ftm = FtmUtils::GetFtmName(a_pin);
+	const Ftm::QdName a_ftm = PINOUT::GetFtmQd(a_pin);
 	const int a_module = FtmUtils::GetFtmModule(a_ftm);
 
-	const Ftm::Name b_ftm = FtmUtils::GetFtmName(b_pin);
+	const Ftm::QdName b_ftm = PINOUT::GetFtmQd(b_pin);
 	const int b_module = FtmUtils::GetFtmModule(b_ftm);
 
-	if (a_module == b_module && a_ftm != Ftm::Name::kDisable)
+	if (a_module == b_module && a_ftm != Ftm::QdName::kDisable)
 	{
 		m_module = a_module;
 		return true;
@@ -144,12 +145,9 @@ void FtmQuadDecoder::InitPin(const Pin::Name a_pin, const Pin::Name b_pin)
 {
 	Pin::Config a_config, b_config;
 	a_config.pin = a_pin;
+	a_config.mux = PINOUT::GetFtmQdMux(a_pin);
 	b_config.pin = b_pin;
-
-	a_config.mux = (a_pin == Pin::Name::kPta12) ? Pin::Config::MuxControl::kAlt7
-			: Pin::Config::MuxControl::kAlt6;
-	b_config.mux = (b_pin == Pin::Name::kPta13) ? Pin::Config::MuxControl::kAlt7
-			: Pin::Config::MuxControl::kAlt6;
+	b_config.mux = PINOUT::GetFtmQdMux(b_pin);
 
 	m_a = Pin(a_config);
 	m_b = Pin(b_config);

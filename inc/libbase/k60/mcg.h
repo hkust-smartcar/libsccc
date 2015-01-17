@@ -2,7 +2,8 @@
  * mcg.h
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -21,6 +22,8 @@ class Mcg
 public:
 	struct Config
 	{
+		Config();
+
 		uint32_t external_oscillator_khz;
 		uint32_t core_clock_khz;
 		uint32_t bus_clock_khz;
@@ -28,23 +31,36 @@ public:
 		uint32_t flash_clock_khz;
 	};
 
-	static void Init();
+	static Mcg& Get()
+	{
+		static Mcg inst;
+		return inst;
+	}
 
-	static uint32_t GetCoreClock()
+	void Init();
+
+	uint32_t GetCoreClock()
 	{
 		return m_core_clock;
 	}
 
 private:
-	__attribute__((__weak__))
+	Mcg();
+
+	/**
+	 * Get the Config object used during initialization, to be implemented by
+	 * user
+	 *
+	 * @return
+	 */
 	static Config GetMcgConfig();
 
-	static void InitFbe(const Config &config);
-	static void InitPbe(const Config &config, const uint8_t vdiv);
-	static void InitPee(const Config &config);
-	static void InitClocks(const Config &config, const uint32_t core_clock);
+	void InitFbe(const Config &config);
+	void InitPbe(const Config &config, const uint8_t vdiv);
+	void InitPee(const Config &config);
+	void InitClocks(const Config &config, const uint32_t core_clock);
 
-	static uint32_t m_core_clock;
+	uint32_t m_core_clock;
 };
 
 }

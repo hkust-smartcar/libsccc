@@ -3,7 +3,8 @@
  * Manage ISR for pins
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -34,7 +35,7 @@ public:
 private:
 	struct PinData
 	{
-		libbase::k60::Pin *pin = nullptr;
+		Pin *pin = nullptr;
 		OnPinIrqListener isr = nullptr;
 	};
 

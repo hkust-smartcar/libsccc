@@ -2,7 +2,8 @@
  * st7735r.cpp
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 /*
  * Author: Henry
@@ -17,6 +18,7 @@
 #include "libbase/k60/soft_spi_master.h"
 
 #include "libsc/config.h"
+#include "libsc/device_h/st7735r.h"
 #include "libsc/k60/st7735r.h"
 #include "libsc/k60/system.h"
 #include "libsc/lcd_font.h"
@@ -24,24 +26,6 @@
 
 #define SEND_COMMAND(dat) Send(true, dat)
 #define SEND_DATA(dat) Send(false, dat)
-
-#define CMD_SW_RESET 0x01
-#define CMD_SLEEP_OUT 0x11
-#define CMD_DISPLAY_ON 0x29
-#define CMD_COLUMN_ADDRESS_SET 0x2A
-#define CMD_ROW_ADDRESS_SET 0x2B
-#define CMD_MEMORY_WRITE 0x2C
-#define CMD_MEM_DATA_ACCESS_CTRL 0x36
-#define CMD_PIXEL_FORMAT 0x3A
-#define CMD_FRAME_RATE_CTRL_NORMAL 0xB1
-#define CMD_POWER_CTRL1 0xC0
-#define CMD_POWER_CTRL2 0xC1
-#define CMD_POWER_CTRL3 0xC2
-#define CMD_POWER_CTRL4 0xC3
-#define CMD_POWER_CTRL5 0xC4
-#define CMD_VCOM_CTRL 0xC5
-#define CMD_GAMMA_CORRECTION_POS_POLARITY 0xE0
-#define CMD_GAMMA_CORRECTION_NEG_POLARITY 0xE1
 
 using namespace libbase::k60;
 using namespace std;
@@ -90,63 +74,61 @@ Gpo::Config GetDcConfig()
 
 }
 
-St7735r::St7735r()
-		: St7735r(false)
-{}
-
-St7735r::St7735r(const bool is_revert)
+St7735r::St7735r(const Config &config)
 		: m_spi(GetSpiConfig()),
 		  m_rst(GetRstConfig()),
 		  m_dc(GetDcConfig()),
 
 		  m_bg_color(0)
 {
-#ifdef LIBSC_USE_LCD_HW_SPI
-	spi_init(SpiUtils::GetSpiModule<LIBSC_LCD_SCLK, LIBSC_LCD_MOSI, LIBSC_LCD_MISO, LIBSC_LCD_CS>(),
-			SpiUtils::GetSpiPcs<LIBSC_LCD_SCLK, LIBSC_LCD_MOSI, LIBSC_LCD_MISO, LIBSC_LCD_CS>(),
-			MASTER, SPI_MOSI_FLAG, 12000000u);
-#endif
-
 	Clear();
-	SEND_COMMAND(CMD_SW_RESET);
+	SEND_COMMAND(ST7735R_SWRESET);
 	System::DelayMs(10);
 
-	SEND_COMMAND(CMD_SLEEP_OUT);
+	SEND_COMMAND(ST7735R_SLPOUT);
 	System::DelayMs(120);
 
-	SEND_COMMAND(CMD_MEM_DATA_ACCESS_CTRL);
-	SEND_DATA(is_revert ? 0x08 : 0xC8);
+	uint8_t madctl_reg = 0;
+	if (!config.is_revert)
+	{
+		madctl_reg |= 0xC0;
+	}
+#ifdef LIBSC_ST7735R_BGR_PANEL
+	madctl_reg |= 0x08;
+#endif
+	SEND_COMMAND(ST7735R_MADCTL);
+	SEND_DATA(madctl_reg);
 
 	// 16-bit
-	SEND_COMMAND(CMD_PIXEL_FORMAT);
+	SEND_COMMAND(ST7735R_COLMOD);
 	SEND_DATA(0x55);
 
 	// ~60Hz
-	SEND_COMMAND(CMD_FRAME_RATE_CTRL_NORMAL);
+	SEND_COMMAND(ST7735R_FRMCTRL1);
 	SEND_DATA(0x05);
 	SEND_DATA(0x3C);
 	SEND_DATA(0x3C);
 
-	SEND_COMMAND(CMD_POWER_CTRL1);
+	SEND_COMMAND(ST7735R_PWCTR1);
 	SEND_DATA(0xA2);
 	SEND_DATA(0x02);
 	SEND_DATA(0x84);
-	SEND_COMMAND(CMD_POWER_CTRL2);
+	SEND_COMMAND(ST7735R_PWCTR2);
 	SEND_DATA(0xC5);
-	SEND_COMMAND(CMD_POWER_CTRL3);
+	SEND_COMMAND(ST7735R_PWCTR3);
 	SEND_DATA(0x0A);
 	SEND_DATA(0x00);
-	SEND_COMMAND(CMD_POWER_CTRL4);
+	SEND_COMMAND(ST7735R_PWCTR4);
 	SEND_DATA(0x8A);
 	SEND_DATA(0x2A);
-	SEND_COMMAND(CMD_POWER_CTRL5);
+	SEND_COMMAND(ST7735R_PWCTR5);
 	SEND_DATA(0x8A);
 	SEND_DATA(0xEE);
 
-	SEND_COMMAND(CMD_VCOM_CTRL);
+	SEND_COMMAND(ST7735R_VMCTR1);
 	SEND_DATA(0x0E);
 
-	SEND_COMMAND(CMD_GAMMA_CORRECTION_POS_POLARITY);
+	SEND_COMMAND(ST7735R_GMCTRP1);
 	SEND_DATA(0x02);
 	SEND_DATA(0x1C);
 	SEND_DATA(0x07);
@@ -164,7 +146,7 @@ St7735r::St7735r(const bool is_revert)
 	SEND_DATA(0x03);
 	SEND_DATA(0x10);
 
-	SEND_COMMAND(CMD_GAMMA_CORRECTION_NEG_POLARITY);
+	SEND_COMMAND(ST7735R_GMCTRN1);
 	SEND_DATA(0x03);
 	SEND_DATA(0x1D);
 	SEND_DATA(0x07);
@@ -184,7 +166,7 @@ St7735r::St7735r(const bool is_revert)
 
 	SetActiveRect(0, 0, kW, kH);
 
-	SEND_COMMAND(CMD_DISPLAY_ON);
+	SEND_COMMAND(ST7735R_DISPON);
 	System::DelayMs(10);
 }
 
@@ -202,7 +184,7 @@ void St7735r::DrawGrayscalePixelBuffer(const uint8_t x, const uint8_t y,
 		const uint8_t w, const uint8_t h, const uint8_t *pixel)
 {
 	SetActiveRect(x, y, w, h);
-	SEND_COMMAND(CMD_MEMORY_WRITE);
+	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint area = w * h;
 	for (Uint i = 0; i < area; ++i)
 	{
@@ -216,7 +198,7 @@ void St7735r::DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
 		const uint8_t h, const uint16_t *pixel)
 {
 	SetActiveRect(x, y, w, h);
-	SEND_COMMAND(CMD_MEMORY_WRITE);
+	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint area = w * h;
 	for (Uint i = 0; i < area; ++i)
 	{
@@ -230,7 +212,7 @@ void St7735r::DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
 		const bool *data)
 {
 	SetActiveRect(x, y, w, h);
-	SEND_COMMAND(CMD_MEMORY_WRITE);
+	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint area = w * h;
 	for (Uint i = 0; i < area; ++i)
 	{
@@ -251,7 +233,7 @@ void St7735r::DrawPixel(const uint8_t x, const uint8_t y, const uint8_t w,
 		const uint8_t h, const uint16_t color)
 {
 	SetActiveRect(x, y, w, h);
-	SEND_COMMAND(CMD_MEMORY_WRITE);
+	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint area = w * h;
 	for (Uint i = 0; i < area; ++i)
 	{
@@ -294,7 +276,7 @@ void St7735r::DrawChar(const uint8_t x, const uint8_t y, const char ch,
 void St7735r::SetActiveRect(const uint8_t x, const uint8_t y, const uint8_t w,
 		const uint8_t h)
 {
-	SEND_COMMAND(CMD_COLUMN_ADDRESS_SET);
+	SEND_COMMAND(ST7735R_CASET);
 	// start
 	SEND_DATA(0x00);
 	SEND_DATA(x);
@@ -302,7 +284,7 @@ void St7735r::SetActiveRect(const uint8_t x, const uint8_t y, const uint8_t w,
 	SEND_DATA(0x00);
 	SEND_DATA(x + w - 1);
 
-	SEND_COMMAND(CMD_ROW_ADDRESS_SET);
+	SEND_COMMAND(ST7735R_RASET);
 	SEND_DATA(0x00);
 	SEND_DATA(y);
 	SEND_DATA(0x00);
@@ -316,12 +298,11 @@ void St7735r::Send(const bool is_cmd, const uint8_t data)
 }
 
 #else
-St7735r::St7735r()
+St7735r::St7735r(const Config&)
 		: m_spi(nullptr), m_rst(nullptr), m_dc(nullptr), m_bg_color(0)
 {
 	LOG_DL("Configured not to use St7735r(LCD)");
 }
-St7735r::St7735r(const bool) : St7735r() {}
 void St7735r::Clear() {}
 void St7735r::DrawPixel(const uint8_t, const uint8_t, const uint8_t,
 		const uint8_t, const uint16_t) {}

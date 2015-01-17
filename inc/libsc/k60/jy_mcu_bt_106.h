@@ -3,7 +3,7 @@
  * JY-MCU BT Board v1.06
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -23,17 +23,13 @@ namespace k60
 class JyMcuBt106 : public UartDevice
 {
 public:
-	JyMcuBt106(const uint8_t id,
-			const libbase::k60::Uart::Config::BaudRate baud_rate);
-
-protected:
-	class UartConfigBuilder : public UartDevice::UartConfigBuilder
+	struct Config
 	{
-	public:
-		using UartDevice::UartConfigBuilder::UartConfigBuilder;
-
-		virtual libbase::k60::Uart::Config Build() const override;
+		uint8_t id;
+		libbase::k60::Uart::Config::BaudRate baud_rate;
 	};
+
+	explicit JyMcuBt106(const Config &config);
 };
 
 }
