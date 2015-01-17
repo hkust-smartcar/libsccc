@@ -128,7 +128,7 @@ void Encoder::Update()
 
 #else
 Encoder::Encoder(const Initializer&)
-		: m_count(0)
+		: m_count(0), m_quad_decoder(nullptr)
 {
 	LOG_DL("Configured not to use Encoder");
 }
