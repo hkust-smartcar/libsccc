@@ -22,8 +22,10 @@ class RandGenerator
 public:
 	struct Config
 	{
-		// Set the external entropy, should also toggle is_ext_entropy to
-		// respect this value
+		/**
+		 * Set the external entropy, should also toggle is_ext_entropy to
+		 * respect this value
+		 */
 		uint32_t entropy;
 		bool is_ext_entropy;
 	};

@@ -27,8 +27,12 @@ class SoftI2cMaster : public I2cMasterInterface
 public:
 	struct Config : public I2cMasterInterface::Config
 	{
-		// Try pushing your slave device to its limit! The default is for the
-		// standard 100KHz bus
+		/**
+		 * Set the delay to work in a different frequency than the default
+		 * 100KHz one
+		 *
+		 * @note The device may not operate correctly if the value is lowered
+		 */
 		uint32_t delay_us = 10;
 	};
 

@@ -224,11 +224,13 @@ public:
 		{
 			kHighDriveStrength = 0,
 			kOpenDrain,
-			// Disable the passive input filter when high speed interfaces of more
-			// than 2 MHz are supported on the pin
+			/**
+			 * Disable the passive input filter when high speed interfaces of
+			 * more than 2 MHz are supported on the pin
+			 */
 			kPassiveFilter,
 			kSlowSlewRate,
-			// Enable the internal pull-up or pull-down resistor
+			/// Enable the internal pull-up or pull-down resistor
 			kPullEnable,
 			kPullUp,
 
