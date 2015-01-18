@@ -40,9 +40,11 @@ public:
 
 	/**
 	 * Clockwise (top view):
+	 * <pre>
 	 * |-------|   ^
 	 * | Motor |-- ^
 	 * |-------|   ^
+	 * </pre>
 	 *
 	 * @param flag
 	 */
