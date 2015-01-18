@@ -34,10 +34,10 @@ public:
 	class Var
 	{
 	public:
-		enum Type
+		enum struct Type
 		{
-			INT,
-			REAL
+			kInt,
+			kReal,
 		};
 
 		Var(Var &&rhs);
