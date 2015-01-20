@@ -9,6 +9,7 @@
 
 #define MMA8451Q_DEFAULT_ADDRESS		0x1C
 
+// Registers
 #define MMA8451Q_RA_REG_OUT_ALL			MMA8451Q_RA_REG_OUT_X_MSB
 #define MMA8451Q_RA_REG_STATUS	    	0x00
 #define MMA8451Q_RA_REG_OUT_X_MSB    	0x01
@@ -84,4 +85,8 @@
 #define MMA8451Q_XDC_HPF_OUT			1<<4
 
 // FF_MT_CFG
+#define MMA8451Q_FMC_ELE				1<<7
 #define MMA8451Q_FMC_OAE				1<<6
+#define MMA8451Q_FMC_ZEFE				1<<5
+#define MMA8451Q_FMC_YEFE				1<<4
+#define MMA8451Q_FMC_XEFE				1<<3

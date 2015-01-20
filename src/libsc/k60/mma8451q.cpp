@@ -20,16 +20,6 @@ namespace libsc
 namespace k60
 {
 
-SoftI2cMaster::Config GetI2cMasterConfig()
-{
-	SoftI2cMaster::Config config;
-//	config.scl_pin = Pin::Name::kPta4;
-//	config.sda_pin = Pin::Name::kPta6;
-	config.scl_pin = Pin::Name::kPtb0;
-	config.sda_pin = Pin::Name::kPtb1;
-	return config;
-}
-
 bool Mma8451q::IsConnected()
 {
 	Byte devId = 0;
@@ -116,7 +106,7 @@ bool Mma8451q::WriteRegByte(const Byte RegAddr, const Byte data)
 
 Mma8451q::Mma8451q(Mma8451q::Config config)
 :
-	m_I2cMaster(GetI2cMasterConfig()),
+	m_I2cMaster(config),
 	m_Sens(config.sens),
 	m_Len(config.len)
 {
@@ -135,7 +125,10 @@ Mma8451q::Mma8451q(Mma8451q::Config config)
 
 	WriteRegByte(MMA8451Q_RA_HP_FILTER_CUTOFF, MMA8451Q_HFC_PULSE_LPF_EN);
 
-	WriteRegByte(MMA8451Q_RA_CTRL_REG2, MMA8451Q_CR2_MODS0);
+	WriteRegByte(MMA8451Q_RA_FF_MT_CFG, MMA8451Q_FMC_ELE |
+										MMA8451Q_FMC_ZEFE);
+
+	WriteRegByte(MMA8451Q_RA_CTRL_REG2, (Byte)config.power_mode);
 
 	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate |
 										MMA8451Q_CR1_F_ACTIVE |

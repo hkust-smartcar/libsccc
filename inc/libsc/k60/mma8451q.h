@@ -56,10 +56,18 @@ public:
 			k1_56Hz = 7<<3
 		};
 
+		enum struct PowerMode
+		{
+			Normal = 0,
+			LowNoiseLowPower,
+			HighResolution,
+			LowPower
+		};
+
 		uint8_t id = 0;
 		Sensitivity sens = Sensitivity::Low;
 		DataLength len = DataLength::k8;
-//		bool isLowPowerMode = true;
+		PowerMode power_mode = PowerMode::LowNoiseLowPower;
 		ODR output_data_rate = ODR::k50Hz;
 	};
 
