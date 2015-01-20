@@ -33,9 +33,9 @@ public:
 	{
 		enum struct Sensitivity
 		{
-			High = 1 << 10,
-			Mid = 1 << 11,
-			Low = 1 << 12
+			High = 0,
+			Mid,
+			Low
 		};
 
 		enum struct DataLength

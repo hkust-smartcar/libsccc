@@ -47,7 +47,7 @@ float Mma8451q::GetAccelGeneral(const Byte MsbRegAddr)
 		hbytes >>= 2;
 	}
 
-	return ((float)hbytes / (float)m_Sens * ((bytes[0] >> 7)? -1 : 1));
+	return ((float)hbytes / (float)(1 << ((Byte)m_Sens + 0x0A)) * ((bytes[0] >> 7)? -1 : 1));
 }
 
 float Mma8451q::GetAccelX()
@@ -112,27 +112,18 @@ Mma8451q::Mma8451q(Mma8451q::Config config)
 {
 	if (config.id != 0)
 		assert(false);
-//	WriteRegByte(MMA8451Q_RA_CTRL_REG4, MMA8451Q_CR4_INT_EN_DRDY |
-//											 MMA8451Q_CR4_INT_EN_FF_MT |
-//											 MMA8451Q_CR4_INT_EN_PULSE |
-//											 MMA8451Q_CR4_INT_EN_TRANS |
-//											 MMA8451Q_CR4_INT_EN_FIFO);
-//	WriteRegByte(MMA8451Q_RA_CTRL_REG5, MMA8451Q_CR5_INT_CFG_DRDY |
-//											 MMA8451Q_CR5_INT_CFG_PULSE |
-//											 MMA8451Q_CR4_INT_EN_TRANS);
 
-	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, (Byte)config.sens - (Byte)0x0A);
+	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (Byte)config.sens);
 
-	WriteRegByte(MMA8451Q_RA_HP_FILTER_CUTOFF, MMA8451Q_HFC_PULSE_LPF_EN);
-
-	WriteRegByte(MMA8451Q_RA_FF_MT_CFG, MMA8451Q_FMC_ELE |
-										MMA8451Q_FMC_ZEFE);
+//	WriteRegByte(MMA8451Q_RA_HP_FILTER_CUTOFF, MMA8451Q_HFC_PULSE_LPF_EN);
 
 	WriteRegByte(MMA8451Q_RA_CTRL_REG2, (Byte)config.power_mode);
 
+//	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate |
+//										MMA8451Q_CR1_LNOISE |
+//										MMA8451Q_CR1_F_ACTIVE);
 	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate |
-										MMA8451Q_CR1_F_ACTIVE |
-										MMA8451Q_CR1_LNOISE);
+										MMA8451Q_CR1_F_ACTIVE);
 }
 
 Mma8451q::Mma8451q()

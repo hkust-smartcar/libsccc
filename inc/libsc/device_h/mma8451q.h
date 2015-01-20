@@ -35,6 +35,7 @@
 #define MMA8451Q_RA_CTRL_REG2        	0x2B
 #define MMA8451Q_RA_CTRL_REG4        	0x2D
 #define MMA8451Q_RA_CTRL_REG5        	0x2E
+#define MMA8451Q_RA_OFF_Z				0x31
 
 //STATUS
 #define MMA8451Q_S_ZYXOW				1<<7
