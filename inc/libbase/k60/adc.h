@@ -123,7 +123,7 @@ public:
 		 * @note Having listener and continuous mode both set will most likely
 		 * result in the listener being called in a dead lock manner
 		 */
-		OnConversionCompleteListener conversion_listener;
+		OnConversionCompleteListener conversion_isr;
 	};
 
 	static constexpr int kModuleChannelCount = 36;

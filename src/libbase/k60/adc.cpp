@@ -120,9 +120,9 @@ Adc::Adc(const Config &config)
 			AdcUtils::GetModule(m_name)), true);
 
 /*
-	if (m_config.is_continuous_mode && !m_config.conversion_listener)
+	if (m_config.is_continuous_mode && !m_config.conversion_isr)
 	{
-		m_config.conversion_listener = std::bind(&Adc::OnConversionComplete,
+		m_config.conversion_isr = std::bind(&Adc::OnConversionComplete,
 				this, placeholders::_1, placeholders::_2);
 	}
 */
@@ -317,7 +317,7 @@ void Adc::InitInterrupt()
 	const Uint module = AdcUtils::GetModule(m_name);
 
 	DisableInterrupt(module);
-	if (m_config.conversion_listener)
+	if (m_config.conversion_isr)
 	{
 		EnableInterrupt();
 	}
@@ -521,7 +521,7 @@ __ISR void Adc::IrqHandler()
 	}
 	else
 	{
-		that->m_config.conversion_listener(that, MEM_MAPS[module]->R[0]);
+		that->m_config.conversion_isr(that, MEM_MAPS[module]->R[0]);
 	}
 }
 
