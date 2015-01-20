@@ -3,7 +3,7 @@
  * DS18B20 digital thermometer
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -123,7 +123,7 @@ void Ds18b20::SendByte(const uint8_t byte)
 		else
 		{
 			System::DelayUs(60);
-			m_pin.Set(true);
+			m_pin.EnsureGpi();
 		}
 		System::DelayUs(1);
 	}

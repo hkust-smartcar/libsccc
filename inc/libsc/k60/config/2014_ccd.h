@@ -3,7 +3,8 @@
  * Config file for 2014 CCD board
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -16,18 +17,17 @@
 #define LIBSC_USE_BUTTON 2
 #define LIBSC_USE_BUZZER 1
 #define LIBSC_USE_ENCODER 1
-//#define LIBSC_USE_SOFT_ENCODER
+//#define LIBSC_USE_SOFT_ENCODER 1
 #define LIBSC_USE_GYROSCOPE 1
 #define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_LCD 1
-//#define LIBSC_USE_LCD_HW_SPI
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_LIGHT_SENSOR 2
 #define LIBSC_USE_LINEAR_CCD 2
 #define LIBSC_NEGATE_LINEAR_CCD
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
-//#define LIBSC_USE_SOFT_SERVO_PWM
+//#define LIBSC_USE_SOFT_SERVO_PWM 1
 #define LIBSC_USE_SWITCH 5
 #define LIBSC_USE_UART 1
 

@@ -2,7 +2,8 @@
  * soft_i2c_master.h
  *
  * Author: Ming Tsang
- * Copyright (c) 2014 HKUST SmartCar Team
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
 #pragma once
@@ -57,10 +58,11 @@ private:
 	void Start();
 	void Stop();
 	bool SendByte_(const Byte byte);
-	Byte ReadByte_(const bool is_ack);
+	bool ReadByte_(const bool is_ack, Byte *out_byte);
 
 	inline void Delay();
 
+	uint16_t m_scl_low_timeout;
 	uint32_t m_delay_us;
 
 	Gpio m_scl;
