@@ -155,6 +155,7 @@ Adc& Adc::operator=(Adc &&rhs)
 			rhs.m_name = Name::kDisable;
 
 			m_pin = std::move(rhs.m_pin);
+			m_config = std::move(rhs.m_config);
 			m_name = name;
 		}
 	}
