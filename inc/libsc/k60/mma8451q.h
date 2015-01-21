@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <libbase/k60/soft_i2c_master.h>
 #include <libbase/k60/pin.h>
+#include <libbase/k60/dwt.h>
 
 #include <vector>
 #include <cstring>
@@ -46,14 +47,14 @@ public:
 
 		enum struct ODR
 		{
-			k800Hz = 0<<3,
-			k400Hz = 1<<3,
-			k200Hz = 2<<3,
-			k100Hz = 3<<3,
-			k50Hz = 4<<3,
-			k12_5Hz = 5<<3,
-			k6_25Hz = 6<<3,
-			k1_56Hz = 7<<3
+			k800Hz = 0,
+			k400Hz,
+			k200Hz,
+			k100Hz,
+			k50Hz,
+			k12_5Hz,
+			k6_25Hz,
+			k1_56Hz
 		};
 
 		enum struct PowerMode
@@ -64,24 +65,26 @@ public:
 			LowPower
 		};
 
-		uint8_t id = 0;
+		uint8_t id;
 		Sensitivity sens = Sensitivity::Low;
-		DataLength len = DataLength::k8;
+		DataLength len = DataLength::k14;
 		PowerMode power_mode = PowerMode::LowNoiseLowPower;
 		ODR output_data_rate = ODR::k50Hz;
 	};
 
-	explicit Mma8451q(Mma8451q::Config config);
 	explicit Mma8451q();
+	explicit Mma8451q(Mma8451q::Config config);
 	~Mma8451q();
 
 	bool IsConnected();
 
-	float GetAccelX();
-	float GetAccelY();
-	float GetAccelZ();
+	bool update();
 
-	array<float, 3> GetAccel();
+	float getAccelX();
+	float getAccelY();
+	float getAccelZ();
+
+	array<float, 3> getAccel();
 
 private:
 
@@ -89,12 +92,10 @@ private:
 	Config::Sensitivity m_Sens;
 	Config::DataLength m_Len;
 
-	float m_lastAccelX = 0.0f;
-	float m_lastAccelY = 0.0f;
-	float m_lastAccelZ = 0.0f;
+	array<float, 3> m_lastAccel;
 
-	float GetAccelScaleFactor();
-	float GetAccelGeneral(const Byte MsbRegAddr);
+	void getAllAccel();
+//	float GetAccelGeneral(const Byte MsbRegAddr);
 
 	Byte ReadRegByte(const Byte RegAddr);
 	bool WriteRegByte(const Byte RegAddr, const Byte data);
