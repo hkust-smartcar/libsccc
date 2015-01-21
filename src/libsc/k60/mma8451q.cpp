@@ -20,6 +20,16 @@ namespace libsc
 namespace k60
 {
 
+SoftI2cMaster::Config GetI2cMasterConfig(Mma8451q::Config config)
+{
+	SoftI2cMaster::Config Masterconfig;
+//	config.scl_pin = Pin::Name::kPta4;
+//	config.sda_pin = Pin::Name::kPta6;
+	Masterconfig.scl_pin = config.scl_pin;
+	Masterconfig.sda_pin = config.sda_pin;
+	return Masterconfig;
+}
+
 bool Mma8451q::IsConnected()
 {
 	Byte devId = 0;
@@ -27,59 +37,82 @@ bool Mma8451q::IsConnected()
 	return (devId == 0x1A);
 }
 
-float Mma8451q::GetAccelGeneral(const Byte MsbRegAddr)
+//float Mma8451q::GetAccelGeneral(const Byte MsbRegAddr)
+//{
+//	Byte *bytes = new Byte[2] { 0 };
+//	uint16_t hbytes = 0;
+//
+//	bytes = ReadRegBytes(MsbRegAddr, (Byte)m_Len);
+//
+//	if ((Byte)m_Len - 1)
+//	{
+//		hbytes = bytes[0] << 8 | bytes[1];
+//		hbytes = (bytes[0] >> 7)? ((~hbytes + (0x01 << 2)) + 0x01) : (hbytes);
+//		hbytes >>= 2;
+//	}
+//	else
+//	{
+//		hbytes = (bytes[0] >> 7)? (~bytes[0] + 0x01) : (bytes[0]);
+//		hbytes <<= 8;
+//		hbytes >>= 2;
+//	}
+//
+//	return ((float)hbytes / ((float)(1 << ((Byte)m_Sens + 0x0A))) * ((bytes[0] >> 7)? -1 : 1));
+//}
+
+float Mma8451q::getAllAccel()
 {
-	Byte *bytes = new Byte[2] { 0 };
+	Byte *bytes = new Byte[6] { 0 };
 	uint16_t hbytes = 0;
 
-	bytes = ReadRegBytes(MsbRegAddr, (Byte)m_Len);
+	bytes = ReadRegBytes(MMA8451Q_RA_REG_OUT_X_MSB, 0x06);
 
-	if ((Byte)m_Len - 1)
+	for (Byte i = 0; i < 6; i += 2)
 	{
-		hbytes = bytes[0] << 8 | bytes[1];
-		hbytes = (bytes[0] >> 7)? ((~hbytes + (0x01 << 2)) + 0x01) : (hbytes);
-		hbytes >>= 2;
+		if ((Byte)m_Len - 1)
+		{
+			hbytes = bytes[i] << 8 | bytes[i + 1];
+			hbytes = (bytes[i] >> 7)? ((~hbytes + (0x01 << 2)) + 0x01) : (hbytes);
+			hbytes >>= 2;
+		}
+		else
+		{
+			hbytes = (bytes[i] >> 7)? (~bytes[i] + 0x01) : (bytes[i]);
+			hbytes <<= 8;
+			hbytes >>= 2;
+		}
+
+		m_lastAccel[i / 2] = ((float)hbytes / ((float)(1 << ((Byte)m_Sens + 0x0A))) * ((bytes[i] >> 7)? -1 : 1));
 	}
-	else
+}
+
+bool Mma8451q::update()
+{
+	if (ReadRegByte(MMA8451Q_RA_REG_STATUS) & MMA8451Q_S_ZYXDR)
 	{
-		hbytes = (bytes[0] >> 7)? (~bytes[0] + 0x01) : (bytes[0]);
-		hbytes <<= 8;
-		hbytes >>= 2;
+		getAllAccel();
+		return true;
 	}
-
-	return ((float)hbytes / (float)m_Sens * ((bytes[0] >> 7)? -1 : 1));
+	return false;
 }
 
-float Mma8451q::GetAccelX()
+float Mma8451q::getAccelX()
 {
-	if (ReadRegByte(MMA8451Q_RA_REG_STATUS) & MMA8451Q_S_XDR)
-		m_lastAccelX = GetAccelGeneral(MMA8451Q_RA_REG_OUT_X_MSB);
-	return m_lastAccelX;
+	return m_lastAccel[0];
 }
 
-float Mma8451q::GetAccelY()
+float Mma8451q::getAccelY()
 {
-	if (ReadRegByte(MMA8451Q_RA_REG_STATUS) & MMA8451Q_S_YDR)
-		m_lastAccelY = GetAccelGeneral(MMA8451Q_RA_REG_OUT_Y_MSB);
-	return m_lastAccelY;
+	return m_lastAccel[1];
 }
 
-float Mma8451q::GetAccelZ()
+float Mma8451q::getAccelZ()
 {
-	if (ReadRegByte(MMA8451Q_RA_REG_STATUS) & MMA8451Q_S_ZDR)
-		m_lastAccelZ = GetAccelGeneral(MMA8451Q_RA_REG_OUT_Z_MSB);
-	return m_lastAccelZ;
+	return m_lastAccel[2];
 }
-
-array<float, 3> Mma8451q::GetAccel()
+array<float, 3> Mma8451q::getAccel()
 {
-	array<float, 3> ret = { 0 };
-
-	ret[0] = GetAccelX();
-	ret[1] = GetAccelY();
-	ret[2] = GetAccelZ();
-
-	return ret;
+	return m_lastAccel;
 }
 
 Byte *Mma8451q::ReadRegBytes(const Byte RegAddr, const Byte Length)
@@ -106,33 +139,20 @@ bool Mma8451q::WriteRegByte(const Byte RegAddr, const Byte data)
 
 Mma8451q::Mma8451q(Mma8451q::Config config)
 :
-	m_I2cMaster(config),
+	m_I2cMaster(GetI2cMasterConfig(config)),
 	m_Sens(config.sens),
 	m_Len(config.len)
 {
 	if (config.id != 0)
 		assert(false);
-//	WriteRegByte(MMA8451Q_RA_CTRL_REG4, MMA8451Q_CR4_INT_EN_DRDY |
-//											 MMA8451Q_CR4_INT_EN_FF_MT |
-//											 MMA8451Q_CR4_INT_EN_PULSE |
-//											 MMA8451Q_CR4_INT_EN_TRANS |
-//											 MMA8451Q_CR4_INT_EN_FIFO);
-//	WriteRegByte(MMA8451Q_RA_CTRL_REG5, MMA8451Q_CR5_INT_CFG_DRDY |
-//											 MMA8451Q_CR5_INT_CFG_PULSE |
-//											 MMA8451Q_CR4_INT_EN_TRANS);
 
-	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, (Byte)config.sens - (Byte)0x0A);
-
-	WriteRegByte(MMA8451Q_RA_HP_FILTER_CUTOFF, MMA8451Q_HFC_PULSE_LPF_EN);
-
-	WriteRegByte(MMA8451Q_RA_FF_MT_CFG, MMA8451Q_FMC_ELE |
-										MMA8451Q_FMC_ZEFE);
+	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (Byte)config.sens);
 
 	WriteRegByte(MMA8451Q_RA_CTRL_REG2, (Byte)config.power_mode);
 
-	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate |
-										MMA8451Q_CR1_F_ACTIVE |
-										MMA8451Q_CR1_LNOISE);
+	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate << 3 |
+										MMA8451Q_CR1_LNOISE |
+										MMA8451Q_CR1_F_ACTIVE);
 }
 
 Mma8451q::Mma8451q()

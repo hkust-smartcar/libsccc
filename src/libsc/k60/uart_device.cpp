@@ -207,8 +207,6 @@ void UartDevice::SendBuffer(const Byte *buf, const size_t len)
 
 	m_tx_buf.PushBuffer(DynamicBlockBuffer::Block(data, len));
 	EnableTx();
-
-	delete[] data;
 }
 
 void UartDevice::SendBuffer(unique_ptr<Byte[]> &&buf, const size_t len)
