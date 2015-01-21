@@ -65,22 +65,21 @@ public:
 			LowPower
 		};
 
-		uint8_t id = 0;
+		uint8_t id;
 		Sensitivity sens = Sensitivity::Low;
 		DataLength len = DataLength::k14;
-		PowerMode power_mode = PowerMode::Normal;
+		PowerMode power_mode = PowerMode::LowNoiseLowPower;
 		ODR output_data_rate = ODR::k50Hz;
 	};
 
-	explicit Mma8451q(Mma8451q::Config config);
 	explicit Mma8451q();
+	explicit Mma8451q(Mma8451q::Config config);
 	~Mma8451q();
 
 	bool IsConnected();
 
 	bool update();
 
-	float getAllAccel();
 	float getAccelX();
 	float getAccelY();
 	float getAccelZ();
@@ -93,10 +92,10 @@ private:
 	Config::Sensitivity m_Sens;
 	Config::DataLength m_Len;
 
-	array<float, 3> m_lastAccel = { 0.0f };
+	array<float, 3> m_lastAccel;
 
-	float GetAccelScaleFactor();
-	float GetAccelGeneral(const Byte MsbRegAddr);
+	void getAllAccel();
+//	float GetAccelGeneral(const Byte MsbRegAddr);
 
 	Byte ReadRegByte(const Byte RegAddr);
 	bool WriteRegByte(const Byte RegAddr, const Byte data);

@@ -37,30 +37,7 @@ bool Mma8451q::IsConnected()
 	return (devId == 0x1A);
 }
 
-//float Mma8451q::GetAccelGeneral(const Byte MsbRegAddr)
-//{
-//	Byte *bytes = new Byte[2] { 0 };
-//	uint16_t hbytes = 0;
-//
-//	bytes = ReadRegBytes(MsbRegAddr, (Byte)m_Len);
-//
-//	if ((Byte)m_Len - 1)
-//	{
-//		hbytes = bytes[0] << 8 | bytes[1];
-//		hbytes = (bytes[0] >> 7)? ((~hbytes + (0x01 << 2)) + 0x01) : (hbytes);
-//		hbytes >>= 2;
-//	}
-//	else
-//	{
-//		hbytes = (bytes[0] >> 7)? (~bytes[0] + 0x01) : (bytes[0]);
-//		hbytes <<= 8;
-//		hbytes >>= 2;
-//	}
-//
-//	return ((float)hbytes / ((float)(1 << ((Byte)m_Sens + 0x0A))) * ((bytes[0] >> 7)? -1 : 1));
-//}
-
-float Mma8451q::getAllAccel()
+void Mma8451q::getAllAccel()
 {
 	Byte *bytes = new Byte[6] { 0 };
 	uint16_t hbytes = 0;
@@ -83,7 +60,11 @@ float Mma8451q::getAllAccel()
 		}
 
 		m_lastAccel[i / 2] = ((float)hbytes / ((float)(1 << ((Byte)m_Sens + 0x0A))) * ((bytes[i] >> 7)? -1 : 1));
+
+		hbytes = 0;
 	}
+
+	delete[] bytes;
 }
 
 bool Mma8451q::update()
@@ -159,7 +140,8 @@ Mma8451q::Mma8451q()
 :
 	m_I2cMaster(nullptr),
 	m_Sens(Config::Sensitivity::Low),
-	m_Len(Config::DataLength::k8)
+	m_Len(Config::DataLength::k8),
+	m_lastAccel({ 0.0f })
 {}
 
 }
