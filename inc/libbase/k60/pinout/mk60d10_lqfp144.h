@@ -76,6 +76,16 @@ public:
 		return PINOUT_ADC_COUNT;
 	}
 
+	static constexpr Uint GetDmaChCount()
+	{
+		return PINOUT_DMA_CH_COUNT;
+	}
+
+	static constexpr Uint GetDmaMuxCount()
+	{
+		return PINOUT_DMA_MUX_COUNT;
+	}
+
 	static constexpr Uint GetFtmCount()
 	{
 		return PINOUT_FTM_COUNT;
