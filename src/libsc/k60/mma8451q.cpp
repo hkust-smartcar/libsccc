@@ -14,6 +14,10 @@
 using namespace std;
 using namespace libbase::k60;
 
+#define PI				3.14159265f
+#define halfPI			1.57079633f
+#define SQRT_MAGIC_F	0x5F3759DF
+
 namespace libsc
 {
 
@@ -37,7 +41,52 @@ bool Mma8451q::IsConnected()
 	return (devId == 0x1A);
 }
 
-void Mma8451q::getAllAccel()
+bool Mma8451q::Update()
+{
+	if (ReadRegByte(MMA8451Q_RA_REG_STATUS) & MMA8451Q_S_ZYXDR)
+	{
+		GetAllAccel();
+		GetAllAngle();
+		return true;
+	}
+	return false;
+}
+
+float Mma8451q::GetAccelX()
+{
+	return m_lastAccel[0];
+}
+float Mma8451q::GetAccelY()
+{
+	return m_lastAccel[1];
+}
+float Mma8451q::GetAccelZ()
+{
+	return m_lastAccel[2];
+}
+array<float, 3> Mma8451q::GetAccel()
+{
+	return m_lastAccel;
+}
+
+float Mma8451q::GetAngleX()
+{
+	return m_lastAngle[0];
+}
+float Mma8451q::GetAngleY()
+{
+	return m_lastAngle[1];
+}
+float Mma8451q::GetAngleZ()
+{
+	return m_lastAngle[2];
+}
+array<float, 3> Mma8451q::GetAngle()
+{
+	return m_lastAngle;
+}
+
+void Mma8451q::GetAllAccel()
 {
 	Byte *bytes = new Byte[6] { 0 };
 	uint16_t hbytes = 0;
@@ -67,33 +116,45 @@ void Mma8451q::getAllAccel()
 	delete[] bytes;
 }
 
-bool Mma8451q::update()
+// 0.024533333ms
+void Mma8451q::GetAllAngle()
 {
-	if (ReadRegByte(MMA8451Q_RA_REG_STATUS) & MMA8451Q_S_ZYXDR)
+	// TODO: Test it
+	for (uint8_t j = 0; j < 3; j++)
 	{
-		getAllAccel();
-		return true;
+		m_lastAngle[j] = ArcTan(m_lastAccel[j] / Sqrt2(m_lastAccel[(j + 1) % 3] * m_lastAccel[(j + 1) % 3] + m_lastAccel[(j + 2) % 3] * m_lastAccel[(j + 2) % 3]));
+		if (m_lastAngle[j] == 0.0f)
+		{
+			if (m_lastAccel[j] != 0.0f)
+				m_lastAngle[j] = halfPI * ((m_lastAccel[j] > 0)? 1 : -1);
+		}
 	}
-	return false;
+	m_lastAngle[2] -= halfPI;
 }
 
-float Mma8451q::getAccelX()
+/* Formula From Cecil Hastings */
+float Mma8451q::ArcTan(float x)
 {
-	return m_lastAccel[0];
+	float y = (fabs(x) - 1) / (fabs(x) + 1);
+	float z = y * y;
+    return (.785398f + (.995354f + (-.288679f + .079331f * z) * z) * y) * ((x < 0)? -1 : 1);
 }
 
-float Mma8451q::getAccelY()
+float Mma8451q::ArcSin(float x)
 {
-	return m_lastAccel[1];
+	return (1.570796f - sqrt(1 - x) * (1.570723f - x * (0.212114f + x *( 0.074261f + x * (- 0.018729f)))));
 }
 
-float Mma8451q::getAccelZ()
+float Mma8451q::Sqrt2(const float x)
 {
-	return m_lastAccel[2];
-}
-array<float, 3> Mma8451q::getAccel()
-{
-	return m_lastAccel;
+  union // get bits for floating value
+  {
+    float x;
+    int i;
+  } u;
+  u.x = x;
+  u.i = SQRT_MAGIC_F - (u.i >> 1);  // gives initial guess y0
+  return x * u.x * (1.5f - halfPI * u.x * u.x);// Newton step, repeating increases accuracy
 }
 
 Byte *Mma8451q::ReadRegBytes(const Byte RegAddr, const Byte Length)

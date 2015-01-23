@@ -16,6 +16,7 @@
 #include <vector>
 #include <cstring>
 #include <cfloat>
+#include <cmath>
 
 using namespace std;
 using namespace libbase::k60;
@@ -66,7 +67,7 @@ public:
 		};
 
 		uint8_t id;
-		Sensitivity sens = Sensitivity::Low;
+		Sensitivity sens = Sensitivity::Mid;
 		DataLength len = DataLength::k14;
 		PowerMode power_mode = PowerMode::LowNoiseLowPower;
 		ODR output_data_rate = ODR::k50Hz;
@@ -78,13 +79,18 @@ public:
 
 	bool IsConnected();
 
-	bool update();
+	bool Update();
 
-	float getAccelX();
-	float getAccelY();
-	float getAccelZ();
+	float GetAccelX();
+	float GetAccelY();
+	float GetAccelZ();
 
-	array<float, 3> getAccel();
+	float GetAngleX();
+	float GetAngleY();
+	float GetAngleZ();
+
+	array<float, 3> GetAccel();
+	array<float, 3> GetAngle();
 
 private:
 
@@ -93,9 +99,14 @@ private:
 	Config::DataLength m_Len;
 
 	array<float, 3> m_lastAccel;
+	array<float, 3> m_lastAngle;
 
-	void getAllAccel();
-//	float GetAccelGeneral(const Byte MsbRegAddr);
+	void GetAllAccel();
+	void GetAllAngle();
+
+	float ArcTan(float x);
+	float ArcSin(float x);
+	float Sqrt2(const float x);
 
 	Byte ReadRegByte(const Byte RegAddr);
 	bool WriteRegByte(const Byte RegAddr, const Byte data);
