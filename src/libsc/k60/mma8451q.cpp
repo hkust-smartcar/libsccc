@@ -123,13 +123,10 @@ void Mma8451q::GetAllAngle()
 	for (uint8_t j = 0; j < 3; j++)
 	{
 		m_lastAngle[j] = ArcTan(m_lastAccel[j] / Sqrt2(m_lastAccel[(j + 1) % 3] * m_lastAccel[(j + 1) % 3] + m_lastAccel[(j + 2) % 3] * m_lastAccel[(j + 2) % 3]));
-		if (m_lastAngle[j] == 0.0f)
-		{
-			if (m_lastAccel[j] != 0.0f)
-				m_lastAngle[j] = halfPI * ((m_lastAccel[j] > 0)? 1 : -1);
-		}
+		if (!isfinite(m_lastAngle[j]))
+			m_lastAngle[j] = halfPI;
 	}
-	m_lastAngle[2] -= halfPI;
+	m_lastAngle[2] -= halfPI * ((m_lastAccel[2] < 0)? -1 : 1);
 }
 
 /* Formula From Cecil Hastings */
@@ -147,14 +144,15 @@ float Mma8451q::ArcSin(float x)
 
 float Mma8451q::Sqrt2(const float x)
 {
-  union // get bits for floating value
-  {
-    float x;
-    int i;
-  } u;
-  u.x = x;
-  u.i = SQRT_MAGIC_F - (u.i >> 1);  // gives initial guess y0
-  return x * u.x * (1.5f - halfPI * u.x * u.x);// Newton step, repeating increases accuracy
+	const float xhalf = 0.5f * x;
+	union // get bits for floating value
+	{
+		float x;
+		int i;
+	} u;
+	u.x = x;
+	u.i = SQRT_MAGIC_F - (u.i >> 1);  // gives initial guess y0
+	return x * u.x * (1.5f - xhalf * u.x * u.x);// Newton step, repeating increases accuracy
 }
 
 Byte *Mma8451q::ReadRegBytes(const Byte RegAddr, const Byte Length)
