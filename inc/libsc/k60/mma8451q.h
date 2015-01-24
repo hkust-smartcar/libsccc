@@ -70,8 +70,8 @@ public:
 		uint8_t id;
 		Sensitivity sens = Sensitivity::Mid;
 		DataLength len = DataLength::k14;
-		PowerMode power_mode = PowerMode::LowNoiseLowPower;
-		ODR output_data_rate = ODR::k200Hz;
+		PowerMode power_mode = PowerMode::Normal;
+		ODR output_data_rate = ODR::k400Hz;
 	};
 
 	explicit Mma8451q();
