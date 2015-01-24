@@ -88,38 +88,21 @@ array<float, 3> Mma8451q::GetAngle()
 
 void Mma8451q::GetAllAccel()
 {
-	Byte *bytes = new Byte[6] { 0 };
+	int8_t *bytes = new int8_t[6] { 0 };
 	uint16_t hbytes = 0;
 
-	bytes = ReadRegBytes(MMA8451Q_RA_REG_OUT_X_MSB, 0x06);
+	bytes = (int8_t *)ReadRegBytes(MMA8451Q_RA_REG_OUT_X_MSB, 0x06);
 
 	for (Byte i = 0; i < 6; i += 2)
 	{
-		if ((Byte)m_Len - 1)
-		{
-			hbytes = bytes[i] << 8 | bytes[i + 1];
-			hbytes = (bytes[i] >> 7)? ((~hbytes + (0x01 << 2)) + 0x01) : (hbytes);
-			hbytes >>= 2;
-		}
-		else
-		{
-			hbytes = (bytes[i] >> 7)? (~bytes[i] + 0x01) : (bytes[i]);
-			hbytes <<= 8;
-			hbytes >>= 2;
-		}
+		hbytes = abs((bytes[i] << 8 | (((Byte)m_Len - 1)? bytes[i + 1] : 0x00))) >> 2;
 
-		m_lastAccel[i / 2] = ((float)hbytes / ((float)(1 << ((Byte)m_Sens + 0x0A))) * ((bytes[i] >> 7)? -1 : 1));
-
-		hbytes = 0;
+		m_lastAccel[i / 2] = (float)hbytes / (float)(1 << ((Byte)m_Sens + 0x0A)) * ((bytes[i] < 0)? -1 : 1);
 	}
-
-	delete[] bytes;
 }
 
-// 0.024533333ms
 void Mma8451q::GetAllAngle()
 {
-	// TODO: Test it
 	for (uint8_t j = 0; j < 3; j++)
 	{
 		m_lastAngle[j] = ArcTan(m_lastAccel[j] / Sqrt2(m_lastAccel[(j + 1) % 3] * m_lastAccel[(j + 1) % 3] + m_lastAccel[(j + 2) % 3] * m_lastAccel[(j + 2) % 3]));
