@@ -17,6 +17,7 @@
 #include <cstring>
 #include <cfloat>
 #include <cmath>
+#include <cstdlib>
 
 using namespace std;
 using namespace libbase::k60;
@@ -70,7 +71,7 @@ public:
 		Sensitivity sens = Sensitivity::Mid;
 		DataLength len = DataLength::k14;
 		PowerMode power_mode = PowerMode::LowNoiseLowPower;
-		ODR output_data_rate = ODR::k50Hz;
+		ODR output_data_rate = ODR::k200Hz;
 	};
 
 	explicit Mma8451q();
@@ -79,6 +80,7 @@ public:
 
 	bool IsConnected();
 
+	// 13ms
 	bool Update();
 
 	float GetAccelX();
@@ -101,7 +103,9 @@ private:
 	array<float, 3> m_lastAccel;
 	array<float, 3> m_lastAngle;
 
+	// 2ms
 	void GetAllAccel();
+	// 0ms
 	void GetAllAngle();
 
 	float ArcTan(float x);
