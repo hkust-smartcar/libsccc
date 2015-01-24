@@ -36,7 +36,7 @@ float AsFloat(const uint32_t val)
 }
 
 RemoteVarManager::Var::Var()
-		: m_type(Type::INT),
+		: m_type(Type::kInt),
 		  m_id(0),
 		  m_val(0)
 {}
@@ -117,7 +117,7 @@ void RemoteVarManager::Start(const bool is_broadcast)
 	{
 		for (size_t i = 0; i < m_vars.size(); ++i)
 		{
-			if (m_vars[i].m_type == Var::Type::INT)
+			if (m_vars[i].m_type == Var::Type::kInt)
 			{
 				m_uart->SendStr(String::Format("%s,int,%d,%d\n",
 						m_vars[i].m_name.c_str(), m_vars[i].m_id,

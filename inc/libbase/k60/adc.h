@@ -101,22 +101,29 @@ public:
 			k32,
 		};
 
-		// Either pin or adc has to be set. If pin is set, adc will be ignored.
-		// This provides two ways to specify the ADC pin. If the pin can be used
-		// with more than 1 ADC module (eg, PTB0, PTB1), the first one will be
-		// chosen by default. Otherwise you should specify the ADC pin through
-		// adc
+		///@{
+		/**
+		 * Specify the pin to be used. Either Config::pin or Config::adc has to
+		 * be set. If Config::pin is set, Config::adc will be ignored. This
+		 * provides two ways to specify the ADC pin. If the pin can be used
+		 * with more than 1 ADC module (eg, PTB0, PTB1), the first one will be
+		 * chosen by default. Otherwise you should specify the ADC pin through
+		 * Config::adc
+		 */
 		Pin::Name pin = Pin::Name::kDisable;
 		Adc::Name adc = Adc::Name::kDisable;
-		// Enable diferential mode, only work with DADn channels
+		/// @}
+		/// Enable diferential mode, only work with DADn channels
 		bool is_diff_mode = false;
 		Resolution resolution = Resolution::k8Bit;
 		SpeedMode speed = SpeedMode::kTypical;
 		bool is_continuous_mode = false;
 		AveragePass avg_pass = AveragePass::kDisable;
-		// Having listener and continuous mode both set will most likely result
-		// in the listener being called in a dead lock manner
-		OnConversionCompleteListener conversion_listener;
+		/**
+		 * @note Having listener and continuous mode both set will most likely
+		 * result in the listener being called in a dead lock manner
+		 */
+		OnConversionCompleteListener conversion_isr;
 	};
 
 	static constexpr int kModuleChannelCount = 36;

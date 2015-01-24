@@ -31,7 +31,14 @@ public:
 		Pin::Name pin;
 		uint32_t period;
 		uint32_t pos_width;
-		// Should only select NS when period < 1000 us
+		/**
+		 * Set the unit of Config::period and Config::pos_width. It is useful
+		 * when the period is too small such that the precision is not high
+		 * enough. Otherwise, the default should be kept
+		 *
+		 * @note Should only select Precision::kNs when period < 1000 us.
+		 * Otherwise integer overflow may occur during some calculations
+		 */
 		Precision precision = Precision::kUs;
 	};
 

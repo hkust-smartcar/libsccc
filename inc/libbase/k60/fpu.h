@@ -26,13 +26,17 @@ public:
 			kZero,
 		};
 
-		// Enable the default NaN mode, see p.63 of DDI0403D
+		/// Enable the default NaN mode, see p.63 of DDI0403D
 		bool is_default_nan = true;
-		// Enable the flush-to-zero mode, which effectively discard subnormal
-		// numbers, see p.62 of DDI0403D
+		/**
+		 * Enable the flush-to-zero mode, which effectively discard subnormal
+		 * numbers, see p.62 of DDI0403D
+		 */
 		bool is_flush_to_zero = true;
-		// Set the floating point rounding mode, has nothing to do with the
-		// float->int conversion
+		/**
+		 * Set the floating point rounding mode, has nothing to do with the
+		 * float->int conversion
+		 */
 		RoundingMode rounding_mode = RoundingMode::kNearest;
 	};
 
