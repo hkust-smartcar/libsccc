@@ -88,17 +88,12 @@ array<float, 3> Mma8451q::GetAngle()
 
 void Mma8451q::GetAllAccel()
 {
-	int8_t *bytes = new int8_t[6] { 0 };
-	uint16_t hbytes = 0;
+	uint8_t *bytes;
 
-	bytes = (int8_t *)ReadRegBytes(MMA8451Q_RA_REG_OUT_X_MSB, 0x06);
+	bytes = (uint8_t *)ReadRegBytes(MMA8451Q_RA_REG_OUT_X_MSB, 0x06);
 
 	for (Byte i = 0, j = 0; i < 3; i++, j += 2)
-	{
-		hbytes = abs((bytes[j] << 8 | bytes[j + 1])) >> 2;
-
-		m_lastAccel[i] = (float)hbytes / m_ScaleFactor * ((bytes[j] < 0)? -1 : 1);
-	}
+		m_lastAccel[i] = ((int16_t)abs((int16_t)(bytes[j] << 8 | bytes[j + 1])) >> 2) / m_ScaleFactor * (((int8_t)bytes[j] < 0)? -1 : 1);
 }
 
 void Mma8451q::GetAllAngle()
