@@ -88,12 +88,17 @@ array<float, 3> Mma8451q::GetAngle()
 
 void Mma8451q::GetAllAccel()
 {
-	int8_t *bytes;
+	int8_t *bytes = new int8_t[6] { 0 };
+	uint16_t hbytes = 0;
 
 	bytes = (int8_t *)ReadRegBytes(MMA8451Q_RA_REG_OUT_X_MSB, 0x06);
 
 	for (Byte i = 0, j = 0; i < 3; i++, j += 2)
-		m_lastAccel[i] = (float)(abs((bytes[j] << 8 | bytes[j + 1])) >> 2) / m_ScaleFactor * ((bytes[j] < 0)? -1 : 1);
+	{
+		hbytes = abs((bytes[j] << 8 | bytes[j + 1])) >> 2;
+
+		m_lastAccel[i] = (float)hbytes / m_ScaleFactor * ((bytes[j] < 0)? -1 : 1);
+	}
 }
 
 void Mma8451q::GetAllAngle()
@@ -159,7 +164,7 @@ Mma8451q::Mma8451q(Mma8451q::Config config)
 :
 	m_I2cMaster(GetI2cMasterConfig(config)),
 	m_Sens(config.sens),
-	m_ScaleFactor((float)(1 << ((uint8_t)m_Sens + 0x0A)))
+	m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0A)))
 {
 	if (config.id != 0)
 		assert(false);
@@ -177,8 +182,8 @@ Mma8451q::Mma8451q()
 :
 	m_I2cMaster(nullptr),
 	m_Sens(Config::Sensitivity::Low),
-	m_lastAccel({ 0.0f }),
-	m_ScaleFactor((float)(1 << ((uint8_t)m_Sens + 0x0A)))
+	m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0A))),
+	m_lastAccel({ 0.0f })
 {}
 
 }

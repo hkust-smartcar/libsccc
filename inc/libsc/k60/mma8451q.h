@@ -67,8 +67,8 @@ public:
 		 *  Low - 2g, Mid - 4g, High - 8g */
 		Sensitivity sens = Sensitivity::Mid;
 
-		PowerMode power_mode = PowerMode::Normal;
-		ODR output_data_rate = ODR::k400Hz;
+		PowerMode power_mode = PowerMode::LowNoiseLowPower;
+		ODR output_data_rate = ODR::k200Hz;
 	};
 
 	explicit Mma8451q();
