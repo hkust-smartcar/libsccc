@@ -91,11 +91,11 @@ array<float, 3> Mma8451q::GetAngle()
 // TODO: further simplify the following calculation
 void Mma8451q::GetAllAccel()
 {
-	int16_t *bytes = new int8_t[6] { 0 };
+	int8_t *bytes;
 
-	bytes = (int16_t *)ReadRegBytes(MMA8451Q_RA_REG_OUT_ALL, 0x06);
+	bytes = (int8_t *)ReadRegBytes(MMA8451Q_RA_REG_OUT_ALL, 0x06);
 	for (uint8_t i = 0; i < 3; i++)
-		m_lastAccel[i] = (float)(abs(bytes[i]) >> 2) / m_ScaleFactor * ((bytes[i] < 0)? -1 : 1);
+		m_lastAccel[i] = (float)((int16_t)(abs((int16_t)((bytes[i] << 8) | bytes[i + 1]))) >> 2) / m_ScaleFactor * ((bytes[i] < 0)? -1 : 1);
 }
 
 void Mma8451q::GetAllAngle()
@@ -179,7 +179,8 @@ Mma8451q::Mma8451q()
 :
 	m_I2cMaster(nullptr),
 	m_Sens(Config::Sensitivity::Low),
-	m_lastAccel({ 0.0f })
+	m_lastAccel({ 0.0f }),
+	m_ScaleFactor((float)(1 << ((uint8_t)m_Sens + 0x0A)))
 {}
 
 }
