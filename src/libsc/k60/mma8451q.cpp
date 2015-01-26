@@ -36,7 +36,7 @@ SoftI2cMaster::Config GetI2cMasterConfig(Mma8451q::Config config)
 
 bool Mma8451q::IsConnected()
 {
-	Byte devId = 0;
+	uint8_t devId = 0;
 	devId = ReadRegByte(MMA8451Q_RA_REG_WHO_AM_I);
 	return (devId == 0x1A);
 }
@@ -86,28 +86,25 @@ array<float, 3> Mma8451q::GetAngle()
 	return m_lastAngle;
 }
 
+
+// TODO: test it
+// TODO: further simplify the following calculation
 void Mma8451q::GetAllAccel()
 {
-	int8_t *bytes = new int8_t[6] { 0 };
-	uint16_t hbytes = 0;
+	int16_t *bytes = new int8_t[6] { 0 };
 
-	bytes = (int8_t *)ReadRegBytes(MMA8451Q_RA_REG_OUT_X_MSB, 0x06);
-
-	for (Byte i = 0; i < 6; i += 2)
-	{
-		hbytes = abs((bytes[i] << 8 | (((Byte)m_Len - 1)? bytes[i + 1] : 0x00))) >> 2;
-
-		m_lastAccel[i / 2] = (float)hbytes / (float)(1 << ((Byte)m_Sens + 0x0A)) * ((bytes[i] < 0)? -1 : 1);
-	}
+	bytes = (int16_t *)ReadRegBytes(MMA8451Q_RA_REG_OUT_ALL, 0x06);
+	for (uint8_t i = 0; i < 3; i++)
+		m_lastAccel[i] = (float)(abs(bytes[i]) >> 2) / m_ScaleFactor * ((bytes[i] < 0)? -1 : 1);
 }
 
 void Mma8451q::GetAllAngle()
 {
-	for (uint8_t j = 0; j < 3; j++)
+	for (uint8_t i = 0, j = 0, k = 0; i < 3; i++, j = (i + 1) % 3, k = (i + 2) % 3)
 	{
-		m_lastAngle[j] = ArcTan(m_lastAccel[j] / Sqrt2(m_lastAccel[(j + 1) % 3] * m_lastAccel[(j + 1) % 3] + m_lastAccel[(j + 2) % 3] * m_lastAccel[(j + 2) % 3]));
-		if (!isfinite(m_lastAngle[j]))
-			m_lastAngle[j] = halfPI;
+		m_lastAngle[i] = ArcTan(m_lastAccel[i] / Sqrt2(m_lastAccel[j] * m_lastAccel[j] + m_lastAccel[k] * m_lastAccel[k]));
+		if (!isfinite(m_lastAngle[i]))
+			m_lastAngle[i] = halfPI;
 	}
 	m_lastAngle[2] -= halfPI * ((m_lastAccel[2] < 0)? -1 : 1);
 }
@@ -138,24 +135,24 @@ float Mma8451q::Sqrt2(const float x)
 	return x * u.x * (1.5f - xhalf * u.x * u.x);// Newton step, repeating increases accuracy
 }
 
-Byte *Mma8451q::ReadRegBytes(const Byte RegAddr, const Byte Length)
+uint8_t *Mma8451q::ReadRegBytes(const uint8_t RegAddr, const uint8_t Length)
 {
 	return m_I2cMaster.GetBytes(MMA8451Q_DEFAULT_ADDRESS, RegAddr, Length).data();
 }
 
-bool Mma8451q::WriteRegBytes(const Byte RegAddr, const Byte *data)
+bool Mma8451q::WriteRegBytes(const uint8_t RegAddr, const uint8_t *data)
 {
-	return m_I2cMaster.SendBytes(MMA8451Q_DEFAULT_ADDRESS, RegAddr, vector<Byte>(data, data + sizeof(data) / sizeof(data[0])));
+	return m_I2cMaster.SendBytes(MMA8451Q_DEFAULT_ADDRESS, RegAddr, vector<uint8_t>(data, data + sizeof(data) / sizeof(data[0])));
 }
 
-Byte Mma8451q::ReadRegByte(const Byte RegAddr)
+uint8_t Mma8451q::ReadRegByte(const uint8_t RegAddr)
 {
-	Byte data = 0;
+	uint8_t data = 0;
 	m_I2cMaster.GetByte(MMA8451Q_DEFAULT_ADDRESS, RegAddr, &data);
 	return data;
 }
 
-bool Mma8451q::WriteRegByte(const Byte RegAddr, const Byte data)
+bool Mma8451q::WriteRegByte(const uint8_t RegAddr, const uint8_t data)
 {
 	return m_I2cMaster.SendByte(MMA8451Q_DEFAULT_ADDRESS, RegAddr, data);
 }
@@ -164,16 +161,16 @@ Mma8451q::Mma8451q(Mma8451q::Config config)
 :
 	m_I2cMaster(GetI2cMasterConfig(config)),
 	m_Sens(config.sens),
-	m_Len(config.len)
+	m_ScaleFactor((float)(1 << ((uint8_t)m_Sens + 0x0A)))
 {
 	if (config.id != 0)
 		assert(false);
 
-	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (Byte)config.sens);
+	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (uint8_t)config.sens);
 
-	WriteRegByte(MMA8451Q_RA_CTRL_REG2, (Byte)config.power_mode);
+	WriteRegByte(MMA8451Q_RA_CTRL_REG2, (uint8_t)config.power_mode);
 
-	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate << 3 |
+	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (uint8_t)config.output_data_rate << 3 |
 										MMA8451Q_CR1_LNOISE |
 										MMA8451Q_CR1_F_ACTIVE);
 }
@@ -182,7 +179,6 @@ Mma8451q::Mma8451q()
 :
 	m_I2cMaster(nullptr),
 	m_Sens(Config::Sensitivity::Low),
-	m_Len(Config::DataLength::k8),
 	m_lastAccel({ 0.0f })
 {}
 

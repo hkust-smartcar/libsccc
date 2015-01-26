@@ -41,12 +41,6 @@ public:
 			Low
 		};
 
-		enum struct DataLength
-		{
-			k8	= 1,
-			k14	= 2
-		};
-
 		enum struct ODR
 		{
 			k800Hz = 0,
@@ -68,8 +62,11 @@ public:
 		};
 
 		uint8_t id;
+
+		/** Maximun acceleration:
+		 *  Low - 2g, Mid - 4g, High - 8g */
 		Sensitivity sens = Sensitivity::Mid;
-		DataLength len = DataLength::k14;
+
 		PowerMode power_mode = PowerMode::Normal;
 		ODR output_data_rate = ODR::k400Hz;
 	};
@@ -96,9 +93,9 @@ public:
 
 private:
 
-	SoftI2cMaster m_I2cMaster;
-	Config::Sensitivity m_Sens;
-	Config::DataLength m_Len;
+	SoftI2cMaster 			m_I2cMaster;
+	Config::Sensitivity 	m_Sens;
+	float					m_ScaleFactor;
 
 	array<float, 3> m_lastAccel;
 	array<float, 3> m_lastAngle;
