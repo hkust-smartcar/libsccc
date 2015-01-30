@@ -16,6 +16,15 @@
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
+#define LIBSC_USE_LCD 1
+
+#define LIBSC_LCD_RST libbase::k60::Pin::Name::kPte3
+#define LIBSC_LCD_DC libbase::k60::Pin::Name::kPte0
+#define LIBSC_LCD_CS libbase::k60::Pin::Name::kPte4
+#define LIBSC_LCD_SDAT libbase::k60::Pin::Name::kPte1
+#define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPte2
+
+#define LIBSC_ST7735R_BGR_PANEL 1
 
 #define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc1Ad17
 
