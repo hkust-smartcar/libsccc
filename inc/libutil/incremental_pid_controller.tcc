@@ -41,7 +41,7 @@ void IncrementalPidController<InT_, OutT_>::OnCalc(const InT error)
 template<typename InT_, typename OutT_>
 OutT_ IncrementalPidController<InT_, OutT_>::GetControlOut()
 {
-	return this->GetPrevOut() + this->GetP() + this->GetI() + this->GetD();
+	return this->GetP() + this->GetI() + this->GetD();
 }
 
 }
