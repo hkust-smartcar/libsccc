@@ -35,6 +35,7 @@ void IncrementalPidController<InT_, OutT_>::OnCalc(const InT error)
 
 	std::swap(m_prev_error[0], m_prev_error[1]);
 	m_prev_error[0] = error;
+	this->UpdatePid(p, i, d);
 }
 
 template<typename InT_, typename OutT_>
