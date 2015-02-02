@@ -12,6 +12,7 @@
 #include <bitset>
 
 #include "libbase/log.h"
+#include "libbase/k60/adc.h"
 #include "libbase/k60/gpio.h"
 #include "libbase/k60/pin.h"
 
@@ -118,9 +119,10 @@ inline Pin::Name GetSiPin(const uint8_t id)
 
 #endif
 
-Gpi::Config GetAdGpiConfig(const uint8_t id)
+Adc::Config GetAdConfig(const uint8_t id)
 {
-	Gpi::Config config;
+	Adc::Config config;
+	config.resolution = Adc::Config::Resolution::k16Bit;
 	config.pin = GetAdPin(id);
 	return config;
 }
@@ -142,8 +144,10 @@ Gpo::Config GetSiGpoConfig(const uint8_t id)
 }
 
 LinearCcd::LinearCcd(const uint8_t id)
-		: m_ad_pin(GetAdGpiConfig(id)), m_clk_pin(GetClkGpoConfig(id)),
-		  m_si_pin(GetSiGpoConfig(id)), m_index(0)
+		: m_ad_pin(GetAdConfig(id)),
+		  m_clk_pin(GetClkGpoConfig(id)),
+		  m_si_pin(GetSiGpoConfig(id)),
+		  m_index(0)
 {}
 
 void LinearCcd::Delay()
@@ -181,7 +185,7 @@ bool LinearCcd::SampleProcess()
 	m_clk_pin.Set(false);
 	Delay();
 
-	m_back_buffer[m_index] = (m_ad_pin.Get() == CCD_DARK);
+	m_back_buffer[m_index] = m_ad_pin.GetResult();
 
 	if (++m_index >= kSensorW)
 	{
