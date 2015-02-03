@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include "libsc/k60/uart_device.h"
 
 namespace libsc
@@ -16,7 +18,13 @@ namespace libsc
 namespace k60
 {
 
-typedef UartDevice FtdiFt232r;
+class FtdiFt232r : public UartDevice
+{
+public:
+	typedef UartDevice::Config Config;
+
+	explicit FtdiFt232r(const Config &config);
+};
 
 }
 }

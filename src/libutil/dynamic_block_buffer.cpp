@@ -59,6 +59,7 @@ void DynamicBlockBuffer::Block::Recycle() volatile
 			delete data.vector_;
 			break;
 		}
+		data.byte_ = nullptr;
 	}
 }
 

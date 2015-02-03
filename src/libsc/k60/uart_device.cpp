@@ -108,31 +108,34 @@ inline Pin::Name GetRxPin(const uint8_t id)
 
 #endif
 
-Uart::Config GetUartConfig(const UartDevice::Config &config,
+inline Uart::Config GetUartConfig_(Uart::Config &&config,
 		const Uart::OnTxEmptyListener &tx_isr,
 		const Uart::OnRxFullListener &rx_isr)
 {
+	config.tx_isr = tx_isr;
+	config.rx_isr = rx_isr;
+	return config;
+}
+
+}
+
+Uart::Config UartDevice::Initializer::GetUartConfig() const
+{
 	Uart::Config product;
 	product.tx_pin = GetTxPin(config.id);
-	product.tx_config = config.tx_config;
 	product.rx_pin = GetRxPin(config.id);
-	product.rx_config = config.rx_config;
 	product.baud_rate = config.baud_rate;
 	product.config.set(Uart::Config::ConfigBit::kFifo);
-	product.tx_isr = tx_isr;
-	product.rx_isr = rx_isr;
 	product.rx_irq_threshold = config.rx_irq_threshold;
 	product.is_rx_irq_threshold_percentage =
 			config.is_rx_irq_threshold_percentage;
 	return product;
 }
 
-}
-
-UartDevice::UartDevice(const Config &config)
+UartDevice::UartDevice(const Initializer &initializer)
 		: m_rx_buf{new RxBuffer}, m_listener(nullptr),
 		  m_tx_buf(14), m_is_tx_idle(true),
-		  m_uart(GetUartConfig(config,
+		  m_uart(GetUartConfig_(initializer.GetUartConfig(),
 				std::bind(&UartDevice::OnTxEmpty, this, placeholders::_1),
 				std::bind(&UartDevice::OnRxFull, this, placeholders::_1)))
 {
@@ -331,7 +334,7 @@ void UartDevice::OnRxFull(Uart *uart)
 struct UartDevice::RxBuffer
 {};
 
-UartDevice::UartDevice(const Config&)
+UartDevice::UartDevice(const Initializer&)
 		: m_tx_buf(0), m_is_tx_idle(true), m_uart(nullptr)
 {
 	LOG_DL("Configured not to use UartDevice");

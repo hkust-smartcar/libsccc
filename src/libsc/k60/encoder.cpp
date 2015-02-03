@@ -120,6 +120,9 @@ Encoder::Encoder(const Initializer &initializer)
 		  m_quad_decoder(initializer.GetQuadDecoderConfig())
 {}
 
+Encoder::~Encoder()
+{}
+
 void Encoder::Update()
 {
 	m_count = m_quad_decoder.GetCount();
@@ -132,6 +135,7 @@ Encoder::Encoder(const Initializer&)
 {
 	LOG_DL("Configured not to use Encoder");
 }
+Encoder::~Encoder() {}
 void Encoder::Update() {}
 
 #endif /* LIBSC_USE_ENCODER */

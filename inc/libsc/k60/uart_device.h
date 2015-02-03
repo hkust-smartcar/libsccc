@@ -12,14 +12,12 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <bitset>
 #include <functional>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "libbase/k60/misc_utils.h"
-#include "libbase/k60/pin.h"
 #include "libbase/k60/uart.h"
 
 #include "libutil/dynamic_block_buffer.h"
@@ -47,11 +45,8 @@ public:
 		uint8_t rx_irq_threshold;
 		/// To treat rx_irq_threshold as a percentage of Rx buffer size
 		bool is_rx_irq_threshold_percentage = false;
-		std::bitset<libbase::k60::Pin::Config::ConfigBit::kSize> tx_config;
-		std::bitset<libbase::k60::Pin::Config::ConfigBit::kSize> rx_config;
 	};
 
-	explicit UartDevice(const Config &config);
 	virtual ~UartDevice();
 
 	/**
@@ -123,6 +118,24 @@ public:
 	{
 		m_uart.SetLoopMode(flag);
 	}
+
+protected:
+	/**
+	 * Use to initialize the UartDevice in possibly a polymorphic way, notice
+	 * that Initializer::config is stored as a reference only
+	 */
+	struct Initializer
+	{
+		explicit Initializer(const Config &config)
+				: config(config)
+		{}
+
+		virtual libbase::k60::Uart::Config GetUartConfig() const;
+
+		const Config &config;
+	};
+
+	explicit UartDevice(const Initializer &initializer);
 
 private:
 	struct RxBuffer;

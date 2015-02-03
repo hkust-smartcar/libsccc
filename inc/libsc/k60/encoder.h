@@ -40,6 +40,8 @@ public:
 		uint8_t id;
 	};
 
+	virtual ~Encoder();
+
 	void Update();
 
 	/**
