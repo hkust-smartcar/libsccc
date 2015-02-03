@@ -52,35 +52,11 @@ bool Mma8451q::Update()
 	return false;
 }
 
-float Mma8451q::GetAccelX()
-{
-	return m_lastAccel[0];
-}
-float Mma8451q::GetAccelY()
-{
-	return m_lastAccel[1];
-}
-float Mma8451q::GetAccelZ()
-{
-	return m_lastAccel[2];
-}
 array<float, 3> Mma8451q::GetAccel()
 {
 	return m_lastAccel;
 }
 
-float Mma8451q::GetAngleX()
-{
-	return m_lastAngle[0];
-}
-float Mma8451q::GetAngleY()
-{
-	return m_lastAngle[1];
-}
-float Mma8451q::GetAngleZ()
-{
-	return m_lastAngle[2];
-}
 array<float, 3> Mma8451q::GetAngle()
 {
 	return m_lastAngle;
@@ -88,12 +64,12 @@ array<float, 3> Mma8451q::GetAngle()
 
 void Mma8451q::GetAllAccel()
 {
-	uint8_t *bytes;
+	Byte *bytes;
 
-	bytes = (uint8_t *)ReadRegBytes(MMA8451Q_RA_REG_OUT_X_MSB, 0x06);
+	bytes = ReadRegBytes(MMA8451Q_RA_REG_OUT_ALL, 0x06);
 
 	for (Byte i = 0, j = 0; i < 3; i++, j += 2)
-		m_lastAccel[i] = ((int16_t)abs((int16_t)(bytes[j] << 8 | bytes[j + 1])) >> 2) / m_ScaleFactor * (((int8_t)bytes[j] < 0)? -1 : 1);
+		m_lastAccel[i] = (int16_t)(bytes[j] << 8 | bytes[j + 1]) / m_ScaleFactor;
 }
 
 void Mma8451q::GetAllAngle()
@@ -159,25 +135,28 @@ Mma8451q::Mma8451q(Mma8451q::Config config)
 :
 	m_I2cMaster(GetI2cMasterConfig(config)),
 	m_Sens(config.sens),
-	m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0A)))
+	m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0C)))
 {
 	if (config.id != 0)
 		assert(false);
 
+	WriteRegByte(MMA8451Q_RA_CTRL_REG1, ReadRegByte(MMA8451Q_RA_CTRL_REG1) & ~MMA8451Q_CR1_F_ACTIVE);
+
 	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (Byte)config.sens);
 
-	WriteRegByte(MMA8451Q_RA_CTRL_REG2, (Byte)config.power_mode);
+//	WriteRegByte(MMA8451Q_RA_CTRL_REG2, (Byte)config.power_mode);
+//
+//	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate << 3 | MMA8451Q_CR1_LNOISE);
+	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate << 3);
 
-	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate << 3 |
-										MMA8451Q_CR1_LNOISE |
-										MMA8451Q_CR1_F_ACTIVE);
+	WriteRegByte(MMA8451Q_RA_CTRL_REG1, ReadRegByte(MMA8451Q_RA_CTRL_REG1) | MMA8451Q_CR1_F_ACTIVE);
 }
 
 Mma8451q::Mma8451q()
 :
 	m_I2cMaster(nullptr),
 	m_Sens(Config::Sensitivity::Low),
-	m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0A))),
+	m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0C))),
 	m_lastAccel({ 0.0f })
 {}
 

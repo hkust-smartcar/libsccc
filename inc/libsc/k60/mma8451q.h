@@ -80,14 +80,6 @@ public:
 	// 13ms
 	bool Update();
 
-	float GetAccelX();
-	float GetAccelY();
-	float GetAccelZ();
-
-	float GetAngleX();
-	float GetAngleY();
-	float GetAngleZ();
-
 	array<float, 3> GetAccel();
 	array<float, 3> GetAngle();
 
