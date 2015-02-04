@@ -25,6 +25,16 @@ public:
 	IncrementalPidController(const InT setpoint, const float kp, const float ki,
 			const float kd);
 
+	/**
+	 * Set the upper bound of i, <= 0 means unlimited i
+	 *
+	 * @param value
+	 */
+	void SetILimit(const float value)
+	{
+		m_i_limit = value;
+	}
+
 	void Reset()
 	{
 		ResetTime();
@@ -40,6 +50,8 @@ protected:
 	OutT GetControlOut() override;
 
 private:
+	float m_i_limit;
+
 	InT m_prev_error[2];
 	OutT m_prev_output;
 	libsc::k60::Timer::TimerInt m_prev_time;

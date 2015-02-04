@@ -23,6 +23,8 @@ template<typename InT_, typename OutT_>
 IncrementalPidController<InT_, OutT_>::IncrementalPidController(
 		const InT setpoint, const float kp, const float ki, const float kd)
 		: PidController<InT_, OutT_>(setpoint, kp, ki, kd),
+		  m_i_limit(0.0f),
+
 		  m_prev_error{0, 0},
 		  m_prev_output(0),
 		  m_prev_time(libsc::k60::System::Time())
@@ -38,7 +40,11 @@ void IncrementalPidController<InT_, OutT_>::OnCalc(const InT error)
 			/ 1000.0f;
 
 	const float p = this->GetKp() * (error - m_prev_error[0]);
-	const float i = this->GetKi() * error * time_diff * 0.5f;
+	float i = this->GetKi() * error * time_diff * 0.5f;
+	if (m_i_limit > 0.0f)
+	{
+		i = libutil::Clamp<float>(-m_i_limit, i, m_i_limit);
+	}
 	const float d = this->GetKd() * (error - 2 * m_prev_error[0]
 			+ m_prev_error[1]) / time_diff;
 
