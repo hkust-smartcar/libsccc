@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "libsc/k60/timer.h"
 #include "libutil/pid_controller.h"
 
 namespace libutil
@@ -31,6 +32,7 @@ protected:
 private:
 	InT m_prev_error[2];
 	OutT m_prev_output;
+	libsc::k60::Timer::TimerInt m_prev_time;
 };
 
 }

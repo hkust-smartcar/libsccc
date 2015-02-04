@@ -11,6 +11,8 @@
 
 #include <algorithm>
 
+#include "libsc/k60/system.h"
+#include "libsc/k60/timer.h"
 #include "libutil/incremental_pid_controller.h"
 #include "libutil/misc.h"
 
@@ -22,16 +24,23 @@ IncrementalPidController<InT_, OutT_>::IncrementalPidController(
 		const InT setpoint, const float kp, const float ki, const float kd)
 		: PidController<InT_, OutT_>(setpoint, kp, ki, kd),
 		  m_prev_error{0, 0},
-		  m_prev_output(0)
+		  m_prev_output(0),
+		  m_prev_time(libsc::k60::System::Time())
 {}
 
 template<typename InT_, typename OutT_>
 void IncrementalPidController<InT_, OutT_>::OnCalc(const InT error)
 {
+	using namespace libsc::k60;
+
+	const Timer::TimerInt time = System::Time();
+	const float time_diff = Timer::TimeDiff(System::Time(), m_prev_time)
+			/ 1000.0f;
+
 	const float p = this->GetKp() * (error - m_prev_error[0]);
-	const float i = this->GetKi() * error;
+	const float i = this->GetKi() * error * time_diff * 0.5f;
 	const float d = this->GetKd() * (error - 2 * m_prev_error[0]
-			+ m_prev_error[1]);
+			+ m_prev_error[1]) / time_diff;
 
 	std::swap(m_prev_error[0], m_prev_error[1]);
 	m_prev_error[0] = error;
