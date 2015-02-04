@@ -25,6 +25,16 @@ public:
 	IncrementalPidController(const InT setpoint, const float kp, const float ki,
 			const float kd);
 
+	void Reset()
+	{
+		ResetTime();
+	}
+
+	void ResetTime()
+	{
+		m_prev_time = libsc::k60::System::Time();
+	}
+
 protected:
 	void OnCalc(const InT error) override;
 	OutT GetControlOut() override;
