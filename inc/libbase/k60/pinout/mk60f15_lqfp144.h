@@ -10,10 +10,12 @@
 
 #pragma once
 
+#include <array>
 #include <bitset>
 
 #include "libbase/k60/adc.h"
 #include "libbase/k60/dac.h"
+#include "libbase/k60/dma_mux.h"
 #include "libbase/k60/ftm.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
@@ -121,6 +123,16 @@ public:
 	static Pin::Config::MuxControl GetFtmMux(const Pin::Name pin);
 	static Ftm::QdName GetFtmQd(const Pin::Name pin);
 	static Pin::Config::MuxControl GetFtmQdMux(const Pin::Name pin);
+	/**
+	 * Return the source number for the modules, i.e., the 1st element in the
+	 * array holds the source number in module 0. If @a src doesn't exist in the
+	 * module, -1 would be stored
+	 *
+	 * @param src
+	 * @return
+	 */
+	static std::array<uint8_t, PINOUT_DMA_MUX_COUNT> GetDmaMuxSource(
+			const DmaMux::Source src);
 
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;
