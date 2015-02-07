@@ -109,7 +109,7 @@ public:
 		 * If true, listener would also be called when the major iterations are
 		 * halfly completed
 		 */
-		bool is_listen_half_complete;
+		bool is_listen_half_complete = false;
 		OnCompleteListener complete_isr;
 
 		/// Enable error interrupt
