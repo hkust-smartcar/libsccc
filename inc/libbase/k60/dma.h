@@ -133,7 +133,7 @@ public:
 	Dma& operator=(Dma &&rhs);
 	operator bool() const
 	{
-		return (m_channel != (Uint)-1);
+		return m_is_init;
 	}
 
 	void Start();
@@ -172,6 +172,8 @@ private:
 	Uint m_channel;
 	OnCompleteListener m_complete_isr;
 	OnErrorListener m_error_isr;
+
+	bool m_is_init;
 };
 
 }

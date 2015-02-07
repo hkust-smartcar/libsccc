@@ -51,12 +51,15 @@ constexpr DMAMUX_Type* MUX_MEM_MAPS[PINOUT::GetDmaMuxCount()] =
 
 Dma::Dma(const Config &config, const Uint channel)
 		: m_complete_isr(config.complete_isr),
-		  m_error_isr(config.error_isr)
+		  m_error_isr(config.error_isr),
+		  m_is_init(false)
 {
 	assert(channel < 32);
 	m_channel = channel;
 
 	Stop();
+
+	m_is_init = true;
 
 	DMA0->TCD[channel].SADDR = DMA_SADDR_SADDR(config.src.addr);
 	DMA0->TCD[channel].SOFF = DMA_SOFF_SOFF(config.src.offset);
@@ -82,7 +85,8 @@ Dma::Dma(Dma &&rhs)
 }
 
 Dma::Dma(nullptr_t)
-		: m_channel(-1)
+		: m_channel(0),
+		  m_is_init(false)
 {}
 
 Dma::~Dma()
@@ -97,12 +101,13 @@ Dma& Dma::operator=(Dma &&rhs)
 		Uninit();
 		if (rhs)
 		{
-			const Uint ch = rhs.m_channel;
-			rhs.m_channel = -1;
+			rhs.m_is_init = false;
 
+			m_channel = rhs.m_channel;
 			m_complete_isr = rhs.m_complete_isr;
 			m_error_isr = rhs.m_error_isr;
-			m_channel = ch;
+
+			m_is_init = true;
 		}
 	}
 	return *this;
@@ -196,11 +201,12 @@ void Dma::InitEeiReg(const Config &config)
 
 void Dma::Uninit()
 {
-	if (m_channel != (Uint)-1)
+	if (m_is_init)
 	{
+		m_is_init = false;
+	
 		Stop();
 		DmaManager::Delete(this);
-		m_channel = (Uint)-1;
 	}
 }
 
