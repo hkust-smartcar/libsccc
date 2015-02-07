@@ -78,7 +78,10 @@ Dma::Dma(nullptr_t)
 
 Dma::~Dma()
 {
-	Uninit();
+	if (m_is_init)
+	{
+		DmaManager::Delete(this);
+	}
 }
 
 Dma& Dma::operator=(Dma &&rhs)
@@ -193,7 +196,7 @@ void Dma::Uninit()
 		m_is_init = false;
 	
 		Stop_();
-		DmaManager::Delete(this);
+		DMA0->TCD[m_channel].CSR = 0;
 	}
 }
 
