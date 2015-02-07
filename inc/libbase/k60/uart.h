@@ -135,10 +135,9 @@ public:
 	 * Tx IRQ will be disabled after invoking this method and needed to be
 	 * enabled manually
 	 *
-	 * @note To use DMA, Config::tx_isr must NOT be set for this UART. Otherwise,
+	 * @note To use DMA, Config::tx_isr must NOT be set for this Uart. Otherwise,
 	 * the operation will fail and no changes would be made to @a config
 	 * @param config
-	 * @return
 	 */
 	void ConfigTxAsDmaDst(Dma::Config *config);
 
