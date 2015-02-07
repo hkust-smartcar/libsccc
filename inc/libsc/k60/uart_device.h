@@ -42,7 +42,7 @@ public:
 		 * affect how often new bytes are pushed to the internal buffer, or your
 		 * listener being triggered, depending on the config
 		 */
-		uint8_t rx_irq_threshold;
+		uint8_t rx_irq_threshold = 1;
 		/// To treat rx_irq_threshold as a percentage of Rx buffer size
 		bool is_rx_irq_threshold_percentage = false;
 	};
