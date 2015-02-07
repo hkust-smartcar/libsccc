@@ -36,19 +36,6 @@ namespace libbase
 namespace k60
 {
 
-namespace
-{
-
-constexpr DMAMUX_Type* MUX_MEM_MAPS[PINOUT::GetDmaMuxCount()] =
-{
-	DMAMUX0,
-#if PINOUT_DMA_MUX_COUNT > 1
-	DMAMUX1,
-#endif
-};
-
-}
-
 Dma::Dma(const Config &config, const Uint channel)
 		: m_complete_isr(config.complete_isr),
 		  m_error_isr(config.error_isr),
