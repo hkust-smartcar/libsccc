@@ -37,7 +37,8 @@ namespace k60
 {
 
 Dma::Dma(const Config &config, const Uint channel)
-		: m_complete_isr(config.complete_isr),
+		: m_mux_src(config.mux_src),
+		  m_complete_isr(config.complete_isr),
 		  m_error_isr(config.error_isr),
 		  m_is_init(false)
 {
@@ -73,6 +74,7 @@ Dma::Dma(Dma &&rhs)
 
 Dma::Dma(nullptr_t)
 		: m_channel(0),
+		  m_mux_src(DmaMux::Source::kNull),
 		  m_is_init(false)
 {}
 
@@ -94,6 +96,7 @@ Dma& Dma::operator=(Dma &&rhs)
 			rhs.m_is_init = false;
 
 			m_channel = rhs.m_channel;
+			m_mux_src = rhs.m_mux_src;
 			m_complete_isr = rhs.m_complete_isr;
 			m_error_isr = rhs.m_error_isr;
 
@@ -217,7 +220,14 @@ void Dma::Start()
 	ConsumeInterrupt();
 	EnableInterrupt();
 
-	SET_BIT(DMA0->TCD[m_channel].CSR, DMA_CSR_START_SHIFT);
+	if (m_mux_src == DmaMux::Source::kNull)
+	{
+		SET_BIT(DMA0->TCD[m_channel].CSR, DMA_CSR_START_SHIFT);
+	}
+	else
+	{
+		DmaMux::SetEnableSource(m_mux_src, m_channel);
+	}
 }
 
 void Dma::Stop()
@@ -237,6 +247,12 @@ void Dma::Stop_()
 
 	// Set major count to 0
 	DMA0->TCD[m_channel].CITER_ELINKNO &= ~DMA_CITER_ELINKNO_CITER_MASK;
+
+	// Disable DMA MUX
+	if (m_mux_src != DmaMux::Source::kNull)
+	{
+		DmaMux::SetEnableSource(DmaMux::Source::kNull, m_channel);
+	}
 }
 
 bool Dma::IsDone() const

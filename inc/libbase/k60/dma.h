@@ -13,6 +13,7 @@
 
 #include <functional>
 
+#include "libbase/k60/dma_mux.h"
 #include "libbase/k60/misc_utils.h"
 
 namespace libbase
@@ -82,6 +83,7 @@ public:
 		};
 
 		NodeConfig src;
+		DmaMux::Source mux_src = DmaMux::Source::kNull;
 		NodeConfig dst;
 
 		/**
@@ -171,6 +173,7 @@ private:
 	static __ISR void IrqHandler();
 
 	Uint m_channel;
+	DmaMux::Source m_mux_src;
 	OnCompleteListener m_complete_isr;
 	OnErrorListener m_error_isr;
 
