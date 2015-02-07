@@ -116,7 +116,8 @@ public:
 		bool is_eror_irq = false;
 		OnErrorListener error_isr;
 
-		bool is_disable_request;
+		/// Disable DMA request after finishing major loop
+		bool is_disable_request = true;
 	};
 
 	Dma(const Config &config, const Uint channel);
