@@ -144,18 +144,12 @@ public:
 	void Stop();
 
 	bool IsDone() const;
-	void ResetDone();
 	bool IsActive() const;
 
 	Uint GetChannel() const
 	{
 		return m_channel;
 	}
-
-	void EnableInterrupt();
-	void DisableInterrupt();
-
-	static __ISR void IrqHandler();
 
 private:
 	void InitTcdAttrReg(const Config &config);
@@ -167,7 +161,13 @@ private:
 
 	void Uninit();
 
+	void ResetDone();
+	
+	void EnableInterrupt();
+	void DisableInterrupt();
 	void ConsumeInterrupt();
+
+	static __ISR void IrqHandler();
 
 	Uint m_channel;
 	OnCompleteListener m_complete_isr;
