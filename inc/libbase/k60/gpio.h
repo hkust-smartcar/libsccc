@@ -14,6 +14,7 @@
 #include <bitset>
 #include <functional>
 
+#include "libbase/k60/dma.h"
 #include "libbase/k60/pin.h"
 
 namespace libbase
@@ -116,6 +117,17 @@ public:
 	}
 
 	Gpi ToGpi();
+
+	/**
+	 * Config this Gpo up to be ready to serve toggle as DMA destination, and
+	 * set @a config accordingly. The following options are also set besides
+	 * dst:<br>
+	 * Dma::Config::minor_bytes = 4<br>
+	 * Dma::Config::major_count = 1
+	 *
+	 * @param config
+	 */
+	void ConfigToggleAsDmaDst(Dma::Config *config);
 
 	Pin* GetPin()
 	{
