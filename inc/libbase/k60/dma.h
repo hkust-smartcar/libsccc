@@ -165,7 +165,7 @@ private:
 
 	void Stop_();
 	void ResetDone();
-	
+
 	void EnableInterrupt();
 	void DisableInterrupt();
 	void ConsumeInterrupt();

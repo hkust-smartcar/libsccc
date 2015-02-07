@@ -197,7 +197,7 @@ void Dma::Uninit()
 	if (m_is_init)
 	{
 		m_is_init = false;
-	
+
 		Stop_();
 		DMA0->TCD[m_channel].CSR = 0;
 	}
