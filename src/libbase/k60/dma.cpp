@@ -57,7 +57,7 @@ Dma::Dma(const Config &config, const Uint channel)
 	assert(channel < 32);
 	m_channel = channel;
 
-	Stop();
+	Stop_();
 
 	m_is_init = true;
 
@@ -205,13 +205,15 @@ void Dma::Uninit()
 	{
 		m_is_init = false;
 	
-		Stop();
+		Stop_();
 		DmaManager::Delete(this);
 	}
 }
 
 void Dma::Start()
 {
+	STATE_GUARD(Dma, VOID);
+
 	ResetDone();
 
 	// Set current major count to beg
@@ -230,6 +232,14 @@ void Dma::Start()
 
 void Dma::Stop()
 {
+	// The public version has to be guarded, while the internal one should not
+	STATE_GUARD(Dma, VOID);
+
+	Stop_();
+}
+
+void Dma::Stop_()
+{
 	DisableInterrupt();
 
 	// Disable request
@@ -241,6 +251,8 @@ void Dma::Stop()
 
 bool Dma::IsDone() const
 {
+	STATE_GUARD(Dma, false);
+
 	return GET_BIT(DMA0->TCD[m_channel].CSR, DMA_CSR_DONE_SHIFT);
 }
 
@@ -251,6 +263,8 @@ void Dma::ResetDone()
 
 bool Dma::IsActive() const
 {
+	STATE_GUARD(Dma, false);
+
 	return GET_BIT(DMA0->TCD[m_channel].CSR, DMA_CSR_ACTIVE_SHIFT);
 }
 

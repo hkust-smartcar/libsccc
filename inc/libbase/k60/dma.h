@@ -161,6 +161,7 @@ private:
 
 	void Uninit();
 
+	void Stop_();
 	void ResetDone();
 	
 	void EnableInterrupt();
