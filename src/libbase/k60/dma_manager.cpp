@@ -166,6 +166,7 @@ void DmaManager::Delete_(Dma *dma)
 {
 	EnsureInit();
 	const Uint channel = dma->GetChannel();
+	assert(channel < PINOUT::GetDmaChCount());
 	if (!m_channels[channel].dma)
 	{
 		return;
