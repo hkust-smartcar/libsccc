@@ -15,6 +15,7 @@
 #include <functional>
 #include <vector>
 
+#include "libbase/k60/dma.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 
@@ -118,12 +119,28 @@ public:
 
 	/**
 	 * Enable Tx/Rx interrupt, by default they are both disabled after
-	 * initialization and required programmer to explicitly enable them
+	 * initialization and require programmer to explicitly enable them
 	 *
 	 * @param flag
 	 */
 	void SetEnableTxIrq(const bool flag);
 	void SetEnableRxIrq(const bool flag);
+
+	/**
+	 * Config this Uart up to be ready to serve Tx as DMA destination, and set
+	 * @a config accordingly. The following options are also set besides mux_src
+	 * and dst:<br>
+	 * Dma::Config::minor_bytes = 1
+	 *
+	 * Tx IRQ will be disabled after invoking this method and needed to be
+	 * enabled manually
+	 *
+	 * @note To use DMA, Config::tx_isr must NOT be set for this UART. Otherwise,
+	 * the operation will fail and no changes would be made to @a config
+	 * @param config
+	 * @return
+	 */
+	void ConfigTxAsDmaDst(Dma::Config *config);
 
 private:
 	enum Module
