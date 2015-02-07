@@ -69,7 +69,7 @@ void Mma8451q::GetAllAccel()
 	bytes = ReadRegBytes(MMA8451Q_RA_REG_OUT_ALL, 0x06);
 
 	for (Byte i = 0, j = 0; i < 3; i++, j += 2)
-		m_lastAccel[i] = (int16_t)(bytes[j] << 8 | bytes[j + 1]) / m_ScaleFactor;
+		m_lastAccel[i] = (float)((int16_t)(bytes[j] << 8 | bytes[j + 1]) / m_ScaleFactor);
 }
 
 void Mma8451q::GetAllAngle()
