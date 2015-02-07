@@ -45,6 +45,14 @@ public:
 		uint8_t rx_irq_threshold = 1;
 		/// To treat rx_irq_threshold as a percentage of Rx buffer size
 		bool is_rx_irq_threshold_percentage = false;
+		
+		/**
+		 * The size of the Tx buffer. Old data will be poped when the buffer
+		 * overflows. Notice that this size is not in bytes, but rather the
+		 * number of Send* calls. Depending on the use case, the actualy buffer
+		 * size in bytes will vary
+		 */
+		uint8_t tx_buf_size = 14;
 	};
 
 	virtual ~UartDevice();
