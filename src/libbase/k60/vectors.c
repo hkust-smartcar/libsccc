@@ -344,7 +344,7 @@ void InitIrqPriority(void)
 {
 	for (Uint i = 0; i < IRQ_COUNT; ++i)
 	{
-		NVIC_SetPriority(i, 8);
+		NVIC_SetPriority(i, __BASE_IRQ_PRIORITY);
 	}
 }
 
