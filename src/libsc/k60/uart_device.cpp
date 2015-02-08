@@ -356,7 +356,7 @@ void UartDevice::NextTxDma()
 		break;
 
 	case DynamicBlockBuffer::Block::kVector:
-		m_dma_config->src.addr = (void*)block->data.vector_->data();
+		m_dma_config->src.addr = block->data.vector_->data();
 		break;
 	}
 	m_dma_config->major_count = block->size;
