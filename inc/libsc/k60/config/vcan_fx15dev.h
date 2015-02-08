@@ -14,6 +14,7 @@
 #define LIBSC_USE_LCD_HW_SPI
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 1
+#define LIBSC_USE_OV7725 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
 
@@ -34,6 +35,14 @@
 #define LIBSC_MOTOR0_PWMB libbase::k60::Pin::Name::kPtc2
 #define LIBSC_MOTOR0_DEADTIME 1000
 #define LIBSC_ALTERNATE_MOTOR_CW_PWM 1
+
+#define LIBSC_OV77250_SCL libbase::k60::Pin::Name::kPtb0
+#define LIBSC_OV77250_SDA libbase::k60::Pin::Name::kPtb1
+// Must be byte-aligned
+#define LIBSC_OV77250_DATA0 libbase::k60::Pin::Name::kPtc8
+#define LIBSC_OV77250_PCLK libbase::k60::Pin::Name::kPtc7
+#define LIBSC_OV77250_VSYNC libbase::k60::Pin::Name::kPta29
+#define LIBSC_OV77250_DMA_CH 1
 
 #define LIBSC_SERVO0 libbase::k60::Pin::Name::kPtd0
 
