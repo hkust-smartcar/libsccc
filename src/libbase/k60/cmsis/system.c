@@ -77,4 +77,5 @@ void SystemInit(void)
 #endif
 
 	InitVectorTable();
+	InitIrqPriority();
 }
