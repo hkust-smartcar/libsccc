@@ -266,7 +266,7 @@ void St7735r::DrawChar(const uint8_t x, const uint8_t y, const char ch,
 
 	const Rect region_backup = m_region;
 	const uint8_t *font_data = &LcdFont::DATA_8x16[(ch - 32) << 4];
-	SelectRegion({x, y, kFontW, kFontH});
+	SetRegion({x, y, kFontW, kFontH});
 	SEND_COMMAND(0x2C);
 	for (Uint y = 0; y < kFontH; ++y)
 	{

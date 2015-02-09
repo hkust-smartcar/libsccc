@@ -38,26 +38,6 @@ public:
 		bool is_revert = false;
 	};
 
-	static constexpr Uint GetW()
-	{
-		return kW;
-	}
-
-	static constexpr Uint GetH()
-	{
-		return kH;
-	}
-
-	static constexpr Uint GetFontW()
-	{
-		return kFontW;
-	}
-
-	static constexpr Uint GetFontH()
-	{
-		return kFontH;
-	}
-
 	explicit St7735r(const Config &config);
 
 	void SetRegion(const Rect &rect) override;
@@ -120,6 +100,26 @@ public:
 			DrawChar(x_, y, *buf++, color, bg_color);
 			x_ += 8;
 		}
+	}
+
+	static constexpr Uint GetW()
+	{
+		return kW;
+	}
+
+	static constexpr Uint GetH()
+	{
+		return kH;
+	}
+
+	static constexpr Uint GetFontW()
+	{
+		return kFontW;
+	}
+
+	static constexpr Uint GetFontH()
+	{
+		return kFontH;
 	}
 
 private:
