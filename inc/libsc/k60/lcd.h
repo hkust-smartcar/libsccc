@@ -29,6 +29,15 @@ public:
 		uint8_t h;
 	};
 
+	static constexpr uint16_t kBlack = 0x0000;
+	static constexpr uint16_t kWhite = 0xFFFF;
+	static constexpr uint16_t kRed = 0xF800;
+	static constexpr uint16_t kYellow = 0xFFE0;
+	static constexpr uint16_t kGreen = 0x07E0;
+	static constexpr uint16_t kCyan = 0x07FF;
+	static constexpr uint16_t kBlue = 0x001F;
+	static constexpr uint16_t kPurple = 0xF81F;
+
 	virtual ~Lcd()
 	{}
 
