@@ -175,8 +175,8 @@ void St7735r::SetRegion(const Rect &rect)
 {
 	m_region.x = rect.x;
 	m_region.y = rect.y;
-	m_region.w = libutil::Clamp<Uint>(0, rect.w, kW);
-	m_region.h = libutil::Clamp<Uint>(0, rect.h, kH);
+	m_region.w = libutil::Clamp<Uint>(0, rect.w, (Uint)kW);
+	m_region.h = libutil::Clamp<Uint>(0, rect.h, (Uint)kH);
 }
 
 void St7735r::FillColor(const uint16_t color)
