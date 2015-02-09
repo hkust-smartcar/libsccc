@@ -49,7 +49,8 @@ public:
 
 	void ClearRegion() override
 	{
-		m_region = Rect{0, 0, GetW(), GetH()};
+		m_region = Rect{0, 0, static_cast<uint8_t>(GetW()),
+				static_cast<uint8_t>(GetH())};
 	}
 
 	void FillColor(const uint16_t color) override;
@@ -126,10 +127,10 @@ public:
 	}
 
 private:
-	static constexpr uint8_t kW = 128;
-	static constexpr uint8_t kH = 160;
-	static constexpr uint8_t kFontW = 8;
-	static constexpr uint8_t kFontH = 16;
+	static constexpr Uint kW = 128;
+	static constexpr Uint kH = 160;
+	static constexpr Uint kFontW = 8;
+	static constexpr Uint kFontH = 16;
 
 	void SetActiveRect();
 	void Send(const bool is_cmd, const uint8_t data);
