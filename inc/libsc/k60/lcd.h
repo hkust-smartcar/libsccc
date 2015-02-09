@@ -11,6 +11,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "libbase/misc_types.h"
+
 namespace libsc
 {
 namespace k60
@@ -79,6 +81,19 @@ public:
 	 */
 	virtual void FillBits(const uint16_t color_t, const uint16_t color_f,
 			const bool *data, const size_t length) = 0;
+	/**
+	 * Fill two colors based on the bit set
+	 *
+	 * @param color_t Color in RGB565 used when the element is true
+	 * @param color_f Color in RGB565 used when the element is false
+	 * @param data A byte array indicating which color to fill. Each element
+	 * corresponds to 8 pixel, MSB first -> LSB last
+	 * @param bit_length Length of @a data in @b bits
+	 * @warning The @a bit_length argument takes length in bits not bytes, think
+	 * of it the pixel count
+	 */
+	virtual void FillBits(const uint16_t color_t, const uint16_t color_f,
+			const Byte *data, const size_t bit_length) = 0;
 
 	/**
 	 * Clear the screen. Depending on the implementation, this may or may not

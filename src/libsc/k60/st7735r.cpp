@@ -237,6 +237,34 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 	}
 }
 
+void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
+		const Byte *data, const size_t bit_length)
+{
+	SetActiveRect();
+	SEND_COMMAND(ST7735R_RAMWR);
+	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, bit_length);
+	Uint pos = 0;
+	Uint bit_pos = -1;
+	for (Uint i = 0; i < length_; ++i)
+	{
+		if (++bit_pos >= 8)
+		{
+			bit_pos = 0;
+			++pos;
+		}
+		if (GET_BIT(data[pos], bit_pos))
+		{
+			SEND_DATA(color_t >> 8);
+			SEND_DATA(color_t);
+		}
+		else
+		{
+			SEND_DATA(color_f >> 8);
+			SEND_DATA(color_f);
+		}
+	}
+}
+
 void St7735r::Clear()
 {
 	m_rst.Clear();

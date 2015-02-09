@@ -13,6 +13,7 @@
 
 #include "libbase/k60/soft_spi_master.h"
 #include "libbase/k60/spi_master.h"
+#include "libbase/misc_types.h"
 
 #include "libsc/config.h"
 #include "libsc/k60/lcd.h"
@@ -56,6 +57,8 @@ public:
 	void FillPixel(const uint16_t *pixel, const size_t length) override;
 	void FillBits(const uint16_t color_t, const uint16_t color_f,
 			const bool *data, const size_t length) override;
+	void FillBits(const uint16_t color_t, const uint16_t color_f,
+			const Byte *data, const size_t bit_length) override;
 
 	void Clear() override;
 	void Clear(const uint16_t color) override;
