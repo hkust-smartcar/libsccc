@@ -30,6 +30,7 @@ public:
 	};
 
 	static constexpr uint16_t kBlack = 0x0000;
+	static constexpr uint16_t kGray = 0x7BEF;
 	static constexpr uint16_t kWhite = 0xFFFF;
 	static constexpr uint16_t kRed = 0xF800;
 	static constexpr uint16_t kYellow = 0xFFE0;
