@@ -244,12 +244,12 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, bit_length);
 	Uint pos = 0;
-	Uint bit_pos = -1;
+	int bit_pos = 8;
 	for (Uint i = 0; i < length_; ++i)
 	{
-		if (++bit_pos >= 8)
+		if (--bit_pos < 0)
 		{
-			bit_pos = 0;
+			bit_pos = 7;
 			++pos;
 		}
 		if (GET_BIT(data[pos], bit_pos))
