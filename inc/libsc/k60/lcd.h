@@ -37,6 +37,12 @@ public:
 	 */
 	virtual void SetRegion(const Rect &rect) = 0;
 	/**
+	 * Return the current region
+	 *
+	 * @param rect
+	 */
+	virtual Rect GetRegion() = 0;
+	/**
 	 * Clear the currect region. Basically what it does is to extend the region
 	 * to the whole screen
 	 */
