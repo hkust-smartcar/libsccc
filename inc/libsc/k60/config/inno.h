@@ -10,39 +10,38 @@
 #pragma once
 
 //#define LIBSC_USE_AMBIENT_LIGHT 1
-//#define LIBSC_USE_CAMERA 1
-#define LIBSC_USE_ENCODER 1
-#define LIBSC_USE_SOFT_ENCODER
+#define LIBSC_USE_OV7725 1
+//#define LIBSC_USE_ENCODER 1
+//#define LIBSC_USE_SOFT_ENCODER
 //#define LIBSC_USE_INFRA_RED_SENSOR 1
-//#define LIBSC_USE_LCD 1
+#define LIBSC_USE_LCD 1
 #define LIBSC_USE_LED 4
-#define LIBSC_USE_LIGHT_SENSOR 1
+//#define LIBSC_USE_LIGHT_SENSOR 1
 //#define LIBSC_USE_LINEAR_CCD 1
-#define LIBSC_USE_MOTOR 1
+//#define LIBSC_USE_MOTOR 1
 //#define LIBSC_USE_SERVO 1
 //#define LIBSC_USE_TEMPERATURE_SENSOR 1
-#define LIBSC_USE_UART 1
+//#define LIBSC_USE_UART 1
 
 #define LIBSC_AMBIENT_LIGHT0 libbase::k60::Pin::Name::kPta8
 
-#define LIBSC_CAMERA_SDA PTC7
-#define LIBSC_CAMERA_SCL PTC6
-#define LIBSC_CAMERA_PCLK PTC5
-#define LIBSC_CAMERA_HREF PTA10
-#define LIBSC_CAMERA_VSYNC PTC4
-#define LIBSC_CAMERA_DMA_SRC_ADDR PTC8
-#define LIBSC_CAMERA_DMA_CH 0
+#define LIBSC_OV77250_SCL libbase::k60::Pin::Name::kPtc4
+#define LIBSC_OV77250_SDA libbase::k60::Pin::Name::kPtc5
+#define LIBSC_OV77250_PCLK libbase::k60::Pin::Name::kPtc6
+#define LIBSC_OV77250_VSYNC libbase::k60::Pin::Name::kPtc7
+#define LIBSC_OV77250_DATA0 libbase::k60::Pin::Name::kPtc8
+#define LIBSC_OV77250_DMA_CH 1
 
 #define LIBSC_ENCODER0_QDA libbase::k60::Pin::Name::kPta6
 #define LIBSC_ENCODER0_QDB libbase::k60::Pin::Name::kPtc4
 
 #define LIBSC_INFRA_RED0 libbase::k60::Pin::Name::kPtc4
 
-#define LIBSC_LCD_RST libbase::k60::Pin::Name::kPta8
+#define LIBSC_LCD_RST libbase::k60::Pin::Name::kPta6
 #define LIBSC_LCD_DC libbase::k60::Pin::Name::kPtd7
-#define LIBSC_LCD_CS libbase::k60::Pin::Name::kPte4
+#define LIBSC_LCD_CS libbase::k60::Pin::Name::kPta8
 #define LIBSC_LCD_SDAT libbase::k60::Pin::Name::kPte5
-#define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPta6
+#define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPte4
 
 #define LIBSC_LED0 libbase::k60::Pin::Name::kPte24
 #define LIBSC_LED1 libbase::k60::Pin::Name::kPte25
