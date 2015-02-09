@@ -8,8 +8,7 @@
 
 #pragma	once
 
-#define OV7725_W_SLAVE_ADDR 0x42 // Device slave address for write
-#define OV7725_R_SLAVE_ADDR 0x43 // Device slave address for read
+#define OV7725_SLAVE_ADDR	0x21 // Device slave address
 
 // Registers
 #define OV7725_GAIN			0x00 // AGC - Gain control gain setting
