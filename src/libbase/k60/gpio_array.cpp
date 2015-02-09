@@ -20,6 +20,7 @@
 #include "libbase/k60/gpio_array.h"
 #include "libbase/k60/pin_utils.h"
 
+#include "libutil/endian_utils.h"
 #include "libutil/misc.h"
 
 using namespace libutil;
@@ -88,10 +89,18 @@ void GpiArray::ConfigValueAsDmaSrc(Dma::Config *config)
 	STATE_GUARD(GpiArray, VOID);
 
 	const int start_pin = PinUtils::GetPinNumber(m_pins[0].GetPin()->GetName());
+	const int last_pin = start_pin + m_pins.size() - 1;
 	config->src.addr =
 			(void*)&MEM_MAPS[PinUtils::GetPort(m_pins[0].GetPin()->GetName())]
 					->PDIR;
-	config->src.addr = (Byte*)config->src.addr + (start_pin / 8);
+	if (libutil::EndianUtils::IsBigEndian())
+	{
+		config->src.addr = (Byte*)config->src.addr + 3 - (last_pin / 8);
+	}
+	else
+	{
+		config->src.addr = (Byte*)config->src.addr + (start_pin / 8);
+	}
 	config->src.offset = 0;
 	int size = (m_pins.size() + 7) / 8;
 	if (start_pin % 8 + m_pins.size() % 8 > 8)
