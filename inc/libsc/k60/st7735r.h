@@ -60,7 +60,7 @@ public:
 
 	explicit St7735r(const Config &config);
 
-	void SelectRegion(const Rect &rect) override;
+	void SetRegion(const Rect &rect) override;
 	void ClearRegion() override
 	{
 		m_region = Rect{0, 0, GetW(), GetH()};

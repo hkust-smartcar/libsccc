@@ -171,7 +171,7 @@ St7735r::St7735r(const Config &config)
 	System::DelayMs(10);
 }
 
-void St7735r::SelectRegion(const Rect &rect)
+void St7735r::SetRegion(const Rect &rect)
 {
 	m_region.x = rect.x;
 	m_region.y = rect.y;
