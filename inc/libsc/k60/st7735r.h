@@ -15,13 +15,14 @@
 #include "libbase/k60/spi_master.h"
 
 #include "libsc/config.h"
+#include "libsc/k60/lcd.h"
 
 namespace libsc
 {
 namespace k60
 {
 
-class St7735r
+class St7735r : public Lcd
 {
 public:
 #if LIBSC_USE_SOFT_ST7735R
@@ -59,27 +60,20 @@ public:
 
 	explicit St7735r(const Config &config);
 
-	void Clear();
-	void Clear(const uint16_t color)
+	void SelectRegion(const Rect &rect) override;
+	void ClearRegion() override
 	{
-		DrawPixel(0, 0, kW, kH, color);
-		m_bg_color = color;
+		m_region = Rect{0, 0, GetW(), GetH()};
 	}
 
-	void DrawPixel(const uint8_t x, const uint8_t y, const uint8_t w,
-			const uint8_t h, const uint16_t color);
-	void DrawPixel(const uint8_t x, const uint8_t y, const uint16_t color)
-	{
-		DrawPixel(x, y, 1, 1, color);
-	}
+	void FillColor(const uint16_t color) override;
+	void FillGrayscalePixel(const uint8_t *pixel, const size_t length) override;
+	void FillPixel(const uint16_t *pixel, const size_t length) override;
+	void FillBits(const uint16_t color_t, const uint16_t color_f,
+			const bool *data, const size_t length) override;
 
-	void DrawGrayscalePixelBuffer(const uint8_t x, const uint8_t y,
-			const uint8_t w, const uint8_t h, const uint8_t *pixel);
-	void DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
-			const uint8_t h, const uint16_t *pixel);
-	void DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
-			const uint8_t h, const uint16_t color_t, const uint16_t color_f,
-			const bool *data);
+	void Clear() override;
+	void Clear(const uint16_t color) override;
 
 	void DrawChar(const uint8_t x, const uint8_t y, const char ch,
 			const uint16_t color, const uint16_t bg_color);
@@ -129,14 +123,14 @@ private:
 	static constexpr uint8_t kFontW = 8;
 	static constexpr uint8_t kFontH = 16;
 
-	void SetActiveRect(const uint8_t x, const uint8_t y, const uint8_t w,
-			const uint8_t h);
+	void SetActiveRect();
 	void Send(const bool is_cmd, const uint8_t data);
 
 	SpiMaster m_spi;
 	libbase::k60::Gpo m_rst;
 	libbase::k60::Gpo m_dc;
 
+	Rect m_region;
 	uint16_t m_bg_color;
 };
 

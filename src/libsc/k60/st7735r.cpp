@@ -79,6 +79,7 @@ St7735r::St7735r(const Config &config)
 		  m_rst(GetRstConfig()),
 		  m_dc(GetDcConfig()),
 
+		  m_region{0, 0, GetW(), GetH()},
 		  m_bg_color(0)
 {
 	Clear();
@@ -164,57 +165,64 @@ St7735r::St7735r(const Config &config)
 	SEND_DATA(0x02);
 	SEND_DATA(0x10);
 
-	SetActiveRect(0, 0, kW, kH);
+	SetActiveRect();
 
 	SEND_COMMAND(ST7735R_DISPON);
 	System::DelayMs(10);
 }
 
-void St7735r::Clear()
+void St7735r::SelectRegion(const Rect &rect)
 {
-	m_rst.Clear();
-	System::DelayMs(100);
-	m_rst.Set();
-	System::DelayMs(100);
-
-	m_bg_color = 0;
+	m_region.x = rect.x;
+	m_region.y = rect.y;
+	m_region.w = libutil::Clamp<Uint>(0, rect.w, kW);
+	m_region.h = libutil::Clamp<Uint>(0, rect.h, kH);
 }
 
-void St7735r::DrawGrayscalePixelBuffer(const uint8_t x, const uint8_t y,
-		const uint8_t w, const uint8_t h, const uint8_t *pixel)
+void St7735r::FillColor(const uint16_t color)
 {
-	SetActiveRect(x, y, w, h);
+	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint area = w * h;
-	for (Uint i = 0; i < area; ++i)
+	const Uint length = m_region.w * m_region.h;
+	for (Uint i = 0; i < length; ++i)
 	{
-		const uint16_t col = libutil::GetRgb565(pixel[i], pixel[i], pixel[i]);
-		SEND_DATA(col >> 8);
-		SEND_DATA(col);
+		SEND_DATA(color >> 8);
+		SEND_DATA(color);
 	}
 }
 
-void St7735r::DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
-		const uint8_t h, const uint16_t *pixel)
+void St7735r::FillGrayscalePixel(const uint8_t *pixel, const size_t length)
 {
-	SetActiveRect(x, y, w, h);
+	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint area = w * h;
-	for (Uint i = 0; i < area; ++i)
+	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
+	for (Uint i = 0; i < length_; ++i)
+	{
+		const uint16_t color = libutil::GetRgb565(pixel[i], pixel[i], pixel[i]);
+		SEND_DATA(color >> 8);
+		SEND_DATA(color);
+	}
+}
+
+void St7735r::FillPixel(const uint16_t *pixel, const size_t length)
+{
+	SetActiveRect();
+	SEND_COMMAND(ST7735R_RAMWR);
+	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
+	for (Uint i = 0; i < length_; ++i)
 	{
 		SEND_DATA(pixel[i] >> 8);
 		SEND_DATA(pixel[i]);
 	}
 }
 
-void St7735r::DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
-		const uint8_t h, const uint16_t color_t, const uint16_t color_f,
-		const bool *data)
+void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
+		const bool *data, const size_t length)
 {
-	SetActiveRect(x, y, w, h);
+	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint area = w * h;
-	for (Uint i = 0; i < area; ++i)
+	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
+	for (Uint i = 0; i < length_; ++i)
 	{
 		if (data[i])
 		{
@@ -229,17 +237,22 @@ void St7735r::DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
 	}
 }
 
-void St7735r::DrawPixel(const uint8_t x, const uint8_t y, const uint8_t w,
-		const uint8_t h, const uint16_t color)
+void St7735r::Clear()
 {
-	SetActiveRect(x, y, w, h);
-	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint area = w * h;
-	for (Uint i = 0; i < area; ++i)
-	{
-		SEND_DATA(color >> 8);
-		SEND_DATA(color);
-	}
+	m_rst.Clear();
+	System::DelayMs(100);
+	m_rst.Set();
+	System::DelayMs(100);
+
+	m_bg_color = 0;
+	ClearRegion();
+}
+
+void St7735r::Clear(const uint16_t color)
+{
+	ClearRegion();
+	FillColor(color);
+	m_bg_color = color;
 }
 
 void St7735r::DrawChar(const uint8_t x, const uint8_t y, const char ch,
@@ -251,8 +264,9 @@ void St7735r::DrawChar(const uint8_t x, const uint8_t y, const char ch,
 		return;
 	}
 
+	const Rect region_backup = m_region;
 	const uint8_t *font_data = &LcdFont::DATA_8x16[(ch - 32) << 4];
-	SetActiveRect(x, y, kFontW, kFontH);
+	SelectRegion({x, y, kFontW, kFontH});
 	SEND_COMMAND(0x2C);
 	for (Uint y = 0; y < kFontH; ++y)
 	{
@@ -271,24 +285,24 @@ void St7735r::DrawChar(const uint8_t x, const uint8_t y, const char ch,
 		}
 		++font_data;
 	}
+	m_region = region_backup;
 }
 
-void St7735r::SetActiveRect(const uint8_t x, const uint8_t y, const uint8_t w,
-		const uint8_t h)
+void St7735r::SetActiveRect()
 {
 	SEND_COMMAND(ST7735R_CASET);
 	// start
 	SEND_DATA(0x00);
-	SEND_DATA(x);
+	SEND_DATA(m_region.x);
 	// end
 	SEND_DATA(0x00);
-	SEND_DATA(x + w - 1);
+	SEND_DATA(m_region.x + m_region.w - 1);
 
 	SEND_COMMAND(ST7735R_RASET);
 	SEND_DATA(0x00);
-	SEND_DATA(y);
+	SEND_DATA(m_region.y);
 	SEND_DATA(0x00);
-	SEND_DATA(y + h - 1);
+	SEND_DATA(m_region.y + m_region.h - 1);
 }
 
 void St7735r::Send(const bool is_cmd, const uint8_t data)
