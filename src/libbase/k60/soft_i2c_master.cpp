@@ -97,6 +97,8 @@ SoftI2cMaster& SoftI2cMaster::operator=(SoftI2cMaster &&rhs)
 		{
 			rhs.m_is_init = false;
 
+			m_scl_low_timeout = rhs.m_scl_low_timeout;
+
 			m_delay_us = rhs.m_delay_us;
 
 			m_scl = std::move(rhs.m_scl);
