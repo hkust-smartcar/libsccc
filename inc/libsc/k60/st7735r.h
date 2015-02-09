@@ -14,6 +14,8 @@
 #include "libbase/k60/soft_spi_master.h"
 #include "libbase/k60/spi_master.h"
 
+#include "libsc/config.h"
+
 namespace libsc
 {
 namespace k60
@@ -22,6 +24,14 @@ namespace k60
 class St7735r
 {
 public:
+#if LIBSC_USE_SOFT_ST7735R
+	typedef libbase::k60::SoftSpiMaster SpiMaster;
+
+#else
+	typedef libbase::k60::SpiMaster SpiMaster;
+
+#endif // LIBSC_USE_SOFT_ST7735R
+
 	struct Config
 	{
 		bool is_revert = false;
@@ -103,7 +113,7 @@ private:
 			const uint8_t h);
 	void Send(const bool is_cmd, const uint8_t data);
 
-	libbase::k60::SpiMaster m_spi;
+	SpiMaster m_spi;
 	libbase::k60::Gpo m_rst;
 	libbase::k60::Gpo m_dc;
 
