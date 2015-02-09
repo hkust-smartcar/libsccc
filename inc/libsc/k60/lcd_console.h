@@ -25,12 +25,12 @@ namespace internal
 
 inline constexpr int LcdConsoleGetMaxTextW()
 {
-	return St7735r::kW / St7735r::kFontW;
+	return St7735r::GetW() / St7735r::GetFontW();
 }
 
 inline constexpr int LcdConsoleGetMaxTextH()
 {
-	return St7735r::kH / St7735r::kFontH;
+	return St7735r::GetH() / St7735r::GetFontH();
 }
 
 }

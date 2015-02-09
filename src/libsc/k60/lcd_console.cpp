@@ -40,8 +40,8 @@ void LcdConsole::PrintChar(const char ch, const uint16_t color,
 		CellData *cell = &m_buffer[m_cursor_y * GetMaxTextW() + m_cursor_x];
 		if (cell->ch != ch || cell->color != color || cell->bg_color != bg_color)
 		{
-			m_lcd->DrawChar(m_cursor_x * St7735r::kFontW,
-					m_cursor_y * St7735r::kFontH, ch, color, bg_color);
+			m_lcd->DrawChar(m_cursor_x * St7735r::GetFontW(),
+					m_cursor_y * St7735r::GetFontH(), ch, color, bg_color);
 		}
 		cell->ch = ch;
 		cell->color = color;

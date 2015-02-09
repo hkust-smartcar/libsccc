@@ -37,10 +37,25 @@ public:
 		bool is_revert = false;
 	};
 
-	static constexpr uint8_t kW = 128;
-	static constexpr uint8_t kH = 160;
-	static constexpr uint8_t kFontW = 8;
-	static constexpr uint8_t kFontH = 16;
+	static constexpr Uint GetW()
+	{
+		return kW;
+	}
+
+	static constexpr Uint GetH()
+	{
+		return kH;
+	}
+
+	static constexpr Uint GetFontW()
+	{
+		return kFontW;
+	}
+
+	static constexpr Uint GetFontH()
+	{
+		return kFontH;
+	}
 
 	explicit St7735r(const Config &config);
 
@@ -109,6 +124,11 @@ public:
 	}
 
 private:
+	static constexpr uint8_t kW = 128;
+	static constexpr uint8_t kH = 160;
+	static constexpr uint8_t kFontW = 8;
+	static constexpr uint8_t kFontH = 16;
+
 	void SetActiveRect(const uint8_t x, const uint8_t y, const uint8_t w,
 			const uint8_t h);
 	void Send(const bool is_cmd, const uint8_t data);
