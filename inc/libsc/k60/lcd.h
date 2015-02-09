@@ -23,10 +23,10 @@ class Lcd
 public:
 	struct Rect
 	{
-		uint8_t x;
-		uint8_t y;
-		uint8_t w;
-		uint8_t h;
+		Uint x;
+		Uint y;
+		Uint w;
+		Uint h;
 	};
 
 	static constexpr uint16_t kBlack = 0x0000;
