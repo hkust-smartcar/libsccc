@@ -9,6 +9,8 @@
 #include <cassert>
 #include <cstdint>
 
+#include <functional>
+
 #include "libbase/log.h"
 #include "libbase/k60/gpio.h"
 
@@ -78,20 +80,56 @@ inline Pin::Name GetPin(const uint8_t id)
 
 #endif
 
-Gpi::Config GetGpiConfig(const uint8_t id)
+Gpi::Config GetGpiConfig(const Button::Config &config,
+		const Gpi::OnGpiEventListener &listener)
 {
-	Gpi::Config config;
-	config.pin = GetPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
+	Gpi::Config product;
+	product.pin = GetPin(config.id);
+	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	if (listener)
+	{
+		switch (config.listener_trigger)
+		{
+		default:
+		case Button::Config::Trigger::kDown:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kFalling
+					: Pin::Config::Interrupt::kRising);
+			break;
+
+		case Button::Config::Trigger::kUp:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kRising
+					: Pin::Config::Interrupt::kFalling);
+			break;
+
+		case Button::Config::Trigger::kBoth:
+			product.interrupt = Pin::Config::Interrupt::kBoth;
+			break;
+		}
+		product.isr = listener;
+	}
+	return product;
 }
 
 }
 
 Button::Button(const Config &config)
-		: m_pin(GetGpiConfig(config.id)),
+		: m_pin(nullptr),
 		  m_is_active_low(config.is_active_low)
-{}
+{
+	Gpi::OnGpiEventListener listener;
+	if (config.listener)
+	{
+		const uint8_t id = config.id;
+		m_isr = config.listener;
+		listener = [this, id](Gpi*)
+				{
+					m_isr(id);
+				};
+	}
+	m_pin = Gpi(GetGpiConfig(config, listener));
+}
 
 bool Button::IsDown() const
 {
