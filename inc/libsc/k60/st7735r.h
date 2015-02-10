@@ -36,6 +36,7 @@ public:
 
 	struct Config
 	{
+		/// Revert the screen upside down
 		bool is_revert = false;
 	};
 
@@ -83,6 +84,11 @@ public:
 private:
 	static constexpr Uint kW = 128;
 	static constexpr Uint kH = 160;
+
+	void InitMadctl(const Config &config);
+	void InitFrmctr();
+	void InitPwctr();
+	void InitGamma();
 
 	void SetActiveRect();
 	inline void Send(const bool is_cmd, const uint8_t data);

@@ -89,46 +89,75 @@ St7735r::St7735r(const Config &config)
 	SEND_COMMAND(ST7735R_SLPOUT);
 	System::DelayMs(120);
 
-	uint8_t madctl_reg = 0;
-	if (!config.is_revert)
-	{
-		madctl_reg |= 0xC0;
-	}
-#ifdef LIBSC_ST7735R_BGR_PANEL
-	madctl_reg |= 0x08;
-#endif
-	SEND_COMMAND(ST7735R_MADCTL);
-	SEND_DATA(madctl_reg);
+	InitMadctl(config);
 
 	// 16-bit
 	SEND_COMMAND(ST7735R_COLMOD);
-	SEND_DATA(0x55);
+	SEND_DATA(0x05);
 
+	InitFrmctr(config);
+	InitPwctr();
+	InitGamma();
+
+	SEND_COMMAND(ST7735R_VMCTR1);
+	SEND_DATA(0x0E);
+
+	SetActiveRect();
+
+	SEND_COMMAND(ST7735R_DISPON);
+	System::DelayMs(10);
+}
+
+void St7735r::InitMadctl(const Config &config)
+{
+	uint8_t param = 0;
+	if (config.is_revert)
+	{
+		SET_BIT(param, 7);
+		SET_BIT(param, 6);
+	}
+#ifdef LIBSC_ST7735R_BGR_PANEL
+	SET_BIT(param, 4);
+#endif
+
+	SEND_COMMAND(ST7735R_MADCTL);
+	SEND_DATA(param);
+}
+
+void St7735r::InitFrmctr()
+{
 	// ~60Hz
 	SEND_COMMAND(ST7735R_FRMCTR1);
 	SEND_DATA(0x05);
 	SEND_DATA(0x3C);
 	SEND_DATA(0x3C);
+}
 
+void St7735r::InitPwctr()
+{
 	SEND_COMMAND(ST7735R_PWCTR1);
 	SEND_DATA(0xA2);
 	SEND_DATA(0x02);
 	SEND_DATA(0x84);
+
 	SEND_COMMAND(ST7735R_PWCTR2);
 	SEND_DATA(0xC5);
+
 	SEND_COMMAND(ST7735R_PWCTR3);
 	SEND_DATA(0x0A);
 	SEND_DATA(0x00);
+
 	SEND_COMMAND(ST7735R_PWCTR4);
 	SEND_DATA(0x8A);
 	SEND_DATA(0x2A);
+
 	SEND_COMMAND(ST7735R_PWCTR5);
 	SEND_DATA(0x8A);
 	SEND_DATA(0xEE);
+}
 
-	SEND_COMMAND(ST7735R_VMCTR1);
-	SEND_DATA(0x0E);
-
+void St7735r::InitGamma()
+{
 	SEND_COMMAND(ST7735R_GMCTRP1);
 	SEND_DATA(0x02);
 	SEND_DATA(0x1C);
@@ -164,11 +193,6 @@ St7735r::St7735r(const Config &config)
 	SEND_DATA(0x00);
 	SEND_DATA(0x02);
 	SEND_DATA(0x10);
-
-	SetActiveRect();
-
-	SEND_COMMAND(ST7735R_DISPON);
-	System::DelayMs(10);
 }
 
 void St7735r::FillColor(const uint16_t color)
