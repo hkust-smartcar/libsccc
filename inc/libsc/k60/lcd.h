@@ -27,6 +27,11 @@ public:
 		Uint y;
 		Uint w;
 		Uint h;
+
+		Rect() = default;
+		Rect(const Uint x, const Uint y, const Uint w, const Uint h)
+				: x(x), y(y), w(w), h(h)
+		{}
 	};
 
 	static constexpr uint16_t kBlack = 0x0000;
