@@ -304,25 +304,18 @@ void St7735r::Send(const bool is_cmd, const uint8_t data)
 
 #else
 St7735r::St7735r(const Config&)
-		: m_spi(nullptr), m_rst(nullptr), m_dc(nullptr), m_bg_color(0)
+		: m_spi(nullptr), m_rst(nullptr), m_dc(nullptr)
 {
 	LOG_DL("Configured not to use St7735r(LCD)");
 }
+void St7735r::SetRegion(const Rect&) {}
+void St7735r::FillColor(const uint16_t) {}
+void St7735r::FillGrayscalePixel(const uint8_t*, const size_t) {}
+void St7735r::FillPixel(const uint16_t*, const size_t) {}
+void St7735r::FillBits(const uint16_t, const uint16_t, const bool*, const size_t) {}
+void St7735r::FillBits(const uint16_t, const uint16_t, const Byte*, const size_t) {}
 void St7735r::Clear() {}
-void St7735r::DrawPixel(const uint8_t, const uint8_t, const uint8_t,
-		const uint8_t, const uint16_t) {}
-void St7735r::DrawGrayscalePixelBuffer(const uint8_t, const uint8_t,
-		const uint8_t, const uint8_t, const uint8_t*) {}
-void St7735r::DrawPixelBuffer(const uint8_t, const uint8_t, const uint8_t,
-		const uint8_t, const uint16_t*) {}
-void St7735r::DrawPixelBuffer(const uint8_t, const uint8_t, const uint8_t,
-		const uint8_t, const uint16_t, const uint16_t,
-		const bool*) {}
-void St7735r::DrawChar(const uint8_t, const uint8_t, const char,
-		const uint16_t, const uint16_t) {}
-void St7735r::SetActiveRect(const uint8_t, const uint8_t, const uint8_t,
-		const uint8_t) {}
-void St7735r::Send(const bool, const uint8_t) {}
+void St7735r::Clear(const uint16_t) {}
 
 #endif /* LIBSC_USE_LCD */
 
