@@ -256,14 +256,14 @@ void St7735r::FillGrayscalePixel(const uint8_t *pixel, const size_t length)
 	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
 	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
-	// We add the original region w to column_beg, so length_ here also should
-	// be the original
+	// We add the original region w to row_beg, so length_ here also should be
+	// the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
-	for (Uint column_beg = 0; column_beg < length_; column_beg += m_region.w)
+	for (Uint row_beg = 0; row_beg < length_; row_beg += m_region.w)
 	{
 		for (Uint x = 0; x < w; ++x)
 		{
-			const uint8_t gs_color = pixel[column_beg + x];
+			const uint8_t gs_color = pixel[row_beg + x];
 			const uint16_t color = GetRgb565(gs_color, gs_color, gs_color);
 			SEND_DATA(color >> 8);
 			SEND_DATA(color);
@@ -282,15 +282,15 @@ void St7735r::FillPixel(const uint16_t *pixel, const size_t length)
 	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
 	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
-	// We add the original region w to column_beg, so length_ here also should
-	// be the original
+	// We add the original region w to row_beg, so length_ here also should be
+	// the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
-	for (Uint column_beg = 0; column_beg < length_; column_beg += m_region.w)
+	for (Uint row_beg = 0; row_beg < length_; row_beg += m_region.w)
 	{
 		for (Uint x = 0; x < w; ++x)
 		{
-			SEND_DATA(pixel[column_beg + x] >> 8);
-			SEND_DATA(pixel[column_beg + x]);
+			SEND_DATA(pixel[row_beg + x] >> 8);
+			SEND_DATA(pixel[row_beg + x]);
 		}
 	}
 }
@@ -307,14 +307,14 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
 	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
-	// We add the original region w to column_beg, so length_ here also should
-	// be the original
+	// We add the original region w to row_beg, so length_ here also should be
+	// the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
-	for (Uint column_beg = 0; column_beg < length_; column_beg += m_region.w)
+	for (Uint row_beg = 0; row_beg < length_; row_beg += m_region.w)
 	{
 		for (Uint x = 0; x < w; ++x)
 		{
-			if (data[column_beg + x])
+			if (data[row_beg + x])
 			{
 				SEND_DATA(color_t >> 8);
 				SEND_DATA(color_t);
@@ -340,12 +340,12 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
 	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
-	// We add the original region w to column_beg, so length_ here also should
-	// be the original
+	// We add the original region w to row_beg, so length_ here also should be
+	// the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, bit_length);
 	Uint pos = 0;
 	int bit_pos = 8;
-	for (Uint column_beg = 0; column_beg < length_; column_beg += m_region.w)
+	for (Uint row_beg = 0; row_beg < length_; row_beg += m_region.w)
 	{
 		for (Uint x = 0; x < w; ++x)
 		{
