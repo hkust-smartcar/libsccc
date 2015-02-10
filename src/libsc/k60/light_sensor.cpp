@@ -100,6 +100,7 @@ LightSensor::LightSensor(const Config &config)
 	if (config.listener)
 	{
 		const uint8_t id = config.id;
+		m_isr = config.listener;
 		listener = [this, id](Gpi*)
 				{
 					m_isr(id);
