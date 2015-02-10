@@ -64,48 +64,6 @@ public:
 	void Clear() override;
 	void Clear(const uint16_t color) override;
 
-	void DrawChar(const uint8_t x, const uint8_t y, const char ch,
-			const uint16_t color, const uint16_t bg_color);
-	void DrawChar(const uint8_t x, const uint8_t y, const char ch,
-			const uint16_t color)
-	{
-		DrawChar(x, y, ch, color, m_bg_color);
-	}
-
-	void DrawString(const uint8_t x, const uint8_t y, const char *str,
-			const uint16_t color)
-	{
-		DrawString(x, y, str, color, m_bg_color);
-	}
-
-	void DrawString(const uint8_t x, const uint8_t y, const char *str,
-			const uint16_t color, const uint16_t bg_color)
-	{
-		uint8_t x_ = x;
-		while (*str && x_ < kW)
-		{
-			DrawChar(x_, y, *str++, color, bg_color);
-			x_ += 8;
-		}
-	}
-
-	void DrawBuffer(const uint8_t x, const uint8_t y, const uint8_t *buf,
-			const uint32_t len, const uint16_t color)
-	{
-		DrawBuffer(x, y, buf, len, color, m_bg_color);
-	}
-
-	void DrawBuffer(const uint8_t x, const uint8_t y, const uint8_t *buf,
-			const uint32_t len, const uint16_t color, const uint16_t bg_color)
-	{
-		uint8_t x_ = x;
-		for (uint32_t i = 0; i < len && x_ < kW; ++i)
-		{
-			DrawChar(x_, y, *buf++, color, bg_color);
-			x_ += 8;
-		}
-	}
-
 	static constexpr Uint GetW()
 	{
 		return kW;
@@ -116,21 +74,9 @@ public:
 		return kH;
 	}
 
-	static constexpr Uint GetFontW()
-	{
-		return kFontW;
-	}
-
-	static constexpr Uint GetFontH()
-	{
-		return kFontH;
-	}
-
 private:
 	static constexpr Uint kW = 128;
 	static constexpr Uint kH = 160;
-	static constexpr Uint kFontW = 8;
-	static constexpr Uint kFontH = 16;
 
 	void SetActiveRect();
 	void Send(const bool is_cmd, const uint8_t data);
@@ -140,7 +86,6 @@ private:
 	libbase::k60::Gpo m_dc;
 
 	Rect m_region;
-	uint16_t m_bg_color;
 };
 
 }

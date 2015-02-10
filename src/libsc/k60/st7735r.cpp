@@ -79,8 +79,7 @@ St7735r::St7735r(const Config &config)
 		  m_rst(GetRstConfig()),
 		  m_dc(GetDcConfig()),
 
-		  m_region{0, 0, GetW(), GetH()},
-		  m_bg_color(0)
+		  m_region{0, 0, GetW(), GetH()}
 {
 	Clear();
 	SEND_COMMAND(ST7735R_SWRESET);
@@ -267,53 +266,17 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 
 void St7735r::Clear()
 {
+	ClearRegion();
 	m_rst.Clear();
 	System::DelayMs(100);
 	m_rst.Set();
 	System::DelayMs(100);
-
-	m_bg_color = 0;
-	ClearRegion();
 }
 
 void St7735r::Clear(const uint16_t color)
 {
 	ClearRegion();
 	FillColor(color);
-	m_bg_color = color;
-}
-
-void St7735r::DrawChar(const uint8_t x, const uint8_t y, const char ch,
-		const uint16_t color, const uint16_t bg_color)
-{
-	if (ch < 32 || ch > 126)
-	{
-		LOG_EL("Unsupported character");
-		return;
-	}
-
-	const Rect region_backup = m_region;
-	const uint8_t *font_data = &LcdFont::DATA_8x16[(ch - 32) << 4];
-	SetRegion({x, y, kFontW, kFontH});
-	SEND_COMMAND(0x2C);
-	for (Uint y = 0; y < kFontH; ++y)
-	{
-		for (Uint x = 0; x < kFontW; ++x)
-		{
-			if (*font_data & (0x80 >> x))
-			{
-				SEND_DATA(color >> 8);
-				SEND_DATA(color);
-			}
-			else
-			{
-				SEND_DATA(bg_color >> 8);
-				SEND_DATA(bg_color);
-			}
-		}
-		++font_data;
-	}
-	m_region = region_backup;
 }
 
 void St7735r::SetActiveRect()
