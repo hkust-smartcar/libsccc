@@ -11,7 +11,7 @@
 #define LIBSC_USE_BATTERY_METER 1
 #define LIBSC_USE_BUTTON 2
 //#define LIBSC_USE_BUZZER 1
-//#define LIBSC_USE_JOYSTICK 1
+#define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
@@ -26,6 +26,10 @@
 #define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPte2
 
 #define LIBSC_ST7735R_BGR_PANEL 1
+
+#define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtb0
+#define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPtb1
+#define LIBSC_LINEAR_CCD0_AD libbase::k60::Pin::Name::kPtc9
 
 #define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc1Ad17
 
