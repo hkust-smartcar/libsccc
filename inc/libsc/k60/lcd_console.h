@@ -1,6 +1,5 @@
 /*
  * lcd_console.h
- * Use the LCD screen as console
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -12,6 +11,9 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <memory>
+
+#include "libsc/k60/lcd_typewriter.h"
 #include "libsc/k60/st7735r.h"
 #include "libutil/misc.h"
 
@@ -20,78 +22,47 @@ namespace libsc
 namespace k60
 {
 
-namespace internal
-{
-
-inline constexpr int LcdConsoleGetMaxTextW()
-{
-	return St7735r::kW / St7735r::kFontW;
-}
-
-inline constexpr int LcdConsoleGetMaxTextH()
-{
-	return St7735r::kH / St7735r::kFontH;
-}
-
-}
-
+/**
+ * Print text on screen with a managed buffer. Only changed contents are updated
+ */
 class LcdConsole
 {
 public:
-	explicit LcdConsole(St7735r *const lcd);
+	// Conditionally select Lcd implementation here. Should prevent working with
+	// the interface directly (performance)
+	typedef St7735r Lcd;
 
-	void PrintChar(const char ch, const uint16_t color, const uint16_t bg_color);
-	void PrintString(const char *str, const uint16_t color,
-			const uint16_t bg_color);
-	void PrintRawString(const char *str, const size_t len,
-			const uint16_t color, const uint16_t bg_color);
-
-	void PrintChar(const char ch, const uint16_t color)
+	struct Config
 	{
-		PrintChar(ch, color, 0);
-	}
+		Lcd *lcd = nullptr;
+		/// The screen region for this console
+		Lcd::Rect region = Lcd::Rect{0, 0, Lcd::GetW(), Lcd::GetH()};
+		uint16_t text_color = 0xFFFF;
+		uint16_t bg_color = 0;
+	};
 
-	void PrintString(const char *str, const uint16_t color)
-	{
-		PrintString(str, color, 0);
-	}
+	explicit LcdConsole(const Config &config);
 
-	void PrintRawString(const char *str, const size_t len, const uint16_t color)
-	{
-		PrintRawString(str, len, color, 0);
-	}
-
-	void PrintChar(const char ch)
-	{
-		PrintChar(ch, 0xFFFF, 0);
-	}
-
-	void PrintString(const char *str)
-	{
-		PrintString(str, 0xFFFF, 0);
-	}
-
-	void PrintRawString(const char *str, const size_t len)
-	{
-		PrintRawString(str, len, 0xFFFF, 0);
-	}
+	void WriteChar(const char ch);
+	void WriteString(const char *str);
+	void WriteBuffer(const char *buf, const size_t length);
 
 	void Clear(const bool is_clear_screen);
 
 	void SetCursorRow(const uint8_t row)
 	{
 		m_cursor_x = 0;
-		m_cursor_y = libutil::ClampVal<uint8_t>(0, row, GetMaxTextH());
+		m_cursor_y = libutil::ClampVal<Uint>(0, row, m_max_text_y);
 	}
 
-	static constexpr int GetMaxTextW()
+	void SetTextColor(const uint16_t color)
 	{
-		return internal::LcdConsoleGetMaxTextW();
+		m_typewriter.SetTextColor(color);
 	}
 
-	static constexpr int GetMaxTextH()
+	void SetBgColor(const uint16_t color)
 	{
-		return internal::LcdConsoleGetMaxTextH();
+		m_typewriter.SetBgColor(color);
 	}
 
 private:
@@ -102,30 +73,19 @@ private:
 		uint16_t bg_color;
 	};
 
-	void NewChar()
-	{
-		if (++m_cursor_x >= GetMaxTextW())
-		{
-			NewLine();
-			m_cursor_x = 0;
-		}
-	}
+	inline void NewChar();
+	inline void NewLine();
 
-	void NewLine()
-	{
-		if (++m_cursor_y >= GetMaxTextH())
-		{
-			m_cursor_y = 0;
-		}
-		m_cursor_x = 0;
-	}
+	Lcd *const m_lcd;
+	LcdTypewriter m_typewriter;
+	Lcd::Rect m_region;
+	Uint m_cursor_x;
+	Uint m_cursor_y;
 
-	St7735r *const m_lcd;
-	uint8_t m_cursor_x;
-	uint8_t m_cursor_y;
+	Uint m_max_text_x;
+	Uint m_max_text_y;
 
-	CellData m_buffer[internal::LcdConsoleGetMaxTextW()
-			* internal::LcdConsoleGetMaxTextH()];
+	std::unique_ptr<CellData[]> m_buffer;
 };
 
 }
