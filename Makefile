@@ -95,6 +95,12 @@ CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4
 CCFLAGS+=-mfpu=fpv4-sp-d16 -mfloat-abi=hard
 $(info MCU sub-family = MK60F15)
 
+else ifeq ($(SCCC_MCU),MKL26Z4)
+CPPFLAGS+=-DMKL26Z4=1
+CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m0plus
+CCFLAGS+=-msoft-float -mfloat-abi=soft
+$(info MCU sub-family = MKL26Z4)
+
 else
 $(error Missing/Unknown MCU identifier '$(SCCC_MCU)' (set SCCC_MCU))
 
@@ -142,6 +148,9 @@ SRC_FILES+=$(SRC_PATH)/libbase/k60/pinout/mk60d10_lqfp144.cpp
 
 else ifeq ($(SCCC_MCU),MK60F15)
 SRC_FILES+=$(SRC_PATH)/libbase/k60/pinout/mk60f15_lqfp144.cpp
+
+else ifeq ($(SCCC_MCU),MKL26Z4)
+SRC_FILES+=$(SRC_PATH)/libbase/kl26/pinout/mkl26z4_lqfp100.cpp
 
 endif
 
