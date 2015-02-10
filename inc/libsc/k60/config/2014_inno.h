@@ -17,6 +17,7 @@
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
 #define LIBSC_USE_LCD 1
+#define LIBSC_USE_ADC 4
 
 #define LIBSC_LCD_RST libbase::k60::Pin::Name::kPte3
 #define LIBSC_LCD_DC libbase::k60::Pin::Name::kPte0
