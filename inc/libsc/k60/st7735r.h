@@ -38,6 +38,8 @@ public:
 	{
 		/// Revert the screen upside down
 		bool is_revert = false;
+		/// Whether using a BGR panel instead of a RGB one
+		bool is_bgr = false;
 	};
 
 	explicit St7735r(const Config &config);

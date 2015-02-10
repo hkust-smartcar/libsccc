@@ -54,7 +54,6 @@
 #define LIBSC_ST7735R_CS libbase::k60::Pin::Name::kPte4
 #define LIBSC_ST7735R_SDAT libbase::k60::Pin::Name::kPte1
 #define LIBSC_ST7735R_SCLK libbase::k60::Pin::Name::kPte2
-#define LIBSC_ST7735R_BGR_PANEL 1
 
 #define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtd7
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtd6

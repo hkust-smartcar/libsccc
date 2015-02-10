@@ -116,9 +116,10 @@ void St7735r::InitMadctl(const Config &config)
 		SET_BIT(param, 7);
 		SET_BIT(param, 6);
 	}
-#ifdef LIBSC_ST7735R_BGR_PANEL
-	SET_BIT(param, 4);
-#endif
+	if (config.is_bgr)
+	{
+		SET_BIT(param, 4);
+	}
 
 	SEND_COMMAND(ST7735R_MADCTL);
 	SEND_DATA(param);
