@@ -56,9 +56,19 @@ public:
 		m_fg_color = color;
 	}
 
+	uint16_t GetTextColor()
+	{
+		return m_fg_color;
+	}
+
 	void SetBgColor(const uint16_t color)
 	{
 		m_bg_color = color;
+	}
+
+	uint16_t GetBgColor()
+	{
+		return m_bg_color;
 	}
 
 	static constexpr Uint GetFontW()
