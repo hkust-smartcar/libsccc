@@ -348,7 +348,7 @@ void St7735r::SetActiveRect()
 	SEND_DATA(m_region.y + m_region.h - 1);
 }
 
-void St7735r::Send(const bool is_cmd, const uint8_t data)
+inline void St7735r::Send(const bool is_cmd, const uint8_t data)
 {
 	m_dc.Set(!is_cmd);
 	m_spi.ExchangeData(0, data);

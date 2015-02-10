@@ -83,7 +83,7 @@ private:
 	static constexpr Uint kH = 160;
 
 	void SetActiveRect();
-	void Send(const bool is_cmd, const uint8_t data);
+	inline void Send(const bool is_cmd, const uint8_t data);
 
 	SpiMaster m_spi;
 	libbase::k60::Gpo m_rst;
