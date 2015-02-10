@@ -41,7 +41,11 @@ public:
 
 	explicit St7735r(const Config &config);
 
-	void SetRegion(const Rect &rect) override;
+	void SetRegion(const Rect &rect) override
+	{
+		m_region = rect;
+	}
+
 	Rect GetRegion() override
 	{
 		return m_region;
