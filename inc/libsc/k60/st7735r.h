@@ -40,6 +40,8 @@ public:
 		bool is_revert = false;
 		/// Whether using a BGR panel instead of a RGB one
 		bool is_bgr = false;
+		/// Frame rate of the screen
+		uint8_t fps = 60;
 	};
 
 	explicit St7735r(const Config &config);
@@ -88,7 +90,7 @@ private:
 	static constexpr Uint kH = 160;
 
 	void InitMadctl(const Config &config);
-	void InitFrmctr();
+	void InitFrmctr(const Config &config);
 	void InitPwctr();
 	void InitGamma();
 

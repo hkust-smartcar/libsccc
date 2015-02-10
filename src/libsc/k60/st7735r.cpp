@@ -125,13 +125,43 @@ void St7735r::InitMadctl(const Config &config)
 	SEND_DATA(param);
 }
 
-void St7735r::InitFrmctr()
+void St7735r::InitFrmctr(const Config &config)
 {
-	// ~60Hz
+	const Uint line = 160;
+	const uint32_t fosc = 850000;
+	Uint best_rtna = 0;
+	Uint best_fpa = 0;
+	Uint best_bpa = 0;
+	Uint min_diff = static_cast<Uint>(-1);
+	for (uint32_t rtna = 0; rtna <= 0x0F; ++rtna)
+	{
+		const uint32_t this_rtna = rtna * 2 + 40;
+		for (Uint fpa = 1; fpa <= 0x3F; ++fpa)
+		{
+			for (Uint bpa = 1; bpa <= 0x3F; ++bpa)
+			{
+				const Uint this_rate = fosc / (this_rtna * (line + fpa + bpa + 2));
+				const Uint this_diff = abs((int32_t)(this_rate - config.fps));
+				if (this_diff < min_diff)
+				{
+					min_diff = this_diff;
+					best_rtna = rtna;
+					best_fpa = fpa;
+					best_bpa = bpa;
+				}
+
+				if (min_diff == 0)
+				{
+					break;
+				}
+			}
+		}
+	}
+
 	SEND_COMMAND(ST7735R_FRMCTR1);
-	SEND_DATA(0x05);
-	SEND_DATA(0x3C);
-	SEND_DATA(0x3C);
+	SEND_DATA(best_rtna);
+	SEND_DATA(best_fpa);
+	SEND_DATA(best_bpa);
 }
 
 void St7735r::InitPwctr()
