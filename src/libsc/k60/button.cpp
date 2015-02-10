@@ -86,6 +86,11 @@ Gpi::Config GetGpiConfig(const Button::Config &config,
 	Gpi::Config product;
 	product.pin = GetPin(config.id);
 	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	if (config.is_use_pull_resistor)
+	{
+		product.config.set(Pin::Config::ConfigBit::kPullEnable);
+		product.config.set(Pin::Config::ConfigBit::kPullUp, config.is_active_low);
+	}
 	if (listener)
 	{
 		switch (config.listener_trigger)

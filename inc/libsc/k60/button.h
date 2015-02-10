@@ -35,6 +35,11 @@ public:
 
 		uint8_t id;
 		bool is_active_low;
+		/**
+		 * If set, the internal resistor will be used to hold the pin deserted.
+		 * Useful if the button is not connected to one on the board
+		 */
+		bool is_use_pull_resistor = false;
 		Listener listener;
 		/// When to trigger the listener, ignored if @a listener is not set
 		Trigger listener_trigger;
