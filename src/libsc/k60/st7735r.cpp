@@ -200,7 +200,7 @@ void St7735r::FillGrayscalePixel(const uint8_t *pixel, const size_t length)
 	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
+	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
 	// We add the original region w to column_beg, so length_ here also should
 	// be the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
@@ -226,7 +226,7 @@ void St7735r::FillPixel(const uint16_t *pixel, const size_t length)
 	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
+	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
 	// We add the original region w to column_beg, so length_ here also should
 	// be the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
@@ -251,7 +251,7 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
+	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
 	// We add the original region w to column_beg, so length_ here also should
 	// be the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
@@ -284,7 +284,7 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
 	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
+	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
 	// We add the original region w to column_beg, so length_ here also should
 	// be the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, bit_length);
