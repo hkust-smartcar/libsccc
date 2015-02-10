@@ -6,6 +6,7 @@
  * Refer to LICENSE for details
  */
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -33,7 +34,9 @@ LcdTypewriter::LcdTypewriter(const Config &config)
 		: m_lcd(config.lcd),
 		  m_fg_color(config.text_color),
 		  m_bg_color(config.bg_color)
-{}
+{
+	assert(config.lcd);
+}
 
 void LcdTypewriter::WriteChar(const char ch)
 {

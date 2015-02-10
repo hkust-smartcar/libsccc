@@ -35,7 +35,7 @@ public:
 
 	struct Config
 	{
-		Lcd *lcd;
+		Lcd *lcd = nullptr;
 		uint16_t text_color = 0xFFFF;
 		uint16_t bg_color = 0;
 	};
