@@ -40,7 +40,7 @@ LcdTypewriter::LcdTypewriter(const Config &config)
 
 void LcdTypewriter::WriteChar(const char ch)
 {
-	WriteBuffer(&ch, 1);
+	WriteOneLineBuffer(&ch, 1);
 }
 
 void LcdTypewriter::WriteString(const char *str)
@@ -50,6 +50,49 @@ void LcdTypewriter::WriteString(const char *str)
 
 void LcdTypewriter::WriteBuffer(const char *buf, const size_t length)
 {
+	if (length == 0)
+	{
+		return;
+	}
+
+	const Lcd::Rect &region = m_lcd->GetRegion();
+	size_t start = 0;
+	size_t count = 0;
+	size_t y = region.y;
+	size_t h = region.h;
+	for (size_t i = 0; i < length; ++i)
+	{
+		if (buf[i] == '\n')
+		{
+			m_lcd->SetRegion({region.x, y, region.w, h});
+			WriteOneLineBuffer(buf + start, count);
+			start = i + 1;
+			count = 0;
+			y += kFontH;
+			h -= kFontH;
+		}
+		else
+		{
+			++count;
+		}
+	}
+	// Last line
+	if (count > 0)
+	{
+		m_lcd->SetRegion({region.x, y, region.w, h});
+		WriteOneLineBuffer(buf + start, count);
+	}
+
+	m_lcd->SetRegion(region);
+}
+
+void LcdTypewriter::WriteOneLineBuffer(const char *buf, const size_t length)
+{
+	if (length == 0)
+	{
+		return;
+	}
+
 	unique_ptr<const Byte*> font_data(new const Byte*[length]);
 	for (size_t i = 0; i < length; ++i)
 	{

@@ -67,13 +67,15 @@ public:
 	}
 
 private:
-	Lcd *m_lcd;
-	uint16_t m_fg_color;
-	uint16_t m_bg_color;
-
 	static constexpr uint8_t kFontW = 8;
 	static constexpr uint8_t kFontH = 16;
 	static const Byte kFontData[];
+
+	void WriteOneLineBuffer(const char *buf, const size_t length);
+
+	Lcd *m_lcd;
+	uint16_t m_fg_color;
+	uint16_t m_bg_color;
 };
 
 }
