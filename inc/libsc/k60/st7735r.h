@@ -68,6 +68,8 @@ public:
 	void Clear() override;
 	void Clear(const uint16_t color) override;
 
+	void SetInvertColor(const bool flag);
+
 	static constexpr Uint GetW()
 	{
 		return kW;

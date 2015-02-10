@@ -328,6 +328,18 @@ void St7735r::Clear(const uint16_t color)
 	FillColor(color);
 }
 
+void St7735r::SetInvertColor(const bool flag)
+{
+	if (flag)
+	{
+		SEND_COMMAND(ST7735R_INVON);
+	}
+	else
+	{
+		SEND_COMMAND(ST7735R_INVOFF);
+	}
+}
+
 void St7735r::SetActiveRect()
 {
 	SEND_COMMAND(ST7735R_CASET);
