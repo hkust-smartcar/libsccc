@@ -43,8 +43,8 @@ namespace
 SpiMaster::Config GetSpiConfig()
 {
 	SpiMaster::Config config;
-	config.sout_pin = LIBSC_LCD_SDAT;
-	config.sck_pin = LIBSC_LCD_SCLK;
+	config.sout_pin = LIBSC_ST7735R_SDAT;
+	config.sck_pin = LIBSC_ST7735R_SCLK;
 	// Max freq of ST7735R == 15MHz
 	config.baud_rate_khz = 15000;
 	config.frame_size = 8;
@@ -52,14 +52,14 @@ SpiMaster::Config GetSpiConfig()
 	config.is_sck_capture_first = true;
 	config.is_msb_firt = true;
 
-	config.slaves[0].cs_pin = LIBSC_LCD_CS;
+	config.slaves[0].cs_pin = LIBSC_ST7735R_CS;
 	return config;
 }
 
 Gpo::Config GetRstConfig()
 {
 	Gpo::Config config;
-	config.pin = LIBSC_LCD_RST;
+	config.pin = LIBSC_ST7735R_RST;
 	config.is_high = true;
 	return config;
 }
@@ -67,7 +67,7 @@ Gpo::Config GetRstConfig()
 Gpo::Config GetDcConfig()
 {
 	Gpo::Config config;
-	config.pin = LIBSC_LCD_DC;
+	config.pin = LIBSC_ST7735R_DC;
 	config.is_high = true;
 	return config;
 }
