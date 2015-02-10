@@ -21,7 +21,7 @@
 #define ST7735R_RAMWR 0x2C // Memory Write
 #define ST7735R_MADCTL 0x36 // Memory Data Access Control
 #define ST7735R_COLMOD 0x3A // Interface Pixel Format
-#define ST7735R_FRMCTRL1 0xB1 // Frame Rate Control (in normal mode)
+#define ST7735R_FRMCTR1 0xB1 // Frame Rate Control (in normal mode)
 #define ST7735R_INVCTR 0xB4 // Display Inversion Control
 #define ST7735R_PWCTR1 0xC0 // Power Control 1
 #define ST7735R_PWCTR2 0xC1 // Power Control 2
