@@ -38,6 +38,11 @@ public:
 		Lcd *lcd = nullptr;
 		uint16_t text_color = 0xFFFF;
 		uint16_t bg_color = 0;
+		/**
+		 * Start a newline when no more horizontal space left. If set, a newline
+		 * is always preferred over a halfly printed character
+		 */
+		bool is_text_wrap = false;
 	};
 
 	explicit LcdTypewriter(const Config &config);
@@ -76,6 +81,7 @@ private:
 	Lcd *m_lcd;
 	uint16_t m_fg_color;
 	uint16_t m_bg_color;
+	bool m_is_text_wrap;
 };
 
 }

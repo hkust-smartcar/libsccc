@@ -33,7 +33,8 @@ namespace k60
 LcdTypewriter::LcdTypewriter(const Config &config)
 		: m_lcd(config.lcd),
 		  m_fg_color(config.text_color),
-		  m_bg_color(config.bg_color)
+		  m_bg_color(config.bg_color),
+		  m_is_text_wrap(config.is_text_wrap)
 {
 	assert(config.lcd);
 }
@@ -58,18 +59,28 @@ void LcdTypewriter::WriteBuffer(const char *buf, const size_t length)
 	const Lcd::Rect &region = m_lcd->GetRegion();
 	size_t start = 0;
 	size_t count = 0;
+	const size_t max_count = std::max<size_t>(region.w / kFontW, 1);
 	size_t y = region.y;
 	size_t h = region.h;
 	for (size_t i = 0; i < length; ++i)
 	{
-		if (buf[i] == '\n')
+		if (buf[i] == '\n' || (m_is_text_wrap && count == max_count))
 		{
 			m_lcd->SetRegion({region.x, y, region.w, h});
 			WriteOneLineBuffer(buf + start, count);
-			start = i + 1;
 			count = 0;
 			y += kFontH;
 			h -= kFontH;
+			if (buf[i] == '\n')
+			{
+				start = i + 1;
+			}
+			else
+			{
+				start = i;
+				// Hack to compensate the ++i after the loop
+				--i;
+			}
 		}
 		else
 		{
