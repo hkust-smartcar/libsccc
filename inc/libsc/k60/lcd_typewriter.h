@@ -29,6 +29,8 @@ namespace k60
 class LcdTypewriter
 {
 public:
+	// Conditionally select Lcd implementation here. Should prevent working with
+	// the interface directly (performance)
 	typedef St7735r Lcd;
 
 	struct Config
