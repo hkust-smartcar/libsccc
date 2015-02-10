@@ -319,10 +319,7 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 void St7735r::Clear()
 {
 	ClearRegion();
-	m_rst.Clear();
-	System::DelayMs(100);
-	m_rst.Set();
-	System::DelayMs(100);
+	FillColor(0);
 }
 
 void St7735r::Clear(const uint16_t color)
