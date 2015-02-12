@@ -67,6 +67,7 @@ private:
 	inline void Delay();
 
 	uint16_t m_scl_low_timeout;
+	bool m_is_use_repeated_start;
 	uint32_t m_delay_us;
 
 	Gpio m_scl;

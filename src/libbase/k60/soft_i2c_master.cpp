@@ -63,6 +63,7 @@ inline void SoftI2cMaster::Delay()
 
 SoftI2cMaster::SoftI2cMaster(const Config &config)
 		: m_scl_low_timeout(config.scl_low_timeout),
+		  m_is_use_repeated_start(config.is_use_repeated_start),
 		  m_delay_us(config.delay_us),
 		  m_scl(GetSclConfig(config)),
 		  m_sda(GetSdaConfig(config)),
@@ -77,6 +78,7 @@ SoftI2cMaster::SoftI2cMaster(SoftI2cMaster &&rhs)
 
 SoftI2cMaster::SoftI2cMaster(nullptr_t)
 		: m_scl_low_timeout(0),
+		  m_is_use_repeated_start(false),
 		  m_delay_us(0),
 		  m_scl(nullptr),
 		  m_sda(nullptr),
@@ -96,6 +98,9 @@ SoftI2cMaster& SoftI2cMaster::operator=(SoftI2cMaster &&rhs)
 		if (rhs)
 		{
 			rhs.m_is_init = false;
+
+			m_scl_low_timeout = rhs.m_scl_low_timeout;
+			m_is_use_repeated_start = rhs.m_is_use_repeated_start;
 
 			m_delay_us = rhs.m_delay_us;
 
@@ -262,6 +267,10 @@ bool SoftI2cMaster::GetByte(const Byte slave_addr, const Byte reg_addr,
 	Start();
 	SEND_BYTE_GUARDED(slave_addr << 1, false);
 	SEND_BYTE_GUARDED(reg_addr, false);
+	if (!m_is_use_repeated_start)
+	{
+		Stop();
+	}
 	Start();
 	SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, false);
 	if (!ReadByte_(false, out_byte))
@@ -287,6 +296,10 @@ vector<Byte> SoftI2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
 	Start();
 	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, {});
 	SEND_BYTE_GUARDED(reg_addr, {});
+	if (!m_is_use_repeated_start)
+	{
+		Stop();
+	}
 	Start();
 	SEND_BYTE_GUARDED(((slave_addr << 1) & 0xFE) | 0x1, {});
 	for (uint8_t i = 0; i < size - 1; ++i)

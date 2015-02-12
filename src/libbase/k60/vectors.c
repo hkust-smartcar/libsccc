@@ -45,10 +45,12 @@ extern uint32_t __SP_INIT;
 extern void __thumb_startup(void);
 
 #if MK60DZ10 || MK60D10
+#define IRQ_COUNT 0x77
+
 /* Interrupt vector table type definition */
 typedef struct {
 	void * __ptr;
-	tIsrFunc __fun[0x77];
+	tIsrFunc __fun[IRQ_COUNT];
 } tVectorTable;
 
 __attribute__ ((section (".vectortable")))
@@ -179,10 +181,12 @@ const tVectorTable __vect_table = { /* Interrupt vector table */
 };
 
 #elif MK60F15
+#define IRQ_COUNT 0x79
+
 /* Interrupt vector table type definition */
 typedef struct {
 	void * __ptr;
-	tIsrFunc __fun[0x79];
+	tIsrFunc __fun[IRQ_COUNT];
 } tVectorTable;
 
 __attribute__ ((section (".vectortable")))
@@ -314,10 +318,12 @@ const tVectorTable __vect_table = { /* Interrupt vector table */
 	}
 };
 
+#else
+#error Unknown MCU
+
 #endif
 
 __attribute__ ((section (".vectortableram"))) tVectorTable __vect_ram; /* Interrupt vector table in RAM */
-
 
 void InitVectorTable(void)
 {
@@ -332,6 +338,14 @@ void InitVectorTable(void)
 	assert((uint32_t)(&__vect_ram) % 0x200 == 0);   //Vector Table base offset field. This value must be a multiple of 0x200.
 	/* Write the VTOR with the new value */
 	SCB->VTOR = (uint32_t)(&__vect_ram);
+}
+
+void InitIrqPriority(void)
+{
+	for (Uint i = 0; i < IRQ_COUNT; ++i)
+	{
+		NVIC_SetPriority(i, __BASE_IRQ_PRIORITY);
+	}
 }
 
 void SetIsr(IRQn_Type irq, tIsrFunc handler)
