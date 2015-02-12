@@ -12,12 +12,14 @@
 #define LIBSC_USE_BUTTON 2
 //#define LIBSC_USE_BUZZER 1
 #define LIBSC_USE_JOYSTICK 1
+#define LIBSC_USE_LCD 1
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_ADC 4
+#define LIBSC_USE_LINEAR_CCD 1
 
 #define LIBSC_LCD_RST libbase::k60::Pin::Name::kPte3
 #define LIBSC_LCD_DC libbase::k60::Pin::Name::kPte0
@@ -56,6 +58,12 @@
 #define LIBSC_ALTERNATE_MOTOR_CW_PWM 1
 
 #define LIBSC_SERVO0 libbase::k60::Pin::Name::kPta10
+
+#define LIBSC_ST7735R_RST libbase::k60::Pin::Name::kPte3
+#define LIBSC_ST7735R_DC libbase::k60::Pin::Name::kPte0
+#define LIBSC_ST7735R_CS libbase::k60::Pin::Name::kPte4
+#define LIBSC_ST7735R_SDAT libbase::k60::Pin::Name::kPte1
+#define LIBSC_ST7735R_SCLK libbase::k60::Pin::Name::kPte2
 
 #define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtd7
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtd6

@@ -22,6 +22,8 @@ namespace libsc
 namespace k60
 {
 
+#ifdef LIBSC_USE_UART
+
 Uart::Config JyMcuBt106::Initializer::GetUartConfig() const
 {
 	Uart::Config product = UartDevice::Initializer::GetUartConfig();
@@ -35,6 +37,13 @@ Uart::Config JyMcuBt106::Initializer::GetUartConfig() const
 JyMcuBt106::JyMcuBt106(const Config &config)
 		: UartDevice(Initializer(config))
 {}
+
+#else /* LIBSC_USE_UART */
+JyMcuBt106::JyMcuBt106(const Config&)
+		: UartDevice(nullptr)
+{}
+
+#endif /* LIBSC_USE_UART */
 
 }
 }
