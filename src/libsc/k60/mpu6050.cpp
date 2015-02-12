@@ -33,7 +33,7 @@ namespace k60
 namespace
 {
 
-SoftI2cMaster::Config GetI2CConfig()
+SoftI2cMaster::Config GetI2cConfig()
 {
 	SoftI2cMaster::Config config;
 	config.scl_pin = LIBSC_MPU6050_SCL;
@@ -44,7 +44,7 @@ SoftI2cMaster::Config GetI2CConfig()
 }
 
 Mpu6050::Mpu6050(const Config &config)
-		: m_i2c(GetI2CConfig()),
+		: m_i2c(GetI2cConfig()),
 		  m_gyro_range(config.gyro_range),
 		  m_accel_range(config.accel_range)
 {

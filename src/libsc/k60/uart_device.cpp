@@ -137,7 +137,7 @@ Uart::Config UartDevice::Initializer::GetUartConfig() const
 UartDevice::UartDevice(const Initializer &initializer)
 		: m_rx_buf{new RxBuffer},
 		  m_listener(nullptr),
-		  m_tx_buf(14),
+		  m_tx_buf(initializer.config.tx_buf_size),
 		  m_is_tx_idle(true),
 		  m_tx_dma_channel(initializer.config.tx_dma_channel),
 		  m_dma(nullptr),
@@ -424,6 +424,9 @@ struct UartDevice::RxBuffer
 {};
 
 UartDevice::UartDevice(const Initializer&)
+		: UartDevice(nullptr)
+{}
+UartDevice::UartDevice(nullptr_t)
 		: m_tx_buf(0), m_is_tx_idle(true), m_uart(nullptr)
 {
 	LOG_DL("Configured not to use UartDevice");

@@ -13,4 +13,4 @@
 #include "libbase/misc_utils_c.h"
 
 #define VOID
-#define STATE_GUARD(clz, ret) if (!(*this)) { LOG_WL(#clz " in illegal state"); return ret; }
+#define STATE_GUARD(clz, ret) if (!(*this)) { LOG_W(#clz " in illegal state @%d", __LINE__); return ret; }

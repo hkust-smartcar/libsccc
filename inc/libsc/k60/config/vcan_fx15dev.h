@@ -11,7 +11,6 @@
 
 #define LIBSC_USE_BUTTON 1
 #define LIBSC_USE_LCD 1
-#define LIBSC_USE_LCD_HW_SPI
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_OV7725 1
@@ -19,12 +18,6 @@
 #define LIBSC_USE_UART 1
 
 #define LIBSC_BUTTON0 libbase::k60::Pin::Name::kPtd7
-
-#define LIBSC_LCD_RST libbase::k60::Pin::Name::kPta13
-#define LIBSC_LCD_DC libbase::k60::Pin::Name::kPta17
-#define LIBSC_LCD_CS libbase::k60::Pin::Name::kPta14
-#define LIBSC_LCD_SDAT libbase::k60::Pin::Name::kPta16
-#define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPta15
 
 #define LIBSC_LED0 libbase::k60::Pin::Name::kPtb20
 #define LIBSC_LED1 libbase::k60::Pin::Name::kPtb21
@@ -45,6 +38,12 @@
 #define LIBSC_OV77250_DMA_CH 1
 
 #define LIBSC_SERVO0 libbase::k60::Pin::Name::kPtd0
+
+#define LIBSC_ST7735R_RST libbase::k60::Pin::Name::kPta13
+#define LIBSC_ST7735R_DC libbase::k60::Pin::Name::kPta17
+#define LIBSC_ST7735R_CS libbase::k60::Pin::Name::kPta14
+#define LIBSC_ST7735R_SDAT libbase::k60::Pin::Name::kPta16
+#define LIBSC_ST7735R_SCLK libbase::k60::Pin::Name::kPta15
 
 #define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtd7
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtd6

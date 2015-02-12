@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "libsc/k60/timer.h"
 #include "libutil/pid_controller.h"
 
 namespace libutil
@@ -24,13 +25,36 @@ public:
 	IncrementalPidController(const InT setpoint, const float kp, const float ki,
 			const float kd);
 
+	/**
+	 * Set the upper bound of i, <= 0 means unlimited i
+	 *
+	 * @param value
+	 */
+	void SetILimit(const float value)
+	{
+		m_i_limit = value;
+	}
+
+	void Reset()
+	{
+		ResetTime();
+	}
+
+	void ResetTime()
+	{
+		m_prev_time = libsc::k60::System::Time();
+	}
+
 protected:
 	void OnCalc(const InT error) override;
 	OutT GetControlOut() override;
 
 private:
+	float m_i_limit;
+
 	InT m_prev_error[2];
 	OutT m_prev_output;
+	libsc::k60::Timer::TimerInt m_prev_time;
 };
 
 }
