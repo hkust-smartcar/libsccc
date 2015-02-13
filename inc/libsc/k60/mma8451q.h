@@ -26,9 +26,9 @@ public:
 	{
 		enum struct Sensitivity
 		{
-			High = 0,
-			Mid,
-			Low
+			kHigh = 0,
+			kMid,
+			kLow
 		};
 
 		enum struct OutputDataRate
@@ -45,10 +45,10 @@ public:
 
 		enum struct PowerMode
 		{
-			Normal = 0,
-			LowNoiseLowPower,
-			HighResolution,
-			LowPower
+			kNormal = 0,
+			kLowNoiseLowPower,
+			kHighResolution,
+			kLowPower
 		};
 
 		uint8_t id;
@@ -60,9 +60,9 @@ public:
 		 * Mid - 4g
 		 * High - 8g
 		 */
-		Sensitivity sensitivity = Sensitivity::Mid;
+		Sensitivity sensitivity = Sensitivity::kMid;
 
-		PowerMode power_mode = PowerMode::LowNoiseLowPower;
+		PowerMode power_mode = PowerMode::kLowNoiseLowPower;
 		OutputDataRate output_data_rate = OutputDataRate::k200Hz;
 	};
 
