@@ -22,8 +22,7 @@ using namespace libbase::k60;
 using namespace libutil;
 using namespace std;
 
-#define PI				3.14159265f
-#define halfPI			1.57079633f
+#define HALF_PI 1.57079633f
 
 namespace libsc
 {
@@ -120,9 +119,9 @@ void Mma8451q::GetAllAngle()
 				+ m_lastAccel[(j + 2) % 3] * m_lastAccel[(j + 2) % 3];
 		m_lastAngle[j] = Math::ArcTan(m_lastAccel[j] / Math::Sqrt2(factor));
 		if (!isfinite(m_lastAngle[j]))
-			m_lastAngle[j] = halfPI;
+			m_lastAngle[j] = HALF_PI;
 	}
-	m_lastAngle[2] -= halfPI * ((m_lastAccel[2] < 0)? -1 : 1);
+	m_lastAngle[2] -= HALF_PI * ((m_lastAccel[2] < 0)? -1 : 1);
 }
 
 void Mma8451q::SetActive(const bool flag)
