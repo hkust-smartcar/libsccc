@@ -14,24 +14,10 @@
 #define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LED 4
+#define LIBSC_USE_LINEAR_CCD 1
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
-#define LIBSC_USE_LCD 1
-#define LIBSC_USE_ADC 4
-#define LIBSC_USE_LINEAR_CCD 1
-
-#define LIBSC_LCD_RST libbase::k60::Pin::Name::kPte3
-#define LIBSC_LCD_DC libbase::k60::Pin::Name::kPte0
-#define LIBSC_LCD_CS libbase::k60::Pin::Name::kPte4
-#define LIBSC_LCD_SDAT libbase::k60::Pin::Name::kPte1
-#define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPte2
-
-#define LIBSC_ST7735R_BGR_PANEL 1
-
-#define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtb0
-#define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPtb1
-#define LIBSC_LINEAR_CCD0_AD libbase::k60::Pin::Name::kPtc9
 
 #define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc1Ad17
 
@@ -51,6 +37,10 @@
 #define LIBSC_LED1 libbase::k60::Pin::Name::kPte11
 #define LIBSC_LED2 libbase::k60::Pin::Name::kPte10
 #define LIBSC_LED3 libbase::k60::Pin::Name::kPte9
+
+#define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtb0
+#define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPtb1
+#define LIBSC_LINEAR_CCD0_AD libbase::k60::Pin::Name::kPtc9
 
 #define LIBSC_MOTOR0_PWMA libbase::k60::Pin::Name::kPtc1
 #define LIBSC_MOTOR0_PWMB libbase::k60::Pin::Name::kPtc2
