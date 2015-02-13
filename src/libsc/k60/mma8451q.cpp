@@ -20,8 +20,8 @@
 // ArcSin : http://cpp.sh/7po
 //			http://cpp.sh/5fqt
 
-using namespace std;
 using namespace libbase::k60;
+using namespace std;
 
 #define PI				3.14159265f
 #define halfPI			1.57079633f
@@ -29,7 +29,6 @@ using namespace libbase::k60;
 
 namespace libsc
 {
-
 namespace k60
 {
 
@@ -164,11 +163,10 @@ bool Mma8451q::WriteRegByte(const Byte RegAddr, const Byte data)
 	return m_I2cMaster.SendByte(MMA8451Q_DEFAULT_ADDRESS, RegAddr, data);
 }
 
-Mma8451q::Mma8451q(Mma8451q::Config config)
-:
-	m_I2cMaster(GetI2cMasterConfig(config)),
-	m_Sens(config.sens),
-	m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0C)))
+Mma8451q::Mma8451q(const Mma8451q::Config &config)
+		: m_I2cMaster(GetI2cMasterConfig(config)),
+		  m_Sens(config.sens),
+		  m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0C)))
 {
 	if (config.id != 0)
 		assert(false);
@@ -186,11 +184,10 @@ Mma8451q::Mma8451q(Mma8451q::Config config)
 }
 
 Mma8451q::Mma8451q()
-:
-	m_I2cMaster(nullptr),
-	m_Sens(Config::Sensitivity::Low),
-	m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0C))),
-	m_lastAccel({ 0.0f })
+		: m_I2cMaster(nullptr),
+		  m_Sens(Config::Sensitivity::Low),
+		  m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0C))),
+		  m_lastAccel({ 0.0f })
 {}
 
 }

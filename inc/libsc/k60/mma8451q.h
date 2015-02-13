@@ -62,7 +62,7 @@ public:
 	};
 
 	explicit Mma8451q();
-	explicit Mma8451q(Mma8451q::Config config);
+	explicit Mma8451q(const Mma8451q::Config &config);
 	~Mma8451q();
 
 	bool IsConnected();
@@ -74,14 +74,6 @@ public:
 	std::array<float, 3> GetAngle();
 
 private:
-
-	libbase::k60::SoftI2cMaster m_I2cMaster;
-	Config::Sensitivity m_Sens;
-	float m_ScaleFactor;
-
-	std::array<float, 3> m_lastAccel;
-	std::array<float, 3> m_lastAngle;
-
 	// 2ms
 	void GetAllAccel();
 	// 0ms
@@ -93,8 +85,15 @@ private:
 
 	Byte ReadRegByte(const Byte RegAddr);
 	bool WriteRegByte(const Byte RegAddr, const Byte data);
-	Byte *ReadRegBytes(const Byte RegAddr, const Byte Length);
+	Byte* ReadRegBytes(const Byte RegAddr, const Byte Length);
 	bool WriteRegBytes(const Byte RegAddr, const Byte *data);
+
+	libbase::k60::SoftI2cMaster m_I2cMaster;
+	Config::Sensitivity m_Sens;
+	float m_ScaleFactor;
+
+	std::array<float, 3> m_lastAccel;
+	std::array<float, 3> m_lastAngle;
 
 };
 
