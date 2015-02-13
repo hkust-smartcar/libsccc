@@ -63,7 +63,6 @@ public:
 
 	explicit Mma8451q();
 	explicit Mma8451q(const Mma8451q::Config &config);
-	~Mma8451q();
 
 	bool IsConnected();
 
