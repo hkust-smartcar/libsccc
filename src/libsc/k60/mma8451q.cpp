@@ -65,7 +65,7 @@ SoftI2cMaster::Config GetI2cMasterConfig(const Mma8451q::Config &config)
 
 Mma8451q::Mma8451q(const Mma8451q::Config &config)
 		: m_i2c_master(GetI2cMasterConfig(config)),
-		  m_sensitivity(config.sens),
+		  m_sensitivity(config.sensitivity),
 		  m_scale_factor((float)(1 << ((Byte)m_sensitivity + 0x0C)))
 {
 	if (config.id != 0)
@@ -73,7 +73,7 @@ Mma8451q::Mma8451q(const Mma8451q::Config &config)
 
 	SetActive(false);
 
-	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (Byte)config.sens);
+	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (Byte)config.sensitivity);
 
 //	WriteRegByte(MMA8451Q_RA_CTRL_REG2, (Byte)config.power_mode);
 //

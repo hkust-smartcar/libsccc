@@ -53,9 +53,14 @@ public:
 
 		uint8_t id;
 
-		/** Maximun acceleration:
-		 *  Low - 2g, Mid - 4g, High - 8g */
-		Sensitivity sens = Sensitivity::Mid;
+		/**
+		 * Set the sensitivity of the accelerometer as follows:
+		 * Sensitivity - Maximun acceleration
+		 * Low - 2g
+		 * Mid - 4g
+		 * High - 8g
+		 */
+		Sensitivity sensitivity = Sensitivity::Mid;
 
 		PowerMode power_mode = PowerMode::LowNoiseLowPower;
 		OutputDataRate output_data_rate = OutputDataRate::k200Hz;
