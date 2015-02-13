@@ -68,9 +68,6 @@ Mma8451q::Mma8451q(const Mma8451q::Config &config)
 		  m_sensitivity(config.sensitivity),
 		  m_scale_factor((float)(1 << ((Byte)m_sensitivity + 0x0C)))
 {
-	if (config.id != 0)
-		assert(false);
-
 	SetActive(false);
 
 	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (Byte)config.sensitivity);
