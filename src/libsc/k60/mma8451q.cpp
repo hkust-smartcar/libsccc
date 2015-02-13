@@ -5,6 +5,7 @@
  *      Author: Peter
  */
 
+#include "libsc/config.h"
 #include "libsc/k60/mma8451q.h"
 #include "libsc/device_h/mma8451q.h"
 
@@ -24,14 +25,38 @@ namespace libsc
 namespace k60
 {
 
-SoftI2cMaster::Config GetI2cMasterConfig(Mma8451q::Config config)
+namespace
 {
-	SoftI2cMaster::Config Masterconfig;
-//	config.scl_pin = Pin::Name::kPta4;
-//	config.sda_pin = Pin::Name::kPta6;
-	Masterconfig.scl_pin = config.scl_pin;
-	Masterconfig.sda_pin = config.sda_pin;
+
+#if LIBSC_USE_MMA8451Q == 1
+inline Pin::Name GetSclPin(const uint8_t id)
+{
+	if (id != 0)
+	{
+		assert(false);
+	}
+	return LIBSC_MMA8451Q0_SCL;
+}
+
+inline Pin::Name GetSdaPin(const uint8_t id)
+{
+	if (id != 0)
+	{
+		assert(false);
+	}
+	return LIBSC_MMA8451Q0_SDA;
+}
+
+#endif
+
+SoftI2cMaster::Config GetI2cMasterConfig(const Mma8451q::Config &config)
+{
+	SoftI2cMaster::Config product;
+	product.scl_pin = GetSclPin(config.id);
+	product.sda_pin = GetSdaPin(config.id);
 	return Masterconfig;
+}
+
 }
 
 bool Mma8451q::IsConnected()
