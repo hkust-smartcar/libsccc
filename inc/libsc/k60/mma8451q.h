@@ -8,8 +8,10 @@
 
 #pragma once
 
-#include <array>
 #include <cstdint>
+
+#include <array>
+#include <vector>
 
 #include "libbase/k60/soft_i2c_master.h"
 #include "libbase/misc_types.h"
@@ -93,7 +95,7 @@ private:
 
 	Byte ReadRegByte(const Byte RegAddr);
 	bool WriteRegByte(const Byte RegAddr, const Byte data);
-	Byte* ReadRegBytes(const Byte RegAddr, const Byte Length);
+	std::vector<Byte> ReadRegBytes(const Byte RegAddr, const Byte Length);
 	bool WriteRegBytes(const Byte RegAddr, const Byte *data);
 
 	libbase::k60::SoftI2cMaster m_i2c_master;

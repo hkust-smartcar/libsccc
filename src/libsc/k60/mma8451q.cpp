@@ -11,6 +11,7 @@
 #include <cstdint>
 
 #include <array>
+#include <vector>
 
 #include "libsc/config.h"
 #include "libsc/device_h/mma8451q.h"
@@ -100,9 +101,7 @@ bool Mma8451q::Update()
 
 void Mma8451q::GetAllAccel()
 {
-	Byte *bytes;
-
-	bytes = ReadRegBytes(MMA8451Q_RA_REG_OUT_ALL, 0x06);
+	const vector<Byte> &bytes = ReadRegBytes(MMA8451Q_RA_REG_OUT_ALL, 0x06);
 
 	for (Byte i = 0, j = 0; i < 3; i++, j += 2)
 		m_last_accel[i] = (int16_t)(bytes[j] << 8 | bytes[j + 1]) / m_scale_factor;
@@ -136,9 +135,9 @@ void Mma8451q::SetActive(const bool flag)
 	WriteRegByte(MMA8451Q_RA_CTRL_REG1, reg);
 }
 
-Byte *Mma8451q::ReadRegBytes(const Byte RegAddr, const Byte Length)
+vector<Byte> Mma8451q::ReadRegBytes(const Byte RegAddr, const Byte Length)
 {
-	return m_i2c_master.GetBytes(MMA8451Q_DEFAULT_ADDRESS, RegAddr, Length).data();
+	return m_i2c_master.GetBytes(MMA8451Q_DEFAULT_ADDRESS, RegAddr, Length);
 }
 
 bool Mma8451q::WriteRegBytes(const Byte RegAddr, const Byte *data)
