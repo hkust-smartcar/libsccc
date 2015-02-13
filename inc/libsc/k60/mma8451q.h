@@ -19,12 +19,8 @@
 #include "libbase/k60/soft_i2c_master.h"
 #include "libbase/misc_types.h"
 
-using namespace std;
-using namespace libbase::k60;
-
 namespace libsc
 {
-
 namespace k60
 {
 
@@ -32,7 +28,7 @@ class Mma8451q
 {
 public:
 
-	struct Config : SoftI2cMaster::Config
+	struct Config : libbase::k60::SoftI2cMaster::Config
 	{
 		enum struct Sensitivity
 		{
@@ -80,17 +76,17 @@ public:
 	// 13ms
 	bool Update();
 
-	array<float, 3> GetAccel();
-	array<float, 3> GetAngle();
+	std::array<float, 3> GetAccel();
+	std::array<float, 3> GetAngle();
 
 private:
 
-	SoftI2cMaster 			m_I2cMaster;
+	libbase::k60::SoftI2cMaster 			m_I2cMaster;
 	Config::Sensitivity 	m_Sens;
 	float					m_ScaleFactor;
 
-	array<float, 3> m_lastAccel;
-	array<float, 3> m_lastAngle;
+	std::array<float, 3> m_lastAccel;
+	std::array<float, 3> m_lastAngle;
 
 	// 2ms
 	void GetAllAccel();
