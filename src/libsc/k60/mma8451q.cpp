@@ -148,15 +148,6 @@ vector<Byte> Mma8451q::ReadRegBytes(const Byte reg, const Byte length)
 	return data;
 }
 
-void Mma8451q::WriteRegBytes(const Byte reg, const Byte *data)
-{
-	if (!m_i2c_master.SendBytes(MMA8451Q_DEFAULT_ADDRESS, reg,
-			vector<Byte>(data, data + sizeof(data) / sizeof(data[0]))))
-	{
-		LOG_W("MMA8451Q Failed sending 0x%X", reg);
-	}
-}
-
 Byte Mma8451q::ReadRegByte(const Byte reg)
 {
 	Byte data = 0;
