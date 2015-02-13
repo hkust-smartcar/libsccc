@@ -1,23 +1,23 @@
 /*
  * mma8451q.h
  *
- *  Created on: Jan 16, 2015
- *      Author: Peter
+ * Author: Peter
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
-#ifndef INC_LIBSC_K60_MMA8451Q_H_
-#define INC_LIBSC_K60_MMA8451Q_H_
+#pragma once
 
-#include <assert.h>
-#include <libbase/k60/soft_i2c_master.h>
-#include <libbase/k60/pin.h>
-#include <libbase/k60/dwt.h>
-
-#include <vector>
-#include <cstring>
-#include <cfloat>
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <cstring>
+
+#include <array>
+
+#include "libbase/k60/pin.h"
+#include "libbase/k60/soft_i2c_master.h"
+#include "libbase/misc_types.h"
 
 using namespace std;
 using namespace libbase::k60;
@@ -111,5 +111,3 @@ private:
 }
 
 }
-
-#endif /* INC_LIBSC_K60_MMA8451Q_H_ */
