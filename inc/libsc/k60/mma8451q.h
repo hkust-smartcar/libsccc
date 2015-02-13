@@ -27,8 +27,7 @@ namespace k60
 class Mma8451q
 {
 public:
-
-	struct Config : libbase::k60::SoftI2cMaster::Config
+	struct Config
 	{
 		enum struct Sensitivity
 		{
