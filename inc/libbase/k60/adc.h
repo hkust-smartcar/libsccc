@@ -190,9 +190,6 @@ public:
 	 * mux_src and src:<br>
 	 * Dma::Config::minor_bytes = 1 or 2 (depending on the resolution)
 	 *
-	 * Tx IRQ will be disabled after invoking this method and needed to be
-	 * enabled manually
-	 *
 	 * @note To use DMA, Config::conversion_isr must NOT be set for this Adc.
 	 * Otherwise, the operation will fail and no changes would be made to
 	 * @a config
