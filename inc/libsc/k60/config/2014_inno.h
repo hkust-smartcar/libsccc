@@ -14,14 +14,11 @@
 #define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LED 4
+#define LIBSC_USE_LINEAR_CCD 1
+#define LIBSC_USE_MMA8451Q 1
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
-#define LIBSC_USE_LINEAR_CCD 1
-
-#define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtb0
-#define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPtb1
-#define LIBSC_LINEAR_CCD0_AD libbase::k60::Pin::Name::kPtc9
 
 #define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc1Ad17
 
@@ -41,6 +38,13 @@
 #define LIBSC_LED1 libbase::k60::Pin::Name::kPte11
 #define LIBSC_LED2 libbase::k60::Pin::Name::kPte10
 #define LIBSC_LED3 libbase::k60::Pin::Name::kPte9
+
+#define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtb0
+#define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPtb1
+#define LIBSC_LINEAR_CCD0_AD libbase::k60::Pin::Name::kPtc9
+
+#define LIBSC_MMA8451Q0_SCL libbase::k60::Pin::Name::kPta4
+#define LIBSC_MMA8451Q0_SDA libbase::k60::Pin::Name::kPta6
 
 #define LIBSC_MOTOR0_PWMA libbase::k60::Pin::Name::kPtc1
 #define LIBSC_MOTOR0_PWMB libbase::k60::Pin::Name::kPtc2
