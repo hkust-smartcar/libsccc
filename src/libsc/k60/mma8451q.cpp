@@ -183,13 +183,5 @@ Mma8451q::Mma8451q(const Mma8451q::Config &config)
 	WriteRegByte(MMA8451Q_RA_CTRL_REG1, ReadRegByte(MMA8451Q_RA_CTRL_REG1) | MMA8451Q_CR1_F_ACTIVE);
 }
 
-Mma8451q::Mma8451q()
-		: m_I2cMaster(nullptr),
-		  m_Sens(Config::Sensitivity::Low),
-		  m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0C))),
-		  m_lastAccel({ 0.0f })
-{}
-
 }
-
 }

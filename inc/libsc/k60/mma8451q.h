@@ -61,7 +61,6 @@ public:
 		ODR output_data_rate = ODR::k200Hz;
 	};
 
-	explicit Mma8451q();
 	explicit Mma8451q(const Mma8451q::Config &config);
 
 	bool IsConnected();
