@@ -1,13 +1,21 @@
 /*
  * mma8451q.cpp
  *
- *  Created on: Jan 16, 2015
- *      Author: Peter
+ * Author: Peter
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
+#include <cassert>
+#include <cmath>
+#include <cstdint>
+
+#include <array>
+
 #include "libsc/config.h"
-#include "libsc/k60/mma8451q.h"
 #include "libsc/device_h/mma8451q.h"
+#include "libsc/k60/mma8451q.h"
+#include "libutil/misc.h"
 
 // ArcSin : http://cpp.sh/7po
 //			http://cpp.sh/5fqt

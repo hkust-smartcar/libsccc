@@ -8,14 +8,9 @@
 
 #pragma once
 
-#include <cassert>
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
-
 #include <array>
+#include <cstdint>
 
-#include "libbase/k60/pin.h"
 #include "libbase/k60/soft_i2c_master.h"
 #include "libbase/misc_types.h"
 
@@ -80,9 +75,9 @@ public:
 
 private:
 
-	libbase::k60::SoftI2cMaster 			m_I2cMaster;
-	Config::Sensitivity 	m_Sens;
-	float					m_ScaleFactor;
+	libbase::k60::SoftI2cMaster m_I2cMaster;
+	Config::Sensitivity m_Sens;
+	float m_ScaleFactor;
 
 	std::array<float, 3> m_lastAccel;
 	std::array<float, 3> m_lastAngle;
