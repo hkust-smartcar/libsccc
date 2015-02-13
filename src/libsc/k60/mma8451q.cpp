@@ -15,17 +15,15 @@
 #include "libsc/config.h"
 #include "libsc/device_h/mma8451q.h"
 #include "libsc/k60/mma8451q.h"
+#include "libutil/math.h"
 #include "libutil/misc.h"
 
-// ArcSin : http://cpp.sh/7po
-//			http://cpp.sh/5fqt
-
 using namespace libbase::k60;
+using namespace libutil;
 using namespace std;
 
 #define PI				3.14159265f
 #define halfPI			1.57079633f
-#define SQRT_MAGIC_F	0x5F3759DF
 
 namespace libsc
 {
@@ -98,37 +96,11 @@ void Mma8451q::GetAllAngle()
 {
 	for (uint8_t j = 0; j < 3; j++)
 	{
-		m_lastAngle[j] = ArcTan(m_lastAccel[j] / Sqrt2(m_lastAccel[(j + 1) % 3] * m_lastAccel[(j + 1) % 3] + m_lastAccel[(j + 2) % 3] * m_lastAccel[(j + 2) % 3]));
+		m_lastAngle[j] = Math::ArcTan(m_lastAccel[j] / Math::Sqrt2(m_lastAccel[(j + 1) % 3] * m_lastAccel[(j + 1) % 3] + m_lastAccel[(j + 2) % 3] * m_lastAccel[(j + 2) % 3]));
 		if (!isfinite(m_lastAngle[j]))
 			m_lastAngle[j] = halfPI;
 	}
 	m_lastAngle[2] -= halfPI * ((m_lastAccel[2] < 0)? -1 : 1);
-}
-
-/* Formula From Cecil Hastings */
-float Mma8451q::ArcTan(float x)
-{
-	float y = (fabs(x) - 1) / (fabs(x) + 1);
-	float z = y * y;
-    return (.785398f + (.995354f + (-.288679f + .079331f * z) * z) * y) * ((x < 0)? -1 : 1);
-}
-
-float Mma8451q::ArcSin(float x)
-{
-	return (1.570796f - sqrt(1 - x) * (1.570723f - x * (0.212114f + x *( 0.074261f + x * (- 0.018729f)))));
-}
-
-float Mma8451q::Sqrt2(const float x)
-{
-	const float xhalf = 0.5f * x;
-	union // get bits for floating value
-	{
-		float x;
-		int i;
-	} u;
-	u.x = x;
-	u.i = SQRT_MAGIC_F - (u.i >> 1);  // gives initial guess y0
-	return x * u.x * (1.5f - xhalf * u.x * u.x);// Newton step, repeating increases accuracy
 }
 
 Byte *Mma8451q::ReadRegBytes(const Byte RegAddr, const Byte Length)

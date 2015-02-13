@@ -84,10 +84,6 @@ private:
 	// 0ms
 	void GetAllAngle();
 
-	float ArcTan(float x);
-	float ArcSin(float x);
-	float Sqrt2(const float x);
-
 	Byte ReadRegByte(const Byte RegAddr);
 	bool WriteRegByte(const Byte RegAddr, const Byte data);
 	Byte* ReadRegBytes(const Byte RegAddr, const Byte Length);
