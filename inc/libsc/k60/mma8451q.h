@@ -68,8 +68,15 @@ public:
 	// 13ms
 	bool Update();
 
-	std::array<float, 3> GetAccel();
-	std::array<float, 3> GetAngle();
+	const std::array<float, 3>& GetAccel() const
+	{
+		return m_lastAccel;
+	}
+
+	const std::array<float, 3>& GetAngle() const
+	{
+		return m_lastAngle;
+	}
 
 private:
 	// 2ms

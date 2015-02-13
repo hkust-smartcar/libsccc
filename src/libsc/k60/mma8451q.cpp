@@ -84,16 +84,6 @@ bool Mma8451q::Update()
 	return false;
 }
 
-array<float, 3> Mma8451q::GetAccel()
-{
-	return m_lastAccel;
-}
-
-array<float, 3> Mma8451q::GetAngle()
-{
-	return m_lastAngle;
-}
-
 void Mma8451q::GetAllAccel()
 {
 	Byte *bytes;
