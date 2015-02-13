@@ -50,7 +50,7 @@ bool DmaMux::SetEnableSource(const Source src, const Uint channel)
 		SET_BIT(reg, DMAMUX_CHCFG_ENBL_SHIFT);
 
 		// Each MUX handles 16 DMA channel
-		const uint8_t src_num = PINOUT::GetDmaMuxSource(src)[channel / 16];
+		const uint8_t src_num = PINOUT::GetDmaMuxSource(src, channel / 16);
 		if (src_num == static_cast<uint8_t>(-1))
 		{
 			assert(false);

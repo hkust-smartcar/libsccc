@@ -534,61 +534,62 @@ Pin::Config::MuxControl Mk60d10Lqfp144::GetFtmQdMux(const Pin::Name pin)
 	}
 }
 
-array<uint8_t, PINOUT_DMA_MUX_COUNT> Mk60d10Lqfp144::GetDmaMuxSource(
-		const DmaMux::Source src)
+uint8_t Mk60d10Lqfp144::GetDmaMuxSource(const DmaMux::Source src, const Uint mux)
 {
+	assert(mux < PINOUT_DMA_MUX_COUNT);
+
 	if ((Uint)src >= (Uint)DmaMux::Source::kUart0Rx
 			&& (Uint)src <= (Uint)DmaMux::Source::kUart5Tx)
 	{
-		return {(uint8_t)((Uint)src - (Uint)DmaMux::Source::kUart0Rx + 2)};
+		return (Uint)src - (Uint)DmaMux::Source::kUart0Rx + 2;
 	}
 	else if ((Uint)src >= (Uint)DmaMux::Source::kSpi0Rx
 			&& (Uint)src <= (Uint)DmaMux::Source::kSpi2Tx)
 	{
-		return {(uint8_t)((Uint)src - (Uint)DmaMux::Source::kSpi0Rx + 16)};
+		return (Uint)src - (Uint)DmaMux::Source::kSpi0Rx + 16;
 	}
 	else if (src == DmaMux::Source::kI2c0)
 	{
-		return {22};
+		return 22;
 	}
 	else if (src == DmaMux::Source::kI2c1or2)
 	{
-		return {23};
+		return 23;
 	}
 	else if ((Uint)src >= (Uint)DmaMux::Source::kFtm0Ch0
 			&& (Uint)src <= (Uint)DmaMux::Source::kFtm2Ch1)
 	{
-		return {(uint8_t)((Uint)src - (Uint)DmaMux::Source::kFtm0Ch0 + 24)};
+		return (Uint)src - (Uint)DmaMux::Source::kFtm0Ch0 + 24;
 	}
 	else if (src == DmaMux::Source::kAdc0)
 	{
-		return {40};
+		return 40;
 	}
 	else if (src == DmaMux::Source::kAdc1)
 	{
-		return {41};
+		return 41;
 	}
 	else if (src == DmaMux::Source::kDac0)
 	{
-		return {45};
+		return 45;
 	}
 	else if (src == DmaMux::Source::kDac1)
 	{
-		return {46};
+		return 46;
 	}
 	else if ((Uint)src >= (Uint)DmaMux::Source::kPortA
 			&& (Uint)src <= (Uint)DmaMux::Source::kPortE)
 	{
-		return {(uint8_t)((Uint)src - (Uint)DmaMux::Source::kPortA + 49)};
+		return (Uint)src - (Uint)DmaMux::Source::kPortA + 49;
 	}
-	else if (src == DmaMux::Source::kSoftware)
+	else if ((Uint)src >= (Uint)DmaMux::Source::kSoftware0
+			&& (Uint)src <= (Uint)DmaMux::Source::kSoftware5)
 	{
-		// TODO Multipe software source
-		return {54};
+		return (Uint)src - (Uint)DmaMux::Source::kSoftware0 + 58;
 	}
 	else
 	{
-		return {static_cast<uint8_t>(-1)};
+		return static_cast<uint8_t>(-1);
 	}
 }
 

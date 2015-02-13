@@ -124,15 +124,14 @@ public:
 	static Ftm::QdName GetFtmQd(const Pin::Name pin);
 	static Pin::Config::MuxControl GetFtmQdMux(const Pin::Name pin);
 	/**
-	 * Return the source number for the modules, i.e., the 1st element in the
-	 * array holds the source number in module 0. If @a src doesn't exist in the
-	 * module, -1 would be stored
+	 * Return the source number for the specific module @a mux, or -1 if @a src
+	 * doesn't exist in the module
 	 *
 	 * @param src
+	 * @param mux
 	 * @return
 	 */
-	static std::array<uint8_t, PINOUT_DMA_MUX_COUNT> GetDmaMuxSource(
-			const DmaMux::Source src);
+	static uint8_t GetDmaMuxSource(const DmaMux::Source src, const Uint mux);
 
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;
