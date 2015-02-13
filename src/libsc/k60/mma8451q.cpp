@@ -72,7 +72,7 @@ Mma8451q::Mma8451q(const Mma8451q::Config &config)
 	if (config.id != 0)
 		assert(false);
 
-	WriteRegByte(MMA8451Q_RA_CTRL_REG1, ReadRegByte(MMA8451Q_RA_CTRL_REG1) & ~MMA8451Q_CR1_F_ACTIVE);
+	SetActive(false);
 
 	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (Byte)config.sens);
 
@@ -81,7 +81,7 @@ Mma8451q::Mma8451q(const Mma8451q::Config &config)
 //	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate << 3 | MMA8451Q_CR1_LNOISE);
 	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate << 3);
 
-	WriteRegByte(MMA8451Q_RA_CTRL_REG1, ReadRegByte(MMA8451Q_RA_CTRL_REG1) | MMA8451Q_CR1_F_ACTIVE);
+	SetActive(true);
 }
 
 bool Mma8451q::IsConnected()
@@ -123,6 +123,21 @@ void Mma8451q::GetAllAngle()
 			m_lastAngle[j] = halfPI;
 	}
 	m_lastAngle[2] -= halfPI * ((m_lastAccel[2] < 0)? -1 : 1);
+}
+
+void Mma8451q::SetActive(const bool flag)
+{
+	uint8_t reg = ReadRegByte(MMA8451Q_RA_CTRL_REG1);
+	if (flag)
+	{
+		CLEAR_BIT(reg, MMA8451Q_CR1_F_ACTIVE_SHIFT);
+	}
+	else
+	{
+		SET_BIT(reg, MMA8451Q_CR1_F_ACTIVE_SHIFT);
+	}
+
+	WriteRegByte(MMA8451Q_RA_CTRL_REG1, reg);
 }
 
 Byte *Mma8451q::ReadRegBytes(const Byte RegAddr, const Byte Length)

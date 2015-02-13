@@ -84,6 +84,8 @@ private:
 	// 0ms
 	void GetAllAngle();
 
+	void SetActive(const bool flag);
+
 	Byte ReadRegByte(const Byte RegAddr);
 	bool WriteRegByte(const Byte RegAddr, const Byte data);
 	Byte* ReadRegBytes(const Byte RegAddr, const Byte Length);
