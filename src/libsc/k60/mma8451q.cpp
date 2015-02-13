@@ -54,7 +54,7 @@ SoftI2cMaster::Config GetI2cMasterConfig(const Mma8451q::Config &config)
 	SoftI2cMaster::Config product;
 	product.scl_pin = GetSclPin(config.id);
 	product.sda_pin = GetSdaPin(config.id);
-	return Masterconfig;
+	return product;
 }
 
 }
