@@ -93,10 +93,10 @@ private:
 
 	void SetActive(const bool flag);
 
-	Byte ReadRegByte(const Byte RegAddr);
-	bool WriteRegByte(const Byte RegAddr, const Byte data);
-	std::vector<Byte> ReadRegBytes(const Byte RegAddr, const Byte Length);
-	bool WriteRegBytes(const Byte RegAddr, const Byte *data);
+	Byte ReadRegByte(const Byte reg);
+	void WriteRegByte(const Byte reg, const Byte data);
+	std::vector<Byte> ReadRegBytes(const Byte reg, const Byte length);
+	void WriteRegBytes(const Byte reg, const Byte *data);
 
 	libbase::k60::SoftI2cMaster m_i2c_master;
 	Config::Sensitivity m_sensitivity;

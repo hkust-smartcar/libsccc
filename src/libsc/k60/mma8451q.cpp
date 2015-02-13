@@ -13,6 +13,8 @@
 #include <array>
 #include <vector>
 
+#include "libbase/log.h"
+
 #include "libsc/config.h"
 #include "libsc/device_h/mma8451q.h"
 #include "libsc/k60/mma8451q.h"
@@ -103,7 +105,7 @@ void Mma8451q::GetAllAccel()
 {
 	const vector<Byte> &bytes = ReadRegBytes(MMA8451Q_RA_REG_OUT_ALL, 0x06);
 
-	for (Byte i = 0, j = 0; i < 3; i++, j += 2)
+	for (int i = 0, j = 0; i < 3; i++, j += 2)
 		m_last_accel[i] = (int16_t)(bytes[j] << 8 | bytes[j + 1]) / m_scale_factor;
 }
 
@@ -135,27 +137,42 @@ void Mma8451q::SetActive(const bool flag)
 	WriteRegByte(MMA8451Q_RA_CTRL_REG1, reg);
 }
 
-vector<Byte> Mma8451q::ReadRegBytes(const Byte RegAddr, const Byte Length)
+vector<Byte> Mma8451q::ReadRegBytes(const Byte reg, const Byte length)
 {
-	return m_i2c_master.GetBytes(MMA8451Q_DEFAULT_ADDRESS, RegAddr, Length);
-}
-
-bool Mma8451q::WriteRegBytes(const Byte RegAddr, const Byte *data)
-{
-	return m_i2c_master.SendBytes(MMA8451Q_DEFAULT_ADDRESS, RegAddr,
-			vector<Byte>(data, data + sizeof(data) / sizeof(data[0])));
-}
-
-Byte Mma8451q::ReadRegByte(const Byte RegAddr)
-{
-	Byte data = 0;
-	m_i2c_master.GetByte(MMA8451Q_DEFAULT_ADDRESS, RegAddr, &data);
+	vector<Byte> data;
+	data = m_i2c_master.GetBytes(MMA8451Q_DEFAULT_ADDRESS, reg, length);
+	if (data.empty())
+	{
+		LOG_W("MMA8451Q Failed reading 0x%X", reg);
+	}
 	return data;
 }
 
-bool Mma8451q::WriteRegByte(const Byte RegAddr, const Byte data)
+void Mma8451q::WriteRegBytes(const Byte reg, const Byte *data)
 {
-	return m_i2c_master.SendByte(MMA8451Q_DEFAULT_ADDRESS, RegAddr, data);
+	if (!m_i2c_master.SendBytes(MMA8451Q_DEFAULT_ADDRESS, reg,
+			vector<Byte>(data, data + sizeof(data) / sizeof(data[0]))))
+	{
+		LOG_W("MMA8451Q Failed sending 0x%X", reg);
+	}
+}
+
+Byte Mma8451q::ReadRegByte(const Byte reg)
+{
+	Byte data = 0;
+	if (!m_i2c_master.GetByte(MMA8451Q_DEFAULT_ADDRESS, reg, &data))
+	{
+		LOG_W("MMA8451Q Failed reading 0x%X", reg);
+	}
+	return data;
+}
+
+void Mma8451q::WriteRegByte(const Byte reg, const Byte data)
+{
+	if (!m_i2c_master.SendByte(MMA8451Q_DEFAULT_ADDRESS, reg, data))
+	{
+		LOG_W("MMA8451Q Failed sending 0x%X", reg);
+	}
 }
 
 }
