@@ -32,6 +32,8 @@ namespace libsc
 namespace k60
 {
 
+#ifdef LIBSC_USE_MMA8451Q
+
 namespace
 {
 
@@ -165,6 +167,18 @@ void Mma8451q::WriteRegByte(const Byte reg, const Byte data)
 		LOG_W("MMA8451Q Failed sending 0x%X", reg);
 	}
 }
+
+#else
+Mma8451q::Mma8451q(const Config&)
+		: m_i2c_master(nullptr), m_sensitivity(Config::Sensitivity::kHigh),
+		  m_scale_factor(0.0f)
+{
+	LOG_DL("Configured not to use Mma8451q");
+}
+bool Mma8451q::IsConnected() { return false; }
+bool Mma8451q::Update() { return false; }
+
+#endif
 
 }
 }
