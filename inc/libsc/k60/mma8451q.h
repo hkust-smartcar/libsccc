@@ -31,7 +31,7 @@ public:
 			Low
 		};
 
-		enum struct ODR
+		enum struct OutputDataRate
 		{
 			k800Hz = 0,
 			k400Hz,
@@ -58,7 +58,7 @@ public:
 		Sensitivity sens = Sensitivity::Mid;
 
 		PowerMode power_mode = PowerMode::LowNoiseLowPower;
-		ODR output_data_rate = ODR::k200Hz;
+		OutputDataRate output_data_rate = OutputDataRate::k200Hz;
 	};
 
 	explicit Mma8451q(const Mma8451q::Config &config);
