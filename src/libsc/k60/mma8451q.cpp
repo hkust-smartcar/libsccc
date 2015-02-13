@@ -64,9 +64,9 @@ SoftI2cMaster::Config GetI2cMasterConfig(const Mma8451q::Config &config)
 }
 
 Mma8451q::Mma8451q(const Mma8451q::Config &config)
-		: m_I2cMaster(GetI2cMasterConfig(config)),
-		  m_Sens(config.sens),
-		  m_ScaleFactor((float)(1 << ((Byte)m_Sens + 0x0C)))
+		: m_i2c_master(GetI2cMasterConfig(config)),
+		  m_sensitivity(config.sens),
+		  m_scale_factor((float)(1 << ((Byte)m_sensitivity + 0x0C)))
 {
 	if (config.id != 0)
 		assert(false);
@@ -108,20 +108,20 @@ void Mma8451q::GetAllAccel()
 	bytes = ReadRegBytes(MMA8451Q_RA_REG_OUT_ALL, 0x06);
 
 	for (Byte i = 0, j = 0; i < 3; i++, j += 2)
-		m_lastAccel[i] = (int16_t)(bytes[j] << 8 | bytes[j + 1]) / m_ScaleFactor;
+		m_last_accel[i] = (int16_t)(bytes[j] << 8 | bytes[j + 1]) / m_scale_factor;
 }
 
 void Mma8451q::GetAllAngle()
 {
 	for (int j = 0; j < 3; j++)
 	{
-		const float factor = m_lastAccel[(j + 1) % 3] * m_lastAccel[(j + 1) % 3]
-				+ m_lastAccel[(j + 2) % 3] * m_lastAccel[(j + 2) % 3];
-		m_lastAngle[j] = Math::ArcTan(m_lastAccel[j] / Math::Sqrt2(factor));
-		if (!isfinite(m_lastAngle[j]))
-			m_lastAngle[j] = HALF_PI;
+		const float factor = m_last_accel[(j + 1) % 3] * m_last_accel[(j + 1) % 3]
+				+ m_last_accel[(j + 2) % 3] * m_last_accel[(j + 2) % 3];
+		m_last_angle[j] = Math::ArcTan(m_last_accel[j] / Math::Sqrt2(factor));
+		if (!isfinite(m_last_angle[j]))
+			m_last_angle[j] = HALF_PI;
 	}
-	m_lastAngle[2] -= HALF_PI * ((m_lastAccel[2] < 0)? -1 : 1);
+	m_last_angle[2] -= HALF_PI * ((m_last_accel[2] < 0)? -1 : 1);
 }
 
 void Mma8451q::SetActive(const bool flag)
@@ -141,25 +141,25 @@ void Mma8451q::SetActive(const bool flag)
 
 Byte *Mma8451q::ReadRegBytes(const Byte RegAddr, const Byte Length)
 {
-	return m_I2cMaster.GetBytes(MMA8451Q_DEFAULT_ADDRESS, RegAddr, Length).data();
+	return m_i2c_master.GetBytes(MMA8451Q_DEFAULT_ADDRESS, RegAddr, Length).data();
 }
 
 bool Mma8451q::WriteRegBytes(const Byte RegAddr, const Byte *data)
 {
-	return m_I2cMaster.SendBytes(MMA8451Q_DEFAULT_ADDRESS, RegAddr,
+	return m_i2c_master.SendBytes(MMA8451Q_DEFAULT_ADDRESS, RegAddr,
 			vector<Byte>(data, data + sizeof(data) / sizeof(data[0])));
 }
 
 Byte Mma8451q::ReadRegByte(const Byte RegAddr)
 {
 	Byte data = 0;
-	m_I2cMaster.GetByte(MMA8451Q_DEFAULT_ADDRESS, RegAddr, &data);
+	m_i2c_master.GetByte(MMA8451Q_DEFAULT_ADDRESS, RegAddr, &data);
 	return data;
 }
 
 bool Mma8451q::WriteRegByte(const Byte RegAddr, const Byte data)
 {
-	return m_I2cMaster.SendByte(MMA8451Q_DEFAULT_ADDRESS, RegAddr, data);
+	return m_i2c_master.SendByte(MMA8451Q_DEFAULT_ADDRESS, RegAddr, data);
 }
 
 }

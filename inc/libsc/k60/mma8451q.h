@@ -70,12 +70,12 @@ public:
 
 	const std::array<float, 3>& GetAccel() const
 	{
-		return m_lastAccel;
+		return m_last_accel;
 	}
 
 	const std::array<float, 3>& GetAngle() const
 	{
-		return m_lastAngle;
+		return m_last_angle;
 	}
 
 private:
@@ -91,12 +91,12 @@ private:
 	Byte* ReadRegBytes(const Byte RegAddr, const Byte Length);
 	bool WriteRegBytes(const Byte RegAddr, const Byte *data);
 
-	libbase::k60::SoftI2cMaster m_I2cMaster;
-	Config::Sensitivity m_Sens;
-	float m_ScaleFactor;
+	libbase::k60::SoftI2cMaster m_i2c_master;
+	Config::Sensitivity m_sensitivity;
+	float m_scale_factor;
 
-	std::array<float, 3> m_lastAccel;
-	std::array<float, 3> m_lastAngle;
+	std::array<float, 3> m_last_accel;
+	std::array<float, 3> m_last_angle;
 
 };
 
