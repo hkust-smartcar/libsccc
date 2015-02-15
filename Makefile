@@ -50,7 +50,7 @@ CPPFLAGS+=$(addprefix -D,$(ALL_SYMBOLS))
 CPPFLAGS+=-MMD
 
 CCFLAGS+=-fmessage-length=0
-CCFLAGS+=-flto -ffunction-sections -fdata-sections
+CCFLAGS+=-fsigned-char -ffunction-sections -fdata-sections 
 CCFLAGS+=-fno-strict-aliasing
 CCFLAGS+=-Wall -Wextra
 
@@ -100,8 +100,10 @@ $(info MCU sub-family = MK60F15)
 
 else ifeq ($(SCCC_MCU),MKL26Z4)
 CPPFLAGS+=-DMKL26Z4=1
-CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m0plus
-CCFLAGS+=-msoft-float -mfloat-abi=soft
+CCFLAGS+=-mthumb -mcpu=cortex-m0plus
+#CCFLAGS+=-msoft-float -mfloat-abi=soft
+LDFLAGS+=-mthumb -mcpu=cortex-m0plus -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections
+#LDFLAGS+=-msoft-float -mfloat-abi=soft
 SCCC_MCU_DIR=kl26
 $(info MCU sub-family = MKL26Z4)
 
@@ -121,8 +123,10 @@ CXXFLAGS:=$(CCFLAGS)
 CCFLAGS+=-std=gnu99
 
 CXXFLAGS+=-std=gnu++11
-CXXFLAGS+=-pedantic
-CXXFLAGS+=-fno-exceptions -fno-rtti
+CXXFLAGS+=-fabi-version=0
+#CXXFLAGS+=-pedantic
+CXXFLAGS+=-fno-exceptions -fno-rtti -fno-use-cxa-atexit -fno-threadsafe-statics -MMD -MP
+#CXXFLAGS+=-fno-exceptions -fno-rtti
 
 ARFLAGS+=-r
 

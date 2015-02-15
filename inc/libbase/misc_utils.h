@@ -22,4 +22,4 @@ uint32_t be32toh(const uint32_t big_endian_32bits);
 uint32_t le32toh(const uint32_t little_endian_32bits);
 
 #define VOID
-#define STATE_GUARD(clz, ret) if (!(*this)) { LOG_WL(#clz " in illegal state"); return ret; }
+#define STATE_GUARD(clz, ret) if (!(*this)) { /*LOG_WL(#clz " in illegal state");*/ return ret; }
