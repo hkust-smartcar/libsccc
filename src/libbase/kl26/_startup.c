@@ -73,8 +73,7 @@ _exit(int);
 
 // Forward declarations
 
-void
-_start(void);
+void __thumb_startup(void);
 
 void
 __initialize_data(unsigned int* from, unsigned int* section_begin,
@@ -140,6 +139,7 @@ extern void
 extern void
 (*__fini_array_end[])(void) __attribute__((weak));
 
+/*
 // Iterate over all the preinit/init routines (mainly static constructors).
 inline void
 __attribute__((always_inline))
@@ -179,6 +179,7 @@ __run_fini_array(void)
   // to add the function prologue/epilogue.
   //_fini(); // DO NOT ENABE THIS!
 }
+*/
 
 //#if defined(DEBUG) && (OS_INCLUDE_STARTUP_GUARD_CHECKS)
 
@@ -213,8 +214,7 @@ typedef void
 (* const pHandler)(void);
 extern pHandler gHandlers;
 
-void __attribute__ ((__section__(".after_vectors_start"),noreturn))
-_start(void)
+void __thumb_startup(void)
 {
 
   // Initialise hardware right after reset, to switch clock to higher
@@ -274,7 +274,8 @@ _start(void)
 
   // Call the standard library initialisation (mandatory for C++ to
   // execute the constructors for the static objects).
-  __run_init_array();
+  //__run_init_array();
+  __libc_init_array();
 
 //  KeepSyscallSymbols();
 
@@ -287,7 +288,7 @@ _start(void)
   while(1){}
 
   // Run the C++ static destructors.
-  __run_fini_array();
+  //__run_fini_array();
 
   _exit(code);
 

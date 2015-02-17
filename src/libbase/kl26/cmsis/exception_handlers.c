@@ -9,9 +9,7 @@
 
 // ----------------------------------------------------------------------------
 
-extern void
-__attribute__((noreturn))
-_start(void);
+void __thumb_startup(void);
 
 // ----------------------------------------------------------------------------
 // Default exception handlers. Override the ones here by defining your own
@@ -24,7 +22,7 @@ _start(void);
 void __attribute__ ((section(".after_vectors"),noreturn))
 Reset_Handler (void)
   {
-    _start ();
+	__thumb_startup ();
   }
 
 //#else
