@@ -53,7 +53,7 @@
  * permission of Real Time Engineers Ltd. (this is the norm within the industry and
  * is intended to ensure information accuracy).
  */
-/*
+
 
 #include "libbase/kl26/hardware.h"
 
@@ -65,6 +65,7 @@
 #include "libbase/kl26/mcg.h"
 #include "libbase/kl26/mcg_c.h"
 #include "libbase/kl26/misc_utils.h"
+#include "libbase/kl26/cmsis/system_MKL26Z4.h"
 
 #define FLL_MAX_FREQ 39062
 #define FLL_MIN_FREQ 31250
@@ -81,30 +82,6 @@
 	#define _MCG_S_LOCK0_SHIFT MCG_S_LOCK0_SHIFT
 #endif
 
-#if Mkl26DZ10 || Mkl26D10
-	#define PRDIV_MAX 0x18
-	#define VDIV_BASE 24
-	#define MIN_PLL_REF_KHZ 2000
-	#define MAX_PLL_REF_KHZ 4000
-#elif Mkl26F15
-	#define PRDIV_MAX 0x7
-	#define VDIV_BASE 16
-	#define MIN_PLL_REF_KHZ 8000
-	#define MAX_PLL_REF_KHZ 16000
-#endif
-
-#if Mkl26DZ10 || Mkl26D10
-	#define MAX_CORE_CLOCK 100000000
-	#define MAX_BUS_CLOCK 50000000
-	#define MAX_FLEXBUS_CLOCK 50000000
-	#define MAX_FLASH_CLOCK 25000000
-#elif Mkl26F15
-	#define MAX_CORE_CLOCK 150000000
-	#define MAX_BUS_CLOCK 75000000
-	#define MAX_FLEXBUS_CLOCK 50000000
-	#define MAX_FLASH_CLOCK 25000000
-#endif
-
 namespace libbase
 {
 namespace kl26
@@ -114,16 +91,16 @@ namespace
 {
 
 
- * This routine must be placed in RAM. It is a workaround for errata e2448.
+ /** This routine must be placed in RAM. It is a workaround for errata e2448.
  * Flash prefetch must be disabled when the flash clock divider is changed.
  * This cannot be performed while executing out of flash.
  * There must be a short delay after the clock dividers are changed before prefetch
- * can be re-enabled
+ * can be re-enabled*/
 
 __RAMFUNC void SetSysDividers(const uint32_t outdiv1, const uint32_t outdiv2,
 		const uint32_t outdiv3, const uint32_t outdiv4)
 {
-	uint32_t temp_reg;
+	/*uint32_t temp_reg;
 	uint8_t i;
 
 	temp_reg = FMC->PFAPR; // store present value of FMC_PFAPR
@@ -143,7 +120,7 @@ __RAMFUNC void SetSysDividers(const uint32_t outdiv1, const uint32_t outdiv2,
 
 	FMC->PFAPR = temp_reg; // re-store original value of FMC_PFAPR
 
-	return;
+	return;*/
 } // SetSysDividers
 
 class PllDividerCalc
@@ -175,7 +152,7 @@ private:
 void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 		const uint32_t core_clock_khz)
 {
-	Uint best_prdiv = 0, best_vdiv = 0;
+	/*Uint best_prdiv = 0, best_vdiv = 0;
 	Uint min_diff = static_cast<Uint>(-1);
 	for (Uint i = 0; i <= PRDIV_MAX; ++i)
 	{
@@ -216,16 +193,16 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 #if Mkl26F15
 	m_core_clock >>= 1;
 #endif
-}
+*/}
 
 }
 
 Mcg::Config::Config()
 		: external_oscillator_khz(0),
-		  core_clock_khz(MAX_CORE_CLOCK / 1000),
-		  bus_clock_khz(MAX_BUS_CLOCK / 1000),
-		  flexbus_clock_khz(MAX_FLEXBUS_CLOCK / 1000),
-		  flash_clock_khz(MAX_FLEXBUS_CLOCK / 1000)
+		  core_clock_khz(SystemCoreClock / 1000),
+		  bus_clock_khz(SystemCoreClock / 2 / 1000),
+//		  flexbus_clock_khz(MAX_FLEXBUS_CLOCK / 1000),
+		  flash_clock_khz(SystemCoreClock / 2 / 1000)
 {}
 
 Mcg::Mcg()
@@ -234,7 +211,7 @@ Mcg::Mcg()
 
 void Mcg::Init()
 {
-	const Config &config = GetMcgConfig();
+	/*const Config &config = GetMcgConfig();
 
 	// First, FEI must transition to FBE mode
 	InitFbe(config);
@@ -258,14 +235,14 @@ void Mcg::Init()
 	InitPbe(config, calc.GetVdiv());
 
 	// Lastly, PBE mode transitions into PEE mode
-	InitPee(config);
+	InitPee(config);*/
 
-	m_core_clock = calc.GetCoreClock();
+	m_core_clock = SystemCoreClock/*calc.GetCoreClock()*/;
 }
 
 void Mcg::InitFbe(const Config &config)
 {
-	uint8_t c2_reg = 0;
+	/*uint8_t c2_reg = 0;
 #if Mkl26F15
 	// Reset with a loss of OSC clock
 	SET_BIT(c2_reg, MCG_C2_LOCRE0_SHIFT);
@@ -315,12 +292,12 @@ void Mcg::InitFbe(const Config &config)
 	// Loop until S[CLKST] is 2'b10, indicating that the external reference
 	// clock is selected to feed MCGOUTCLK
 	while (GET_BITS(MCG->S, MCG_S_CLKST_SHIFT, MCG_S_CLKST_MASK) != 0x2)
-	{}
+	{}*/
 }
 
 void Mcg::InitPbe(const Config&, const uint8_t vdiv)
 {
-	// If a transition through BLPE mode is desired, first set C2[LP] to 1
+	/*// If a transition through BLPE mode is desired, first set C2[LP] to 1
 	SET_BIT(MCG->C2, MCG_C2_LP_SHIFT);
 
 	uint8_t c6_reg = 0;
@@ -338,24 +315,24 @@ void Mcg::InitPbe(const Config&, const uint8_t vdiv)
 
 	// Then loop until S[LOCK] is set, indicating that the PLL has acquired lock
 	while (!GET_BIT(MCG->S, _MCG_S_LOCK0_SHIFT))
-	{}
+	{}*/
 }
 
 void Mcg::InitPee(const Config&)
 {
-	// C1[CLKS] set to 2'b00 in order to select the output of the PLL as the
+	/*// C1[CLKS] set to 2'b00 in order to select the output of the PLL as the
 	// system clock source
 	MCG->C1 &= ~MCG_C1_CLKS_MASK;
 
 	// Loop until S[CLKST] are 2'b11, indicating that the PLL output is selected
 	// to feed MCGOUTCLK in the current clock mode
 	while (GET_BITS(MCG->S, MCG_S_CLKST_SHIFT, MCG_S_CLKST_MASK) != 0x3)
-	{}
+	{}*/
 }
 
 void Mcg::InitClocks(const Config &config, const uint32_t core_clock)
 {
-	Uint bus_div = 0;
+	/*Uint bus_div = 0;
 	Uint bus_clk = config.bus_clock_khz * 1000;
 	bus_div = core_clock / std::min<uint32_t>(bus_clk, MAX_BUS_CLOCK);
 	const Uint max_bus_clk = core_clock / bus_div;
@@ -398,7 +375,7 @@ void Mcg::InitClocks(const Config &config, const uint32_t core_clock)
 //	SIM->CLKDIV1 = reg;
 	SetSysDividers(0, std::min<Uint>(bus_div - 1, 0xF),
 			std::min<Uint>(flexbus_div - 1, 0xF),
-			std::min<Uint>(flash_div - 1, 0xF));
+			std::min<Uint>(flash_div - 1, 0xF));*/
 }
 
 }
@@ -413,4 +390,3 @@ uint32_t Libbasekl26McgGetCoreClock()
 {
 	return libbase::kl26::Mcg::Get().GetCoreClock();
 }
-*/

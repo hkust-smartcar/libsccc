@@ -39,6 +39,9 @@
 #elif defined(K60_VCAN_FX15DEV)
 #include "libsc/k60/config/vcan_fx15dev.h"
 
+#elif defined(KL26_VCAN_Z4DEV)
+#include "libsc/kl26/config/vcan_z4dev.h"
+
 #else
 #error Unknown board
 

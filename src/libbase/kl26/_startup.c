@@ -139,6 +139,8 @@ extern void
 extern void
 (*__fini_array_end[])(void) __attribute__((weak));
 
+extern void __libc_init_array(void);
+
 /*
 // Iterate over all the preinit/init routines (mainly static constructors).
 inline void
@@ -274,7 +276,7 @@ void __thumb_startup(void)
 
   // Call the standard library initialisation (mandatory for C++ to
   // execute the constructors for the static objects).
-  //__run_init_array();
+//  __run_init_array();
   __libc_init_array();
 
 //  KeepSyscallSymbols();

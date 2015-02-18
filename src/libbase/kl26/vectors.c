@@ -4,7 +4,8 @@
 //
 
 // ----------------------------------------------------------------------------
-
+#include "libbase/kl26/hardware.h"
+#include "libbase/misc_types.h"
 #include "libbase/cmsis/ExceptionHandlers.h"
 
 // ----------------------------------------------------------------------------
@@ -86,8 +87,11 @@ PORTD_IRQHandler(void);
 
 extern unsigned int _estack;
 
+/*typedef void
+(* const pHandler)(void);*/
+
 typedef void
-(* const pHandler)(void);
+(* pHandler)(void);
 
 // ----------------------------------------------------------------------------
 
@@ -398,6 +402,40 @@ pHandler gConfigs[] =
     };
 
 // ----------------------------------------------------------------------------
+
+__attribute__ ((section (".vectortableram"))) pHandler* __vect_ram; /* Interrupt vector table in RAM */
+
+
+void InitVectorTable(void)
+{
+	const Byte *rom = (const Byte*)&gHandlers;
+	Byte *ram = (Byte*)&__vect_ram;
+
+    for (uint32_t i = 0; i < sizeof(pHandler); ++i)
+    {
+    	*ram++ = *rom++;
+    }
+
+	assert((uint32_t)(&__vect_ram) % 0x200 == 0);   //Vector Table base offset field. This value must be a multiple of 0x200.
+	/* Write the VTOR with the new value */
+	SCB->VTOR = (uint32_t)(&__vect_ram);
+}
+
+void SetIsr(IRQn_Type irq, pHandler handler)
+{
+	__vect_ram[irq + abs(NonMaskableInt_IRQn) + 1] = handler ? handler
+			: Default_Handler;
+}
+
+void EnableIrq(IRQn_Type irq)
+{
+	NVIC_EnableIRQ(irq);
+}
+
+void DisableIrq(IRQn_Type irq)
+{
+	NVIC_DisableIRQ(irq);
+}
 
 // Processor ends up here if an unexpected interrupt occurs or a specific
 // handler is not present in the application code.

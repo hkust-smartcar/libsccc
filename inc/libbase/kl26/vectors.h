@@ -32,6 +32,9 @@
 **     http      : www.freescale.com
 **     mail      : support@freescale.com
 ** ###################################################################
+**
+** */
+
 #pragma once
 
 #ifdef __cplusplus
@@ -41,7 +44,7 @@ extern "C" {
 #include "libbase/kl26/hardware.h"
 #include "libbase/kl26/misc_utils_c.h"
 
- Interrupt handler type definition
+// Interrupt handler type definition
 typedef void (*tIsrFunc)(void);
 
 typedef void (*HardFaultHandler)(void);
@@ -60,4 +63,4 @@ __ISR void DefaultIsr(void);
 #ifdef __cplusplus
 }
 #endif
-*/
+

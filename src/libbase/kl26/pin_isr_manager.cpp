@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
-/*
+
 
 #include <cstring>
 
@@ -155,4 +155,4 @@ __ISR void PinIsrManager::PortIrqHandler()
 
 }
 }
-*/
+

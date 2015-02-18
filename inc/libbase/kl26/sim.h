@@ -35,7 +35,7 @@ public:
 		kK60
 	};
 
-#if MKL26Z4
+#ifdef MKL26Z4
 	enum struct ClockGate
 	{
 		kAdc0,
@@ -84,7 +84,7 @@ public:
 //		kUart4,
 //		kUart5,
 //		kUsbDcd,
-//		kUsbOtg,
+		kUsbOtg,
 //		kVref,
 	};
 

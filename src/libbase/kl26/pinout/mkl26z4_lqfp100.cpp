@@ -3,6 +3,7 @@
 #include <bitset>
 
 #include "libbase/kl26/pinout/mkl26z4_lqfp100.h"
+#include "libbase/kl26/adc.h"
 
 namespace libbase
 {
@@ -132,6 +133,20 @@ void Mkl26z4Lqfp100::UnregPin_(const Uint pin)
 void Mkl26z4Lqfp100::UnregPin_(const Pin::Name pin)
 {
 	UnregPin_((Uint)GetPinId(pin));
+}
+
+Adc::Name Mkl26z4Lqfp100::GetAdc(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPte16:
+		return Adc::Name::kAdc0Ad1;
+
+
+
+	default:
+		return Adc::Name::kDisable;
+	}
 }
 
 }

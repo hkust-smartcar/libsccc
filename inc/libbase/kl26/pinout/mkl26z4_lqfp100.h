@@ -11,6 +11,7 @@
 #include "libbase/misc_types.h"
 #include "libbase/kl26/pin.h"
 #include "libbase/kl26/pinout/mkl26z4_lqfp100_macros.h"
+#include "libbase/kl26/adc.h"
 
 namespace libbase{
 namespace kl26{
@@ -27,10 +28,10 @@ public:
 		return Get().RegPin_(pin);
 	}
 
-//	static bool RegPin(const Adc::Name pin)
-//	{
-//		return Get().RegPin_(pin);
-//	}
+	static bool RegPin(const Adc::Name pin)
+	{
+		return Get().RegPin_(pin);
+	}
 
 	static void UnregPin(const Uint pin)
 	{
@@ -42,10 +43,10 @@ public:
 		Get().UnregPin_(pin);
 	}
 
-//	static void UnregPin(const Adc::Name pin)
-//	{
-//		Get().UnregPin_(pin);
-//	}
+	static void UnregPin(const Adc::Name pin)
+	{
+		Get().UnregPin_(pin);
+	}
 
 	static constexpr Uint GetAdcCount()
 	{
@@ -77,7 +78,7 @@ public:
 		return PINOUT_UART_COUNT;
 	}
 
-//	static Adc::Name GetAdc(const Pin::Name pin);
+	static Adc::Name GetAdc(const Pin::Name pin);
 //	static Ftm::Name GetFtm(const Pin::Name pin);
 	static Pin::Config::MuxControl GetFtmMux(const Pin::Name pin);
 //	static Ftm::QdName GetFtmQd(const Pin::Name pin);
@@ -95,10 +96,10 @@ private:
 
 	bool RegPin_(const Uint pin);
 	bool RegPin_(const Pin::Name pin);
-//	bool RegPin_(const Adc::Name pin);
+	bool RegPin_(const Adc::Name pin);
 	void UnregPin_(const Uint pin);
 	void UnregPin_(const Pin::Name pin);
-//	void UnregPin_(const Adc::Name pin);
+	void UnregPin_(const Adc::Name pin);
 
 	std::bitset<kPinCount> m_is_pins_active;
 };
