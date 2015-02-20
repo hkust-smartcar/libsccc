@@ -35,6 +35,14 @@ $(info Make version = $(MAKE_VERSION))
 
 endif
 
+ifdef WIN32
+# TODO Also print CC version on win32
+
+else ifdef UNIX
+$(info CC = $(shell $(CC) --version | (read -r line; echo $$line)))
+
+endif
+
 $(info User include paths = $(ALL_INC_PATHS))
 $(info User symbols = $(ALL_SYMBOLS))
 
