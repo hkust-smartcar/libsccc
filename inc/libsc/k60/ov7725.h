@@ -51,7 +51,7 @@ public:
 	 */
 	void Start();
 	/**
-	 * Stop shooting new frames after finishing he current frame
+	 * Stop shooting new frames after finishing the current one
 	 */
 	void Stop();
 
