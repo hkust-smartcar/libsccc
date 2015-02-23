@@ -124,9 +124,7 @@ CXXFLAGS:=$(CCFLAGS)
 CCFLAGS+=-std=gnu99
 
 CXXFLAGS+=-std=gnu++11
-#CXXFLAGS+=-fabi-version=0
 CXXFLAGS+=-pedantic
-#CXXFLAGS+=-fno-exceptions -fno-rtti -fno-use-cxa-atexit -fno-threadsafe-statics -MMD -MP
 CXXFLAGS+=-fno-exceptions -fno-rtti
 
 ARFLAGS+=-r
