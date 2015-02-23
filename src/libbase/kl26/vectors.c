@@ -43,7 +43,7 @@ SPI0_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
 SPI1_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
-UART0_IRQHandler(void);
+/*void __attribute__ ((weak))*/ UART0_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
 UART1_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
@@ -123,7 +123,6 @@ pHandler gHandlers[] =
   // Core Level - CM0
       (pHandler) &_estack, // The initial stack pointer
       Reset_Handler, // The reset handler
-
       NMI_Handler, // The NMI handler
       HardFault_Handler, // The hard fault handler
 #if defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
@@ -403,7 +402,7 @@ pHandler gConfigs[] =
 
 // ----------------------------------------------------------------------------
 
-__attribute__ ((section (".vectortableram"))) pHandler* __vect_ram; /* Interrupt vector table in RAM */
+__attribute__ ((section (".vectortableram"))) pHandler __vect_ram[256]; /* Interrupt vector table in RAM */
 
 
 void InitVectorTable(void)
@@ -416,15 +415,16 @@ void InitVectorTable(void)
     	*ram++ = *rom++;
     }
 
-	assert((uint32_t)(&__vect_ram) % 0x200 == 0);   //Vector Table base offset field. This value must be a multiple of 0x200.
+//	assert((uint32_t)(&__vect_ram) % 0x200 == 0);   //Vector Table base offset field. This value must be a multiple of 0x200.
 	/* Write the VTOR with the new value */
 	SCB->VTOR = (uint32_t)(&__vect_ram);
 }
 
 void SetIsr(IRQn_Type irq, pHandler handler)
 {
-	__vect_ram[irq + abs(NonMaskableInt_IRQn) + 1] = handler ? handler
-			: Default_Handler;
+	/*__vect_ram[irq + abs(NonMaskableInt_IRQn) + 1] = handler ? handler
+			: Default_Handler;*/
+	__vect_ram[irq + 16] = handler ? handler : Default_Handler;
 }
 
 void EnableIrq(IRQn_Type irq)

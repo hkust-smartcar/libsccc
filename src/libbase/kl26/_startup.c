@@ -269,6 +269,8 @@ void __thumb_startup(void)
   // clock frequency in the global CMSIS variable, cleared above.
   __initialize_hardware();
 
+  InitVectorTable();
+
   // Get the argc/argv (useful in semihosting configurations).
   int argc;
   char** argv;
@@ -279,7 +281,7 @@ void __thumb_startup(void)
 //  __run_init_array();
   __libc_init_array();
 
-//  KeepSyscallSymbols();
+  KeepSyscallSymbols();
 
   void *v;
   v = (void*)gHandlers;
