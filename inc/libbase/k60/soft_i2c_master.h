@@ -66,8 +66,8 @@ private:
 
 	inline void Delay();
 
-	uint16_t m_scl_low_timeout;
 	uint32_t m_delay_us;
+	uint16_t m_scl_low_timeout_ms;
 
 	Gpio m_scl;
 	Gpio m_sda;

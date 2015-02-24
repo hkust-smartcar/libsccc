@@ -68,8 +68,9 @@ inline void SoftI2cMaster::Delay()
 }
 
 SoftI2cMaster::SoftI2cMaster(const Config &config)
-		: m_scl_low_timeout(config.scl_low_timeout),
-		  m_delay_us(GetDelayUs(config)),
+		: m_delay_us(GetDelayUs(config)),
+		  m_scl_low_timeout_ms((config.scl_low_timeout * m_delay_us + 999)
+				/ 1000),
 		  m_scl(GetSclConfig(config)),
 		  m_sda(GetSdaConfig(config)),
 		  m_is_init(true)
@@ -82,8 +83,8 @@ SoftI2cMaster::SoftI2cMaster(SoftI2cMaster &&rhs)
 }
 
 SoftI2cMaster::SoftI2cMaster(nullptr_t)
-		: m_scl_low_timeout(0),
-		  m_delay_us(0),
+		: m_delay_us(0),
+		  m_scl_low_timeout_ms(0),
 		  m_scl(nullptr),
 		  m_sda(nullptr),
 		  m_is_init(false)
@@ -104,6 +105,7 @@ SoftI2cMaster& SoftI2cMaster::operator=(SoftI2cMaster &&rhs)
 			rhs.m_is_init = false;
 
 			m_delay_us = rhs.m_delay_us;
+			m_scl_low_timeout_ms = rhs.m_scl_low_timeout_ms;
 
 			m_scl = std::move(rhs.m_scl);
 			m_sda = std::move(rhs.m_sda);
@@ -230,12 +232,10 @@ bool SoftI2cMaster::ReadByte_(const bool is_ack, Byte *out_byte)
 
 		// TODO libbase should not depends on libsc
 		const Timer::TimerInt start = System::Time();
-		const Timer::TimerInt max = (m_scl_low_timeout * m_delay_us + 999)
-				/ 1000;
 		// Clock stretching
 		while (!m_scl.Get())
 		{
-			if (Timer::TimeDiff(System::Time(), start) >= max)
+			if (Timer::TimeDiff(System::Time(), start) >= m_scl_low_timeout_ms)
 			{
 				LOG_DL("i2c scl timeout");
 				return false;
