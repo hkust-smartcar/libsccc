@@ -75,56 +75,84 @@ inline Pin::Name GetSelectPin(const uint8_t id)
 
 #endif
 
-Gpi::Config GetUpGpiConfig(const uint8_t id)
+Pin::Name GetStatePin(const Joystick::State state, const uint8_t id)
 {
-	Gpi::Config config;
-	config.pin = GetUpPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
+	switch (state)
+	{
+	default:
+		assert(false);
+		// no break
+
+	case Joystick::State::kUp:
+		return GetUpPin(id);
+
+	case Joystick::State::kDown:
+		return GetDownPin(id);
+
+	case Joystick::State::kLeft:
+		return GetLeftPin(id);
+
+	case Joystick::State::kRight:
+		return GetRightPin(id);
+
+	case Joystick::State::kSelect:
+		return GetSelectPin(id);
+	}
 }
 
-Gpi::Config GetDownGpiConfig(const uint8_t id)
+Gpi::Config GetPinGpiConfig(const Joystick::State state,
+		const Joystick::Config &config, const Gpi::OnGpiEventListener &listener)
 {
-	Gpi::Config config;
-	config.pin = GetDownPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
-}
+	Gpi::Config product;
+	product.pin = GetStatePin(state, config.id);
+	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	if (listener)
+	{
+		switch (config.listener_triggers[static_cast<int>(state)])
+		{
+		default:
+		case Joystick::Config::Trigger::kDown:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kFalling
+					: Pin::Config::Interrupt::kRising);
+			break;
 
-Gpi::Config GetLeftGpiConfig(const uint8_t id)
-{
-	Gpi::Config config;
-	config.pin = GetLeftPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
-}
+		case Joystick::Config::Trigger::kUp:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kRising
+					: Pin::Config::Interrupt::kFalling);
+			break;
 
-Gpi::Config GetRightGpiConfig(const uint8_t id)
-{
-	Gpi::Config config;
-	config.pin = GetRightPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
-}
-
-Gpi::Config GetSelectGpiConfig(const uint8_t id)
-{
-	Gpi::Config config;
-	config.pin = GetSelectPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
+		case Joystick::Config::Trigger::kBoth:
+			product.interrupt = Pin::Config::Interrupt::kBoth;
+			break;
+		}
+		product.isr = listener;
+	}
+	return product;
 }
 
 }
 
 Joystick::Joystick(const Config &config)
-		: m_pins{Gpi(GetUpGpiConfig(config.id)),
-				Gpi(GetDownGpiConfig(config.id)),
-				Gpi(GetLeftGpiConfig(config.id)),
-				Gpi(GetRightGpiConfig(config.id)),
-				Gpi(GetSelectGpiConfig(config.id))},
-		  m_is_active_low(config.is_active_low)
-{}
+		: m_is_active_low(config.is_active_low)
+{
+	for (int i = 0; i < 5; ++i)
+	{
+		Gpi::OnGpiEventListener listener;
+		if (config.listeners[i])
+		{
+			const uint8_t id = config.id;
+			m_isrs[i] = config.listeners[i];
+			listener = [this, id, i](Gpi*)
+					{
+						m_isrs[i](id);
+					};
+		}
+		m_pins[i] = Gpi(GetPinGpiConfig(static_cast<Joystick::State>(i), config,
+				listener));
+	}
+}
 
 Joystick::State Joystick::GetState() const
 {
@@ -140,8 +168,7 @@ Joystick::State Joystick::GetState() const
 
 #else
 Joystick::Joystick(const Config&)
-		: m_pins{Gpi(nullptr), Gpi(nullptr), Gpi(nullptr), Gpi(nullptr),
-				  Gpi(nullptr)}
+		: m_is_active_low(false)
 {
 	LOG_DL("Configured not to use Joystick");
 }
