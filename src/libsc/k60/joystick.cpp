@@ -128,30 +128,14 @@ Joystick::Joystick(const Config &config)
 
 Joystick::State Joystick::GetState() const
 {
-	if (m_pins[0].Get() ^ m_is_active_low)
+	for (int i = 0; i < 5; ++i)
 	{
-		return State::kUp;
+		if (m_pins[i].Get() ^ m_is_active_low)
+		{
+			return static_cast<State>(i);
+		}
 	}
-	else if (m_pins[1].Get() ^ m_is_active_low)
-	{
-		return State::kDown;
-	}
-	else if (m_pins[2].Get() ^ m_is_active_low)
-	{
-		return State::kLeft;
-	}
-	else if (m_pins[3].Get() ^ m_is_active_low)
-	{
-		return State::kRight;
-	}
-	else if (m_pins[4].Get() ^ m_is_active_low)
-	{
-		return State::kSelect;
-	}
-	else
-	{
-		return State::kIdle;
-	}
+	return State::kIdle;
 }
 
 #else
