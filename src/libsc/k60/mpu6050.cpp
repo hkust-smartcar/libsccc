@@ -38,6 +38,7 @@ SoftI2cMaster::Config GetI2cConfig()
 	SoftI2cMaster::Config config;
 	config.scl_pin = LIBSC_MPU6050_SCL;
 	config.sda_pin = LIBSC_MPU6050_SDA;
+	config.freq_khz = 400;
 	return config;
 }
 
