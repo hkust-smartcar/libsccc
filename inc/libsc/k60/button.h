@@ -41,7 +41,7 @@ public:
 		 */
 		bool is_use_pull_resistor = false;
 		Listener listener;
-		/// When to trigger the listener, ignored if @a listener is not set
+		/// When to trigger the listener, ignored if Config::listener is not set
 		Trigger listener_trigger;
 	};
 
