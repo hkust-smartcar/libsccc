@@ -143,7 +143,7 @@ void SoftI2cMaster::Start()
 	}
 
 	m_sda.Clear();
-	Delay();
+	//Delay();
 	m_scl.Clear();
 	Delay();
 }
@@ -176,7 +176,7 @@ void SoftI2cMaster::Stop()
 	}
 
 	m_sda.EnsureGpi();
-	Delay();
+	//Delay();
 }
 
 // Assume SCL is low when being called
