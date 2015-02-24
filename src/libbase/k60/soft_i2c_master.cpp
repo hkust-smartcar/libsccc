@@ -38,6 +38,12 @@ namespace k60
 namespace
 {
 
+Uint GetDelayUs(const SoftI2cMaster::Config &config)
+{
+	const Uint freq2 = config.freq_khz * 2;
+	return (1000 + freq2 - 1) / freq2;
+}
+
 Gpi::Config GetSclConfig(const SoftI2cMaster::Config &config)
 {
 	Gpi::Config gc;
@@ -63,7 +69,7 @@ inline void SoftI2cMaster::Delay()
 
 SoftI2cMaster::SoftI2cMaster(const Config &config)
 		: m_scl_low_timeout(config.scl_low_timeout),
-		  m_delay_us(config.delay_us),
+		  m_delay_us(GetDelayUs(config)),
 		  m_scl(GetSclConfig(config)),
 		  m_sda(GetSdaConfig(config)),
 		  m_is_init(true)
