@@ -130,27 +130,27 @@ Joystick::State Joystick::GetState() const
 {
 	if (m_pins[0].Get() ^ m_is_active_low)
 	{
-		return State::UP;
+		return State::kUp;
 	}
 	else if (m_pins[1].Get() ^ m_is_active_low)
 	{
-		return State::DOWN;
+		return State::kDown;
 	}
 	else if (m_pins[2].Get() ^ m_is_active_low)
 	{
-		return State::LEFT;
+		return State::kLeft;
 	}
 	else if (m_pins[3].Get() ^ m_is_active_low)
 	{
-		return State::RIGHT;
+		return State::kRight;
 	}
 	else if (m_pins[4].Get() ^ m_is_active_low)
 	{
-		return State::SELECT;
+		return State::kSelect;
 	}
 	else
 	{
-		return State::IDLE;
+		return State::kIdle;
 	}
 }
 
@@ -161,7 +161,7 @@ Joystick::Joystick(const Config&)
 {
 	LOG_DL("Configured not to use Joystick");
 }
-Joystick::State Joystick::GetState() const { return State::IDLE; }
+Joystick::State Joystick::GetState() const { return State::kIdle; }
 
 #endif /* LIBSC_USE_BUTTON */
 

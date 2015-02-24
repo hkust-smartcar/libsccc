@@ -22,12 +22,13 @@ class Joystick
 public:
 	enum struct State
 	{
-		IDLE,
-		UP,
-		DOWN,
-		LEFT,
-		RIGHT,
-		SELECT,
+		kUp = 0,
+		kDown,
+		kLeft,
+		kRight,
+		kSelect,
+
+		kIdle
 	};
 
 	struct Config
