@@ -8,15 +8,19 @@
 
 #include <cassert>
 
+#include <array>
 #include <bitset>
 
 #include "libbase/k60/pinout/mk60d10_lqfp144.h"
 
 #include "libbase/k60/adc.h"
+#include "libbase/k60/dma_mux.h"
 #include "libbase/k60/ftm.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pin_utils.h"
+
+using namespace std;
 
 namespace libbase
 {
@@ -527,6 +531,65 @@ Pin::Config::MuxControl Mk60d10Lqfp144::GetFtmQdMux(const Pin::Name pin)
 	else
 	{
 		return Pin::Config::MuxControl::kAlt6;
+	}
+}
+
+uint8_t Mk60d10Lqfp144::GetDmaMuxSource(const DmaMux::Source src, const Uint mux)
+{
+	assert(mux < PINOUT_DMA_MUX_COUNT);
+
+	if ((Uint)src >= (Uint)DmaMux::Source::kUart0Rx
+			&& (Uint)src <= (Uint)DmaMux::Source::kUart5Tx)
+	{
+		return (Uint)src - (Uint)DmaMux::Source::kUart0Rx + 2;
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kSpi0Rx
+			&& (Uint)src <= (Uint)DmaMux::Source::kSpi2Tx)
+	{
+		return (Uint)src - (Uint)DmaMux::Source::kSpi0Rx + 16;
+	}
+	else if (src == DmaMux::Source::kI2c0)
+	{
+		return 22;
+	}
+	else if (src == DmaMux::Source::kI2c1or2)
+	{
+		return 23;
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kFtm0Ch0
+			&& (Uint)src <= (Uint)DmaMux::Source::kFtm2Ch1)
+	{
+		return (Uint)src - (Uint)DmaMux::Source::kFtm0Ch0 + 24;
+	}
+	else if (src == DmaMux::Source::kAdc0)
+	{
+		return 40;
+	}
+	else if (src == DmaMux::Source::kAdc1)
+	{
+		return 41;
+	}
+	else if (src == DmaMux::Source::kDac0)
+	{
+		return 45;
+	}
+	else if (src == DmaMux::Source::kDac1)
+	{
+		return 46;
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kPortA
+			&& (Uint)src <= (Uint)DmaMux::Source::kPortE)
+	{
+		return (Uint)src - (Uint)DmaMux::Source::kPortA + 49;
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kSoftware0
+			&& (Uint)src <= (Uint)DmaMux::Source::kSoftware5)
+	{
+		return (Uint)src - (Uint)DmaMux::Source::kSoftware0 + 58;
+	}
+	else
+	{
+		return static_cast<uint8_t>(-1);
 	}
 }
 

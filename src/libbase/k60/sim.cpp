@@ -18,9 +18,10 @@
 
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/sim.h"
+#include "libutil/endian_utils.h"
 #include "libutil/string.h"
 
-using libutil::String;
+using namespace libutil;
 using namespace std;
 
 #if MK60DZ10 || MK60D10
@@ -121,13 +122,13 @@ Sim::Kinetis Sim::GetKinetisFamily()
 array<Byte, 16> Sim::GetUid()
 {
 	array<Byte, 16> uid;
-	uint32_t temp = htobe32(SIM->UIDH);
+	uint32_t temp = EndianUtils::HostToBe(SIM->UIDH);
 	memcpy(uid.data(), &temp, 4);
-	temp = htobe32(SIM->UIDMH);
+	temp = EndianUtils::HostToBe(SIM->UIDMH);
 	memcpy(uid.data() + 4, &temp, 4);
-	temp = htobe32(SIM->UIDML);
+	temp = EndianUtils::HostToBe(SIM->UIDML);
 	memcpy(uid.data() + 8, &temp, 4);
-	temp = htobe32(SIM->UIDL);
+	temp = EndianUtils::HostToBe(SIM->UIDL);
 	memcpy(uid.data() + 12, &temp, 4);
 	return uid;
 }

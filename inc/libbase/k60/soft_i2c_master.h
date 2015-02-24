@@ -66,6 +66,7 @@ private:
 
 	inline void Delay();
 
+	bool m_is_use_repeated_start;
 	uint32_t m_delay_us;
 	uint16_t m_scl_low_timeout_ms;
 

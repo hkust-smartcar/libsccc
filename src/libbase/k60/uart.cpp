@@ -20,6 +20,8 @@
 
 #include "libbase/log.h"
 #include "libbase/k60/clock_utils.h"
+#include "libbase/k60/dma.h"
+#include "libbase/k60/dma_mux.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pinout.h"
 #include "libbase/k60/sim.h"
@@ -135,6 +137,8 @@ Uart::Uart(const Config &config)
 	InitPin(config);
 
 	InitC1Reg(config);
+	// Clear DMA bit in case it was set before
+	CLEAR_BIT(MEM_MAPS[m_module]->C5, UART_C5_TDMAS_SHIFT);
 	InitFifo(config);
 	InitInterrupt(config);
 	MEM_MAPS[m_module]->C2 |= UART_C2_TE_MASK | UART_C2_RE_MASK;
@@ -458,6 +462,26 @@ void Uart::SetEnableRxIrq(const bool flag)
 	{
 		CLEAR_BIT(MEM_MAPS[m_module]->C2, UART_C2_RIE_SHIFT);
 	}
+}
+
+void Uart::ConfigTxAsDmaDst(Dma::Config *config)
+{
+	STATE_GUARD(Uart, VOID);
+
+	if (m_tx_isr)
+	{
+		assert(false);
+		return;
+	}
+	config->mux_src = EnumAdvance(DmaMux::Source::kUart0Tx, m_module * 2);
+	config->dst.addr = (void*)&MEM_MAPS[m_module]->D;
+	config->dst.offset = 0;
+	config->dst.size = Dma::Config::TransferSize::k1Byte;
+	config->dst.major_offset = 0;
+	config->minor_bytes = 1;
+
+	SetEnableTxIrq(false);
+	SET_BIT(MEM_MAPS[m_module]->C5, UART_C5_TDMAS_SHIFT);
 }
 
 uint8_t Uart::GetAvailableBytes() const
