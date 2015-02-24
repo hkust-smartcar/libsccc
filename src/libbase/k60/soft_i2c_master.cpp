@@ -289,7 +289,7 @@ vector<Byte> SoftI2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
 	SEND_BYTE_GUARDED(reg_addr, {});
 	Start();
 	SEND_BYTE_GUARDED(((slave_addr << 1) & 0xFE) | 0x1, {});
-	for (uint8_t i = 0; i < size - 1; ++i)
+	for (uint8_t i = 0; i < size; ++i)
 	{
 		Byte byte;
 		if (!ReadByte_(true, &byte))
@@ -297,11 +297,6 @@ vector<Byte> SoftI2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
 			Stop();
 			return bytes;
 		}
-		bytes.push_back(byte);
-	}
-	Byte byte;
-	if (ReadByte_(true, &byte))
-	{
 		bytes.push_back(byte);
 	}
 	Stop();
