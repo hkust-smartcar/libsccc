@@ -49,7 +49,7 @@ public:
 	virtual bool SendByte(const Byte slave_addr, const Byte reg_addr,
 			const Byte byte) = 0;
 	virtual bool SendBytes(const Byte slave_addr, const Byte reg_addr,
-			const std::vector<Byte> &bytes) = 0;
+			const Byte *bytes, const size_t size) = 0;
 };
 
 }

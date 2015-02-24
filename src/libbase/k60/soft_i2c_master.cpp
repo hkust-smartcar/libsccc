@@ -335,14 +335,14 @@ bool SoftI2cMaster::SendByte(const Byte slave_addr, const Byte reg_addr,
 }
 
 bool SoftI2cMaster::SendBytes(const Byte slave_addr, const Byte reg_addr,
-		const vector<Byte> &bytes)
+		const Byte *bytes, const size_t size)
 {
 	STATE_GUARD(SoftI2cMaster, false);
 
 	Start();
 	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, false);
 	SEND_BYTE_GUARDED(reg_addr, false);
-	for (size_t i = 0; i < bytes.size(); ++i)
+	for (size_t i = 0; i < size; ++i)
 	{
 		SEND_BYTE_GUARDED(bytes[i], false);
 	}

@@ -54,7 +54,7 @@ public:
 			const uint8_t size) override;
 	bool SendByte(const Byte slave_addr, const Byte reg_addr, const Byte byte) override;
 	bool SendBytes(const Byte slave_addr, const Byte reg_addr,
-			const std::vector<Byte> &bytes) override;
+			const Byte *bytes, const size_t size) override;
 
 private:
 	void Uninit();

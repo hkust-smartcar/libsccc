@@ -8,6 +8,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 #include <cstdio>
 #include <cstdint>
 
@@ -131,6 +132,9 @@ void Encoder::Update()
 
 #else
 Encoder::Encoder(const Initializer&)
+		: Encoder(nullptr)
+{}
+Encoder::Encoder(nullptr_t)
 		: m_count(0), m_quad_decoder(nullptr)
 {
 	LOG_DL("Configured not to use Encoder");

@@ -20,6 +20,8 @@ namespace libsc
 namespace k60
 {
 
+#if LIBSC_USE_ENCODER
+
 #if LIBSC_USE_SOFT_ENCODER
 SoftQuadDecoder::Config AbEncoder::Initializer::GetQuadDecoderConfig() const
 {
@@ -39,6 +41,13 @@ FtmQuadDecoder::Config AbEncoder::Initializer::GetQuadDecoderConfig() const
 AbEncoder::AbEncoder(const Config &config)
 		: Encoder(Initializer(config))
 {}
+
+#else /* LIBSC_USE_ENCODER */
+AbEncoder::AbEncoder(const Config&)
+		: Encoder(nullptr)
+{}
+
+#endif /* LIBSC_USE_ENCODER */
 
 }
 }
