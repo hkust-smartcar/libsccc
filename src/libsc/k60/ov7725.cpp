@@ -328,8 +328,10 @@ void Ov7725::OnDmaComplete(Dma*)
 
 #else
 Ov7725::Ov7725(const Config&)
-		: m_i2c(nullptr),
-		  m_dma(nullptr)
+		: m_sccb(nullptr), m_data_array(nullptr), m_clock(nullptr),
+		  m_vsync(nullptr), m_dma(nullptr), m_w(0), m_h(0), m_buf_size(0),
+		  m_is_shoot(false), m_is_lock_buffer(false), m_is_available(false),
+		  m_is_dma_start(false)
 {
 	LOG_DL("Configured not to use Ov7725");
 }
