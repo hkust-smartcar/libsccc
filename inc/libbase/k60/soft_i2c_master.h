@@ -33,7 +33,7 @@ public:
 		 *
 		 * @note The device may not operate correctly if the value is too high
 		 */
-		uint32_t freq_khz = 100;
+		uint32_t freq_khz = 400;
 	};
 
 	explicit SoftI2cMaster(const Config &config);
