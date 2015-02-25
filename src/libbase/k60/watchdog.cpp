@@ -45,8 +45,11 @@ Watchdog::Watchdog(const Config &config)
 {
 	// FIXME Always reset here
 	Unlock();
-	InitTimeOutReg(config);
-	InitPrescReg(config);
+	if (config.is_enable)
+	{
+		InitTimeOutReg(config);
+		InitPrescReg(config);
+	}
 	InitStctrlReg(config);
 
 	g_instance = this;
