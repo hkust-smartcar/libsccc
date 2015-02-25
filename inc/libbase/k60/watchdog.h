@@ -29,7 +29,7 @@ public:
 	{
 		bool is_enable = false;
 		/// Set whether to allow updating the Watchdog after the initial write
-		bool is_allow_update = false;
+		bool is_allow_update = true;
 		/// Set the time out value, [50, 8000]
 		uint16_t time_out_ms = 1000;
 
