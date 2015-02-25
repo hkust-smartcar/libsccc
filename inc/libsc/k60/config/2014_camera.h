@@ -23,7 +23,8 @@
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 2
 #define LIBSC_USE_MPU6050 1
-#define LIBSC_USE_TEMPERATURE_SENSOR 0
+#define LIBSC_USE_MMA8451Q 1
+//#define LIBSC_USE_TEMPERATURE_SENSOR 0
 #define LIBSC_USE_UART 1
 
 #define LIBSC_ACCELEROMETER_RX libbase::k60::Adc::Name::kAdc0Ad17
@@ -40,8 +41,8 @@
 //#define LIBSC_CAMERA_DMA_SRC_ADDR PTD8
 //#define LIBSC_CAMERA_DMA_CH 0
 
-#define LIBSC_ENCODER0_QDA libbase::k60::Pin::Name::kPtb0
-#define LIBSC_ENCODER0_QDB libbase::k60::Pin::Name::kPtb1
+#define LIBSC_ENCODER0_QDA libbase::k60::Pin::Name::kPta8
+#define LIBSC_ENCODER0_QDB libbase::k60::Pin::Name::kPta9
 #define LIBSC_ENCODER1_QDA libbase::k60::Pin::Name::kPtb18
 #define LIBSC_ENCODER1_QDB libbase::k60::Pin::Name::kPtb19
 
@@ -51,16 +52,16 @@
 #define LIBSC_JOYSTICK0_RIGHT libbase::k60::Pin::Name::kPtc7
 #define LIBSC_JOYSTICK0_SELECT libbase::k60::Pin::Name::kPtc9
 
-#define LIBSC_LCD_RST libbase::k60::Pin::Name::kPta13
-#define LIBSC_LCD_DC libbase::k60::Pin::Name::kPta17
-#define LIBSC_LCD_CS libbase::k60::Pin::Name::kPta14
-#define LIBSC_LCD_SDAT libbase::k60::Pin::Name::kPta16
-#define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPta15
+#define LIBSC_ST7735R_RST libbase::k60::Pin::Name::kPta13
+#define LIBSC_ST7735R_DC libbase::k60::Pin::Name::kPta17
+#define LIBSC_ST7735R_CS libbase::k60::Pin::Name::kPta14
+#define LIBSC_ST7735R_SDAT libbase::k60::Pin::Name::kPta16
+#define LIBSC_ST7735R_SCLK libbase::k60::Pin::Name::kPta15
 
-#define LIBSC_LED0 libbase::k60::Pin::Name::kPte9
-#define LIBSC_LED1 libbase::k60::Pin::Name::kPte10
-#define LIBSC_LED2 libbase::k60::Pin::Name::kPte11
-#define LIBSC_LED3 libbase::k60::Pin::Name::kPte12
+#define LIBSC_LED0 libbase::k60::Pin::Name::kPtd0
+#define LIBSC_LED1 libbase::k60::Pin::Name::kPtd1
+#define LIBSC_LED2 libbase::k60::Pin::Name::kPtd2
+#define LIBSC_LED3 libbase::k60::Pin::Name::kPtd3
 
 #define LIBSC_MOTOR0_PWM libbase::k60::Pin::Name::kPtd7
 #define LIBSC_MOTOR0_DIR libbase::k60::Pin::Name::kPte7
@@ -70,5 +71,14 @@
 #define LIBSC_DIR_MOTOR_CW_LEVEL 0
 
 #define LIBSC_TEMPERATURE0 libbase::k60::Pin::Name::kPtc2
+
+#define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtc17
+#define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtc16
+
+#define LIBSC_MPU6050_SCL libbase::k60::Pin::Name::kPtb22
+#define LIBSC_MPU6050_SDA libbase::k60::Pin::Name::kPtb23
+
+#define LIBSC_MMA8451Q0_SCL libbase::k60::Pin::Name::kPta12
+#define LIBSC_MMA8451Q0_SDA libbase::k60::Pin::Name::kPtd4
 
 #endif /* LIBSC_2014_CAMERA_H_ */
