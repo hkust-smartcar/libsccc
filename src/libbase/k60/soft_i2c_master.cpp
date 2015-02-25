@@ -309,7 +309,8 @@ vector<Byte> SoftI2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
 	for (uint8_t i = 0; i < size; ++i)
 	{
 		Byte byte;
-		if (!ReadByte_(true, &byte))
+		// NACK if last bit
+		if (!ReadByte_((i != size - 1), &byte))
 		{
 			Stop();
 			return bytes;
