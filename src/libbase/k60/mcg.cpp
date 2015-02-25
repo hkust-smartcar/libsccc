@@ -224,7 +224,7 @@ Mcg::Config::Config()
 		  core_clock_khz(MAX_CORE_CLOCK / 1000),
 		  bus_clock_khz(MAX_BUS_CLOCK / 1000),
 		  flexbus_clock_khz(MAX_FLEXBUS_CLOCK / 1000),
-		  flash_clock_khz(MAX_FLEXBUS_CLOCK / 1000)
+		  flash_clock_khz(MAX_FLASH_CLOCK / 1000)
 {}
 
 Mcg::Mcg()
