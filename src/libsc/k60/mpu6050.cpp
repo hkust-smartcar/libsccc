@@ -20,6 +20,8 @@
 #include "libsc/k60/mpu6050.h"
 #include "libutil/misc.h"
 
+#include "libsc/k60/system.h"
+
 using namespace libbase::k60;
 using namespace std;
 
@@ -47,7 +49,8 @@ SoftI2cMaster::Config GetI2cConfig()
 Mpu6050::Mpu6050(const Config &config)
 		: m_i2c(GetI2cConfig()),
 		  m_gyro_range(config.gyro_range),
-		  m_accel_range(config.accel_range)
+		  m_accel_range(config.accel_range),
+		  m_is_calibrated(false)
 {
 	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, 0x00);
 
@@ -70,6 +73,33 @@ Mpu6050::Mpu6050(const Config &config)
 	uint8_t accel_config = static_cast<int>(m_accel_range) << 3;
 	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG,
 			accel_config);
+
+	/**
+	 * Decide if calibrate gyro drift
+	 */
+	if(config.cal_drift){
+		Timer::TimerInt t = 0, pt = 0;
+		std::array<float, 3> omega_sum;
+		int samples = 0;
+		while(samples<512){
+			t = System::Time();
+			if(t-pt >= 2){
+				pt = t;
+				Update();
+				if(samples>=256){
+					std::array<float, 3> omega_ = GetOmega();
+					for(int i=0; i<3; i++){
+						omega_sum[i] += omega_[i];
+					}
+				}
+				samples++;
+			}
+		}
+		for(int i=0; i<3; i++){
+			m_omega_offset[i] = omega_sum[i] / 256;
+		}
+		m_is_calibrated = true;
+	}
 }
 
 float Mpu6050::GetGyroScaleFactor()
@@ -140,6 +170,7 @@ bool Mpu6050::Update()
 		{
 			const int j = (i - 8) / 2;
 			raw_gyro[j] = data[i] << 8 | data[i + 1];
+			raw_gyro[j] -= m_omega_offset[j];
 			m_omega[j] = (float)raw_gyro[j] / GetGyroScaleFactor();
 		}
 	}
