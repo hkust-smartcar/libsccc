@@ -93,15 +93,23 @@
 #endif
 
 #if MK60DZ10 || MK60D10
-	#define MAX_CORE_CLOCK 100000000
-	#define MAX_BUS_CLOCK 50000000
-	#define MAX_FLEXBUS_CLOCK 50000000
-	#define MAX_FLASH_CLOCK 25000000
+	#define CORE_CLOCK 100000000
+	#define BUS_CLOCK 50000000
+	#define FLEXBUS_CLOCK 50000000
+	#define FLASH_CLOCK 25000000
+	#define MAX_CORE_CLOCK 200000000
+	#define MAX_BUS_CLOCK 60000000
+	#define MAX_FLEXBUS_CLOCK 60000000
+	#define MAX_FLASH_CLOCK 30000000
 #elif MK60F15
-	#define MAX_CORE_CLOCK 150000000
-	#define MAX_BUS_CLOCK 75000000
-	#define MAX_FLEXBUS_CLOCK 50000000
-	#define MAX_FLASH_CLOCK 25000000
+	#define CORE_CLOCK 150000000
+	#define BUS_CLOCK 75000000
+	#define FLEXBUS_CLOCK 50000000
+	#define FLASH_CLOCK 25000000
+	#define MAX_CORE_CLOCK 250000000
+	#define MAX_BUS_CLOCK 90000000
+	#define MAX_FLEXBUS_CLOCK 60000000
+	#define MAX_FLASH_CLOCK 30000000
 #endif
 
 namespace libbase
@@ -221,10 +229,10 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 
 Mcg::Config::Config()
 		: external_oscillator_khz(0),
-		  core_clock_khz(MAX_CORE_CLOCK / 1000),
-		  bus_clock_khz(MAX_BUS_CLOCK / 1000),
-		  flexbus_clock_khz(MAX_FLEXBUS_CLOCK / 1000),
-		  flash_clock_khz(MAX_FLASH_CLOCK / 1000)
+		  core_clock_khz(CORE_CLOCK / 1000),
+		  bus_clock_khz(BUS_CLOCK / 1000),
+		  flexbus_clock_khz(FLEXBUS_CLOCK / 1000),
+		  flash_clock_khz(FLASH_CLOCK / 1000)
 {}
 
 Mcg::Mcg()
@@ -354,37 +362,39 @@ void Mcg::InitPee(const Config&)
 
 void Mcg::InitClocks(const Config &config, const uint32_t core_clock)
 {
-	Uint bus_div = 0;
-	Uint bus_clk = config.bus_clock_khz * 1000;
-	bus_div = core_clock / std::min<uint32_t>(bus_clk, MAX_BUS_CLOCK);
+	const Uint target_bus_clk = std::min<uint32_t>(config.bus_clock_khz * 1000,
+			MAX_BUS_CLOCK);
+	Uint bus_div = core_clock / target_bus_clk;
 	const Uint max_bus_clk = core_clock / bus_div;
 	const Uint min_bus_clk = core_clock / (bus_div + 1);
 	if (max_bus_clk > MAX_BUS_CLOCK
-			|| max_bus_clk - bus_clk > bus_clk - min_bus_clk)
+			|| max_bus_clk - target_bus_clk > target_bus_clk - min_bus_clk)
 	{
 		++bus_div;
 	}
 	assert(bus_div > 0);
 
-	Uint flexbus_div = 0;
-	Uint flexbus_clk = config.flexbus_clock_khz * 1000;
-	flexbus_div = core_clock / std::min<uint32_t>(flexbus_clk, MAX_FLEXBUS_CLOCK);
+	const Uint target_flexbus_clk = std::min<uint32_t>(
+			config.flexbus_clock_khz * 1000, MAX_FLEXBUS_CLOCK);
+	Uint flexbus_div = core_clock / target_flexbus_clk;
 	const Uint max_flexbus_clk = core_clock / flexbus_div;
 	const Uint min_flexbus_clk = core_clock / (flexbus_div + 1);
 	if (max_flexbus_clk > MAX_FLEXBUS_CLOCK
-			|| max_flexbus_clk - flexbus_clk > flexbus_clk - min_flexbus_clk)
+			|| max_flexbus_clk - target_flexbus_clk
+					> target_flexbus_clk - min_flexbus_clk)
 	{
 		++flexbus_div;
 	}
 	assert(flexbus_div > 0);
 
-	Uint flash_div = 0;
-	Uint flash_clk = config.flash_clock_khz * 1000;
-	flash_div = core_clock / std::min<uint32_t>(flash_clk, MAX_FLASH_CLOCK);
+	const Uint target_flash_clk = std::min<uint32_t>(
+			config.flash_clock_khz * 1000, MAX_FLASH_CLOCK);
+	Uint flash_div = core_clock / target_flash_clk;
 	const Uint max_flash_clk = core_clock / flash_div;
 	const Uint min_flash_clk = core_clock / (flash_div + 1);
 	if (max_flash_clk > MAX_FLASH_CLOCK
-			|| max_flash_clk - flash_clk > flash_clk - min_flash_clk)
+			|| max_flash_clk - target_flash_clk
+					> target_flash_clk - min_flash_clk)
 	{
 		++flash_div;
 	}
