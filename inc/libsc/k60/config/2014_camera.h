@@ -51,11 +51,11 @@
 #define LIBSC_JOYSTICK0_RIGHT libbase::k60::Pin::Name::kPtc7
 #define LIBSC_JOYSTICK0_SELECT libbase::k60::Pin::Name::kPtc9
 
-#define LIBSC_LCD_RST libbase::k60::Pin::Name::kPta13
-#define LIBSC_LCD_DC libbase::k60::Pin::Name::kPta17
-#define LIBSC_LCD_CS libbase::k60::Pin::Name::kPta14
-#define LIBSC_LCD_SDAT libbase::k60::Pin::Name::kPta16
-#define LIBSC_LCD_SCLK libbase::k60::Pin::Name::kPta15
+#define LIBSC_ST7735R_RST libbase::k60::Pin::Name::kPta13
+#define LIBSC_ST7735R_DC libbase::k60::Pin::Name::kPta17
+#define LIBSC_ST7735R_CS libbase::k60::Pin::Name::kPta14
+#define LIBSC_ST7735R_SDAT libbase::k60::Pin::Name::kPta16
+#define LIBSC_ST7735R_SCLK libbase::k60::Pin::Name::kPta15
 
 #define LIBSC_LED0 libbase::k60::Pin::Name::kPte9
 #define LIBSC_LED1 libbase::k60::Pin::Name::kPte10
