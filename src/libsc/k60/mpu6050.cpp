@@ -74,6 +74,10 @@ Mpu6050::Mpu6050(const Config &config)
 	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG,
 			accel_config);
 
+	for(int i=0; i<3; i++){
+		m_omega_offset[i] = 0;
+	}
+
 	/**
 	 * Decide if calibrate gyro drift
 	 */
