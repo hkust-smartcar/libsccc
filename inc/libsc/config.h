@@ -42,6 +42,9 @@
 #elif defined(KL26_VCAN_Z4DEV)
 #include "libsc/kl26/config/vcan_z4dev.h"
 
+#elif defined(K60_2015_CAMERA)
+#include "libsc/k60/config/2015_camera.h"
+
 #else
 #error Unknown board
 

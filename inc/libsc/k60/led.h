@@ -10,6 +10,7 @@
 
 #include <cstdint>
 
+#include "libbase/k60/dma.h"
 #include "libbase/k60/gpio.h"
 
 namespace libsc
@@ -29,6 +30,15 @@ public:
 
 	void SetEnable(const bool flag);
 	void Switch();
+
+	/**
+	 * @param config
+	 * @see Gpo::ConfigToggleAsDmaDst()
+	 */
+	void ConfigToggleAsDmaDst(libbase::k60::Dma::Config *config)
+	{
+		m_pin.ConfigToggleAsDmaDst(config);
+	}
 
 private:
 	libbase::k60::Gpo m_pin;

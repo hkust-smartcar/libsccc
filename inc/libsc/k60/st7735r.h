@@ -13,15 +13,17 @@
 
 #include "libbase/k60/soft_spi_master.h"
 #include "libbase/k60/spi_master.h"
+#include "libbase/misc_types.h"
 
 #include "libsc/config.h"
+#include "libsc/k60/lcd.h"
 
 namespace libsc
 {
 namespace k60
 {
 
-class St7735r
+class St7735r : public Lcd
 {
 public:
 #if LIBSC_USE_SOFT_ST7735R
@@ -34,90 +36,72 @@ public:
 
 	struct Config
 	{
+		/// Revert the screen upside down
 		bool is_revert = false;
+		/// Whether using a BGR panel instead of a RGB one
+		bool is_bgr = false;
+		/// Frame rate of the screen
+		uint8_t fps = 60;
 	};
-
-	static constexpr uint8_t kW = 128;
-	static constexpr uint8_t kH = 160;
-	static constexpr uint8_t kFontW = 8;
-	static constexpr uint8_t kFontH = 16;
 
 	explicit St7735r(const Config &config);
 
-	void Clear();
-	void Clear(const uint16_t color)
+	void SetRegion(const Rect &rect) override
 	{
-		DrawPixel(0, 0, kW, kH, color);
-		m_bg_color = color;
+		m_region = rect;
 	}
 
-	void DrawPixel(const uint8_t x, const uint8_t y, const uint8_t w,
-			const uint8_t h, const uint16_t color);
-	void DrawPixel(const uint8_t x, const uint8_t y, const uint16_t color)
+	Rect GetRegion() override
 	{
-		DrawPixel(x, y, 1, 1, color);
+		return m_region;
 	}
 
-	void DrawGrayscalePixelBuffer(const uint8_t x, const uint8_t y,
-			const uint8_t w, const uint8_t h, const uint8_t *pixel);
-	void DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
-			const uint8_t h, const uint16_t *pixel);
-	void DrawPixelBuffer(const uint8_t x, const uint8_t y, const uint8_t w,
-			const uint8_t h, const uint16_t color_t, const uint16_t color_f,
-			const bool *data);
-
-	void DrawChar(const uint8_t x, const uint8_t y, const char ch,
-			const uint16_t color, const uint16_t bg_color);
-	void DrawChar(const uint8_t x, const uint8_t y, const char ch,
-			const uint16_t color)
+	void ClearRegion() override
 	{
-		DrawChar(x, y, ch, color, m_bg_color);
+		m_region = Rect{0, 0, static_cast<uint8_t>(GetW()),
+				static_cast<uint8_t>(GetH())};
 	}
 
-	void DrawString(const uint8_t x, const uint8_t y, const char *str,
-			const uint16_t color)
+	void FillColor(const uint16_t color) override;
+	void FillGrayscalePixel(const uint8_t *pixel, const size_t length) override;
+	void FillPixel(const uint16_t *pixel, const size_t length) override;
+	void FillBits(const uint16_t color_t, const uint16_t color_f,
+			const bool *data, const size_t length) override;
+	void FillBits(const uint16_t color_t, const uint16_t color_f,
+			const Byte *data, const size_t bit_length) override;
+
+	void Clear() override;
+	void Clear(const uint16_t color) override;
+
+	void SetInvertColor(const bool flag);
+
+	static constexpr Uint GetW()
 	{
-		DrawString(x, y, str, color, m_bg_color);
+		return kW;
 	}
 
-	void DrawString(const uint8_t x, const uint8_t y, const char *str,
-			const uint16_t color, const uint16_t bg_color)
+	static constexpr Uint GetH()
 	{
-		uint8_t x_ = x;
-		while (*str && x_ < kW)
-		{
-			DrawChar(x_, y, *str++, color, bg_color);
-			x_ += 8;
-		}
-	}
-
-	void DrawBuffer(const uint8_t x, const uint8_t y, const uint8_t *buf,
-			const uint32_t len, const uint16_t color)
-	{
-		DrawBuffer(x, y, buf, len, color, m_bg_color);
-	}
-
-	void DrawBuffer(const uint8_t x, const uint8_t y, const uint8_t *buf,
-			const uint32_t len, const uint16_t color, const uint16_t bg_color)
-	{
-		uint8_t x_ = x;
-		for (uint32_t i = 0; i < len && x_ < kW; ++i)
-		{
-			DrawChar(x_, y, *buf++, color, bg_color);
-			x_ += 8;
-		}
+		return kH;
 	}
 
 private:
-	void SetActiveRect(const uint8_t x, const uint8_t y, const uint8_t w,
-			const uint8_t h);
-	void Send(const bool is_cmd, const uint8_t data);
+	static constexpr Uint kW = 128;
+	static constexpr Uint kH = 160;
+
+	void InitMadctl(const Config &config);
+	void InitFrmctr(const Config &config);
+	void InitPwctr();
+	void InitGamma();
+
+	void SetActiveRect();
+	inline void Send(const bool is_cmd, const uint8_t data);
 
 	SpiMaster m_spi;
 	libbase::k60::Gpo m_rst;
 	libbase::k60::Gpo m_dc;
 
-	uint16_t m_bg_color;
+	Rect m_region;
 };
 
 }

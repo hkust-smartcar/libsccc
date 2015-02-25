@@ -20,20 +20,37 @@ namespace k60
 class Joystick
 {
 public:
+	typedef std::function<void(const uint8_t id)> Listener;
+
 	enum struct State
 	{
-		IDLE,
-		UP,
-		DOWN,
-		LEFT,
-		RIGHT,
-		SELECT,
+		kUp = 0,
+		kDown,
+		kLeft,
+		kRight,
+		kSelect,
+
+		kIdle
 	};
 
 	struct Config
 	{
+		enum struct Trigger
+		{
+			kDown,
+			kUp,
+			kBoth,
+		};
+
 		uint8_t id;
 		bool is_active_low;
+		Listener listeners[5];
+		/**
+		 * When to trigger the listener, ignored if corresponding listener is
+		 * not set in Config::listeners. The sequence of the array follows the
+		 * State enum
+		 */
+		Trigger listener_triggers[5];
 	};
 
 	explicit Joystick(const Config &config);
@@ -43,6 +60,7 @@ public:
 private:
 	libbase::k60::Gpi m_pins[5];
 	bool m_is_active_low;
+	Listener m_isrs[5];
 };
 
 }

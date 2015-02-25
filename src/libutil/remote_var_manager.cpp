@@ -16,6 +16,7 @@
 #include "libbase/k60/misc_utils.h"
 
 #include "libsc/k60/uart_device.h"
+#include "libutil/endian_utils.h"
 #include "libutil/remote_var_manager.h"
 #include "libutil/string.h"
 
@@ -121,13 +122,13 @@ void RemoteVarManager::Start(const bool is_broadcast)
 			{
 				m_uart->SendStr(String::Format("%s,int,%d,%d\n",
 						m_vars[i].m_name.c_str(), m_vars[i].m_id,
-						htobe32(m_vars[i].m_val)));
+						EndianUtils::HostToBe(m_vars[i].m_val)));
 			}
 			else
 			{
 				m_uart->SendStr(String::Format("%s,real,%d,%.3f\n",
 						m_vars[i].m_name.c_str(), m_vars[i].m_id,
-						AsFloat(htobe32(m_vars[i].m_val))));
+						AsFloat(EndianUtils::HostToBe(m_vars[i].m_val))));
 			}
 		}
 	}

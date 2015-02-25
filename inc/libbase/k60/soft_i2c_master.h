@@ -28,12 +28,12 @@ public:
 	struct Config : public I2cMasterInterface::Config
 	{
 		/**
-		 * Set the delay to work in a different frequency than the default
-		 * 100KHz one
+		 * Set the clock frequency. The standard i2c frequency is 100kHz, many
+		 * later devices can go up to 400kHz
 		 *
-		 * @note The device may not operate correctly if the value is lowered
+		 * @note The device may not operate correctly if the value is too high
 		 */
-		uint32_t delay_us = 10;
+		uint32_t freq_khz = 100;
 	};
 
 	explicit SoftI2cMaster(const Config &config);
@@ -54,7 +54,7 @@ public:
 			const uint8_t size) override;
 	bool SendByte(const Byte slave_addr, const Byte reg_addr, const Byte byte) override;
 	bool SendBytes(const Byte slave_addr, const Byte reg_addr,
-			const std::vector<Byte> &bytes) override;
+			const Byte *bytes, const size_t size) override;
 
 private:
 	void Uninit();
@@ -66,8 +66,9 @@ private:
 
 	inline void Delay();
 
-	uint16_t m_scl_low_timeout;
+	bool m_is_use_repeated_start;
 	uint32_t m_delay_us;
+	uint16_t m_scl_low_timeout_ms;
 
 	Gpio m_scl;
 	Gpio m_sda;

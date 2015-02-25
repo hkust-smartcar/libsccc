@@ -29,6 +29,12 @@ public:
 		Pin::Name scl_pin;
 		Pin::Name sda_pin;
 		uint16_t scl_low_timeout = UINT16_MAX;
+		/**
+		 * Generate a START signal followed by a calling command without
+		 * generating a STOP signal first. This saves the time needed for the
+		 * STOP signal
+		 */
+		bool is_use_repeated_start = true;
 	};
 
 	virtual ~I2cMasterInterface()
@@ -43,7 +49,7 @@ public:
 	virtual bool SendByte(const Byte slave_addr, const Byte reg_addr,
 			const Byte byte) = 0;
 	virtual bool SendBytes(const Byte slave_addr, const Byte reg_addr,
-			const std::vector<Byte> &bytes) = 0;
+			const Byte *bytes, const size_t size) = 0;
 };
 
 }

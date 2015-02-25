@@ -15,10 +15,12 @@
 
 #pragma once
 
+#include <array>
 #include <bitset>
 
 #include "libbase/k60/adc.h"
 #include "libbase/k60/dac.h"
+#include "libbase/k60/dma_mux.h"
 #include "libbase/k60/ftm.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
@@ -76,6 +78,16 @@ public:
 		return PINOUT_ADC_COUNT;
 	}
 
+	static constexpr Uint GetDmaChCount()
+	{
+		return PINOUT_DMA_CH_COUNT;
+	}
+
+	static constexpr Uint GetDmaMuxCount()
+	{
+		return PINOUT_DMA_MUX_COUNT;
+	}
+
 	static constexpr Uint GetFtmCount()
 	{
 		return PINOUT_FTM_COUNT;
@@ -116,6 +128,15 @@ public:
 	static Pin::Config::MuxControl GetFtmMux(const Pin::Name pin);
 	static Ftm::QdName GetFtmQd(const Pin::Name pin);
 	static Pin::Config::MuxControl GetFtmQdMux(const Pin::Name pin);
+	/**
+	 * Return the source number for the specific module @a mux, or -1 if @a src
+	 * doesn't exist in the module
+	 *
+	 * @param src
+	 * @param mux
+	 * @return
+	 */
+	static uint8_t GetDmaMuxSource(const DmaMux::Source src, const Uint mux);
 
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;

@@ -8,15 +8,19 @@
 
 #include <cassert>
 
+#include <array>
 #include <bitset>
 
 #include "libbase/k60/pinout/mk60f15_lqfp144.h"
 
 #include "libbase/k60/adc.h"
+#include "libbase/k60/dma_mux.h"
 #include "libbase/k60/ftm.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pin_utils.h"
+
+using namespace std;
 
 namespace libbase
 {
@@ -695,6 +699,85 @@ Pin::Config::MuxControl Mk60f15Lqfp144::GetFtmQdMux(const Pin::Name pin)
 	else
 	{
 		return Pin::Config::MuxControl::kAlt6;
+	}
+}
+
+uint8_t Mk60f15Lqfp144::GetDmaMuxSource(const DmaMux::Source src, const Uint mux)
+{
+	assert(mux < PINOUT_DMA_MUX_COUNT);
+
+	if ((Uint)src >= (Uint)DmaMux::Source::kUart0Rx
+			&& (Uint)src <= (Uint)DmaMux::Source::kUart5Tx)
+	{
+		return (Uint)src - (Uint)DmaMux::Source::kUart0Rx + 2;
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kSpi0Rx
+			&& (Uint)src <= (Uint)DmaMux::Source::kSpi2Tx)
+	{
+		return (Uint)src - (Uint)DmaMux::Source::kSpi0Rx + 16;
+	}
+	else if (src == DmaMux::Source::kI2c0)
+	{
+		return (mux == 0) ? 22 : static_cast<uint8_t>(-1);
+	}
+	else if (src == DmaMux::Source::kI2c1or2)
+	{
+		return (mux == 0) ? 23 : static_cast<uint8_t>(-1);
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kFtm0Ch0
+			&& (Uint)src <= (Uint)DmaMux::Source::kFtm2Ch1)
+	{
+		return (mux == 0) ? ((Uint)src - (Uint)DmaMux::Source::kFtm0Ch0 + 24)
+				: static_cast<uint8_t>(-1);
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kFtm3Ch0
+			&& (Uint)src <= (Uint)DmaMux::Source::kFtm3Ch7)
+	{
+		return (mux == 0) ? static_cast<uint8_t>(-1)
+				: ((Uint)src - (Uint)DmaMux::Source::kFtm3Ch0 + 24);
+	}
+	else if (src == DmaMux::Source::kAdc0)
+	{
+		return 40;
+	}
+	else if (src == DmaMux::Source::kAdc1)
+	{
+		return 41;
+	}
+	else if (src == DmaMux::Source::kAdc2)
+	{
+		return (mux == 0) ? static_cast<uint8_t>(-1) : 42;
+	}
+	else if (src == DmaMux::Source::kAdc3)
+	{
+		return (mux == 0) ? static_cast<uint8_t>(-1) : 43;
+	}
+	else if (src == DmaMux::Source::kDac0)
+	{
+		return 45;
+	}
+	else if (src == DmaMux::Source::kDac1)
+	{
+		return 46;
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kPortA
+			&& (Uint)src <= (Uint)DmaMux::Source::kPortE)
+	{
+		return (mux == 0) ? ((Uint)src - (Uint)DmaMux::Source::kPortA + 49)
+				: static_cast<uint8_t>(-1);
+	}
+	else if (src == DmaMux::Source::kPortF)
+	{
+		return (mux == 0) ? static_cast<uint8_t>(-1) : 53;
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kSoftware0
+			&& (Uint)src <= (Uint)DmaMux::Source::kSoftware9)
+	{
+		return (Uint)src - (Uint)DmaMux::Source::kSoftware0 + 54;
+	}
+	else
+	{
+		return static_cast<uint8_t>(-1);
 	}
 }
 
