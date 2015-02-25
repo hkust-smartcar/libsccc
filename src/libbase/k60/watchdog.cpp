@@ -43,7 +43,6 @@ Watchdog* g_instance = nullptr;
 
 Watchdog::Watchdog(const Config &config)
 {
-	// FIXME Always reset here
 	Unlock();
 	if (config.is_enable)
 	{
@@ -78,7 +77,6 @@ void Watchdog::InitStctrlReg(const Config &config)
 		SET_BIT(reg_h, WDOG_STCTRLH_IRQRSTEN_SHIFT);
 		EnableIrq(Watchdog_IRQn);
 	}
-	SET_BIT(reg_h, WDOG_STCTRLH_CLKSRC_SHIFT);
 	if (config.is_enable)
 	{
 		SET_BIT(reg_h, WDOG_STCTRLH_WDOGEN_SHIFT);
@@ -127,7 +125,6 @@ void Watchdog::StartupInitialize()
 	SET_BIT(reg_h, WDOG_STCTRLH_WAITEN_SHIFT);
 	SET_BIT(reg_h, WDOG_STCTRLH_STOPEN_SHIFT);
 	SET_BIT(reg_h, WDOG_STCTRLH_ALLOWUPDATE_SHIFT);
-	SET_BIT(reg_h, WDOG_STCTRLH_CLKSRC_SHIFT);
 
 	WDOG->STCTRLH = reg_h;
 }
