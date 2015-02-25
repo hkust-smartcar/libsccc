@@ -26,7 +26,6 @@ class UartDevice;
 
 }
 }
-void InitDefaultFwriteHandler(libsc::k60::UartDevice *uart);
 #endif
 
 #define SAFE_DELETE(x) do{if (x) {delete x; x = nullptr;}}while(false)
@@ -35,6 +34,9 @@ void InitDefaultFwriteHandler(libsc::k60::UartDevice *uart);
 
 namespace libutil
 {
+#if defined(MK60DZ10) || defined(MK60D10) || defined(MK60F15)
+void InitDefaultFwriteHandler(libsc::k60::UartDevice *uart);
+#endif
 
 template<typename T>
 inline T Clamp(const T &min, const T &x, const T &max)

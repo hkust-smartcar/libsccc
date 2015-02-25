@@ -23,7 +23,7 @@
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 2
 #define LIBSC_USE_MPU6050 1
-#define LIBSC_USE_TEMPERATURE_SENSOR 0
+//#define LIBSC_USE_TEMPERATURE_SENSOR 0
 #define LIBSC_USE_UART 1
 
 #define LIBSC_ACCELEROMETER_RX libbase::k60::Adc::Name::kAdc0Ad17
@@ -70,5 +70,11 @@
 #define LIBSC_DIR_MOTOR_CW_LEVEL 0
 
 #define LIBSC_TEMPERATURE0 libbase::k60::Pin::Name::kPtc2
+
+#define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtc17
+#define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtc16
+
+#define LIBSC_MPU6050_SCL libbase::k60::Pin::Name::kPtb22
+#define LIBSC_MPU6050_SDA libbase::k60::Pin::Name::kPtb23
 
 #endif /* LIBSC_2014_CAMERA_H_ */

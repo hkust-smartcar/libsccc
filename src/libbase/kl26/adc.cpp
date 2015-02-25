@@ -117,8 +117,8 @@ Adc::Adc(const Config &config)
 
 	if (m_config.is_continuous_mode && !m_config.conversion_isr)
 	{
-		m_config.conversion_isr = std::bind(&Adc::OnConversionComplete,
-				this, placeholders::_1, placeholders::_2);
+		/*m_config.conversion_isr = std::bind(&Adc::OnConversionComplete,
+				this, placeholders::_1, placeholders::_2);*/
 	}
 
 }
