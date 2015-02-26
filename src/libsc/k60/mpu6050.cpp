@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "libbase/log.h"
+#include "libbase/k60/i2c_master.h"
 #include "libbase/k60/soft_i2c_master.h"
 
 #include "libsc/config.h"
@@ -33,12 +34,15 @@ namespace k60
 namespace
 {
 
-SoftI2cMaster::Config GetI2cConfig()
+Mpu6050::I2cMaster::Config GetI2cConfig()
 {
-	SoftI2cMaster::Config config;
+	Mpu6050::I2cMaster::Config config;
 	config.scl_pin = LIBSC_MPU6050_SCL;
 	config.sda_pin = LIBSC_MPU6050_SDA;
 	config.baud_rate_khz = 400;
+	config.scl_low_timeout = 1000;
+	config.min_scl_start_hold_time_ns = 600;
+	config.min_scl_stop_hold_time_ns = 600;
 	return config;
 }
 

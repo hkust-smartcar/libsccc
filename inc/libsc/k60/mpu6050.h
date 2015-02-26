@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <array>
 
+#include "libbase/k60/i2c_master.h"
 #include "libbase/k60/soft_i2c_master.h"
 #include "libbase/misc_types.h"
 
@@ -22,6 +23,14 @@ namespace k60
 class Mpu6050
 {
 public:
+#if LIBSC_USE_SOFT_MPU6050
+	typedef libbase::k60::SoftI2cMaster I2cMaster;
+
+#else
+	typedef libbase::k60::I2cMaster I2cMaster;
+
+#endif // LIBSC_USE_SOFT_MPU6050
+
 	struct Config
 	{
 		enum struct Range
@@ -61,7 +70,7 @@ private:
 	float GetGyroScaleFactor();
 	float GetAccelScaleFactor();
 
-	libbase::k60::SoftI2cMaster m_i2c;
+	I2cMaster m_i2c;
 	std::array<float, 3> m_accel;
 	std::array<float, 3> m_omega;
 	float m_temp;
