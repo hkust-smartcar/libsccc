@@ -42,12 +42,46 @@ public:
 
 	virtual operator bool() const = 0;
 
+	/**
+	 * Receive a single byte from a slave device
+	 *
+	 * @param slave_addr 7-bit address of the slave device
+	 * @param reg_addr Address of the interesting register
+	 * @param out_byte The received byte, no change if false is returned
+	 * @return true if successful, false otherwise
+	 */
 	virtual bool GetByte(const Byte slave_addr, const Byte reg_addr,
 			Byte *out_byte)  = 0;
+	/**
+	 * Receive multiple bytes from a slave device
+	 *
+	 * @param slave_addr 7-bit address of the slave device
+	 * @param reg_addr Address of the first interesting register
+	 * @param size Number of register reads
+	 * @return Received data, if the size of the returned data is < than @a size,
+	 * an error has occurred
+	 */
 	virtual std::vector<Byte> GetBytes(const Byte slave_addr,
 			const Byte reg_addr, const uint8_t size) = 0;
+	/**
+	 * Send a single byte to a slave device
+	 *
+	 * @param slave_addr 7-bit address of the slave device
+	 * @param reg_addr Address of the interesting register
+	 * @param byte The byte to send
+	 * @return true if successful, false otherwise
+	 */
 	virtual bool SendByte(const Byte slave_addr, const Byte reg_addr,
 			const Byte byte) = 0;
+	/**
+	 * Send multiple bytes to a slave device
+	 *
+	 * @param slave_addr 7-bit address of the slave device
+	 * @param reg_addr Address of the first interesting register
+	 * @param bytes Data to send
+	 * @param size Size of the @a bytes array
+	 * @return true if successful, false otherwise
+	 */
 	virtual bool SendBytes(const Byte slave_addr, const Byte reg_addr,
 			const Byte *bytes, const size_t size) = 0;
 };
