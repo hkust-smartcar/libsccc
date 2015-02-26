@@ -41,9 +41,9 @@ namespace k60
 namespace
 {
 
-SpiMaster::Config GetSpiConfig()
+St7735r::SpiMaster::Config GetSpiConfig()
 {
-	SpiMaster::Config config;
+	St7735r::SpiMaster::Config config;
 	config.sout_pin = LIBSC_ST7735R_SDAT;
 	config.sck_pin = LIBSC_ST7735R_SCLK;
 	// Max freq of ST7735R == 15MHz
