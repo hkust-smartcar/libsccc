@@ -56,6 +56,8 @@ Mpu6050::Mpu6050(const Config &config)
 		  m_gyro_range(config.gyro_range),
 		  m_accel_range(config.accel_range)
 {
+	assert(Verify());
+
 	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, 0x00));
 
 	//Register 25 – Sample Rate Divider: Sample Rate = Gyroscope Output Rate / (1 + SMPLRT_DIV)
@@ -78,6 +80,19 @@ Mpu6050::Mpu6050(const Config &config)
 	uint8_t accel_config = static_cast<int>(m_accel_range) << 3;
 	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG,
 			accel_config));
+}
+
+bool Mpu6050::Verify()
+{
+	Byte who_am_i;
+	if (!m_i2c.GetByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_WHO_AM_I, &who_am_i))
+	{
+		return false;
+	}
+	else
+	{
+		return (who_am_i == 0x68);
+	}
 }
 
 float Mpu6050::GetGyroScaleFactor()

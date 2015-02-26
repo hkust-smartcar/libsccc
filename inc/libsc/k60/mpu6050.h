@@ -67,6 +67,8 @@ public:
 	}
 
 private:
+	bool Verify();
+
 	float GetGyroScaleFactor();
 	float GetAccelScaleFactor();
 
