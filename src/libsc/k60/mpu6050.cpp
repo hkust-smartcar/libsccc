@@ -41,8 +41,10 @@ Mpu6050::I2cMaster::Config GetI2cConfig()
 	config.sda_pin = LIBSC_MPU6050_SDA;
 	config.baud_rate_khz = 400;
 	config.scl_low_timeout = 1000;
+#if !LIBSC_USE_SOFT_MPU6050
 	config.min_scl_start_hold_time_ns = 600;
 	config.min_scl_stop_hold_time_ns = 600;
+#endif
 	return config;
 }
 
