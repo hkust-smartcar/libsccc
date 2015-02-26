@@ -170,11 +170,53 @@ void Ov7725::InitCom3Reg()
 
 void Ov7725::InitClock(const Config &config)
 {
+	// Internal clock = 12mHz * PLLx / ((CLKRC + 1)) * 2)
+	// 12m is the input clock of our part
+	int pll, clkrc;
+	switch (config.fps)
+	{
+	case Config::Fps::kStill:
+		pll = 0;
+		clkrc = 0x1F;
+		break;
+
+	case Config::Fps::kVeryLow:
+		pll = 1;
+		clkrc = 0x1F;
+		break;
+
+	case Config::Fps::kLow:
+		pll = 1;
+		clkrc = 0x0F;
+		break;
+
+	default:
+	case Config::Fps::kMid:
+		pll = 2;
+		clkrc = 0x07;
+		break;
+
+	case Config::Fps::kHigh:
+		pll = 2;
+		clkrc = 0x04;
+		break;
+
+	case Config::Fps::kVeryHigh:
+		pll = 3;
+		clkrc = 0x04;
+		break;
+
+	case Config::Fps::kLightning:
+		pll = 3;
+		clkrc = 0x00;
+		break;
+	}
+
 	uint8_t com4_reg = 0x1;
-	com4_reg |= ((int)config.fps + 1) << 6;
+	com4_reg |= pll << 6;
 
 	m_sccb.SendByte(OV7725_SLAVE_ADDR, OV7725_COM4, com4_reg);
-	m_sccb.SendByte(OV7725_SLAVE_ADDR, OV7725_CLKRC, 0x00);
+	m_sccb.SendByte(OV7725_SLAVE_ADDR, OV7725_CLKRC, clkrc);
 }
 
 void Ov7725::InitResolution()
