@@ -28,6 +28,15 @@ public:
 	{
 		Pin::Name scl_pin;
 		Pin::Name sda_pin;
+
+		/**
+		 * Set the baud rate. The standard i2c frequency is 100kHz, many
+		 * later devices can go up to 400kHz
+		 *
+		 * @note The device may not operate correctly if the value is too high
+		 */
+		uint16_t baud_rate_khz = 100;
+
 		uint16_t scl_low_timeout = UINT16_MAX;
 		/**
 		 * Generate a START signal followed by a calling command without

@@ -26,15 +26,7 @@ class SoftI2cMaster : public I2cMasterInterface
 {
 public:
 	struct Config : public I2cMasterInterface::Config
-	{
-		/**
-		 * Set the clock frequency. The standard i2c frequency is 100kHz, many
-		 * later devices can go up to 400kHz
-		 *
-		 * @note The device may not operate correctly if the value is too high
-		 */
-		uint32_t freq_khz = 100;
-	};
+	{};
 
 	explicit SoftI2cMaster(const Config &config);
 	explicit SoftI2cMaster(nullptr_t);

@@ -40,7 +40,7 @@ namespace
 
 Uint GetDelayUs(const SoftI2cMaster::Config &config)
 {
-	const Uint freq2 = config.freq_khz * 2;
+	const Uint freq2 = config.baud_rate_khz * 2;
 	return (1000 + freq2 - 1) / freq2;
 }
 
