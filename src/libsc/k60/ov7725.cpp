@@ -65,7 +65,6 @@ GpiArray::Config GetGpiArrayConfig()
 {
 	GpiArray::Config product;
 	product.start_pin = LIBSC_OV77250_DATA0;
-	product.config[Pin::Config::ConfigBit::kPullEnable] = true;
 	product.count = 8;
 	return product;
 }
@@ -82,7 +81,6 @@ Gpi::Config GetVsyncConfig(Gpi::OnGpiEventListener isr)
 {
 	Gpi::Config product;
 	product.pin = LIBSC_OV77250_VSYNC;
-	product.config[Pin::Config::ConfigBit::kPassiveFilter] = true;
 	product.interrupt = Pin::Config::Interrupt::kFalling;
 	product.isr = isr;
 	return product;
