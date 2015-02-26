@@ -424,7 +424,7 @@ bool I2cMaster::ReadByte_(const bool is_ack, Byte *out_byte)
 bool I2cMaster::GetByte(const Byte slave_addr, const Byte reg_addr,
 		Byte *out_byte)
 {
-	STATE_GUARD(SoftI2cMaster, false);
+	STATE_GUARD(I2cMaster, false);
 
 	Start();
 	SEND_BYTE_GUARDED(slave_addr << 1, false);
@@ -446,7 +446,7 @@ bool I2cMaster::GetByte(const Byte slave_addr, const Byte reg_addr,
 vector<Byte> I2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
 		const uint8_t size)
 {
-	STATE_GUARD(SoftI2cMaster, {});
+	STATE_GUARD(I2cMaster, {});
 
 	vector<Byte> bytes;
 	bytes.reserve(size);
@@ -474,7 +474,7 @@ vector<Byte> I2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
 bool I2cMaster::SendByte(const Byte slave_addr, const Byte reg_addr,
 		const Byte byte)
 {
-	STATE_GUARD(SoftI2cMaster, false);
+	STATE_GUARD(I2cMaster, false);
 
 	Start();
 	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, false);
@@ -487,7 +487,7 @@ bool I2cMaster::SendByte(const Byte slave_addr, const Byte reg_addr,
 bool I2cMaster::SendBytes(const Byte slave_addr, const Byte reg_addr,
 		const Byte *bytes, const size_t size)
 {
-	STATE_GUARD(SoftI2cMaster, false);
+	STATE_GUARD(I2cMaster, false);
 
 	Start();
 	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, false);
