@@ -56,7 +56,6 @@ public:
 private:
 	libbase::k60::Gpi m_pin;
 	bool m_is_active_low;
-	Listener m_isr;
 };
 
 }

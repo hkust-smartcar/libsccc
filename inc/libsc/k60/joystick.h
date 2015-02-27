@@ -60,7 +60,6 @@ public:
 private:
 	libbase::k60::Gpi m_pins[5];
 	bool m_is_active_low;
-	Listener m_isrs[5];
 };
 
 }

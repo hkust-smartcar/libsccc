@@ -127,10 +127,10 @@ Button::Button(const Config &config)
 	if (config.listener)
 	{
 		const uint8_t id = config.id;
-		m_isr = config.listener;
-		listener = [this, id](Gpi*)
+		Button::Listener btn_listener = config.listener;
+		listener = [btn_listener, id](Gpi*)
 				{
-					m_isr(id);
+					btn_listener(id);
 				};
 	}
 	m_pin = Gpi(GetGpiConfig(config, listener));
