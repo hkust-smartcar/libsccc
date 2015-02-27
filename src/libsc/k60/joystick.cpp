@@ -7,6 +7,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 
 #include "libbase/log.h"
@@ -154,6 +155,10 @@ Joystick::Joystick(const Config &config)
 	}
 }
 
+Joystick::Joystick(nullptr_t)
+		: m_is_active_low(false)
+{}
+
 Joystick::State Joystick::GetState() const
 {
 	for (int i = 0; i < 5; ++i)
@@ -168,6 +173,9 @@ Joystick::State Joystick::GetState() const
 
 #else
 Joystick::Joystick(const Config&)
+		: Joystick(nullptr)
+{}
+Joystick::Joystick(nullptr_t)
 		: m_is_active_low(false)
 {
 	LOG_DL("Configured not to use Joystick");

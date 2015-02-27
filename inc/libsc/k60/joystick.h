@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include "libbase/k60/gpio.h"
@@ -54,6 +55,7 @@ public:
 	};
 
 	explicit Joystick(const Config &config);
+	explicit Joystick(nullptr_t);
 
 	State GetState() const;
 

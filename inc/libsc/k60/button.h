@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include <functional>
@@ -46,6 +47,7 @@ public:
 	};
 
 	explicit Button(const Config &config);
+	explicit Button(nullptr_t);
 
 	bool IsDown() const;
 	bool IsUp() const
