@@ -139,7 +139,7 @@ void Encoder::Update()
 Encoder::Encoder(const Initializer&)
 		: Encoder(nullptr)
 {}
-Encoder::Encoder(Encoder &&rhs)
+Encoder::Encoder(Encoder&&)
 		: Encoder(nullptr)
 {}
 Encoder::Encoder(nullptr_t)
