@@ -154,7 +154,7 @@ Mpu6050::Mpu6050(const Config&)
 {
 	LOG_DL("Configured not to use Mpu6050");
 }
-void Mpu6050::Update() {}
+bool Mpu6050::Update() {}
 
 #endif /* LIBSC_USE_MPU6050 */
 
