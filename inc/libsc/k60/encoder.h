@@ -70,6 +70,7 @@ protected:
 
 	explicit Encoder(const Initializer &initializer);
 	explicit Encoder(nullptr_t);
+	Encoder(Encoder &&rhs);
 
 private:
 	int32_t m_count;

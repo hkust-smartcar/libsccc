@@ -121,6 +121,11 @@ Encoder::Encoder(const Initializer &initializer)
 		  m_quad_decoder(initializer.GetQuadDecoderConfig())
 {}
 
+Encoder::Encoder(Encoder &&rhs)
+		: m_count(rhs.m_count),
+		  m_quad_decoder(std::move(rhs.m_quad_decoder))
+{}
+
 Encoder::~Encoder()
 {}
 
@@ -132,6 +137,9 @@ void Encoder::Update()
 
 #else
 Encoder::Encoder(const Initializer&)
+		: Encoder(nullptr)
+{}
+Encoder::Encoder(Encoder &&rhs)
 		: Encoder(nullptr)
 {}
 Encoder::Encoder(nullptr_t)
