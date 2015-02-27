@@ -22,6 +22,7 @@
 #include "libbase/k60/dma_mux.h"
 #include "libbase/k60/gpio.h"
 #include "libbase/k60/gpio_array.h"
+#include "libbase/k60/pin.h"
 #include "libbase/k60/pin_utils.h"
 #include "libbase/k60/soft_sccb_master.h"
 #include "libbase/k60/vectors.h"
@@ -81,7 +82,8 @@ Gpi::Config GetVsyncConfig(Gpi::OnGpiEventListener isr)
 {
 	Gpi::Config product;
 	product.pin = LIBSC_OV77250_VSYNC;
-	product.interrupt = Pin::Config::Interrupt::kFalling;
+	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	product.interrupt = Pin::Config::Interrupt::kRising;
 	product.isr = isr;
 	return product;
 }
@@ -352,6 +354,7 @@ void Ov7725::OnVsync(Gpi*)
 	if (m_dma->IsDone() || !m_is_dma_start)
 	{
 		m_is_dma_start = true;
+		Pin::ConsumeInterrupt(m_clock.GetPin()->GetName());
 		m_dma->Start();
 	}
 }
