@@ -35,15 +35,20 @@ Looper::~Looper()
 
 void Looper::Loop()
 {
-	Timer::TimerInt prev = System::Time();
+	ResetTiming();
 	while (m_is_run)
 	{
-		const Timer::TimerInt now = System::Time();
-		if (now != prev)
-		{
-			Invoke();
-			prev = now;
-		}
+		Once();
+	}
+}
+
+void Looper::Once()
+{
+	const Timer::TimerInt now = System::Time();
+	if (now != m_prev)
+	{
+		Invoke();
+		m_prev = now;
 	}
 }
 
@@ -78,6 +83,11 @@ void Looper::RunAfter(const Timer::TimerInt ms, const Callback &c)
 	rs.start = System::Time();
 	rs.callback = c;
 	m_states.push_back(std::move(rs));
+}
+
+void Looper::ResetTiming()
+{
+	m_prev = System::Time();
 }
 
 }

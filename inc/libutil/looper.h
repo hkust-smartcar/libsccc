@@ -26,10 +26,25 @@ public:
 	Looper();
 	~Looper();
 
+	/**
+	 * Start the main loop. This method would not return unless Break() is
+	 * called
+	 */
 	void Loop();
 	void Break();
+	/**
+	 * Run the looper once and return immediately. Mainly used when you want
+	 * a custom main loop, in that case, you should call ResetTiming() first
+	 * before entering such loop
+	 */
+	void Once();
 
 	void RunAfter(const libsc::k60::Timer::TimerInt ms, const Callback &c);
+
+	/**
+	 * Reset the internal time
+	 */
+	void ResetTiming();
 
 private:
 	struct RunnerState;
@@ -37,6 +52,7 @@ private:
 	void Invoke();
 
 	std::list<RunnerState> m_states;
+	libsc::k60::Timer::TimerInt m_prev;
 	bool m_is_run;
 };
 
