@@ -21,6 +21,7 @@
 #include "libbase/kl26/pin.h"
 #include "libbase/kl26/pin_isr_manager.h"
 #include "libbase/kl26/pin_utils.h"
+#include "libbase/kl26/pinout.h"
 
 #include "libutil/misc.h"
 
@@ -34,7 +35,8 @@ namespace kl26
 namespace
 {
 
-constexpr GPIO_Type* MEM_MAPS[PINOUT::GetPortCount()] = {PTA, PTB, PTC, PTD, PTE};
+constexpr FGPIO_Type* MEM_MAPS[PINOUT::GetPortCount()] = {FPTA, FPTB, FPTC, FPTD,
+		FPTE};
 
 Pin::Config GetPinConfig(const Gpi::Config &config)
 {
