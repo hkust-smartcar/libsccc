@@ -43,6 +43,10 @@ public:
 		 * is always preferred over a halfly printed character
 		 */
 		bool is_text_wrap = false;
+		/**
+		 * Clear remaining pixel to BG color for each line
+		 */
+		bool is_clear_line = true;
 	};
 
 	explicit LcdTypewriter(const Config &config);
@@ -92,6 +96,7 @@ private:
 	uint16_t m_fg_color;
 	uint16_t m_bg_color;
 	bool m_is_text_wrap;
+	bool m_is_clear_line;
 };
 
 }

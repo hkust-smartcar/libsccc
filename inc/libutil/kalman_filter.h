@@ -18,6 +18,11 @@ public:
 
 	float Filter(const float data);
 
+	void SetQ(const float lpQ);
+	void SetR(const float lpR);
+	void SetX(const float lpX);
+	void SetP(const float lpP);
+
 private:
 	void PredictState();
 	void PredictCovariance();

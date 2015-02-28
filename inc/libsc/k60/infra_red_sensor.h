@@ -36,7 +36,6 @@ public:
 	bool IsDetected() const;
 
 private:
-	OnDetectListener m_isr;
 	libbase::k60::Gpi m_pin;
 };
 

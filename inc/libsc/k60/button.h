@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include <functional>
@@ -46,6 +47,7 @@ public:
 	};
 
 	explicit Button(const Config &config);
+	explicit Button(nullptr_t);
 
 	bool IsDown() const;
 	bool IsUp() const
@@ -56,7 +58,6 @@ public:
 private:
 	libbase::k60::Gpi m_pin;
 	bool m_is_active_low;
-	Listener m_isr;
 };
 
 }

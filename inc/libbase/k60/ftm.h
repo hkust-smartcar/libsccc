@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "libbase/k60/pin.h"
 #include "libbase/k60/pinout_macros.h"
 
 namespace libbase

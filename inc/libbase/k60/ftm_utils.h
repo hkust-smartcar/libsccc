@@ -10,7 +10,6 @@
 
 #include "libbase/k60/ftm.h"
 #include "libbase/k60/misc_utils.h"
-#include "libbase/k60/pin.h"
 #include "libbase/k60/pinout.h"
 
 namespace libbase

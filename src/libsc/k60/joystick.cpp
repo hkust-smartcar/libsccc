@@ -7,6 +7,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 
 #include "libbase/log.h"
@@ -143,16 +144,20 @@ Joystick::Joystick(const Config &config)
 		if (config.listeners[i])
 		{
 			const uint8_t id = config.id;
-			m_isrs[i] = config.listeners[i];
-			listener = [this, id, i](Gpi*)
+			Joystick::Listener js_listener = config.listeners[i];
+			listener = [js_listener, id, i](Gpi*)
 					{
-						m_isrs[i](id);
+						js_listener(id);
 					};
 		}
 		m_pins[i] = Gpi(GetPinGpiConfig(static_cast<Joystick::State>(i), config,
 				listener));
 	}
 }
+
+Joystick::Joystick(nullptr_t)
+		: m_is_active_low(false)
+{}
 
 Joystick::State Joystick::GetState() const
 {
@@ -168,6 +173,9 @@ Joystick::State Joystick::GetState() const
 
 #else
 Joystick::Joystick(const Config&)
+		: Joystick(nullptr)
+{}
+Joystick::Joystick(nullptr_t)
 		: m_is_active_low(false)
 {
 	LOG_DL("Configured not to use Joystick");

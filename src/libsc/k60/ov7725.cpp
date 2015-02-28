@@ -22,6 +22,7 @@
 #include "libbase/k60/dma_mux.h"
 #include "libbase/k60/gpio.h"
 #include "libbase/k60/gpio_array.h"
+#include "libbase/k60/pin.h"
 #include "libbase/k60/pin_utils.h"
 #include "libbase/k60/soft_sccb_master.h"
 #include "libbase/k60/vectors.h"
@@ -65,8 +66,8 @@ GpiArray::Config GetGpiArrayConfig()
 {
 	GpiArray::Config product;
 	product.start_pin = LIBSC_OV77250_DATA0;
-	product.config[Pin::Config::ConfigBit::kPullEnable] = true;
 	product.count = 8;
+	product.config.set(Pin::Config::ConfigBit::kPullEnable);
 	return product;
 }
 
@@ -74,6 +75,7 @@ Gpi::Config GetClockConfig()
 {
 	Gpi::Config product;
 	product.pin = LIBSC_OV77250_PCLK;
+	product.config.set(Pin::Config::ConfigBit::kPullEnable);
 	product.interrupt = Pin::Config::Interrupt::kDmaFalling;
 	return product;
 }
@@ -82,8 +84,10 @@ Gpi::Config GetVsyncConfig(Gpi::OnGpiEventListener isr)
 {
 	Gpi::Config product;
 	product.pin = LIBSC_OV77250_VSYNC;
-	product.config[Pin::Config::ConfigBit::kPassiveFilter] = true;
-	product.interrupt = Pin::Config::Interrupt::kFalling;
+	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	product.config.set(Pin::Config::ConfigBit::kPullEnable);
+	product.config.set(Pin::Config::ConfigBit::kPullUp);
+	product.interrupt = Pin::Config::Interrupt::kRising;
 	product.isr = isr;
 	return product;
 }
@@ -172,11 +176,17 @@ void Ov7725::InitCom3Reg()
 
 void Ov7725::InitClock(const Config &config)
 {
+	// Internal clock = 12mHz * PLLx / ((CLKRC + 1)) * 2)
+	// 12m is the input clock of our part
+	const uint8_t pll = std::min<Uint>(static_cast<Uint>(config.fps) + 1, 3);
+	// However, CLKRC must be 0
+	const uint8_t clkrc = 0;
+
 	uint8_t com4_reg = 0x1;
-	com4_reg |= ((int)config.fps + 1) << 6;
+	com4_reg |= pll << 6;
 
 	m_sccb.SendByte(OV7725_SLAVE_ADDR, OV7725_COM4, com4_reg);
-	m_sccb.SendByte(OV7725_SLAVE_ADDR, OV7725_CLKRC, 0x00);
+	m_sccb.SendByte(OV7725_SLAVE_ADDR, OV7725_CLKRC, clkrc);
 }
 
 void Ov7725::InitResolution()
@@ -312,6 +322,7 @@ void Ov7725::OnVsync(Gpi*)
 	if (m_dma->IsDone() || !m_is_dma_start)
 	{
 		m_is_dma_start = true;
+		Pin::ConsumeInterrupt(m_clock.GetPin()->GetName());
 		m_dma->Start();
 	}
 }
