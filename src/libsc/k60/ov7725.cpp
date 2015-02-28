@@ -67,6 +67,7 @@ GpiArray::Config GetGpiArrayConfig()
 	GpiArray::Config product;
 	product.start_pin = LIBSC_OV77250_DATA0;
 	product.count = 8;
+	product.config.set(Pin::Config::ConfigBit::kPullEnable);
 	return product;
 }
 
