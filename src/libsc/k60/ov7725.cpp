@@ -75,6 +75,7 @@ Gpi::Config GetClockConfig()
 {
 	Gpi::Config product;
 	product.pin = LIBSC_OV77250_PCLK;
+	product.config.set(Pin::Config::ConfigBit::kPullEnable);
 	product.interrupt = Pin::Config::Interrupt::kDmaFalling;
 	return product;
 }
@@ -84,6 +85,8 @@ Gpi::Config GetVsyncConfig(Gpi::OnGpiEventListener isr)
 	Gpi::Config product;
 	product.pin = LIBSC_OV77250_VSYNC;
 	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	product.config.set(Pin::Config::ConfigBit::kPullEnable);
+	product.config.set(Pin::Config::ConfigBit::kPullUp);
 	product.interrupt = Pin::Config::Interrupt::kRising;
 	product.isr = isr;
 	return product;
