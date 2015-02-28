@@ -46,6 +46,16 @@ public:
 	 */
 	void ResetTiming();
 
+	/**
+	 * Return whether Break() has been called
+	 *
+	 * @return
+	 */
+	bool IsBreak() const
+	{
+		return !m_is_run;
+	}
+
 private:
 	struct RunnerState;
 
