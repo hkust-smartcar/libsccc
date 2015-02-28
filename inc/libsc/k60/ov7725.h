@@ -33,7 +33,6 @@ public:
 			kLow = 0,
 			kMid,
 			kHigh,
-			kLightning,
 		};
 		/// Width of the image, [1, 640]
 		Uint w;

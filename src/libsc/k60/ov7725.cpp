@@ -175,7 +175,7 @@ void Ov7725::InitClock(const Config &config)
 {
 	// Internal clock = 12mHz * PLLx / ((CLKRC + 1)) * 2)
 	// 12m is the input clock of our part
-	const uint8_t pll = std::min<Uint>(static_cast<Uint>(config.fps), 3);
+	const uint8_t pll = std::min<Uint>(static_cast<Uint>(config.fps) + 1, 3);
 	// However, CLKRC must be 0
 	const uint8_t clkrc = 0;
 
