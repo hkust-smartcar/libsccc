@@ -25,11 +25,9 @@ namespace
 
 uint32_t GetBusClock_()
 {
-	const Uint core_div = ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV1_MASK)
-			>> SIM_CLKDIV1_OUTDIV1_SHIFT) + 1;
 	const Uint bus_div = ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV4_MASK)
 			>> SIM_CLKDIV1_OUTDIV4_SHIFT) + 1;
-	return Mcg::Get().GetCoreClock() * core_div / bus_div;
+	return Mcg::Get().GetCoreClock() / bus_div;
 }
 
 }
