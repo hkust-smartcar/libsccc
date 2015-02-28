@@ -14,8 +14,6 @@
 #include "libbase/k60/soft_i2c_master.h"
 #include "libbase/misc_types.h"
 
-using namespace libbase::k60;
-
 namespace libsc
 {
 namespace k60
@@ -42,7 +40,7 @@ public:
 
 	explicit Mpu6050(const Config &config);
 
-	void Update();
+	bool Update();
 
 	const std::array<float, 3>& GetAccel()
 	{

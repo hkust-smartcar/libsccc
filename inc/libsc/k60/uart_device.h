@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 
+#include "libbase/k60/dma.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/uart.h"
 
@@ -45,7 +46,7 @@ public:
 		uint8_t rx_irq_threshold = 1;
 		/// To treat rx_irq_threshold as a percentage of Rx buffer size
 		bool is_rx_irq_threshold_percentage = false;
-
+		
 		/**
 		 * The size of the Tx buffer. Old data will be poped when the buffer
 		 * overflows. Notice that this size is not in bytes, but rather the
@@ -53,6 +54,11 @@ public:
 		 * size in bytes will vary
 		 */
 		uint8_t tx_buf_size = 14;
+		/**
+		 * (Experimental) If value != -1, DMA will be enabled for this UART's Tx,
+		 * using the DMA channel specified here
+		 */
+		uint8_t tx_dma_channel = static_cast<uint8_t>(-1);
 	};
 
 	virtual ~UartDevice();
@@ -151,8 +157,12 @@ private:
 
 	inline void EnableTx();
 	inline void DisableTx();
+	inline bool IsUseDma();
+
+	void NextTxDma();
 
 	void OnTxEmpty(libbase::k60::Uart *uart);
+	void OnTxDmaComplete(libbase::k60::Dma *dma);
 	void OnRxFull(libbase::k60::Uart *uart);
 
 	std::unique_ptr<volatile RxBuffer> m_rx_buf;
@@ -160,6 +170,10 @@ private:
 
 	libutil::DynamicBlockBuffer m_tx_buf;
 	volatile bool m_is_tx_idle;
+
+	uint8_t m_tx_dma_channel;
+	std::unique_ptr<libbase::k60::Dma::Config> m_dma_config;
+	libbase::k60::Dma *m_dma;
 
 	libbase::k60::Uart m_uart;
 };

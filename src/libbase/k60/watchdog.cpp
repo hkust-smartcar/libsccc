@@ -43,10 +43,12 @@ Watchdog* g_instance = nullptr;
 
 Watchdog::Watchdog(const Config &config)
 {
-	// FIXME Always reset here
 	Unlock();
-	InitTimeOutReg(config);
-	InitPrescReg(config);
+	if (config.is_enable)
+	{
+		InitTimeOutReg(config);
+		InitPrescReg(config);
+	}
 	InitStctrlReg(config);
 
 	g_instance = this;
@@ -75,7 +77,6 @@ void Watchdog::InitStctrlReg(const Config &config)
 		SET_BIT(reg_h, WDOG_STCTRLH_IRQRSTEN_SHIFT);
 		EnableIrq(Watchdog_IRQn);
 	}
-	SET_BIT(reg_h, WDOG_STCTRLH_CLKSRC_SHIFT);
 	if (config.is_enable)
 	{
 		SET_BIT(reg_h, WDOG_STCTRLH_WDOGEN_SHIFT);
@@ -116,7 +117,7 @@ void Watchdog::StartupInitialize()
 	Unlock();
 
 	// Disable but allow reconfig on startup
-	uint32_t reg_h = 0;
+	uint16_t reg_h = 0;
 	SET_BIT(reg_h, WDOG_STCTRLH_DISTESTWDOG_SHIFT);
 #if MK60DZ10 || MK60D10
 	SET_BIT(reg_h, WDOG_STCTRLH_STNDBYEN_SHIFT);
@@ -124,7 +125,7 @@ void Watchdog::StartupInitialize()
 	SET_BIT(reg_h, WDOG_STCTRLH_WAITEN_SHIFT);
 	SET_BIT(reg_h, WDOG_STCTRLH_STOPEN_SHIFT);
 	SET_BIT(reg_h, WDOG_STCTRLH_ALLOWUPDATE_SHIFT);
-	SET_BIT(reg_h, WDOG_STCTRLH_CLKSRC_SHIFT);
+
 	WDOG->STCTRLH = reg_h;
 }
 

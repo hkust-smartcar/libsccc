@@ -18,6 +18,7 @@
 #include "libbase/k60/clock_utils.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
+#include "libbase/k60/pinout.h"
 #include "libbase/k60/sim.h"
 #include "libbase/k60/spi_master.h"
 #include "libbase/k60/spi_utils.h"

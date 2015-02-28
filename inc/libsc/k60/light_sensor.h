@@ -36,7 +36,7 @@ public:
 		uint8_t id;
 		bool is_active_low;
 		Listener listener;
-		/// When to trigger the listener, ignored if @a listener is not set
+		/// When to trigger the listener, ignored if Config::listener is not set
 		Trigger listener_trigger;
 	};
 
@@ -51,7 +51,6 @@ public:
 private:
 	libbase::k60::Gpi m_pin;
 	bool m_is_active_low;
-	Listener m_isr;
 };
 
 }

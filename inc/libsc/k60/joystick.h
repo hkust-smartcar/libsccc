@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include "libbase/k60/gpio.h"
@@ -20,23 +21,41 @@ namespace k60
 class Joystick
 {
 public:
+	typedef std::function<void(const uint8_t id)> Listener;
+
 	enum struct State
 	{
-		IDLE,
-		UP,
-		DOWN,
-		LEFT,
-		RIGHT,
-		SELECT,
+		kUp = 0,
+		kDown,
+		kLeft,
+		kRight,
+		kSelect,
+
+		kIdle
 	};
 
 	struct Config
 	{
+		enum struct Trigger
+		{
+			kDown,
+			kUp,
+			kBoth,
+		};
+
 		uint8_t id;
 		bool is_active_low;
+		Listener listeners[5];
+		/**
+		 * When to trigger the listener, ignored if corresponding listener is
+		 * not set in Config::listeners. The sequence of the array follows the
+		 * State enum
+		 */
+		Trigger listener_triggers[5];
 	};
 
 	explicit Joystick(const Config &config);
+	explicit Joystick(nullptr_t);
 
 	State GetState() const;
 

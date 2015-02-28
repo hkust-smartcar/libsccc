@@ -34,7 +34,8 @@ LcdTypewriter::LcdTypewriter(const Config &config)
 		: m_lcd(config.lcd),
 		  m_fg_color(config.text_color),
 		  m_bg_color(config.bg_color),
-		  m_is_text_wrap(config.is_text_wrap)
+		  m_is_text_wrap(config.is_text_wrap),
+		  m_is_clear_line(config.is_clear_line)
 {
 	assert(config.lcd);
 }
@@ -119,15 +120,18 @@ void LcdTypewriter::WriteOneLineBuffer(const char *buf, const size_t length)
 	}
 	const Lcd::Rect &region = m_lcd->GetRegion();
 	const Uint w = std::min<Uint>(region.w, kFontW * length);
+	const Uint full_w = m_is_clear_line ? region.w : w;
 	const Uint h = std::min<Uint>(region.h, kFontH);
 	if (w == 0 || h == 0)
 	{
 		return;
 	}
-	const Uint pixel_count = w * h;
+	const Uint pixel_count = full_w * h;
 	vector<Byte> bitset((pixel_count + 7) / 8, 0);
 	Byte *bs_ptr = &bitset[0];
 	Uint filled_bit = 0;
+
+	Uint row_remaining_pixel = full_w - w;
 
 	// Won't work if kFontW != 8 BTW
 	Uint font_pos = 0;
@@ -160,8 +164,20 @@ void LcdTypewriter::WriteOneLineBuffer(const char *buf, const size_t length)
 			++font_pos;
 		}
 		font_pos = 0;
+
+		if (m_is_clear_line)
+		{
+			for (Uint i = 0; i < row_remaining_pixel; ++i)
+			{
+				if (++filled_bit == 8)
+				{
+					filled_bit = 0;
+					++bs_ptr;
+				}
+			}
+		}
 	}
-	m_lcd->SetRegion({region.x, region.y, w, h});
+	m_lcd->SetRegion({region.x, region.y, full_w, h});
 	m_lcd->FillBits(m_fg_color, m_bg_color, bitset.data(), pixel_count);
 	m_lcd->SetRegion(region);
 }

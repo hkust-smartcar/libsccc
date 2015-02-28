@@ -100,10 +100,10 @@ LightSensor::LightSensor(const Config &config)
 	if (config.listener)
 	{
 		const uint8_t id = config.id;
-		m_isr = config.listener;
-		listener = [this, id](Gpi*)
+		LightSensor::Listener ls_listener = config.listener;
+		listener = [ls_listener, id](Gpi*)
 				{
-					m_isr(id);
+					ls_listener(id);
 				};
 	}
 	m_pin = Gpi(GetGpiConfig(config, listener));

@@ -7,6 +7,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 
 #include <functional>
@@ -127,14 +128,18 @@ Button::Button(const Config &config)
 	if (config.listener)
 	{
 		const uint8_t id = config.id;
-		m_isr = config.listener;
-		listener = [this, id](Gpi*)
+		Button::Listener btn_listener = config.listener;
+		listener = [btn_listener, id](Gpi*)
 				{
-					m_isr(id);
+					btn_listener(id);
 				};
 	}
 	m_pin = Gpi(GetGpiConfig(config, listener));
 }
+
+Button::Button(nullptr_t)
+		: m_pin(nullptr), m_is_active_low(false)
+{}
 
 bool Button::IsDown() const
 {
@@ -143,6 +148,9 @@ bool Button::IsDown() const
 
 #else
 Button::Button(const Config&)
+		: Button(nullptr)
+{}
+Button::Button(nullptr_t)
 		: m_pin(nullptr), m_is_active_low(false)
 {
 	LOG_DL("Configured not to use Button");

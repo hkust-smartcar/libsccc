@@ -40,7 +40,7 @@ void IncrementalPidController<InT_, OutT_>::OnCalc(const InT error)
 			/ 1000.0f;
 
 	const float p = this->GetKp() * (error - m_prev_error[0]);
-	float i = this->GetKi() * error * time_diff * 0.5f;
+	float i = this->GetKi() * (error + m_prev_error[0]) * time_diff * 0.5f;
 	if (m_i_limit > 0.0f)
 	{
 		i = libutil::Clamp<float>(-m_i_limit, i, m_i_limit);

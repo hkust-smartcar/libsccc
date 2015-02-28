@@ -18,6 +18,11 @@ namespace libsc
 namespace k60
 {
 
+/**
+ * Phase A/B encoder. Provides two mechanisms to read the feedback value,
+ * interrupt based software emulation and hardware quadrature decoding. Software
+ * emulation will pose a large overhead to the system
+ */
 class AbEncoder : public Encoder
 {
 public:

@@ -21,6 +21,8 @@
 #include "libbase/k60/adc.h"
 #include "libbase/k60/adc_utils.h"
 #include "libbase/k60/clock_utils.h"
+#include "libbase/k60/dma.h"
+#include "libbase/k60/dma_mux.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pinout.h"
 #include "libbase/k60/sim.h"
@@ -451,14 +453,45 @@ bool Adc::IsActive() const
 
 bool Adc::IsConversionActive() const
 {
+	STATE_GUARD(Adc, false);
 	return GET_BIT(MEM_MAPS[AdcUtils::GetModule(m_name)]->SC2,
 			ADC_SC2_ADACT_SHIFT);
 }
 
 bool Adc::IsConversionComplete() const
 {
+	STATE_GUARD(Adc, false);
 	return GET_BIT(MEM_MAPS[AdcUtils::GetModule(m_name)]->SC1[0],
 			ADC_SC1_COCO_SHIFT);
+}
+
+void Adc::ConfigResultAsDmaSrc(Dma::Config *config)
+{
+	STATE_GUARD(Adc, VOID);
+
+	if (m_config.conversion_isr)
+	{
+		assert(false);
+		return;
+	}
+	const Uint module = AdcUtils::GetModule(m_name);
+	config->mux_src = EnumAdvance(DmaMux::Source::kAdc0, module);
+	config->src.addr = (void*)MEM_MAPS[module]->R;
+	config->src.offset = 0;
+	config->src.major_offset = 0;
+	if (m_config.resolution == Config::Resolution::k8Bit)
+	{
+		config->src.size = Dma::Config::TransferSize::k1Byte;
+		config->minor_bytes = 1;
+	}
+	else
+	{
+		config->src.size = Dma::Config::TransferSize::k2Byte;
+		config->minor_bytes = 2;
+	}
+
+	DisableInterrupt(module);
+	SET_BIT(MEM_MAPS[module]->SC2, ADC_SC2_DMAEN_SHIFT);
 }
 
 void Adc::EnableInterrupt()
