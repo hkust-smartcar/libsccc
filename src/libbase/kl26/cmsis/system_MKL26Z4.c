@@ -60,6 +60,8 @@
 #include <stdint.h>
 #include "libbase/kl26/cmsis/MKL26Z4.h"
 
+#include "libbase/kl26/watchdog_c.h"
+
 #define DISABLE_WDOG    1
 
 #define CLOCK_SETUP     0
@@ -107,11 +109,9 @@ uint32_t SystemCoreClock = DEFAULT_SYSTEM_CLOCK;
    ---------------------------------------------------------------------------- */
 
 void SystemInit (void) {
-#if (DISABLE_WDOG)
-  /* Disable the WDOG module */
-  /* SIM_COPC: COPT=0,COPCLKS=0,COPW=0 */
-  SIM->COPC = (uint32_t)0x00u;
-#endif /* (DISABLE_WDOG) */
+
+	LibbaseKl26WatchdogInit();
+
 #if (CLOCK_SETUP == 0)
   /* SIM->CLKDIV1: OUTDIV1=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,OUTDIV4=2,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0 */
   SIM->CLKDIV1 = (uint32_t)0x00020000UL; /* Update system prescalers */
