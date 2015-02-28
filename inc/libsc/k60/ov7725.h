@@ -30,12 +30,9 @@ public:
 	{
 		enum struct Fps
 		{
-			kStill = 0,
-			kVeryLow,
-			kLow,
+			kLow = 0,
 			kMid,
 			kHigh,
-			kVeryHigh,
 			kLightning,
 		};
 		/// Width of the image, [1, 640]

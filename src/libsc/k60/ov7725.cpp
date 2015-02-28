@@ -174,45 +174,9 @@ void Ov7725::InitClock(const Config &config)
 {
 	// Internal clock = 12mHz * PLLx / ((CLKRC + 1)) * 2)
 	// 12m is the input clock of our part
-	int pll, clkrc;
-	switch (config.fps)
-	{
-	case Config::Fps::kStill:
-		pll = 0;
-		clkrc = 0x1F;
-		break;
-
-	case Config::Fps::kVeryLow:
-		pll = 1;
-		clkrc = 0x1F;
-		break;
-
-	case Config::Fps::kLow:
-		pll = 1;
-		clkrc = 0x0F;
-		break;
-
-	default:
-	case Config::Fps::kMid:
-		pll = 2;
-		clkrc = 0x07;
-		break;
-
-	case Config::Fps::kHigh:
-		pll = 2;
-		clkrc = 0x04;
-		break;
-
-	case Config::Fps::kVeryHigh:
-		pll = 3;
-		clkrc = 0x04;
-		break;
-
-	case Config::Fps::kLightning:
-		pll = 3;
-		clkrc = 0x00;
-		break;
-	}
+	const uint8_t pll = std::min<Uint>(static_cast<Uint>(config.fps), 3);
+	// However, CLKRC must be 0
+	const uint8_t clkrc = 0;
 
 	uint8_t com4_reg = 0x1;
 	com4_reg |= pll << 6;
