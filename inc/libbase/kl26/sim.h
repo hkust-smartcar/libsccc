@@ -26,13 +26,11 @@ class Sim
 public:
 	enum struct Kinetis
 	{
-		kK10,
-		kK20,
-		kK30,
-		kK40,
-		kK50K52,
-		kK51K53,
-		kK60
+		kKl00,
+		kKl10,
+		kKl20,
+		kKl30,
+		kKl40,
 	};
 
 #ifdef MKL26Z4
@@ -97,7 +95,7 @@ public:
 	}
 
 	static Kinetis GetKinetisFamily();
-	static std::array<Byte, 16> GetUid();
+	static std::array<Byte, 10> GetUid();
 	static std::string GetUidStr();
 
 	static void SetEnableClockGate(const ClockGate cg, const bool flag);

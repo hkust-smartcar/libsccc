@@ -18,18 +18,11 @@
 
 #include "libbase/kl26/misc_utils.h"
 #include "libbase/kl26/sim.h"
+#include "libutil/endian_utils.h"
 #include "libutil/string.h"
 
-using libutil::String;
+using namespace libutil;
 using namespace std;
-
-#ifdef MKL26Z4
-	#define _SIM_SCGC6_DMAMUX0_SHIFT SIM_SCGC6_DMAMUX_SHIFT
-	#define _SIM_SCGC4_SPI0_SHIFT SIM_SCGC4_SPI0_SHIFT
-	#define _SIM_SCGC4_SPI1_SHIFT SIM_SCGC4_SPI1_SHIFT
-	#define _SIM_SCGC4_I2C0_SHIFT SIM_SCGC4_I2C0_SHIFT
-	#define _SIM_SCGC4_I2C1_SHIFT SIM_SCGC4_I2C1_SHIFT
-#endif
 
 namespace libbase
 {
@@ -56,27 +49,14 @@ inline void SetClockGateBit(volatile uint32_t &reg, const Uint shift,
 
 uint32_t Sim::GetRamBytes()
 {
-	/*switch (SIM->SOPT1 & SIM_SOPT1_RAMSIZE_MASK)
+	if ((SIM->SDID & SIM_SDID_SRAMSIZE_MASK) == 0)
 	{
-	default:
-		assert(false);
-		// no break
-
-	case SIM_SOPT1_RAMSIZE(0x1):
-		return 8 << 10;
-
-	case SIM_SOPT1_RAMSIZE(0x3):
-		return 16 << 10;
-
-	case SIM_SOPT1_RAMSIZE(0x5):
-		return 32 << 10;
-
-	case SIM_SOPT1_RAMSIZE(0x7):
-		return 64 << 10;
-
-	case SIM_SOPT1_RAMSIZE(0x9):
-		return 128 << 10;
-	}*/
+		return 512;
+	}
+	else
+	{
+		return 1 << ((SIM->SDID & SIM_SDID_SRAMSIZE_MASK) - 1);
+	}
 }
 
 Sim::Kinetis Sim::GetKinetisFamily()
@@ -88,46 +68,40 @@ Sim::Kinetis Sim::GetKinetisFamily()
 		// no break
 
 	case SIM_SDID_FAMID(0):
-		return Kinetis::kK10;
+		return Kinetis::kKl00;
 
 	case SIM_SDID_FAMID(1):
-		return Kinetis::kK20;
+		return Kinetis::kKl10;
 
 	case SIM_SDID_FAMID(2):
-		return Kinetis::kK30;
+		return Kinetis::kKl20;
 
 	case SIM_SDID_FAMID(3):
-		return Kinetis::kK40;
+		return Kinetis::kKl30;
 
 	case SIM_SDID_FAMID(4):
-		return Kinetis::kK60;
-
-	case SIM_SDID_FAMID(6):
-		return Kinetis::kK50K52;
-
-	case SIM_SDID_FAMID(7):
-		return Kinetis::kK51K53;
+		return Kinetis::kKl40;
 	}
 }
 
-array<Byte, 16> Sim::GetUid()
+array<Byte, 10> Sim::GetUid()
 {
-	array<Byte, 16> uid;
-	/*uint32_t temp = htobe32(SIM->UIDH);
-	memcpy(uid.data(), &temp, 4);
-	temp = htobe32(SIM->UIDMH);
-	memcpy(uid.data() + 4, &temp, 4);
-	temp = htobe32(SIM->UIDML);
-	memcpy(uid.data() + 8, &temp, 4);
-	temp = htobe32(SIM->UIDL);
-	memcpy(uid.data() + 12, &temp, 4);*/
+	array<Byte, 10> uid;
+	uint16_t temp16 = EndianUtils::HostToBe((SIM->UIDMH & SIM_UIDMH_UID_MASK)
+			>> SIM_UIDMH_UID_SHIFT);
+	memcpy(uid.data(), &temp16, 2);
+	uint32_t temp32 = EndianUtils::HostToBe(SIM->UIDML);
+	memcpy(uid.data() + 2, &temp32, 4);
+	temp32 = EndianUtils::HostToBe(SIM->UIDL);
+	memcpy(uid.data() + 6, &temp32, 4);
 	return uid;
 }
 
 string Sim::GetUidStr()
 {
-	/*return String::Format("%8X%8X%8X%8X", SIM->UIDH, SIM->UIDMH, SIM->UIDML,
-			SIM->UIDL);*/
+	return String::Format("%4X%8X%8X",
+			(SIM->UIDMH & SIM_UIDMH_UID_MASK) >> SIM_UIDMH_UID_SHIFT, SIM->UIDML,
+			SIM->UIDL);
 }
 
 void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
