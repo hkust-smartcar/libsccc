@@ -12,7 +12,7 @@
 #include <string>
 #include <type_traits>
 #include <vector>
-
+#ifdef MK60D10 || MK60DZ10 || MK60F15
 #include "libbase/k60/misc_utils.h"
 
 namespace libsc
@@ -24,6 +24,21 @@ class UartDevice;
 
 }
 }
+#endif
+
+#ifdef MKL26Z4
+#include "libbase/kl26/misc_utils.h"
+
+namespace libsc
+{
+namespace kl26
+{
+
+class UartDevice;
+
+}
+}
+#endif
 
 namespace libutil
 {
@@ -80,7 +95,7 @@ public:
 		friend class RemoteVarManager;
 	};
 
-	RemoteVarManager(libsc::k60::UartDevice *uart, const size_t var_count);
+	RemoteVarManager(UartDevice *uart, const size_t var_count);
 	~RemoteVarManager();
 
 	Var* Register(const std::string &name, const Var::Type type);
@@ -96,7 +111,7 @@ public:
 private:
 	void OnUartReceiveChar(const Byte *bytes, const size_t count);
 
-	libsc::k60::UartDevice *m_uart;
+	UartDevice *m_uart;
 	std::vector<Var> m_vars;
 	Byte m_buffer[5];
 	int m_buffer_it;
