@@ -14,7 +14,7 @@
 
 #include "libbase/log.h"
 
-#ifdef MK60D10 || MK60DZ10 || MK60F15
+#if defined(MK60D10) || defined(MK60DZ10) || defined(MK60F15)
 #include "libbase/k60/misc_utils.h"
 #include "libsc/k60/uart_device.h"
 using namespace libsc::k60;
