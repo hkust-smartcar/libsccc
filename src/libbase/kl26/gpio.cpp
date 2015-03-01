@@ -119,15 +119,15 @@ void Gpi::SetIsr(const OnGpiEventListener &isr)
 {
 	if (m_isr)
 	{
-//		PinIsrManager::SetPinIsr(&m_pin, nullptr);
+		PinIsrManager::SetPinIsr(&m_pin, nullptr);
 	}
 	m_isr = isr;
 	if (m_isr)
 	{
-//		PinIsrManager::SetPinIsr(&m_pin, [this](const Pin::Name)
-//				{
-//					m_isr(this);
-//				});
+		PinIsrManager::SetPinIsr(&m_pin, [this](const Pin::Name)
+				{
+					m_isr(this);
+				});
 	}
 }
 
