@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <algorithm>
 #include <bitset>
 #include <functional>
 
@@ -43,7 +44,6 @@ namespace
 constexpr ADC_Type* MEM_MAPS[PINOUT::GetAdcCount()] =
 {
 	ADC0,
-//	ADC1,
 };
 
 Adc* g_instances[PINOUT::GetAdcCount()] = {};
@@ -114,13 +114,13 @@ Adc::Adc(const Config &config)
 	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kAdc0,
 			AdcUtils::GetModule(m_name)), true);
 
-
+/*
 	if (m_config.is_continuous_mode && !m_config.conversion_isr)
 	{
-		/*m_config.conversion_isr = std::bind(&Adc::OnConversionComplete,
-				this, placeholders::_1, placeholders::_2);*/
+		m_config.conversion_isr = std::bind(&Adc::OnConversionComplete,
+				this, placeholders::_1, placeholders::_2);
 	}
-
+*/
 }
 
 Adc::Adc(Adc &&rhs)
@@ -295,7 +295,7 @@ void Adc::InitSpeed()
 	{
 		MEM_MAPS[module]->CFG1 |= ADC_CFG1_ADIV(clock_divider);
 	}
-
+	
 	if (long_sample_time != -1)
 	{
 		SET_BIT(MEM_MAPS[module]->CFG1, ADC_CFG1_ADLSMP_SHIFT);
@@ -446,12 +446,14 @@ bool Adc::IsActive() const
 
 bool Adc::IsConversionActive() const
 {
+	STATE_GUARD(Adc, false);
 	return GET_BIT(MEM_MAPS[AdcUtils::GetModule(m_name)]->SC2,
 			ADC_SC2_ADACT_SHIFT);
 }
 
 bool Adc::IsConversionComplete() const
 {
+	STATE_GUARD(Adc, false);
 	return GET_BIT(MEM_MAPS[AdcUtils::GetModule(m_name)]->SC1[0],
 			ADC_SC1_COCO_SHIFT);
 }
