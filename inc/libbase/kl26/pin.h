@@ -43,17 +43,17 @@ public:
 		kPta18,
 		kPta19,
 		kPta20,
-//		kPta21,
-//		kPta22,
-//		kPta23,
-//		kPta24,
-//		kPta25,
-//		kPta26,
-//		kPta27,
-//		kPta28,
-//		kPta29,
-//		kPta30,
-//		kPta31,
+		kPta21,
+		kPta22,
+		kPta23,
+		kPta24,
+		kPta25,
+		kPta26,
+		kPta27,
+		kPta28,
+		kPta29,
+		kPta30,
+		kPta31,
 
 		kPtb0 = 32,
 		kPtb1,
@@ -222,15 +222,25 @@ public:
 
 		enum ConfigBit
 		{
+			/**
+			 * Select between high/low drive strength, effective only with
+			 * output pin
+			 */
 			kHighDriveStrength = 0,
+			/// Effective only with input pin
 			kOpenDrain,
 			/**
-			 * Disable the passive input filter when high speed interfaces of
-			 * more than 2 MHz are supported on the pin
+			 * Enable a low pass filter (10 MHz to 30 MHz bandwidth) on the pin.
+			 * Disable when supporting high speed interfaces (> 2MHz). Effective
+			 * only with input pin
 			 */
 			kPassiveFilter,
+			/// Effective only with output pin
 			kSlowSlewRate,
-			/// Enable the internal pull-up or pull-down resistor
+			/**
+			 * Enable the internal pull-up or pull-down resistor, depending on
+			 * ConfigBit::kPullUp. Effective only with input pin
+			 */
 			kPullEnable,
 			kPullUp,
 
