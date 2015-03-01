@@ -10,7 +10,6 @@
 
 #include <cstdint>
 
-#include "libbase/k60/mcg.h"
 #include "libbase/k60/watchdog.h"
 
 #include "libsc/k60/sys_tick_timer.h"
