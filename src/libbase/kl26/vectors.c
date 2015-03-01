@@ -5,400 +5,106 @@
 
 // ----------------------------------------------------------------------------
 #include "libbase/kl26/hardware.h"
-#include "libbase/misc_types.h"
-#include "libbase/cmsis/ExceptionHandlers.h"
 
-// ----------------------------------------------------------------------------
+#include <assert.h>
+#include <inttypes.h>
+#include <stdint.h>
+#include <stdlib.h>
 
-void __attribute__((weak))
-Default_Handler(void);
+#include "libbase/log.h"
+#include "libbase/kl26/misc_utils_c.h"
+#include "libbase/kl26/vectors.h"
 
-// Forward declaration of the specific IRQ handlers. These are aliased
-// to the Default_Handler, which is a 'forever' loop. When the application
-// defines a handler (with the same name), this will automatically take
-// precedence over these weak definitions
+__attribute__((__naked__)) void HardFaultHandlerAsm(void);
 
-void __attribute__ ((weak, alias ("Default_Handler")))
-DMA0_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-DMA1_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-DMA2_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-DMA3_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-Reserved20_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-FTFA_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-LVD_LVW_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-LLW_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-I2C0_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-I2C1_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-SPI0_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-SPI1_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-/*void __attribute__ ((weak))*/ UART0_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-UART1_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-UART2_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-ADC0_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-CMP0_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-TPM0_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-TPM1_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-TPM2_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-RTC_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-RTC_Seconds_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-PIT_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-Reserved39_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-USB0_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-DAC0_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-TSI0_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-MCG_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-LPTimer_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-Reserved45_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-PORTA_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-PORTD_IRQHandler(void);
+HardFaultHandler g_hard_fault_handler = NULL;
 
-// ----------------------------------------------------------------------------
+/* ISR prototype */
+extern uint32_t __SP_INIT;
+void __thumb_startup(void);
 
-extern unsigned int _estack;
+/* Interrupt vector table type definition */
+typedef struct {
+	void * __ptr;
+	tIsrFunc __fun[0x2F];
+} tVectorTable;
 
-/*typedef void
-(* const pHandler)(void);*/
+__attribute__((__section__(".vectortable")))
+const tVectorTable __vect_table = { /* Interrupt vector table */
+	/* ISR name                             No. Address      Pri Name                          Description */
+	&__SP_INIT,                        /* 0x00  0x00000000   -   ivINT_Initial_Stack_Pointer   used by PE */
+	{
+	(tIsrFunc)&__thumb_startup,        /* 0x01  0x00000004   -   ivINT_Initial_Program_Counter used by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x02  0x00000008   -2   ivINT_NMI                     used by PE */
+	(tIsrFunc)&HardFaultHandlerAsm,    /* 0x03  0x0000000C   -1   ivINT_Hard_Fault              unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x04  0x00000010   -   ivINT_Reserved4               unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x05  0x00000014   -   ivINT_Reserved5               unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x06  0x00000018   -   ivINT_Reserved6               unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x07  0x0000001C   -   ivINT_Reserved7               unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x08  0x00000020   -   ivINT_Reserved8               unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x09  0x00000024   -   ivINT_Reserved9               unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x0A  0x00000028   -   ivINT_Reserved10              unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x0B  0x0000002C   -   ivINT_SVCall                  unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x0C  0x00000030   -   ivINT_Reserved12              unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x0D  0x00000034   -   ivINT_Reserved13              unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x0E  0x00000038   -   ivINT_PendableSrvReq          unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x0F  0x0000003C   -   ivINT_SysTick                 unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x10  0x00000040   -   ivINT_DMA0                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x11  0x00000044   -   ivINT_DMA1                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x12  0x00000048   -   ivINT_DMA2                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x13  0x0000004C   -   ivINT_DMA3                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x14  0x00000050   -   ivINT_Reserved20              unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x15  0x00000054   -   ivINT_FTFA                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x16  0x00000058   -   ivINT_LVD_LVW                 unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x17  0x0000005C   -   ivINT_LLW                     unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x18  0x00000060   -   ivINT_I2C0                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x19  0x00000064   -   ivINT_I2C1                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x1A  0x00000068   -   ivINT_SPI0                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x1B  0x0000006C   -   ivINT_SPI1                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x1C  0x00000070   -   ivINT_UART0                   unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x1D  0x00000074   -   ivINT_UART1                   unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x1E  0x00000078   -   ivINT_UART2                   unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x1F  0x0000007C   -   ivINT_ADC0                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x20  0x00000080   -   ivINT_CMP0                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x21  0x00000084   -   ivINT_TPM0                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x22  0x00000088   -   ivINT_TPM1                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x23  0x0000008C   -   ivINT_TPM2                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x24  0x00000090   -   ivINT_RTC                     unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x25  0x00000094   -   ivINT_RTC_Seconds             unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x26  0x00000098   -   ivINT_PIT                     unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x27  0x0000009C   -   ivINT_I2S0                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x28  0x000000A0   -   ivINT_USB0                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x29  0x000000A4   -   ivINT_DAC0                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x2A  0x000000A8   -   ivINT_TSI0                    unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x2B  0x000000AC   -   ivINT_MCG                     unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x2C  0x000000B0   -   ivINT_LPTimer                 unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x2D  0x000000B4   -   ivINT_Reserved45              unused by PE */
+	(tIsrFunc)&DefaultIsr,             /* 0x2E  0x000000B8   -   ivINT_PORTA                   unused by PE */
+	(tIsrFunc)&DefaultIsr              /* 0x2F  0x000000BC   -   ivINT_PORTC_PORTD             unused by PE */
+	}
+};
 
-typedef void
-(* pHandler)(void);
-
-// ----------------------------------------------------------------------------
-
-// The vector table.
-// This relies on the linker script to place at correct location in memory.
-
-#define VECTOR_PADDING  (pHandler)0xffffffff
-
-__attribute__ ((section(".isr_vector"),used))
-pHandler gHandlers[] =
-  {
-  // Core Level - CM0
-      (pHandler) &_estack, // The initial stack pointer
-      Reset_Handler, // The reset handler
-      NMI_Handler, // The NMI handler
-      HardFault_Handler, // The hard fault handler
-#if defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
-      MemManage_Handler,                        // The MPU fault handler
-      BusFault_Handler,                        // The bus fault handler
-      UsageFault_Handler,                        // The usage fault handler
-#else
-      0, 0, 0,                                  // Reserved
-#endif
-      0,                                        // Reserved
-      0,                                        // Reserved
-      0,                                        // Reserved
-      0,                                        // Reserved
-      SVC_Handler,                              // SVCall handler
-#if defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__)
-      DebugMon_Handler,                         // Debug monitor handler
-#else
-      0,                                        // Reserved
-#endif
-      0, // Reserved
-      PendSV_Handler, // The PendSV handler
-      SysTick_Handler, // The SysTick handler
-
-      // ----------------------------------------------------------------------
-      // Chip Level - KL25
-      DMA0_IRQHandler, // DMA channel 0 transfer complete/error interrupt
-      DMA1_IRQHandler, // DMA channel 1 transfer complete/error interrupt
-      DMA2_IRQHandler, // DMA channel 2 transfer complete/error interrupt
-      DMA3_IRQHandler, // DMA channel 3 transfer complete/error interrupt
-      Reserved20_IRQHandler, // Reserved interrupt 20
-      FTFA_IRQHandler, // FTFA command complete/read collision interrupt
-      LVD_LVW_IRQHandler, // Low Voltage Detect, Low Voltage Warning
-      LLW_IRQHandler, // Low Leakage Wakeup
-      I2C0_IRQHandler, // I2C0 interrupt
-      I2C1_IRQHandler, // I2C0 interrupt 25
-      SPI0_IRQHandler, // SPI0 interrupt
-      SPI1_IRQHandler, // SPI1 interrupt
-      UART0_IRQHandler, // UART0 status/error interrupt
-      UART1_IRQHandler, // UART1 status/error interrupt
-      UART2_IRQHandler, // UART2 status/error interrupt
-      ADC0_IRQHandler, // ADC0 interrupt
-      CMP0_IRQHandler, // CMP0 interrupt
-      TPM0_IRQHandler, // TPM0 fault, overflow and channels interrupt
-      TPM1_IRQHandler, // TPM1 fault, overflow and channels interrupt
-      TPM2_IRQHandler, // TPM2 fault, overflow and channels interrupt
-      RTC_IRQHandler, // RTC interrupt
-      RTC_Seconds_IRQHandler, // RTC seconds interrupt
-      PIT_IRQHandler, // PIT timer interrupt
-      Reserved39_IRQHandler, // Reserved interrupt 39
-      USB0_IRQHandler, // USB0 interrupt
-      DAC0_IRQHandler, // DAC0 interrupt
-      TSI0_IRQHandler, // TSI0 interrupt
-      MCG_IRQHandler, // MCG interrupt
-      LPTimer_IRQHandler, // LPTimer interrupt
-      Reserved45_IRQHandler, // Reserved interrupt 45
-      PORTA_IRQHandler, // Port A interrupt
-      PORTD_IRQHandler, // Port D interrupt
-
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING,
-      VECTOR_PADDING //
-    };
-
-// ----------------------------------------------------------------------------
-
-__attribute__ ((section (".vectortableram"))) pHandler __vect_ram[256]; /* Interrupt vector table in RAM */
-
+__attribute__((__section__ (".vectortableram"))) tVectorTable __vect_ram; /* Interrupt vector table in RAM */
 
 void InitVectorTable(void)
 {
-	const Byte *rom = (const Byte*)&gHandlers;
+	const Byte *rom = (const Byte*)&__vect_table;
 	Byte *ram = (Byte*)&__vect_ram;
 
-    for (uint32_t i = 0; i < sizeof(pHandler); ++i)
+    for (uint32_t i = 0; i < sizeof(tVectorTable); ++i)
     {
     	*ram++ = *rom++;
     }
 
-//	assert((uint32_t)(&__vect_ram) % 0x200 == 0);   //Vector Table base offset field. This value must be a multiple of 0x200.
+	assert((uint32_t)(&__vect_ram) % 0x200 == 0);   //Vector Table base offset field. This value must be a multiple of 0x200.
 	/* Write the VTOR with the new value */
 	SCB->VTOR = (uint32_t)(&__vect_ram);
 }
 
-void SetIsr(IRQn_Type irq, pHandler handler)
+void SetIsr(IRQn_Type irq, tIsrFunc handler)
 {
-	/*__vect_ram[irq + abs(NonMaskableInt_IRQn) + 1] = handler ? handler
-			: Default_Handler;*/
-	__vect_ram[irq + 16] = handler ? handler : Default_Handler;
+	__vect_ram.__fun[irq + abs(NonMaskableInt_IRQn) + 1] = handler ? handler
+			: DefaultIsr;
 }
 
 void EnableIrq(IRQn_Type irq)
@@ -411,15 +117,97 @@ void DisableIrq(IRQn_Type irq)
 	NVIC_DisableIRQ(irq);
 }
 
-// Processor ends up here if an unexpected interrupt occurs or a specific
-// handler is not present in the application code.
-
-void __attribute__ ((section(".after_vectors")))
-Default_Handler(void)
+void DefaultIsr(void)
 {
-  while (1)
-    {
-    }
+	LOG_W("Unhandled interrupt (VECTORn_t == %" PRIu32 ")\n", GetActiveVector());
 }
 
-// ----------------------------------------------------------------------------
+/**
+ * HardFaultHandler:
+ * Alternative Hard Fault handler to help debug the reason for a fault.
+ * To use, edit the vector table to reference this function in the HardFault vector
+ * This code is suitable for Cortex-M3 and Cortex-M0 cores
+ */
+void HardFaultHandlerAsm(void)
+{
+	/*
+	* Get the appropriate stack pointer, depending on our mode,
+	* and use it as the parameter to the C handler
+	*/
+	__asm("MOVS   R0, #4  \n"
+			"MOV    R1, LR  \n"
+			"TST    R0, R1  \n"
+			"BEQ    _MSP    \n"
+			"MRS    R0, PSP \n"
+			"B      HardFaultHandlerC      \n"
+			"_MSP:  \n"
+			"MRS    R0, MSP \n"
+			"B      HardFaultHandlerC      \n") ;
+}
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+
+/**
+ * HardFaultHandlerC:
+ * This is called from the HardFault_HandlerAsm with a pointer the Fault stack
+ * as the parameter. We can then read the values from the stack and place them
+ * into local variables for ease of reading.
+ * We then read the various Fault Status and Address Registers to help decode
+ * cause of the fault.
+ * The function ends with a BKPT instruction to force control back into the debugger
+ */
+void HardFaultHandlerC(unsigned long *hardfault_args)
+{
+	volatile unsigned long stacked_r0;
+	volatile unsigned long stacked_r1;
+	volatile unsigned long stacked_r2;
+	volatile unsigned long stacked_r3;
+	volatile unsigned long stacked_r12;
+	volatile unsigned long stacked_lr;
+	volatile unsigned long stacked_pc;
+	volatile unsigned long stacked_psr;
+	volatile unsigned long _CFSR;
+	volatile unsigned long _HFSR;
+	volatile unsigned long _DFSR;
+	volatile unsigned long _AFSR;
+	volatile unsigned long _BFAR;
+	volatile unsigned long _MMAR;
+
+	stacked_r0 = ((unsigned long)hardfault_args[0]);
+	stacked_r1 = ((unsigned long)hardfault_args[1]);
+	stacked_r2 = ((unsigned long)hardfault_args[2]);
+	stacked_r3 = ((unsigned long)hardfault_args[3]);
+	stacked_r12 = ((unsigned long)hardfault_args[4]);
+	stacked_lr = ((unsigned long)hardfault_args[5]);
+	stacked_pc = ((unsigned long)hardfault_args[6]);
+	stacked_psr = ((unsigned long)hardfault_args[7]);
+
+	// Configurable Fault Status Register
+	// Consists of MMSR, BFSR and UFSR
+	_CFSR = (*((volatile unsigned long*)(0xE000ED28)));
+
+	// Hard Fault Status Register
+	_HFSR = (*((volatile unsigned long*)(0xE000ED2C)));
+
+	// Debug Fault Status Register
+	_DFSR = (*((volatile unsigned long*)(0xE000ED30)));
+
+	// Auxiliary Fault Status Register
+	_AFSR = (*((volatile unsigned long*)(0xE000ED3C)));
+
+	// Read the Fault Address Registers. These may not contain valid values.
+	// Check BFARVALID/MMARVALID to see if they are valid values
+	// MemManage Fault Address Register
+	_MMAR = (*((volatile unsigned long*)(0xE000ED34)));
+	// Bus Fault Address Register
+	_BFAR = (*((volatile unsigned long*)(0xE000ED38)));
+
+	if (g_hard_fault_handler)
+	{
+		g_hard_fault_handler();
+	}
+	__BREAKPOINT(); // Break into the debugger
+}
+
+#pragma GCC diagnostic pop
