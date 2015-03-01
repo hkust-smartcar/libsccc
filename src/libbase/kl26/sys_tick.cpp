@@ -6,7 +6,6 @@
  * Refer to LICENSE for details
  */
 
-
 #include "libbase/kl26/hardware.h"
 
 #include <cassert>
@@ -129,11 +128,11 @@ void SysTick::SetIsr(const OnSysTickTriggerListener &isr)
 	{
 		::SetIsr(SysTick_IRQn, IrqHandler);
 		SET_BIT(SYST_CSR, SYST_CSR_TICKINT_SHIFT);
-		EnableIrq(SysTick_IRQn);
+		//EnableIrq(SysTick_IRQn);
 	}
 	else
 	{
-		DisableIrq(SysTick_IRQn);
+		//DisableIrq(SysTick_IRQn);
 		::SetIsr(SysTick_IRQn, nullptr);
 		CLEAR_BIT(SYST_CSR, SYST_CSR_TICKINT_SHIFT);
 	}

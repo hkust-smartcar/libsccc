@@ -9,7 +9,7 @@
 #include <cstdint>
 
 #include "libbase/kl26/clock_utils.h"
-//#include "libbase/kl26/pit.h"
+#include "libbase/kl26/sys_tick.h"
 
 #include "libsc/kl26/sys_tick_delay.h"
 
