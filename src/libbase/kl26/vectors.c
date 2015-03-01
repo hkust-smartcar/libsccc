@@ -100,23 +100,6 @@ typedef void
 
 #define VECTOR_PADDING  (pHandler)0xffffffff
 
-/* Flash configuration field values below */
-/* Please be careful when modifying any of
- * the values below as it can secure the
- * flash (possibly permanently): 0x400-0x409.
- */
-#define CONFIG_1                (pHandler)0xffffffff
-#define CONFIG_2                (pHandler)0xffffffff
-#define CONFIG_3                (pHandler)0xffffffff
-#define CONFIG_4                (pHandler)0xfffffffe //b5=1,b4=1,b0=1 div1 fast
-//#define CONFIG_4      (pHandler)0xffffdffe //b5=0,b4=1,b0=1 div1 slow works
-//#define CONFIG_4      (pHandler)0xffffcefe //b5=0,b4=0,b0=0;div8 slow
-//#define CONFIG_4      (pHandler)0xffffeefe //b5=1,b4=0,b0=0 div8 fast
-//#define CONFIG_4      (pHandler)0xffffcffe //b5=0,b4=0,b0=1;div4 slow
-//#define CONFIG_4      (pHandler)0xffffeffe //b5=1,b4=0,b0=1;div4 fast
-//#define CONFIG_4      (pHandler)0xfffffefe //b5=1,b4=1,b0=0;div2 fast
-//#define CONFIG_4      (pHandler)0xffffdefe //b5=0,b4=1,b0=0;div2 slow
-
 __attribute__ ((section(".isr_vector"),used))
 pHandler gHandlers[] =
   {
@@ -389,15 +372,6 @@ pHandler gHandlers[] =
       VECTOR_PADDING,
       VECTOR_PADDING,
       VECTOR_PADDING //
-    };
-
-__attribute__ ((section(".cfmconfig")))
-pHandler gConfigs[] =
-  {
-  CONFIG_1,
-  CONFIG_2,
-  CONFIG_3,
-  CONFIG_4 //
     };
 
 // ----------------------------------------------------------------------------
