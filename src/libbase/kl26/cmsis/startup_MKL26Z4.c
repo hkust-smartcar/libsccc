@@ -191,7 +191,6 @@ void __thumb_startup(void)
 	__copy_rom_sections_to_ram();
 
 	SystemInit();
-	SystemCoreClockUpdate();
 	KeepSyscallSymbols();
 	__libc_init_array();
 

@@ -261,19 +261,18 @@ static void SystemInit_ (void) {
 #endif /* (CLOCK_SETUP == 2) */
 }
 
-void SystemInit(void)
-{
-	// Init MCG
-	SystemInit_();
-
-	InitVectorTable();
-}
-
 /* ----------------------------------------------------------------------------
    -- SystemCoreClockUpdate()
    ---------------------------------------------------------------------------- */
 
-void SystemCoreClockUpdate (void) {
+/**
+ * @brief Updates the SystemCoreClock variable.
+ *
+ * It must be called whenever the core clock is changed during program
+ * execution. SystemCoreClockUpdate() evaluates the clock register settings and calculates
+ * the current core clock.
+ */
+static void SystemCoreClockUpdate (void) {
   uint32_t MCGOUTClock;                                                        /* Variable to store output clock frequency of the MCG module */
   uint8_t Divider;
 
@@ -343,4 +342,13 @@ void SystemCoreClockUpdate (void) {
     return;
   } /* (!((MCG->C1 & MCG_C1_CLKS_MASK) == 0x80u)) */
   SystemCoreClock = (MCGOUTClock / (1u + ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV1_MASK) >> SIM_CLKDIV1_OUTDIV1_SHIFT)));
+}
+
+void SystemInit(void)
+{
+	// Init MCG
+	SystemInit_();
+	SystemCoreClockUpdate();
+
+	InitVectorTable();
 }
