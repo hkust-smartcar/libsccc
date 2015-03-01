@@ -109,7 +109,7 @@ int GetPinId(const Pin::Name pin)
 
 int GetPinId(const Adc::Name pin)
 {
-	if (pin == Adc::Name::kAdc0DAd1 || pin == Adc::Name::kAdc0Ad1)
+	if (pin == Adc::Name::kAdc0DAd1)
 	{
 		return 13;
 	}
@@ -117,7 +117,7 @@ int GetPinId(const Adc::Name pin)
 	{
 		return 14;
 	}
-	else if (pin == Adc::Name::kAdc0DAd2 || pin == Adc::Name::kAdc0Ad2)
+	else if (pin == Adc::Name::kAdc0DAd2)
 	{
 		return 15;
 	}
@@ -125,7 +125,7 @@ int GetPinId(const Adc::Name pin)
 	{
 		return 16;
 	}
-	else if (pin == Adc::Name::kAdc0DAd0 || pin == Adc::Name::kAdc0Ad0)
+	else if (pin == Adc::Name::kAdc0DAd0)
 	{
 		return 17;
 	}
@@ -133,7 +133,7 @@ int GetPinId(const Adc::Name pin)
 	{
 		return 18;
 	}
-	else if (pin == Adc::Name::kAdc0DAd3 || pin == Adc::Name::kAdc0Ad3)
+	else if (pin == Adc::Name::kAdc0DAd3)
 	{
 		return 19;
 	}
@@ -282,25 +282,25 @@ Adc::Name Mkl26z4Lqfp100::GetAdc(const Pin::Name pin)
 		return Adc::Name::kAdc0Ad7B;
 
 	case Pin::Name::kPte16:
-		return Adc::Name::kAdc0Ad1;
+		return Adc::Name::kAdc0DAd1;
 
 	case Pin::Name::kPte17:
 		return Adc::Name::kAdc0Ad5A;
 
 	case Pin::Name::kPte18:
-		return Adc::Name::kAdc0Ad2;
+		return Adc::Name::kAdc0DAd2;
 
 	case Pin::Name::kPte19:
 		return Adc::Name::kAdc0Ad6A;
 
 	case Pin::Name::kPte20:
-		return Adc::Name::kAdc0Ad0;
+		return Adc::Name::kAdc0DAd0;
 
 	case Pin::Name::kPte21:
 		return Adc::Name::kAdc0Ad4A;
 
 	case Pin::Name::kPte22:
-		return Adc::Name::kAdc0Ad3;
+		return Adc::Name::kAdc0DAd3;
 
 	case Pin::Name::kPte23:
 		return Adc::Name::kAdc0Ad7A;

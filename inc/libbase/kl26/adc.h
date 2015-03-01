@@ -30,35 +30,42 @@ public:
 
 	enum struct Name
 	{
-		kAdc0DAd0=0,
+		kAdc0DAd0 = 0,
 		kAdc0DAd1,
 		kAdc0DAd2,
 		kAdc0DAd3,
-
-		kAdc0Ad0,
-		kAdc0Ad1,
-		kAdc0Ad2,
-		kAdc0Ad3,
 		kAdc0Ad4A,
 		kAdc0Ad5A,
 		kAdc0Ad6A,
 		kAdc0Ad7A,
-
 		kAdc0Ad4B,
 		kAdc0Ad5B,
 		kAdc0Ad6B,
 		kAdc0Ad7B,
-
 		kAdc0Ad8,
 		kAdc0Ad9,
+		kAdc0Ad10,
 		kAdc0Ad11,
 		kAdc0Ad12,
 		kAdc0Ad13,
 		kAdc0Ad14,
 		kAdc0Ad15,
+		kAdc0Ad16,
+		kAdc0Ad17,
+		kAdc0Ad18,
+		kAdc0Ad19,
+		kAdc0Ad20,
+		kAdc0Ad21,
+		kAdc0Ad22,
 		kAdc0Ad23,
-
-
+		kAdc0Ad24,
+		kAdc0Ad25,
+		kAdc0Ad26,
+		kAdc0Ad27,
+		kAdc0Ad28,
+		kAdc0Ad29,
+		kAdc0Ad30,
+		kAdc0Ad31,
 
 		kDisable
 	};
@@ -95,10 +102,8 @@ public:
 		/**
 		 * Specify the pin to be used. Either Config::pin or Config::adc has to
 		 * be set. If Config::pin is set, Config::adc will be ignored. This
-		 * provides two ways to specify the ADC pin. If the pin can be used
-		 * with more than 1 ADC module (eg, PTB0, PTB1), the first one will be
-		 * chosen by default. Otherwise you should specify the ADC pin through
-		 * Config::adc
+		 * provides two ways to specify the ADC pin as some pins can be used
+		 * with more than 1 ADC channel
 		 */
 		Pin::Name pin = Pin::Name::kDisable;
 		Adc::Name adc = Adc::Name::kDisable;
