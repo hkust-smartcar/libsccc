@@ -30,7 +30,7 @@ typedef struct RomInfo {
 	unsigned long 	Size;
 } RomInfo;
 
-RomInfo *__S_romp __attribute__((weak));		/* linker defined symbol */
+RomInfo __S_romp __attribute__((weak));		/* linker defined symbol */
 
 /*
  * Routine to flush cache follow the ROM to RAM copy
@@ -95,27 +95,24 @@ static void __copy_rom_section(unsigned long dst, unsigned long src, unsigned lo
  */
 static void __copy_rom_sections_to_ram(void)
 {
+	int	index;
 
-	int				index;
-
-	if (__S_romp == 0L) return;
+	if (&__S_romp == 0L) return;
 
 	/*
 	 *	Go through the entire table, copying sections from ROM to RAM.
 	 */
 	for (index = 0;
-		 __S_romp[index].Source != 0 ||
-		 __S_romp[index].Target != 0 ||
-		 __S_romp[index].Size != 0;
-		 ++index)
+			(&__S_romp)[index].Source != 0 ||
+			(&__S_romp)[index].Target != 0 ||
+			(&__S_romp)[index].Size != 0;
+			++index)
 	{
-		__copy_rom_section( __S_romp[index].Target,
-							__S_romp[index].Source,
-							__S_romp[index].Size );
+		__copy_rom_section( (&__S_romp)[index].Target,
+				(&__S_romp)[index].Source,
+				(&__S_romp)[index].Size );
 
-		__flush_cache( __S_romp[index].Target, __S_romp[index].Size);
-
-
+		__flush_cache( (&__S_romp)[index].Target, (&__S_romp)[index].Size);
 	}
 }
 
