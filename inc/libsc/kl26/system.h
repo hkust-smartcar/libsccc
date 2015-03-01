@@ -12,7 +12,7 @@
 
 #include "libbase/kl26/watchdog.h"
 
-//#include "libsc/kl26/sys_tick_timer.h"
+#include "libsc/kl26/lptmr_timer.h"
 #include "libsc/kl26/sys_tick_delay.h"
 
 namespace libsc
@@ -46,16 +46,16 @@ public:
 		m_instance->m_delay.DelayS(s);
 	}
 
-//	/**
-//	 * Return the time elapsed, in ms, since Init()
-//	 *
-//	 * @return
-//	 */
-//	static Timer::TimerInt Time()
-//	{
-//		return m_instance->m_timer.Time();
-//	}
-//
+	/**
+	 * Return the time elapsed, in ms, since Init()
+	 *
+	 * @return
+	 */
+	static Timer::TimerInt Time()
+	{
+		return m_instance->m_timer.Time();
+	}
+
 	static void FeedDog()
 	{
 		libbase::kl26::Watchdog::Refresh();
@@ -65,7 +65,7 @@ private:
 	System();
 
 	SysTickDelay m_delay;
-	//SysTickTimer m_timer;
+	LptmrTimer m_timer;
 
 	static System *m_instance;
 };

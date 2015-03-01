@@ -19,8 +19,8 @@ namespace kl26
 System *System::m_instance = nullptr;
 
 System::System()
-		: m_delay()
-//		  m_timer()
+		: m_delay(),
+		  m_timer()
 {}
 
 }
