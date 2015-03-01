@@ -86,6 +86,7 @@
 #include <stdint.h>
 
 #include "libbase/kl26/cmsis/system_MKL26Z4.h"
+#include "libbase/kl26/mcg_c.h"
 #include "libbase/kl26/vectors.h"
 
 /* Flash configuration field */
@@ -349,6 +350,8 @@ void SystemInit(void)
 	// Init MCG
 	SystemInit_();
 	SystemCoreClockUpdate();
+
+	LibbaseKl26McgInit();
 
 	InitVectorTable();
 }

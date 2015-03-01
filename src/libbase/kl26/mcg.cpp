@@ -381,12 +381,12 @@ void Mcg::InitClocks(const Config &config, const uint32_t core_clock)
 }
 }
 
-void Libbasekl26McgInit()
+void LibbaseKl26McgInit()
 {
 	libbase::kl26::Mcg::Get().Init();
 }
 
-uint32_t Libbasekl26McgGetCoreClock()
+uint32_t LibbaseKl26McgGetCoreClock()
 {
 	return libbase::kl26::Mcg::Get().GetCoreClock();
 }

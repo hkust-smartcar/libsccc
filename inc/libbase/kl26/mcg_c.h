@@ -14,8 +14,8 @@
 extern "C" {
 #endif
 
-void LibbaseKL26McgInit(void);
-uint32_t LibbaseKL26McgGetCoreClock(void);
+void LibbaseKl26McgInit(void);
+uint32_t LibbaseKl26McgGetCoreClock(void);
 
 #ifdef __cplusplus
 }
