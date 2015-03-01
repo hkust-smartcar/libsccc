@@ -10,11 +10,10 @@
 
 #include <cstdint>
 
-//#include "libbase/kl26/mcg.h"
 #include "libbase/kl26/watchdog.h"
 
 //#include "libsc/kl26/sys_tick_timer.h"
-//#include "libsc/kl26/sys_tick_delay.h"
+#include "libsc/kl26/sys_tick_delay.h"
 
 namespace libsc
 {
@@ -32,21 +31,21 @@ public:
 		}
 	}
 
-//	static void DelayUs(const uint16_t us)
-//	{
-//		m_instance->m_delay.DelayUs(us);
-//	}
-//
-//	static void DelayMs(const uint16_t ms)
-//	{
-//		m_instance->m_delay.DelayMs(ms);
-//	}
-//
-//	static void DelayS(const uint16_t s)
-//	{
-//		m_instance->m_delay.DelayS(s);
-//	}
-//
+	static void DelayUs(const uint16_t us)
+	{
+		m_instance->m_delay.DelayUs(us);
+	}
+
+	static void DelayMs(const uint16_t ms)
+	{
+		m_instance->m_delay.DelayMs(ms);
+	}
+
+	static void DelayS(const uint16_t s)
+	{
+		m_instance->m_delay.DelayS(s);
+	}
+
 //	/**
 //	 * Return the time elapsed, in ms, since Init()
 //	 *
@@ -65,7 +64,7 @@ public:
 private:
 	System();
 
-	//SysTickDelay m_delay;
+	SysTickDelay m_delay;
 	//SysTickTimer m_timer;
 
 	static System *m_instance;
