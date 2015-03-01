@@ -9,8 +9,11 @@
 
 #pragma once
 
+#define LIBSC_USE_BUTTON 1
 #define LIBSC_USE_LED 4
 //#define LIBSC_USE_UART 1
+
+#define LIBSC_BUTTON0 libbase::kl26::Pin::Name::kPta20
 
 #define LIBSC_LED0 libbase::kl26::Pin::Name::kPtd4
 #define LIBSC_LED1 libbase::kl26::Pin::Name::kPtd5
