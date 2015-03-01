@@ -11,10 +11,10 @@
 #include <cstdint>
 
 //#include "libbase/kl26/mcg.h"
-//#include "libbase/kl26/watchdog.h"
+#include "libbase/kl26/watchdog.h"
 
-#include "libsc/kl26/sys_tick_timer.h"
-#include "libsc/kl26/sys_tick_delay.h"
+//#include "libsc/kl26/sys_tick_timer.h"
+//#include "libsc/kl26/sys_tick_delay.h"
 
 namespace libsc
 {
@@ -32,47 +32,41 @@ public:
 		}
 	}
 
-	/*__attribute__((__weak__))
-	static libbase::kl26::Watchdog::Config GetWatchdogConfig();*/
-
-	static void DelayUs(const uint16_t us)
-	{
-		m_instance->m_delay.DelayUs(us);
-	}
-
-	static void DelayMs(const uint16_t ms)
-	{
-		m_instance->m_delay.DelayMs(ms);
-	}
-
-	static void DelayS(const uint16_t s)
-	{
-		m_instance->m_delay.DelayS(s);
-	}
-
-	/**
-	 * Return the time elapsed, in ms, since Init()
-	 *
-	 * @return
-	 */
-	static Timer::TimerInt Time()
-	{
-		return m_instance->m_timer.Time();
-	}
-
+//	static void DelayUs(const uint16_t us)
+//	{
+//		m_instance->m_delay.DelayUs(us);
+//	}
+//
+//	static void DelayMs(const uint16_t ms)
+//	{
+//		m_instance->m_delay.DelayMs(ms);
+//	}
+//
+//	static void DelayS(const uint16_t s)
+//	{
+//		m_instance->m_delay.DelayS(s);
+//	}
+//
+//	/**
+//	 * Return the time elapsed, in ms, since Init()
+//	 *
+//	 * @return
+//	 */
+//	static Timer::TimerInt Time()
+//	{
+//		return m_instance->m_timer.Time();
+//	}
+//
 	static void FeedDog()
 	{
-		//m_instance->m_watchdog.Refresh();
+		libbase::kl26::Watchdog::Refresh();
 	}
 
 private:
 	System();
 
-	// Watchdog is currently broken
-	//libbase::kl26::Watchdog m_watchdog;
-
-	SysTickDelay m_delay;
-	SysTickTimer m_timer;
+	//SysTickDelay m_delay;
+	//SysTickTimer m_timer;
 
 	static System *m_instance;
 };
