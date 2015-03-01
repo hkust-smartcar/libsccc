@@ -227,8 +227,6 @@ public:
 			 * output pin
 			 */
 			kHighDriveStrength = 0,
-			/// Effective only with input pin
-			kOpenDrain,
 			/**
 			 * Enable a low pass filter (10 MHz to 30 MHz bandwidth) on the pin.
 			 * Disable when supporting high speed interfaces (> 2MHz). Effective

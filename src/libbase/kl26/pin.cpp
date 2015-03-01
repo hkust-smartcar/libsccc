@@ -1,27 +1,32 @@
 /*
  * pin.cpp
  *
- *  Created on: Feb 10, 2015
- *      Author: harrison
+ * Author: Harrison Ng
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
+
+#include "libbase/kl26/hardware.h"
+
 #include <cassert>
 #include <cstdint>
 
-#include "libbase/kl26/hardware.h"
+#include "libbase/log.h"
 #include "libbase/kl26/pin.h"
+#include "libbase/kl26/pin_utils.h"
 #include "libbase/kl26/pinout.h"
 #include "libbase/kl26/sim.h"
 
-#include "libbase/kl26/pin_utils.h"
 #include "libutil/misc.h"
-
-#define PORT_COUNT 5
 
 using namespace libutil;
 
-namespace libbase{
-namespace kl26{
+#define PORT_COUNT 5
 
+namespace libbase
+{
+namespace kl26
+{
 
 namespace
 {
@@ -124,10 +129,6 @@ Pin::Pin(const Config &config)
 	{
 		reg |= PORT_PCR_DSE_MASK;
 	}
-/*	if (config.config[Config::ConfigBit::kOpenDrain])
-	{
-		reg |= PORT_PCR_ODE_MASK;
-	}*/
 	if (config.config[Config::ConfigBit::kPassiveFilter])
 	{
 		reg |= PORT_PCR_PFE_MASK;
