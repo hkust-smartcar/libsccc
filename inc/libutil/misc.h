@@ -14,7 +14,7 @@
 
 #include <algorithm>
 
-#if defined(MK60DZ10) || defined(MK60D10) || defined(MK60F15)
+#if MK60DZ10 || MK60D10 || MK60F15
 #include "libbase/k60/misc_utils.h"
 
 namespace libsc
@@ -26,6 +26,10 @@ class UartDevice;
 
 }
 }
+
+#elif MKL26Z4
+#include "libbase/kl26/misc_utils.h"
+
 #endif
 
 #define SAFE_DELETE(x) do{if (x) {delete x; x = nullptr;}}while(false)
