@@ -57,12 +57,12 @@
  * (PLL) that is part of the microcontroller device.
  */
 
+#include "libbase/kl26/hardware.h"
+
 #include <stdint.h>
-#include "libbase/kl26/cmsis/MKL26Z4.h"
 
-#include "libbase/kl26/watchdog_c.h"
-
-#define DISABLE_WDOG    1
+#include "libbase/kl26/cmsis/system_MKL26Z4.h"
+#include "libbase/kl26/vectors.h"
 
 #define CLOCK_SETUP     0
 /* Predefined clock setups
@@ -108,10 +108,7 @@ uint32_t SystemCoreClock = DEFAULT_SYSTEM_CLOCK;
    -- SystemInit()
    ---------------------------------------------------------------------------- */
 
-void SystemInit (void) {
-
-	LibbaseKl26WatchdogInit();
-
+static void SystemInit_ (void) {
 #if (CLOCK_SETUP == 0)
   /* SIM->CLKDIV1: OUTDIV1=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,OUTDIV4=2,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0 */
   SIM->CLKDIV1 = (uint32_t)0x00020000UL; /* Update system prescalers */
@@ -202,6 +199,14 @@ void SystemInit (void) {
   while((MCG->S & 0x0CU) != 0x08U) {    /* Wait until external reference clock is selected as MCG output */
   }
 #endif /* (CLOCK_SETUP == 2) */
+}
+
+void SystemInit(void)
+{
+	// Init MCG
+	SystemInit_();
+
+	InitVectorTable();
 }
 
 /* ----------------------------------------------------------------------------
