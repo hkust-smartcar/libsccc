@@ -12,7 +12,7 @@
 #include "libbase/misc_utils_c.h"
 
 #define __ISR __attribute__((__interrupt__))
-#define __RAMFUNC __attribute__((__long_call__, __section__(".m_data_20000000")))
+#define __RAMFUNC __attribute__((__long_call__, __section__(".m_data_2")))
 #ifdef DEBUG
 #define __BREAKPOINT() asm("BKPT 255")
 
