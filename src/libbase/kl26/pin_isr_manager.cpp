@@ -7,7 +7,7 @@
  * Refer to LICENSE for details
  */
 
-
+#include <cassert>
 #include <cstring>
 
 #include <bitset>
@@ -67,6 +67,13 @@ PinIsrManager::~PinIsrManager()
 
 void PinIsrManager::InitPort(const Uint port)
 {
+	if (port != 0 && port != 2 && port != 3)
+	{
+		// Port not interruptable
+		assert(false);
+		return;
+	}
+
 	if (!m_pin_data[port])
 	{
 		m_pin_data[port] = new PinData[PINOUT::GetPortPinCount()];
@@ -77,28 +84,19 @@ void PinIsrManager::InitPort(const Uint port)
 	{
 	case 0:
 		SetIsr(PORTA_IRQn, PortIrqHandler<0>);
-		break;
-
-	case 1:
-//		SetIsr(PORTB_IRQn, PortIrqHandler<1>);
+		EnableIrq(PORTA_IRQn);
 		break;
 
 	case 2:
 		SetIsr(PORTC_PORTD_IRQn, PortIrqHandler<2>);
+		EnableIrq(PORTC_PORTD_IRQn);
 		break;
 
 	case 3:
 		SetIsr(PORTC_PORTD_IRQn, PortIrqHandler<3>);
+		EnableIrq(PORTC_PORTD_IRQn);
 		break;
-
-	case 4:
-//		SetIsr(PORTE_IRQn, PortIrqHandler<4>);
-		break;
-
-	default:
-		return;
 	}
-	EnableIrq(EnumAdvance(PORTA_IRQn, port));
 	m_is_enable[port] = true;
 }
 
