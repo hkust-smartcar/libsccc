@@ -1,22 +1,26 @@
 /*
  * mkl26z4_lqfp100.h
  *
- *  Created on: Feb 9, 2015
- *      Author: harrison
+ * Author: Harrison Ng
+ * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Refer to LICENSE for details
  */
 
-#ifndef MKL26Z4_LQFP100_H_
-#define MKL26Z4_LQFP100_H_
+#pragma once
 
-#include "libbase/misc_types.h"
-#include "libbase/kl26/pin.h"
-#include "libbase/kl26/pinout/mkl26z4_lqfp100_macros.h"
+#include <bitset>
+
 #include "libbase/kl26/adc.h"
+#include "libbase/kl26/pin.h"
+#include "libbase/misc_types.h"
 
-namespace libbase{
-namespace kl26{
+namespace libbase
+{
+namespace kl26
+{
 
-class Mkl26z4Lqfp100{
+class Mkl26z4Lqfp100
+{
 public:
 	static bool RegPin(const Uint pin)
 	{
@@ -79,10 +83,7 @@ public:
 	}
 
 	static Adc::Name GetAdc(const Pin::Name pin);
-//	static Ftm::Name GetFtm(const Pin::Name pin);
-	static Pin::Config::MuxControl GetFtmMux(const Pin::Name pin);
-//	static Ftm::QdName GetFtmQd(const Pin::Name pin);
-	static Pin::Config::MuxControl GetFtmQdMux(const Pin::Name pin);
+
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;
 
@@ -106,5 +107,3 @@ private:
 
 }
 }
-
-#endif /* MKL26Z4_LQFP100_H_ */
