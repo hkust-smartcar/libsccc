@@ -15,7 +15,6 @@
 
 #pragma once
 
-#include <array>
 #include <bitset>
 
 #include "libbase/k60/adc.h"
