@@ -19,23 +19,11 @@ namespace libbase
 namespace kl26
 {
 
-namespace
-{
-
-Watchdog* g_instance = nullptr;
-
-}
-
-Watchdog::Watchdog()
-{}
-
 void Watchdog::Init()
 {
 	const Config &config = GetWatchdogConfig();
 
 	InitCopcReg(config);
-
-	g_instance = this;
 }
 
 void Watchdog::InitCopcReg(const Config &config)
@@ -59,5 +47,5 @@ void Watchdog::Refresh()
 
 void LibbaseKl26WatchdogInit()
 {
-	libbase::kl26::Watchdog::Get().Init();
+	libbase::kl26::Watchdog::Init();
 }

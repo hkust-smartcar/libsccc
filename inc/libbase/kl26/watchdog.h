@@ -29,16 +29,12 @@ public:
 		Timeout timeout = Timeout::kDisable;
 	};
 
-	static Watchdog& Get()
-	{
-		static Watchdog inst;
-		return inst;
-	}
+	Watchdog() = delete;
 
 	/**
 	 * Must be called at the very beginning in the startup routine
 	 */
-	void Init();
+	static void Init();
 
 	/**
 	 * Refresh the Watchdog to prevent it from resetting the system. Should be
@@ -47,8 +43,6 @@ public:
 	static void Refresh();
 
 private:
-	Watchdog();
-
 	/**
 	 * Get the Config object used during initialization, could be optionally
 	 * implemented by user. The default implementation will simply disable the
@@ -59,7 +53,7 @@ private:
 	__attribute__((__weak__))
 	static Config GetWatchdogConfig();
 
-	void InitCopcReg(const Config &config);
+	static void InitCopcReg(const Config &config);
 };
 
 }
