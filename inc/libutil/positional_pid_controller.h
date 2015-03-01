@@ -10,7 +10,7 @@
 #pragma once
 
 #include "libsc/k60/system.h"
-#include "libsc/k60/timer.h"
+#include "libsc/timer.h"
 #include "libutil/pid_controller.h"
 
 namespace libutil
@@ -56,7 +56,7 @@ private:
 
 	float m_accumulated_error;
 	InT m_prev_error;
-	libsc::k60::Timer::TimerInt m_prev_time;
+	libsc::Timer::TimerInt m_prev_time;
 };
 
 }

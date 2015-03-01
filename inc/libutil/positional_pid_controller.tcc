@@ -10,7 +10,7 @@
 #pragma once
 
 #include "libsc/k60/system.h"
-#include "libsc/k60/timer.h"
+#include "libsc/timer.h"
 #include "libutil/misc.h"
 #include "libutil/positional_pid_controller.h"
 
@@ -31,6 +31,7 @@ PositionalPidController<InT_, OutT_>::PositionalPidController(const InT setpoint
 template<typename InT_, typename OutT_>
 void PositionalPidController<InT_, OutT_>::OnCalc(const InT error)
 {
+	using namespace libsc;
 	using namespace libsc::k60;
 
 	const Timer::TimerInt time = System::Time();

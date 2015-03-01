@@ -10,9 +10,10 @@
 #include <list>
 
 #include "libsc/k60/system.h"
-#include "libsc/k60/timer.h"
+#include "libsc/timer.h"
 #include "libutil/looper.h"
 
+using namespace libsc;
 using namespace libsc::k60;
 using namespace std;
 

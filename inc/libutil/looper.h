@@ -12,7 +12,7 @@
 #include <functional>
 #include <list>
 
-#include "libsc/k60/timer.h"
+#include "libsc/timer.h"
 
 namespace libutil
 {
@@ -20,8 +20,8 @@ namespace libutil
 class Looper
 {
 public:
-	typedef std::function<void(const libsc::k60::Timer::TimerInt request,
-			const libsc::k60::Timer::TimerInt actual)> Callback;
+	typedef std::function<void(const libsc::Timer::TimerInt request,
+			const libsc::Timer::TimerInt actual)> Callback;
 
 	Looper();
 	~Looper();
@@ -39,7 +39,7 @@ public:
 	 */
 	void Once();
 
-	void RunAfter(const libsc::k60::Timer::TimerInt ms, const Callback &c);
+	void RunAfter(const libsc::Timer::TimerInt ms, const Callback &c);
 
 	/**
 	 * Reset the internal time
@@ -62,7 +62,7 @@ private:
 	void Invoke();
 
 	std::list<RunnerState> m_states;
-	libsc::k60::Timer::TimerInt m_prev;
+	libsc::Timer::TimerInt m_prev;
 	bool m_is_run;
 };
 

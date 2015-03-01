@@ -12,7 +12,7 @@
 
 #include "libbase/k60/sys_tick.h"
 
-#include "libsc/k60/timer.h"
+#include "libsc/timer.h"
 
 namespace libsc
 {

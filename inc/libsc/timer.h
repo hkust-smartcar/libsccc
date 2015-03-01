@@ -12,8 +12,6 @@
 
 namespace libsc
 {
-namespace kl26
-{
 
 class Timer
 {
@@ -43,5 +41,4 @@ public:
 	}
 };
 
-}
 }
