@@ -7,16 +7,15 @@
  */
 
 #include "libbase/log.h"
-#include "libbase/k60/adc.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(adc)
 
 #include "libsc/config.h"
-#include "libsc/k60/battery_meter.h"
+#include "libsc/battery_meter.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_BATTERY_METER
@@ -58,5 +57,4 @@ float BatteryMeter::GetVoltage() { return 0.0f; }
 
 #endif /* LIBSC_USE_BATTERY_METER */
 
-}
 }

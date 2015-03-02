@@ -8,11 +8,10 @@
 
 #pragma once
 
-#include "libbase/k60/adc.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(adc)
 
 namespace libsc
-{
-namespace k60
 {
 
 class BatteryMeter
@@ -28,9 +27,8 @@ public:
 	float GetVoltage();
 
 private:
-	libbase::k60::Adc m_adc;
+	LIBBASE_MODULE(Adc) m_adc;
 	float m_voltage_ratio;
 };
 
-}
 }
