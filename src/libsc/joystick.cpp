@@ -11,16 +11,15 @@
 #include <cstdint>
 
 #include "libbase/log.h"
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 #include "libsc/config.h"
-#include "libsc/k60/joystick.h"
+#include "libsc/joystick.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_JOYSTICK
@@ -184,5 +183,4 @@ Joystick::State Joystick::GetState() const { return State::kIdle; }
 
 #endif /* LIBSC_USE_BUTTON */
 
-}
 }

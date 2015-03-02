@@ -11,11 +11,10 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 namespace libsc
-{
-namespace k60
 {
 
 class Joystick
@@ -60,9 +59,8 @@ public:
 	State GetState() const;
 
 private:
-	libbase::k60::Gpi m_pins[5];
+	LIBBASE_MODULE(Gpi) m_pins[5];
 	bool m_is_active_low;
 };
 
-}
 }
