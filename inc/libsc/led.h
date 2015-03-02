@@ -10,12 +10,10 @@
 
 #include <cstdint>
 
-#include "libbase/k60/dma.h"
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 namespace libsc
-{
-namespace k60
 {
 
 class Led
@@ -31,19 +29,9 @@ public:
 	void SetEnable(const bool flag);
 	void Switch();
 
-	/**
-	 * @param config
-	 * @see Gpo::ConfigToggleAsDmaDst()
-	 */
-	void ConfigToggleAsDmaDst(libbase::k60::Dma::Config *config)
-	{
-		m_pin.ConfigToggleAsDmaDst(config);
-	}
-
 private:
-	libbase::k60::Gpo m_pin;
+	LIBBASE_MODULE(Gpo) m_pin;
 };
 
-}
 }
 

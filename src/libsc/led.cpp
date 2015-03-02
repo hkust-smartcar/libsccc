@@ -10,16 +10,15 @@
 #include <cstdint>
 
 #include "libbase/log.h"
-#include "libbase/kl26/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 #include "libsc/config.h"
-#include "libsc/kl26/led.h"
+#include "libsc/led.h"
 
-using namespace libbase::kl26;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace kl26
 {
 
 #ifdef LIBSC_USE_LED
@@ -103,5 +102,4 @@ void Led::Switch() {}
 
 #endif
 
-}
 }
