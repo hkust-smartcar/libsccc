@@ -10,13 +10,12 @@
 
 #include <cstdint>
 
-#include "libbase/k60/pit.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(pit)
 
-#include "libsc/k60/delay.h"
+#include "libsc/delay.h"
 
 namespace libsc
-{
-namespace k60
 {
 
 class PitDelay : public Delay
@@ -30,8 +29,7 @@ public:
 private:
 	inline void DelayCount(const uint32_t count);
 
-	libbase::k60::Pit m_pit;
+	LIBBASE_MODULE(Pit) m_pit;
 };
 
-}
 }

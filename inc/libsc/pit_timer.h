@@ -10,13 +10,12 @@
 
 #include <cstdint>
 
-#include "libbase/k60/pit.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(pit)
 
 #include "libsc/timer.h"
 
 namespace libsc
-{
-namespace k60
 {
 
 class PitTimer : public Timer
@@ -30,11 +29,10 @@ public:
 	}
 
 private:
-	void OnTick(libbase::k60::Pit*);
+	void OnTick(LIBBASE_MODULE(Pit)*);
 
-	libbase::k60::Pit m_pit;
+	LIBBASE_MODULE(Pit) m_pit;
 	volatile TimerInt m_ms;
 };
 
-}
 }

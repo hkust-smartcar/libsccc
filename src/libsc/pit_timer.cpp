@@ -10,16 +10,15 @@
 
 #include <functional>
 
-#include "libbase/k60/clock_utils.h"
-#include "libbase/k60/pit.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(clock_utils)
+#include LIBBASE_H(pit)
 
-#include "libsc/k60/pit_timer.h"
+#include "libsc/pit_timer.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 namespace
@@ -48,5 +47,4 @@ void PitTimer::OnTick(Pit*)
 	++m_ms;
 }
 
-}
 }
