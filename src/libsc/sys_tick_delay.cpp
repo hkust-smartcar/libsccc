@@ -8,16 +8,15 @@
 
 #include <cstdint>
 
-#include "libbase/kl26/clock_utils.h"
-#include "libbase/kl26/sys_tick.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(clock_utils)
+#include LIBBASE_H(sys_tick)
 
-#include "libsc/kl26/sys_tick_delay.h"
+#include "libsc/sys_tick_delay.h"
 
-using namespace libbase::kl26;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace kl26
 {
 
 namespace
@@ -51,5 +50,4 @@ void SysTickDelay::DelayUs(const uint16_t us)
 	DelayCount(ClockUtils::GetCoreTickPerUs(us));
 }
 
-}
 }

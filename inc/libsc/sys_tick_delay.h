@@ -10,13 +10,12 @@
 
 #include <cstdint>
 
-#include "libbase/k60/sys_tick.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(sys_tick)
 
-#include "libsc/k60/delay.h"
+#include "libsc/delay.h"
 
 namespace libsc
-{
-namespace k60
 {
 
 class SysTickDelay : public Delay
@@ -29,8 +28,7 @@ public:
 private:
 	inline void DelayCount(const uint32_t count);
 
-	libbase::k60::SysTick m_sys_tick;
+	LIBBASE_MODULE(SysTick) m_sys_tick;
 };
 
-}
 }

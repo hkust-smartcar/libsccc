@@ -13,7 +13,7 @@
 #include "libbase/kl26/watchdog.h"
 
 #include "libsc/kl26/lptmr_timer.h"
-#include "libsc/kl26/sys_tick_delay.h"
+#include "libsc/sys_tick_delay.h"
 
 namespace libsc
 {
