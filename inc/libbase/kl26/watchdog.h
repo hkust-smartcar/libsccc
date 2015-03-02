@@ -42,6 +42,36 @@ public:
 	 */
 	static void Refresh();
 
+	///@{
+	/**
+	 * Alias of Refresh(), choose the one you like most! :)
+	 */
+	static void Feed()
+	{
+		Refresh();
+	}
+	static void Food()
+	{
+		Refresh();
+	}
+	static void Bone()
+	{
+		Refresh();
+	}
+	static void Play()
+	{
+		Refresh();
+	}
+	static void Hand()
+	{
+		Refresh();
+	}
+	static void Wan()
+	{
+		Refresh();
+	}
+	/// @}
+
 private:
 	/**
 	 * Get the Config object used during initialization, could be optionally
