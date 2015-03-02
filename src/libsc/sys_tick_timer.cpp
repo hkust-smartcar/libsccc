@@ -10,16 +10,15 @@
 
 #include <functional>
 
-#include "libbase/k60/clock_utils.h"
-#include "libbase/k60/sys_tick.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(clock_utils)
+#include LIBBASE_H(sys_tick)
 
-#include "libsc/k60/sys_tick_timer.h"
+#include "libsc/sys_tick_timer.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 namespace
@@ -46,5 +45,4 @@ void SysTickTimer::OnTick(SysTick*)
 	++m_ms;
 }
 
-}
 }

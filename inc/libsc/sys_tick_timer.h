@@ -10,13 +10,12 @@
 
 #include <cstdint>
 
-#include "libbase/kl26/sys_tick.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(sys_tick)
 
 #include "libsc/timer.h"
 
 namespace libsc
-{
-namespace kl26
 {
 
 class SysTickTimer : public Timer
@@ -30,11 +29,10 @@ public:
 	}
 
 private:
-	void OnTick(libbase::kl26::SysTick*);
+	void OnTick(LIBBASE_MODULE(SysTick)*);
 
-	libbase::kl26::SysTick m_pit;
+	LIBBASE_MODULE(SysTick) m_pit;
 	volatile TimerInt m_ms;
 };
 
-}
 }

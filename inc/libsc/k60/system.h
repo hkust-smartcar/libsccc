@@ -13,7 +13,7 @@
 #include "libbase/k60/mcg.h"
 #include "libbase/k60/watchdog.h"
 
-#include "libsc/k60/sys_tick_timer.h"
+#include "libsc/sys_tick_timer.h"
 #include "libsc/k60/dwt_delay.h"
 
 namespace libsc
