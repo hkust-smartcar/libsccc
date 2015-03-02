@@ -49,7 +49,7 @@ float BatteryMeter::GetVoltage()
 
 #else
 BatteryMeter::BatteryMeter(const Config&)
-		: m_adc(nullptr)
+		: m_adc(nullptr), m_voltage_ratio(0.0f)
 {
 	LOG_DL("Configured not to use BatteryMeter");
 }
