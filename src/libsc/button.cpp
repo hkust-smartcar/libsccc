@@ -13,16 +13,15 @@
 #include <functional>
 
 #include "libbase/log.h"
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 #include "libsc/config.h"
-#include "libsc/k60/button.h"
+#include "libsc/button.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_BUTTON
@@ -159,5 +158,4 @@ bool Button::IsDown() const { return false; }
 
 #endif /* LIBSC_USE_BUTTON */
 
-}
 }
