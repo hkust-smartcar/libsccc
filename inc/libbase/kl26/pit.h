@@ -27,7 +27,7 @@ public:
 
 	struct Config
 	{
-		// [0 - 3]
+		// [0 - 1]
 		uint8_t channel;
 		uint32_t count;
 		OnPitTriggerListener isr;
