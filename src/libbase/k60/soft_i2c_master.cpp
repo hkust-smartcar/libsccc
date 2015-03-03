@@ -24,6 +24,7 @@
 #include "libsc/k60/system.h"
 
 using namespace std;
+using namespace libsc;
 using namespace libsc::k60;
 
 #define SEND_BYTE_GUARDED(x, ret) do { if (!SendByte_(x)) { Stop(); return ret; } } while (false)
