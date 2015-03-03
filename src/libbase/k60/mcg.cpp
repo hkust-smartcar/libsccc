@@ -76,7 +76,7 @@
 	#define _MCG_C2_HGO0_SHIFT MCG_C2_HGO_SHIFT
 	#define _MCG_C2_EREFS0_SHIFT MCG_C2_EREFS_SHIFT
 	#define _MCG_S_OSCINIT0_SHIFT MCG_S_OSCINIT_SHIFT
-	
+
 #else
 	#define _MCG_C2_RANGE0 MCG_C2_RANGE0
 	#define _MCG_C5_PRDIV0 MCG_C5_PRDIV0
@@ -85,22 +85,25 @@
 	#define _MCG_C2_HGO0_SHIFT MCG_C2_HGO0_SHIFT
 	#define _MCG_C2_EREFS0_SHIFT MCG_C2_EREFS0_SHIFT
 	#define _MCG_S_OSCINIT0_SHIFT MCG_S_OSCINIT0_SHIFT
-	
+
 #endif
 
 #if MK60DZ10 || MK60D10
-	#define PRDIV_MAX 0x18
-	#define VDIV_BASE 24
-	#define MIN_PLL_REF_KHZ 2000
-	#define MAX_PLL_REF_KHZ 4000
-#elif MK60F15
-	#define PRDIV_MAX 0x7
-	#define VDIV_BASE 16
-	#define MIN_PLL_REF_KHZ 8000
-	#define MAX_PLL_REF_KHZ 16000
-#endif
+	#define LOW_FREQ_MIN_KHZ 32
+	#define LOW_FREQ_MAX_KHZ 40
+	#define HIGH_FREQ_MIN_KHZ 3000
+	#define HIGH_FREQ_MAX_KHZ 8000
+	#define VERY_HIGH_FREQ_MIN_KHZ 8000
+	#define VERY_HIGH_FREQ_MAX_KHZ 32000
 
-#if MK60DZ10 || MK60D10
+	#define PLL_REF_MIN_KHZ 2000
+	#define PLL_REF_MAX_KHZ 4000
+
+	#define PRDIV_MIN 1
+	#define PRDIV_MAX 25
+	#define VDIV_MIN 24
+	#define VDIV_MAX 55
+
 	#define CORE_CLOCK 100000000
 	#define BUS_CLOCK 50000000
 	#define FLEXBUS_CLOCK 50000000
@@ -109,7 +112,23 @@
 	#define MAX_BUS_CLOCK 60000000
 	#define MAX_FLEXBUS_CLOCK 60000000
 	#define MAX_FLASH_CLOCK 30000000
+
 #elif MK60F15
+	#define LOW_FREQ_MIN_KHZ 32
+	#define LOW_FREQ_MAX_KHZ 40
+	#define HIGH_FREQ_MIN_KHZ 3000
+	#define HIGH_FREQ_MAX_KHZ 8000
+	#define VERY_HIGH_FREQ_MIN_KHZ 8000
+	#define VERY_HIGH_FREQ_MAX_KHZ 32000
+
+	#define PLL_REF_MIN_KHZ 8000
+	#define PLL_REF_MAX_KHZ 16000
+
+	#define PRDIV_MIN 1
+	#define PRDIV_MAX 8
+	#define VDIV_MIN 16
+	#define VDIV_MAX 47
+
 	#define CORE_CLOCK 150000000
 	#define BUS_CLOCK 75000000
 	#define FLEXBUS_CLOCK 50000000
@@ -118,6 +137,7 @@
 	#define MAX_BUS_CLOCK 90000000
 	#define MAX_FLEXBUS_CLOCK 60000000
 	#define MAX_FLASH_CLOCK 30000000
+
 #endif
 
 namespace libbase
@@ -161,6 +181,91 @@ __RAMFUNC void SetSysDividers(const uint32_t outdiv1, const uint32_t outdiv2,
 	return;
 } // SetSysDividers
 
+Uint GetFreqRange(const uint32_t external_osc_khz)
+{
+	if (external_osc_khz >= LOW_FREQ_MIN_KHZ
+			&& external_osc_khz <= LOW_FREQ_MAX_KHZ)
+	{
+		return 0;
+	}
+	// Let the border case go upwards
+	else if (external_osc_khz >= HIGH_FREQ_MIN_KHZ
+			&& external_osc_khz < HIGH_FREQ_MAX_KHZ)
+	{
+		return 1;
+	}
+	else if (external_osc_khz >= VERY_HIGH_FREQ_MIN_KHZ
+			&& external_osc_khz <= VERY_HIGH_FREQ_MAX_KHZ)
+	{
+		return 2;
+	}
+	else
+	{
+		// XXX We are using a 50M oscillator, oh well...
+//		assert(false);
+//		return 0;
+		return 2;
+	}
+}
+
+class FllDividerCalc
+{
+public:
+	void Calc(const uint32_t external_osc_khz);
+
+	Uint GetFrdiv() const
+	{
+		return m_frdiv;
+	}
+
+private:
+	Uint m_frdiv;
+};
+
+void FllDividerCalc::Calc(const uint32_t external_osc_khz)
+{
+	Uint best_div = 0;
+	Uint min_diff = static_cast<Uint>(-1);
+	const Uint freq_range = GetFreqRange(external_osc_khz);
+	const int count = (freq_range == 0) ? 8 : 6;
+	for (int i = 0; i < count; ++i)
+	{
+		uint32_t freq;
+		if (freq_range == 0 || freq_range == 1)
+		{
+			freq = (external_osc_khz * 1000) >> i;
+		}
+		else
+		{
+			freq = (external_osc_khz * 1000) >> (5 + i);
+		}
+
+		if (freq >= FLL_MIN_FREQ && freq <= FLL_MAX_FREQ)
+		{
+			best_div = i;
+			break;
+		}
+		else if (freq > FLL_MAX_FREQ)
+		{
+			if (freq - FLL_MAX_FREQ < min_diff)
+			{
+				best_div = i;
+				min_diff = freq - FLL_MAX_FREQ;
+			}
+		}
+		else if (freq < FLL_MIN_FREQ)
+		{
+			if (FLL_MIN_FREQ - freq < min_diff)
+			{
+				best_div = i;
+				min_diff = FLL_MIN_FREQ - freq;
+			}
+		}
+	}
+
+	m_frdiv = best_div;
+}
+
 class PllDividerCalc
 {
 public:
@@ -192,18 +297,18 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 {
 	Uint best_prdiv = 0, best_vdiv = 0;
 	Uint min_diff = static_cast<Uint>(-1);
-	for (Uint i = 0; i <= PRDIV_MAX; ++i)
+	for (Uint i = PRDIV_MIN; i <= PRDIV_MAX; ++i)
 	{
-		const uint32_t pll_ref_khz = external_osc_khz / (i + 1);
-		if (pll_ref_khz < MIN_PLL_REF_KHZ || pll_ref_khz > MAX_PLL_REF_KHZ)
+		const uint32_t pll_ref_khz = external_osc_khz / i;
+		if (pll_ref_khz < PLL_REF_MIN_KHZ || pll_ref_khz > PLL_REF_MAX_KHZ)
 		{
 			// PLL reference freq not valid
 			continue;
 		}
 
-		for (Uint j = 0; j <= 0x1F; ++j)
+		for (Uint j = VDIV_MIN; j <= VDIV_MAX; ++j)
 		{
-			uint32_t this_clock = external_osc_khz * (j + VDIV_BASE) / (i + 1);
+			uint32_t this_clock = external_osc_khz * j / i;
 #if MK60F15
 			// K60 120/150 parts have an additional /2 at the output of VCO
 			this_clock >>= 1;
@@ -223,11 +328,10 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 		}
 	}
 
-	m_prdiv = best_prdiv;
-	m_vdiv = best_vdiv;
+	m_prdiv = best_prdiv - PRDIV_MIN;
+	m_vdiv = best_vdiv - VDIV_MIN;
 
-	m_core_clock = (uint64_t)(external_osc_khz * 1000) * (m_vdiv + VDIV_BASE)
-			/ (m_prdiv + 1);
+	m_core_clock = (uint64_t)(external_osc_khz * 1000) * best_vdiv / best_prdiv;
 #if MK60F15
 	m_core_clock >>= 1;
 #endif
@@ -285,50 +389,26 @@ void Mcg::InitFbe(const Config &config)
 	// Reset with a loss of OSC clock
 	SET_BIT(c2_reg, MCG_C2_LOCRE0_SHIFT);
 #endif
-	c2_reg |= _MCG_C2_RANGE0(2);
+	c2_reg |= _MCG_C2_RANGE0(GetFreqRange(config.external_oscillator_khz));
 	SET_BIT(c2_reg, _MCG_C2_HGO0_SHIFT);
 	SET_BIT(c2_reg, _MCG_C2_EREFS0_SHIFT);
 	MCG->C2 = c2_reg;
+
+	FllDividerCalc calc;
+	calc.Calc(config.external_oscillator_khz);
 
 	uint8_t c1_reg = 0;
 	// C1[CLKS] set to 2'b10 in order to select external reference clock as
 	// system clock source
 	c1_reg |= MCG_C1_CLKS(2);
-	int best_div = 0;
-	Uint min_diff = static_cast<Uint>(-1);
-	for (int i = 0; i < 6; ++i)
-	{
-		const uint32_t freq = config.external_oscillator_khz * 1000 >> (5 + i);
-		if (freq >= FLL_MIN_FREQ && freq <= FLL_MAX_FREQ)
-		{
-			best_div = i;
-			break;
-		}
-		else if (freq > FLL_MAX_FREQ)
-		{
-			if (freq - FLL_MAX_FREQ < min_diff)
-			{
-				best_div = i;
-				min_diff = freq - FLL_MAX_FREQ;
-			}
-		}
-		else if (freq < FLL_MIN_FREQ)
-		{
-			if (FLL_MIN_FREQ - freq < min_diff)
-			{
-				best_div = i;
-				min_diff = FLL_MIN_FREQ - freq;
-			}
-		}
-	}
-	c1_reg |= MCG_C1_FRDIV(best_div);
+	c1_reg |= MCG_C1_FRDIV(calc.GetFrdiv());
 	MCG->C1 = c1_reg;
 
 	// Loop until S[OSCINIT0] is 1, indicating the crystal selected by
 	// C2[EREFS0] has been initialized
 	while (!GET_BIT(MCG->S, _MCG_S_OSCINIT0_SHIFT))
 	{}
-	
+
 	// Loop until S[IREFST] is 0, indicating the external reference is the
 	// current source for the reference clock
 	while (GET_BIT(MCG->S, MCG_S_IREFST_SHIFT))
@@ -387,7 +467,7 @@ void Mcg::InitClocks(const Config &config, const uint32_t core_clock)
 	{
 		++bus_div;
 	}
-	assert(bus_div > 0);
+	assert(bus_div >= 1 && bus_div <= 16);
 
 	const Uint target_flexbus_clk = std::min<uint32_t>(
 			config.flexbus_clock_khz * 1000, MAX_FLEXBUS_CLOCK);
@@ -400,7 +480,7 @@ void Mcg::InitClocks(const Config &config, const uint32_t core_clock)
 	{
 		++flexbus_div;
 	}
-	assert(flexbus_div > 0);
+	assert(flexbus_div >= 1 && flexbus_div <= 16);
 
 	const Uint target_flash_clk = std::min<uint32_t>(
 			config.flash_clock_khz * 1000, MAX_FLASH_CLOCK);
@@ -413,16 +493,9 @@ void Mcg::InitClocks(const Config &config, const uint32_t core_clock)
 	{
 		++flash_div;
 	}
-	assert(flash_div > 0);
+	assert(flash_div >= 1 && flash_div <= 16);
 
-//	uint32_t reg = 0;
-//	reg |= SIM_CLKDIV1_OUTDIV2(std::min<Uint>(bus_div - 1, 0xF));
-//	reg |= SIM_CLKDIV1_OUTDIV3(std::min<Uint>(flexbus_div - 1, 0xF));
-//	reg |= SIM_CLKDIV1_OUTDIV4(std::min<Uint>(flash_div - 1, 0xF));
-//	SIM->CLKDIV1 = reg;
-	SetSysDividers(0, std::min<Uint>(bus_div - 1, 0xF),
-			std::min<Uint>(flexbus_div - 1, 0xF),
-			std::min<Uint>(flash_div - 1, 0xF));
+	SetSysDividers(0, bus_div - 1, flexbus_div - 1, flash_div - 1);
 }
 
 }
