@@ -496,8 +496,9 @@ void FtmPwm::SetPrescaler(const uint8_t prescaler)
 void FtmPwm::SetPeriod(const uint32_t period, const uint32_t pos_width)
 {
 	STATE_GUARD(FtmPwm, VOID);
-
+	assert(period > 0)
 	assert(pos_width <= period);
+
 	for (Uint i = 0; i < PINOUT::GetFtmChannelCount(); ++i)
 	{
 		if (g_instances[m_module][i] && g_instances[m_module][i] != this)
@@ -533,12 +534,12 @@ void FtmPwm::SetPosWidth(const uint32_t pos_width)
 	STATE_GUARD(FtmPwm, VOID);
 	assert(pos_width <= m_period);
 
-	CvCalc cc;
 	uint32_t pos_width_ = pos_width;
 	if (m_alignment == Config::Alignment::kCenter)
 	{
 		pos_width_ >>= 1;
 	}
+	CvCalc cc;
 	cc.Calc(pos_width_, m_precision, GetPrescaler());
 
 	SetCv(cc.GetCv());
