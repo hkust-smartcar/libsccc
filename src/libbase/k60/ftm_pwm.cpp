@@ -496,7 +496,7 @@ void FtmPwm::SetPrescaler(const uint8_t prescaler)
 void FtmPwm::SetPeriod(const uint32_t period, const uint32_t pos_width)
 {
 	STATE_GUARD(FtmPwm, VOID);
-	assert(period > 0)
+	assert(period > 0);
 	assert(pos_width <= period);
 
 	for (Uint i = 0; i < PINOUT::GetFtmChannelCount(); ++i)
