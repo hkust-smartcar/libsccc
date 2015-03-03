@@ -43,9 +43,7 @@ public:
 
 	explicit Mpu6050(const Config &config);
 
-	bool Update(bool clamp_);
-
-	bool Update();
+	bool Update(bool clamp_ = true);
 
 	const std::array<float, 3>& GetAccel()
 	{
