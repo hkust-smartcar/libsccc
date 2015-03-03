@@ -13,6 +13,8 @@
 #include "libbase/k60/dma.h"
 #include "libbase/k60/gpio.h"
 
+#include "libsc/led.h"
+
 namespace libsc
 {
 namespace k60
@@ -21,6 +23,8 @@ namespace k60
 class Led : public libsc::Led
 {
 public:
+	using libsc::Led::Led;
+
 	/**
 	 * @param config
 	 * @see Gpo::ConfigToggleAsDmaDst()
