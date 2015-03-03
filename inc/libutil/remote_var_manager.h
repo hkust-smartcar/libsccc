@@ -46,6 +46,14 @@ namespace libutil
 class RemoteVarManager
 {
 public:
+#if MK60D10 || MK60DZ10 || MK60F15
+	typedef libsc::k60::UartDevice UartDevice;
+
+#elif MKL26Z4
+	typedef libsc::kl26::UartDevice UartDevice;
+
+#endif
+
 	class Var
 	{
 	public:
