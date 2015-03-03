@@ -10,6 +10,7 @@
 
 #include <cstdint>
 
+#include "libbase/k60/reg_file.h"
 #include "libbase/k60/watchdog.h"
 
 #include "libsc/k60/sys_tick_timer.h"
@@ -64,6 +65,11 @@ public:
 		//m_instance->m_watchdog.Refresh();
 	}
 
+	static libbase::k60::RegFile* GetRegFile()
+	{
+		return &m_instance->m_reg_file;
+	}
+
 private:
 	System();
 
@@ -72,6 +78,7 @@ private:
 
 	DwtDelay m_delay;
 	SysTickTimer m_timer;
+	libbase::k60::RegFile m_reg_file;
 
 	static System *m_instance;
 };
