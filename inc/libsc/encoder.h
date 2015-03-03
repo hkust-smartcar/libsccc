@@ -14,17 +14,17 @@
 #include "libbase/helper.h"
 #include "libbase/pinout_macros.h"
 #include LIBBASE_H(gpio)
-#include LIBBASE_H(pinout_macros)
 #include LIBBASE_H(soft_quad_decoder)
+
 #if PINOUT_FTM_COUNT
 #include LIBBASE_H(ftm_quad_decoder)
-#endif
+
+#else
+#define LIBSC_USE_SOFT_ENCODER 1
+
+#endif // PINOUT_FTM_COUNT
 
 #include "libsc/config.h"
-
-#if !PINOUT_FTM_COUNT
-#define LIBSC_USE_SOFT_ENCODER 1
-#endif
 
 namespace libsc
 {
@@ -35,7 +35,7 @@ public:
 #if LIBSC_USE_SOFT_ENCODER
 	typedef LIBBASE_MODULE(SoftQuadDecoder) QuadDecoder;
 
-#else
+#elif PINOUT_FTM_COUNT
 	typedef LIBBASE_MODULE(FtmQuadDecoder) QuadDecoder;
 
 #endif // LIBSC_USE_SOFT_ENCODER

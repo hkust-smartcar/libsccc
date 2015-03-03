@@ -13,6 +13,7 @@
 #include "libbase/helper.h"
 #include "libbase/pinout_macros.h"
 #include LIBBASE_H(gpio)
+
 #if PINOUT_FTM_COUNT
 #include LIBBASE_H(ftm_pwm)
 

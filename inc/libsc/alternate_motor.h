@@ -12,6 +12,7 @@
 
 #include "libbase/helper.h"
 #include "libbase/pinout_macros.h"
+
 #if PINOUT_FTM_COUNT
 #include LIBBASE_H(ftm_pwm)
 
