@@ -17,8 +17,6 @@
 
 namespace libsc
 {
-namespace k60
-{
 
 class LightSensor
 {
@@ -54,5 +52,4 @@ private:
 	bool m_is_active_low;
 };
 
-}
 }
