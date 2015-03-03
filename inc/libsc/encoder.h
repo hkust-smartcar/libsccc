@@ -12,6 +12,7 @@
 #include <cstdint>
 
 #include "libbase/helper.h"
+#include "libbase/pinout_macros.h"
 #include LIBBASE_H(gpio)
 #include LIBBASE_H(pinout_macros)
 #include LIBBASE_H(soft_quad_decoder)
