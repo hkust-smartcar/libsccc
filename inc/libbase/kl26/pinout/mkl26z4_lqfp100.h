@@ -77,6 +77,16 @@ public:
 		return PINOUT_SPI_COUNT;
 	}
 
+	static constexpr Uint GetTpmCount()
+	{
+		return PINOUT_TPM_COUNT;
+	}
+
+	static constexpr Uint GetTpmChannelCount()
+	{
+		return PINOUT_TPM_CHANNEL_COUNT;
+	}
+
 	static constexpr Uint GetUartCount()
 	{
 		return PINOUT_UART_COUNT;
