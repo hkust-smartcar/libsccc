@@ -85,7 +85,7 @@ private:
 	void InitCounter(const uint16_t mod);
 	void InitChannel(const Config &config, const uint16_t cv);
 	void InitScReg(const Config &config, const uint8_t prescaler);
-	void InitConfReg(const Config &config);
+	void InitConfReg();
 	void InitDeadtime(const Config &config);
 
 	void Uninit();

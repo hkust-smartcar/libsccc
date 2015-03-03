@@ -17,7 +17,6 @@
 #include "libbase/k60/ftm.h"
 #include "libbase/k60/ftm_pwm.h"
 #include "libbase/k60/ftm_utils.h"
-#include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pinout.h"
 #include "libbase/k60/pwm.h"
@@ -187,6 +186,7 @@ FtmPwm::FtmPwm(const Config &config)
 		  m_pin(nullptr),
 		  m_is_init(false)
 {
+	assert(config.period > 0);
 	assert(config.pos_width <= config.period);
 	if (!InitModule(config.pin))
 	{
@@ -197,8 +197,8 @@ FtmPwm::FtmPwm(const Config &config)
 	bool is_module_init = false;
 	for (Uint i = 0; i < PINOUT::GetFtmChannelCount(); ++i)
 	{
-		// Channels under the same module must share the same period/frequency,
-		// alignment and polarity
+		// Channels under the same module must share the same period/frequency
+		// and alignment
 		if (g_instances[m_module][i])
 		{
 			is_module_init = true;
@@ -214,6 +214,18 @@ FtmPwm::FtmPwm(const Config &config)
 
 	m_is_init = true;
 
+	uint32_t period_ = config.period;
+	uint32_t pos_width_ = config.pos_width;
+	if (m_alignment == Config::Alignment::kCenter)
+	{
+		period_ >>= 1;
+		pos_width_ >>= 1;
+	}
+	ModCalc mc;
+	mc.Calc(period_, config.precision);
+	CvCalc cc;
+	cc.Calc(pos_width_, config.precision, mc.GetPrescaler());
+
 	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kFtm0, m_module), true);
 
 	g_instances[m_module][m_channel] = this;
@@ -221,28 +233,12 @@ FtmPwm::FtmPwm(const Config &config)
 	SetReadOnlyReg(false);
 	InitChannelPolarity(config);
 
-	ModCalc mc;
-	uint32_t period = config.period;
-	if (config.alignment == Config::Alignment::kCenter)
-	{
-		period >>= 1;
-	}
-	mc.Calc(period, config.precision);
-
-	CvCalc cc;
-	uint32_t pos_width = config.pos_width;
-	if (config.alignment == Config::Alignment::kCenter)
-	{
-		pos_width >>= 1;
-	}
-	cc.Calc(pos_width, m_precision, mc.GetPrescaler());
-
 	if (!is_module_init)
 	{
 		InitChannel(config, cc.GetCv());
 		InitCounter(mc.GetMod());
 		InitScReg(config, mc.GetPrescaler());
-		InitConfReg(config);
+		InitConfReg();
 		InitDeadtime(config);
 	}
 	else
@@ -377,7 +373,7 @@ void FtmPwm::InitScReg(const Config &config, const uint8_t prescaler)
 	SetPrescaler(prescaler);
 }
 
-void FtmPwm::InitConfReg(const Config&)
+void FtmPwm::InitConfReg()
 {
 	uint32_t reg = 0;
 	reg |= FTM_CONF_BDMMODE(1);
@@ -522,6 +518,7 @@ void FtmPwm::SetPeriod(const uint32_t period, const uint32_t pos_width)
 void FtmPwm::SetPosWidth(const uint32_t pos_width)
 {
 	STATE_GUARD(FtmPwm, VOID);
+	assert(pos_width <= m_period);
 
 	CvCalc cc;
 	uint32_t pos_width_ = pos_width;
@@ -536,8 +533,6 @@ void FtmPwm::SetPosWidth(const uint32_t pos_width)
 
 uint8_t FtmPwm::GetPrescaler() const
 {
-	STATE_GUARD(FtmPwm, 0);
-
 	return GET_BITS(MEM_MAPS[m_module]->SC, FTM_SC_PS_SHIFT, FTM_SC_PS_MASK);
 }
 
