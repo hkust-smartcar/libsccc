@@ -46,6 +46,13 @@ CPPFLAGS+=-DK60_2015_CAMERA=1
 SCCC_MCU=MK60F15
 $(info Config = 2015_CAMERA)
 
+else ifeq ($(SCCC_CONFIG),VCAN_Z4DEV)
+BIN_SUFFIX:=$(BIN_SUFFIX)-vcan-z4dev
+CPPFLAGS+=-DKL26_VCAN_Z4DEV=1
+SCCC_MCU=MKL26Z4
+$(info Config = VCAN_Z4DEV)
+
+
 else
 $(error Missing/Unknown config '$(SCCC_CONFIG)' (set SCCC_CONFIG))
 

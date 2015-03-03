@@ -12,7 +12,7 @@
 
 #include "libbase/k60/dwt.h"
 
-#include "libsc/k60/delay.h"
+#include "libsc/delay.h"
 
 namespace libsc
 {

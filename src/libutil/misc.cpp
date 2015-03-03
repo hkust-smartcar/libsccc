@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
-
+#ifndef MKL26Z4
 #include <cstdint>
 
 #include "libbase/syscall.h"
@@ -49,3 +49,4 @@ void UninitDefaultFwriteHandler()
 }
 
 }
+#endif

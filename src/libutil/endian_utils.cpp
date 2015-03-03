@@ -11,6 +11,7 @@
 
 #include "libutil/endian_utils.h"
 #include "libutil/misc.h"
+#include "libbase/misc_types.h"
 
 namespace libutil
 {

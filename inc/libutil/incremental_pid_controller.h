@@ -9,7 +9,15 @@
 
 #pragma once
 
-#include "libsc/k60/timer.h"
+#if MK60DZ10 || MK60D10 || MK60F15
+#include "libsc/k60/system.h"
+
+#elif MKL26Z4
+#include "libsc/kl26/system.h"
+
+#endif
+
+#include "libsc/timer.h"
 #include "libutil/pid_controller.h"
 
 namespace libutil
@@ -42,7 +50,11 @@ public:
 
 	void ResetTime()
 	{
+#if MK60DZ10 || MK60D10 || MK60F15
 		m_prev_time = libsc::k60::System::Time();
+#elif MKL26Z4
+		m_prev_time = libsc::kl26::System::Time();
+#endif
 	}
 
 protected:
@@ -54,7 +66,7 @@ private:
 
 	InT m_prev_error[2];
 	OutT m_prev_output;
-	libsc::k60::Timer::TimerInt m_prev_time;
+	libsc::Timer::TimerInt m_prev_time;
 };
 
 }

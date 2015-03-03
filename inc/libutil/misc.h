@@ -14,6 +14,7 @@
 
 #include <algorithm>
 
+#if MK60DZ10 || MK60D10 || MK60F15
 #include "libbase/k60/misc_utils.h"
 
 namespace libsc
@@ -26,12 +27,20 @@ class UartDevice;
 }
 }
 
+#elif MKL26Z4
+#include "libbase/kl26/misc_utils.h"
+
+#endif
+
 #define SAFE_DELETE(x) do{if (x) {delete x; x = nullptr;}}while(false)
 
 #define UTIL_JOIN(x, y) x ## y
 
 namespace libutil
 {
+#if defined(MK60DZ10) || defined(MK60D10) || defined(MK60F15)
+void InitDefaultFwriteHandler(libsc::k60::UartDevice *uart);
+#endif
 
 template<typename T>
 inline T Clamp(const T &min, const T &x, const T &max)
@@ -50,7 +59,7 @@ inline uint16_t GetRgb565(const uint8_t r, const uint8_t g, const uint8_t b)
 	return ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
 }
 
-void InitDefaultFwriteHandler(libsc::k60::UartDevice *uart);
+
 void UninitDefaultFwriteHandler();
 
 template<typename T>

@@ -36,9 +36,14 @@ public:
 		Range gyro_range;
 		// kSmall -> kExtreme = ±2g, ±4g, ±8g, ±16g
 		Range accel_range;
+
+		bool cal_drift = false;
+
 	};
 
 	explicit Mpu6050(const Config &config);
+
+	bool Update(bool clamp_);
 
 	bool Update();
 
@@ -57,6 +62,14 @@ public:
 		return m_temp;
 	}
 
+	bool IsCalibrated(){
+		return m_is_calibrated;
+	}
+
+	std::array<float, 3>& GetOffset(){
+		return m_omega_offset;
+	}
+
 private:
 	float GetGyroScaleFactor();
 	float GetAccelScaleFactor();
@@ -64,7 +77,11 @@ private:
 	libbase::k60::SoftI2cMaster m_i2c;
 	std::array<float, 3> m_accel;
 	std::array<float, 3> m_omega;
+	std::array<float, 3> m_omega_offset;
 	float m_temp;
+	bool m_is_calibrated;
+
+	float gyro_drift;
 
 	Config::Range m_gyro_range;
 	Config::Range m_accel_range;
