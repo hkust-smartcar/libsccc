@@ -73,11 +73,19 @@
 	#define _MCG_C5_PRDIV0 MCG_C5_PRDIV
 	#define _MCG_C6_VDIV0 MCG_C6_VDIV
 	#define _MCG_S_LOCK0_SHIFT MCG_S_LOCK_SHIFT
+	#define _MCG_C2_HGO0_SHIFT MCG_C2_HGO_SHIFT
+	#define _MCG_C2_EREFS0_SHIFT MCG_C2_EREFS_SHIFT
+	#define _MCG_S_OSCINIT0_SHIFT MCG_S_OSCINIT_SHIFT
+	
 #else
 	#define _MCG_C2_RANGE0 MCG_C2_RANGE0
 	#define _MCG_C5_PRDIV0 MCG_C5_PRDIV0
 	#define _MCG_C6_VDIV0 MCG_C6_VDIV0
 	#define _MCG_S_LOCK0_SHIFT MCG_S_LOCK0_SHIFT
+	#define _MCG_C2_HGO0_SHIFT MCG_C2_HGO0_SHIFT
+	#define _MCG_C2_EREFS0_SHIFT MCG_C2_EREFS0_SHIFT
+	#define _MCG_S_OSCINIT0_SHIFT MCG_S_OSCINIT0_SHIFT
+	
 #endif
 
 #if MK60DZ10 || MK60D10
@@ -278,6 +286,8 @@ void Mcg::InitFbe(const Config &config)
 	SET_BIT(c2_reg, MCG_C2_LOCRE0_SHIFT);
 #endif
 	c2_reg |= _MCG_C2_RANGE0(2);
+	SET_BIT(c2_reg, _MCG_C2_HGO0_SHIFT);
+	SET_BIT(c2_reg, _MCG_C2_EREFS0_SHIFT);
 	MCG->C2 = c2_reg;
 
 	uint8_t c1_reg = 0;
@@ -314,6 +324,11 @@ void Mcg::InitFbe(const Config &config)
 	c1_reg |= MCG_C1_FRDIV(best_div);
 	MCG->C1 = c1_reg;
 
+	// Loop until S[OSCINIT0] is 1, indicating the crystal selected by
+	// C2[EREFS0] has been initialized
+	while (!GET_BIT(MCG->S, _MCG_S_OSCINIT0_SHIFT))
+	{}
+	
 	// Loop until S[IREFST] is 0, indicating the external reference is the
 	// current source for the reference clock
 	while (GET_BIT(MCG->S, MCG_S_IREFST_SHIFT))
