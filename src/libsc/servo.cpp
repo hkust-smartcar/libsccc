@@ -65,31 +65,32 @@ inline Pin::Name GetPin(const uint8_t id)
 
 #endif // LIBSC_USE_SERVO
 
-#if LIBSC_USE_SOFT_SERVO_PWM
+#if LIBSC_USE_SOFT_SERVO
 #if LIBSC_USE_SERVO == 1
-inline uint8_t GetSoftPwmPitChannel(const uint8_t)
+inline uint8_t GetSoftPitChannel(const uint8_t)
 {
-	return LIBSC_SERVO0_SOFT_PWM_PIT_CHANNEL;
+	return LIBSC_SOFT_SERVO0_PIT_CHANNEL;
 }
 
 #else
-inline uint8_t GetSoftPwmPitChannel(const uint8_t id)
+inline uint8_t GetSoftPitChannel(const uint8_t id)
 {
 	switch (id)
 	{
 	default:
 		assert(false);
+		// no break
 
 	case 0:
-		return LIBSC_SERVO0_SOFT_PWM_PIT_CHANNEL;
+		return LIBSC_SOFT_SERVO0_PIT_CHANNEL;
 
 	case 1:
-		return LIBSC_SERVO1_SOFT_PWM_PIT_CHANNEL;
+		return LIBSC_SOFT_SERVO1_PIT_CHANNEL;
 	}
 }
 
 #endif // LIBSC_USE_SERVO
-#endif // LIBSC_USE_SOFT_SERVO_PWM
+#endif // LIBSC_USE_SOFT_SERVO
 
 Servo::Pwm::Config GetPwmConfig(const uint8_t id, const uint16_t period,
 		const uint16_t high_time)
@@ -98,8 +99,8 @@ Servo::Pwm::Config GetPwmConfig(const uint8_t id, const uint16_t period,
 	config.pin = GetPin(id);
 	config.period = period;
 	config.pos_width = high_time;
-#if LIBSC_USE_SOFT_SERVO_PWM
-	config.pit_channel = GetSoftPwmPitChannel(id);
+#if LIBSC_USE_SOFT_SERVO
+	config.pit_channel = GetSoftPitChannel(id);
 #else
 	config.alignment = Servo::Pwm::Config::Alignment::kEdge;
 #endif

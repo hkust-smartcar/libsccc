@@ -21,7 +21,7 @@
 #include LIBBASE_H(tpm_pwm)
 
 #else
-#define LIBSC_USE_SOFT_SERVO_PWM 1
+#define LIBSC_USE_SOFT_SERVO 1
 
 #endif // PINOUT_FTM_COUNT
 
@@ -36,7 +36,7 @@ namespace libsc
 class Servo
 {
 public:
-#if LIBSC_USE_SOFT_SERVO_PWM
+#if LIBSC_USE_SOFT_SERVO
 	typedef LIBBASE_MODULE(SoftPwm) Pwm;
 
 #elif PINOUT_FTM_COUNT
@@ -45,7 +45,7 @@ public:
 #elif PINOUT_TPM_COUNT
 	typedef LIBBASE_MODULE(TpmPwm) Pwm;
 
-#endif // LIBSC_USE_SOFT_SERVO_PWM
+#endif // LIBSC_USE_SOFT_SERVO
 
 	struct Config
 	{
