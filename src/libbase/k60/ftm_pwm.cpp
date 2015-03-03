@@ -333,16 +333,8 @@ void FtmPwm::InitChannelPolarity(const Config &config)
 void FtmPwm::InitCounter(const uint16_t mod)
 {
 	MEM_MAPS[m_module]->CNT = 0;
-
-	uint32_t cntin_reg = 0;
-	cntin_reg |= FTM_CNTIN_INIT(0);
-
-	MEM_MAPS[m_module]->CNTIN = cntin_reg;
-
-	uint32_t mod_reg = 0;
-	mod_reg |= FTM_MOD_MOD(mod);
-
-	MEM_MAPS[m_module]->MOD = mod_reg;
+	MEM_MAPS[m_module]->CNTIN = FTM_CNTIN_INIT(0);
+	MEM_MAPS[m_module]->MOD = FTM_MOD_MOD(mod);
 }
 
 void FtmPwm::InitChannel(const Config &config, const uint16_t cv)
