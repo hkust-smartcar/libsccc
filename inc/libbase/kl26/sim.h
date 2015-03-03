@@ -75,6 +75,9 @@ public:
 	static std::string GetUidStr();
 
 	static void SetEnableClockGate(const ClockGate cg, const bool flag);
+	static uint8_t GetCoreClockDivider();
+	static uint8_t GetBusClockDivider();
+	static uint8_t GetFlashClockDivider();
 };
 
 }

@@ -221,5 +221,22 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 	}
 }
 
+uint8_t Sim::GetCoreClockDivider()
+{
+	return ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV1_MASK)
+			>> SIM_CLKDIV1_OUTDIV1_SHIFT) + 1;
+}
+
+uint8_t Sim::GetBusClockDivider()
+{
+	return ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV4_MASK)
+			>> SIM_CLKDIV1_OUTDIV4_SHIFT) + 1;
+}
+
+uint8_t Sim::GetFlashClockDivider()
+{
+	return GetBusClockDivider();
+}
+
 }
 }
