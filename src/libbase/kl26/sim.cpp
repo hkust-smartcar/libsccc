@@ -221,6 +221,35 @@ void Sim::SetEnableClockGate(const ClockGate cg, const bool flag)
 	}
 }
 
+void Sim::SetTpmClockSource(const TpmClock clock_src)
+{
+	SIM->SOPT2 &= ~SIM_SOPT2_TPMSRC_MASK;
+	CLEAR_BIT(SIM->SOPT2, SIM_SOPT2_PLLFLLSEL_SHIFT);
+
+	switch (clock_src)
+	{
+	case TpmClock::kFll:
+		SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
+		break;
+
+	case TpmClock::kPll:
+		SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
+		SET_BIT(SIM->SOPT2, SIM_SOPT2_PLLFLLSEL_SHIFT);
+		break;
+
+	case TpmClock::kOscer:
+		SIM->SOPT2 |= SIM_SOPT2_TPMSRC(2);
+		break;
+
+	case TpmClock::kMcgir:
+		SIM->SOPT2 |= SIM_SOPT2_TPMSRC(3);
+		break;
+
+	default:
+		assert(false);
+	}
+}
+
 uint8_t Sim::GetCoreClockDivider()
 {
 	return ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV1_MASK)

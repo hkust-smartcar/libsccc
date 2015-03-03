@@ -64,6 +64,15 @@ public:
 		kUsbOtg,
 	};
 
+	enum struct TpmClock
+	{
+		kDisable,
+		kFll,
+		kPll,
+		kOscer,
+		kMcgir,
+	};
+
 	static uint32_t GetRamBytes();
 	static Uint GetRamKBytes()
 	{
@@ -75,6 +84,7 @@ public:
 	static std::string GetUidStr();
 
 	static void SetEnableClockGate(const ClockGate cg, const bool flag);
+	static void SetTpmClockSource(const TpmClock clock_src);
 	static uint8_t GetCoreClockDivider();
 	static uint8_t GetBusClockDivider();
 	static uint8_t GetFlashClockDivider();
