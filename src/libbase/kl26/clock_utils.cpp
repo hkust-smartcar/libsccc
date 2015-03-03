@@ -14,6 +14,7 @@
 #include "libbase/kl26/clock_utils.h"
 #include "libbase/kl26/mcg.h"
 #include "libbase/kl26/misc_utils.h"
+#include "libbase/kl26/sim.h"
 
 namespace libbase
 {
@@ -25,9 +26,7 @@ namespace
 
 uint32_t GetBusClock_()
 {
-	const Uint bus_div = ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV4_MASK)
-			>> SIM_CLKDIV1_OUTDIV4_SHIFT) + 1;
-	return Mcg::Get().GetCoreClock() / bus_div;
+	return Mcg::Get().GetCoreClock() / Sim::GetBusClockDivider();
 }
 
 }
