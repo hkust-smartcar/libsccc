@@ -10,11 +10,10 @@
 
 #include <cstdint>
 
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 namespace libsc
-{
-namespace k60
 {
 
 class SimpleBuzzer
@@ -32,9 +31,8 @@ public:
 	bool GetBeep() const;
 
 private:
-	libbase::k60::Gpo m_pin;
+	LIBBASE_MODULE(Gpo) m_pin;
 	bool m_is_active_low;
 };
 
-}
 }

@@ -10,16 +10,15 @@
 #include <cstdint>
 
 #include "libbase/log.h"
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 #include "libsc/config.h"
-#include "libsc/k60/simple_buzzer.h"
+#include "libsc/simple_buzzer.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_BUZZER
@@ -76,5 +75,4 @@ bool SimpleBuzzer::GetBeep() const { return false; }
 
 #endif /* LIBSC_USE_BUZZER */
 
-}
 }
