@@ -42,6 +42,11 @@ void Watchdog::Refresh()
 	__enable_irq();
 }
 
+Watchdog::Config Watchdog::GetWatchdogConfig()
+{
+	return {};
+}
+
 }
 }
 
