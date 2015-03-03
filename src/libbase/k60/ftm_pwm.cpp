@@ -507,12 +507,20 @@ void FtmPwm::SetPeriod(const uint32_t period, const uint32_t pos_width)
 		}
 	}
 
-	SetReadOnlyReg(false);
+	uint32_t period_ = period;
+	uint32_t pos_width_ = pos_width;
+	if (m_alignment == Config::Alignment::kCenter)
+	{
+		period_ >>= 1;
+		pos_width_ >>= 1;
+	}
 	ModCalc mc;
-	mc.Calc(period, m_precision);
-	InitCounter(mc.GetMod());
+	mc.Calc(period_, m_precision);
 	CvCalc cc;
-	cc.Calc(pos_width, m_precision, mc.GetPrescaler());
+	cc.Calc(pos_width_, m_precision, mc.GetPrescaler());
+
+	SetReadOnlyReg(false);
+	InitCounter(mc.GetMod());
 	SetCv(cc.GetCv());
 	SetPrescaler(mc.GetPrescaler());
 	SetReadOnlyReg(true);
