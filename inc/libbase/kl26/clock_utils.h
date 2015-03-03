@@ -22,7 +22,7 @@ class ClockUtils
 public:
 	static uint32_t GetCoreClock();
 	static uint32_t GetCoreClockKhz();
-	static Uint GetCoreClockMhz();
+	static uint32_t GetCoreClockMhz();
 
 	static uint32_t GetCoreTickPerS()
 	{
@@ -44,17 +44,17 @@ public:
 		return ms * GetCoreTickPerMs();
 	}
 
-	static Uint GetCoreTickPerUs()
+	static uint32_t GetCoreTickPerUs()
 	{
 		return GetCoreClockMhz();
 	}
 
-	static Uint GetCoreTickPerUs(Uint us)
+	static uint32_t GetCoreTickPerUs(Uint us)
 	{
 		return us * GetCoreTickPerUs();
 	}
 
-	static Uint GetCoreTickPerNs(Uint ns)
+	static uint32_t GetCoreTickPerNs(Uint ns)
 	{
 		return ns * GetCoreTickPerUs() / 1000;
 	}
@@ -62,7 +62,7 @@ public:
 
 	static uint32_t GetBusClock();
 	static uint32_t GetBusClockKhz();
-	static Uint GetBusClockMhz();
+	static uint32_t GetBusClockMhz();
 
 	static uint32_t GetBusTickPerS()
 	{
@@ -84,17 +84,17 @@ public:
 		return ms * GetBusTickPerMs();
 	}
 
-	static Uint GetBusTickPerUs()
+	static uint32_t GetBusTickPerUs()
 	{
 		return GetBusClockMhz();
 	}
 
-	static Uint GetBusTickPerUs(Uint us)
+	static uint32_t GetBusTickPerUs(Uint us)
 	{
 		return us * GetBusTickPerUs();
 	}
 
-	static Uint GetBusTickPerNs(Uint ns)
+	static uint32_t GetBusTickPerNs(Uint ns)
 	{
 		return ns * GetBusTickPerUs() / 1000;
 	}

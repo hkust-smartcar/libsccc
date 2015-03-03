@@ -43,7 +43,7 @@ uint32_t ClockUtils::GetCoreClockKhz()
 	return cache;
 }
 
-Uint ClockUtils::GetCoreClockMhz()
+uint32_t ClockUtils::GetCoreClockMhz()
 {
 	static uint32_t cache = GetCoreClock() / 1000000;
 	return cache;
@@ -61,7 +61,7 @@ uint32_t ClockUtils::GetBusClockKhz()
 	return cache;
 }
 
-Uint ClockUtils::GetBusClockMhz()
+uint32_t ClockUtils::GetBusClockMhz()
 {
 	static uint32_t cache = GetBusClock() / 1000000;
 	return cache;
