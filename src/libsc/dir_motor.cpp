@@ -11,13 +11,22 @@
 #include <cstdint>
 
 #include "libbase/log.h"
-#include "libbase/k60/ftm_pwm.h"
-#include "libbase/k60/gpio.h"
-#include "libbase/k60/pin.h"
-#include "libbase/k60/pwm_utils.h"
+#include "libbase/helper.h"
+#include "libbase/pinout_macros.h"
+#include LIBBASE_H(gpio)
+#include LIBBASE_H(pin)
+#include LIBBASE_H(pwm_utils)
+
+#if PINOUT_FTM_COUNT
+#include LIBBASE_H(ftm_pwm)
+
+#elif PINOUT_TPM_COUNT
+#include LIBBASE_H(tpm_pwm)
+
+#endif // PINOUT_FTM_COUNT
 
 #include "libsc/config.h"
-#include "libsc/k60/dir_motor.h"
+#include "libsc/dir_motor.h"
 
 // 10 kHz
 #define PERIOD 100000
@@ -26,11 +35,9 @@
 	#define LIBSC_DIR_MOTOR_CW_LEVEL 1
 #endif
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #if defined(LIBSC_USE_MOTOR) && defined(LIBSC_MOTOR0_PWM) \
@@ -91,14 +98,14 @@ inline Pin::Name GetDirPin(const uint8_t id)
 
 #endif
 
-FtmPwm::Config GetFtmPwmConfig(const uint8_t id)
+DirMotor::Pwm::Config GetPwmConfig(const uint8_t id)
 {
-	FtmPwm::Config config;
+	DirMotor::Pwm::Config config;
 	config.pin = GetPwmPin(id);
 	config.period = PERIOD;
 	config.pos_width = 0;
 	config.precision = Pwm::Config::Precision::kNs;
-	config.alignment = FtmPwm::Config::Alignment::kCenter;
+	config.alignment = DirMotor::Pwm::Config::Alignment::kCenter;
 	return config;
 }
 
@@ -115,7 +122,7 @@ Gpo::Config GetDirConfig(const uint8_t id)
 
 DirMotor::DirMotor(const Config &config)
 		: Motor(config),
-		  m_pwm(GetFtmPwmConfig(config.id)),
+		  m_pwm(GetPwmConfig(config.id)),
 		  m_dir(GetDirConfig(config.id))
 {}
 
@@ -141,5 +148,4 @@ void DirMotor::OnSetClockwise(const bool) {}
 
 #endif
 
-}
 }

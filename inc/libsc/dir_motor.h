@@ -10,19 +10,33 @@
 
 #include <cstdint>
 
-#include "libbase/k60/ftm_pwm.h"
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include "libbase/pinout_macros.h"
+#include LIBBASE_H(gpio)
+#if PINOUT_FTM_COUNT
+#include LIBBASE_H(ftm_pwm)
 
-#include "libsc/k60/motor.h"
+#elif PINOUT_TPM_COUNT
+#include LIBBASE_H(tpm_pwm)
+
+#endif // PINOUT_FTM_COUNT
+
+#include "libsc/motor.h"
 
 namespace libsc
-{
-namespace k60
 {
 
 class DirMotor : public Motor
 {
 public:
+#if PINOUT_FTM_COUNT
+	typedef LIBBASE_MODULE(FtmPwm) Pwm;
+
+#elif PINOUT_TPM_COUNT
+	typedef LIBBASE_MODULE(TpmPwm) Pwm;
+
+#endif // PINOUT_FTM_COUNT
+
 	struct Config : public Motor::Config
 	{
 		uint8_t id;
@@ -34,9 +48,8 @@ private:
 	void OnSetPower(const uint16_t power) override;
 	void OnSetClockwise(const bool flag) override;
 
-	libbase::k60::FtmPwm m_pwm;
-	libbase::k60::Gpo m_dir;
+	Pwm m_pwm;
+	LIBBASE_MODULE(Gpo) m_dir;
 };
 
-}
 }

@@ -11,12 +11,10 @@
 #include "libbase/log.h"
 
 #include "libsc/config.h"
-#include "libsc/k60/motor.h"
+#include "libsc/motor.h"
 #include "libutil/misc.h"
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_MOTOR
@@ -68,5 +66,4 @@ void Motor::SetClockwise(const bool) {}
 
 #endif
 
-}
 }

@@ -10,13 +10,21 @@
 #include <cstdint>
 
 #include "libbase/log.h"
-#include "libbase/k60/ftm_pwm.h"
-#include "libbase/k60/gpio.h"
-#include "libbase/k60/pin.h"
-#include "libbase/k60/pwm_utils.h"
+#include "libbase/helper.h"
+#include "libbase/pinout_macros.h"
+#include LIBBASE_H(pin)
+#include LIBBASE_H(pwm_utils)
+
+#if PINOUT_FTM_COUNT
+#include LIBBASE_H(ftm_pwm)
+
+#elif PINOUT_TPM_COUNT
+#include LIBBASE_H(tpm_pwm)
+
+#endif // PINOUT_FTM_COUNT
 
 #include "libsc/config.h"
-#include "libsc/k60/alternate_motor.h"
+#include "libsc/alternate_motor.h"
 
 // 10 kHz
 #define PERIOD 100000
@@ -26,11 +34,9 @@
 	#define LIBSC_ALTERNATE_MOTOR_CW_PWM 0
 #endif
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #if defined(LIBSC_USE_MOTOR) && defined(LIBSC_MOTOR0_PWMA) \
@@ -58,6 +64,8 @@ inline Pin::Name GetPwmBPin(const uint8_t id)
 	return LIBSC_MOTOR0_PWMB;
 }
 
+#if PINOUT_FTM_COUNT
+// Currently deadtime only supported on FTM
 inline uint32_t GetDeadtime(const uint8_t id)
 {
 	if (id != 0)
@@ -67,6 +75,8 @@ inline uint32_t GetDeadtime(const uint8_t id)
 	return LIBSC_MOTOR0_DEADTIME;
 }
 
+#endif // PINOUT_FTM_COUNT
+
 #else
 inline Pin::Name GetPwmAPin(const uint8_t id)
 {
@@ -74,6 +84,7 @@ inline Pin::Name GetPwmAPin(const uint8_t id)
 	{
 	default:
 		assert(false);
+		// no break
 
 	case 0:
 		return LIBSC_MOTOR0_PWMA;
@@ -89,6 +100,7 @@ inline Pin::Name GetPwmBPin(const uint8_t id)
 	{
 	default:
 		assert(false);
+		// no break
 
 	case 0:
 		return LIBSC_MOTOR0_PWMB;
@@ -98,12 +110,15 @@ inline Pin::Name GetPwmBPin(const uint8_t id)
 	}
 }
 
+#if PINOUT_FTM_COUNT
+// Currently deadtime only supported on FTM
 inline uint32_t GetDeadtime(const uint8_t id)
 {
 	switch (id)
 	{
 	default:
 		assert(false);
+		// no break
 
 	case 0:
 		return LIBSC_MOTOR0_DEADTIME;
@@ -113,31 +128,37 @@ inline uint32_t GetDeadtime(const uint8_t id)
 	}
 }
 
+#endif // PINOUT_FTM_COUNT
+
 #endif
 
-FtmPwm::Config GetFtmPwmAConfig(const uint8_t id)
+AlternateMotor::Pwm::Config GetPwmAConfig(const uint8_t id)
 {
-	FtmPwm::Config config;
+	AlternateMotor::Pwm::Config config;
 	config.pin = GetPwmAPin(id);
 	config.period = PERIOD;
 	config.pos_width = 0;
 	config.precision = Pwm::Config::Precision::kNs;
-	config.alignment = FtmPwm::Config::Alignment::kCenter;
+	config.alignment = AlternateMotor::Pwm::Config::Alignment::kCenter;
+#if PINOUT_FTM_COUNT
 	config.is_insert_deadtime = true;
 	config.deadtime_ns = GetDeadtime(id);
+#endif
 	return config;
 }
 
-FtmPwm::Config GetFtmPwmBConfig(const uint8_t id)
+AlternateMotor::Pwm::Config GetPwmBConfig(const uint8_t id)
 {
-	FtmPwm::Config config;
+	AlternateMotor::Pwm::Config config;
 	config.pin = GetPwmBPin(id);
 	config.period = PERIOD;
 	config.pos_width = 0;
 	config.precision = Pwm::Config::Precision::kNs;
-	config.alignment = FtmPwm::Config::Alignment::kCenter;
+	config.alignment = AlternateMotor::Pwm::Config::Alignment::kCenter;
+#if PINOUT_FTM_COUNT
 	config.is_insert_deadtime = true;
 	config.deadtime_ns = GetDeadtime(id);
+#endif
 	return config;
 }
 
@@ -145,8 +166,8 @@ FtmPwm::Config GetFtmPwmBConfig(const uint8_t id)
 
 AlternateMotor::AlternateMotor(const Config &config)
 		: Motor(config),
-		  m_pwms{FtmPwm(GetFtmPwmAConfig(config.id)),
-				  FtmPwm(GetFtmPwmBConfig(config.id))},
+		  m_pwms{AlternateMotor::Pwm(GetPwmAConfig(config.id)),
+				  AlternateMotor::Pwm(GetPwmBConfig(config.id))},
 		  m_active_pwm(&m_pwms[LIBSC_ALTERNATE_MOTOR_CW_PWM]),
 		  m_pos_width(0)
 {}
@@ -177,7 +198,7 @@ void AlternateMotor::OnSetClockwise(const bool flag)
 #else
 AlternateMotor::AlternateMotor(const Config &config)
 		: Motor(config),
-		  m_pwms({FtmPwm(nullptr), FtmPwm(nullptr)}),
+		  m_pwms({AlternateMotor::Pwm(nullptr), AlternateMotor::Pwm(nullptr)}),
 		  m_active_pwm(nullptr),
 		  m_pos_width(0)
 {
@@ -188,5 +209,4 @@ void AlternateMotor::OnSetClockwise(const bool) {}
 
 #endif
 
-}
 }

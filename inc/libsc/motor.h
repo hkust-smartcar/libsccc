@@ -12,8 +12,6 @@
 
 namespace libsc
 {
-namespace k60
-{
 
 class Motor
 {
@@ -80,5 +78,4 @@ private:
 	bool m_is_clockwise;
 };
 
-}
 }

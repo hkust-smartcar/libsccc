@@ -10,18 +10,32 @@
 
 #include <cstdint>
 
-#include "libbase/k60/ftm_pwm.h"
+#include "libbase/helper.h"
+#include "libbase/pinout_macros.h"
+#if PINOUT_FTM_COUNT
+#include LIBBASE_H(ftm_pwm)
 
-#include "libsc/k60/motor.h"
+#elif PINOUT_TPM_COUNT
+#include LIBBASE_H(tpm_pwm)
+
+#endif // PINOUT_FTM_COUNT
+
+#include "libsc/motor.h"
 
 namespace libsc
-{
-namespace k60
 {
 
 class AlternateMotor : public Motor
 {
 public:
+#if PINOUT_FTM_COUNT
+	typedef LIBBASE_MODULE(FtmPwm) Pwm;
+
+#elif PINOUT_TPM_COUNT
+	typedef LIBBASE_MODULE(TpmPwm) Pwm;
+
+#endif // PINOUT_FTM_COUNT
+
 	struct Config : public Motor::Config
 	{
 		uint8_t id;
@@ -33,10 +47,9 @@ private:
 	void OnSetPower(const uint16_t power) override;
 	void OnSetClockwise(const bool flag) override;
 
-	libbase::k60::FtmPwm m_pwms[2];
-	libbase::k60::FtmPwm *m_active_pwm;
+	Pwm m_pwms[2];
+	Pwm *m_active_pwm;
 	uint32_t m_pos_width;
 };
 
-}
 }
