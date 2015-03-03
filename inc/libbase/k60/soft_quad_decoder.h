@@ -26,7 +26,18 @@ namespace k60
 class SoftQuadDecoder : public QuadDecoderInterface
 {
 public:
-	typedef QuadDecoderInterface::Config Config;
+	struct Config : public QuadDecoderInterface::Config
+	{
+		enum struct EncodingMode
+		{
+			/// @copydoc FtmQuadDecoder::Config::EncodingMode::kPhaseAB
+			kPhaseAB,
+			/// @copydoc FtmQuadDecoder::Config::EncodingMode::kCountDirection
+			kCountDirection,
+		};
+
+		EncodingMode encoding_mode;
+	};
 
 	explicit SoftQuadDecoder(const Config &config);
 	explicit SoftQuadDecoder(nullptr_t);
@@ -51,6 +62,7 @@ private:
 
 	bool m_is_invert_a_polarity;
 	bool m_is_invert_b_polarity;
+	bool m_is_dir_mode;
 
 	Gpi m_qda;
 	Gpi m_qdb;
