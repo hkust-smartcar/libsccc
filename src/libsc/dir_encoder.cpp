@@ -6,17 +6,18 @@
  * Refer to LICENSE for details
  */
 
-#include "libbase/k60/ftm_quad_decoder.h"
-#include "libbase/k60/soft_quad_decoder.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(soft_quad_decoder)
+#if MK60DZ10 || MK60D10 || MK60F15
+#include LIBBASE_H(ftm_quad_decoder)
+#endif
 
 #include "libsc/config.h"
-#include "libsc/k60/dir_encoder.h"
+#include "libsc/dir_encoder.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #if LIBSC_USE_ENCODER
@@ -41,5 +42,4 @@ DirEncoder::DirEncoder(const Config&)
 
 #endif /* LIBSC_USE_ENCODER */
 
-}
 }

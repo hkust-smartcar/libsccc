@@ -11,25 +11,31 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "libbase/k60/ftm_quad_decoder.h"
-#include "libbase/k60/gpio.h"
-#include "libbase/k60/soft_quad_decoder.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
+#include LIBBASE_H(pinout_macros)
+#include LIBBASE_H(soft_quad_decoder)
+#if PINOUT_FTM_COUNT
+#include LIBBASE_H(ftm_quad_decoder)
+#endif
 
 #include "libsc/config.h"
 
+#if !PINOUT_FTM_COUNT
+#define LIBSC_USE_SOFT_ENCODER 1
+#endif
+
 namespace libsc
-{
-namespace k60
 {
 
 class Encoder
 {
 public:
 #if LIBSC_USE_SOFT_ENCODER
-	typedef libbase::k60::SoftQuadDecoder QuadDecoder;
+	typedef LIBBASE_MODULE(SoftQuadDecoder) QuadDecoder;
 
 #else
-	typedef libbase::k60::FtmQuadDecoder QuadDecoder;
+	typedef LIBBASE_MODULE(FtmQuadDecoder) QuadDecoder;
 
 #endif // LIBSC_USE_SOFT_ENCODER
 
@@ -78,5 +84,4 @@ private:
 	QuadDecoder m_quad_decoder;
 };
 
-}
 }

@@ -13,19 +13,20 @@
 #include <cstdint>
 
 #include "libbase/log.h"
-#include "libbase/k60/ftm_quad_decoder.h"
-#include "libbase/k60/gpio.h"
-#include "libbase/k60/soft_quad_decoder.h"
-#include "libbase/k60/vectors.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
+#include LIBBASE_H(soft_quad_decoder)
+#include LIBBASE_H(vectors)
+#if MK60DZ10 || MK60D10 || MK60F15
+#include LIBBASE_H(ftm_quad_decoder)
+#endif
 
 #include "libsc/config.h"
-#include "libsc/k60/encoder.h"
+#include "libsc/encoder.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #if LIBSC_USE_ENCODER
@@ -152,5 +153,4 @@ void Encoder::Update() {}
 
 #endif /* LIBSC_USE_ENCODER */
 
-}
 }
