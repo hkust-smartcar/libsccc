@@ -5,13 +5,11 @@
  * $Revision: 1.4 $
  */
 
+#include "libbase/kl26/hardware.h"
 
-/*
- *	startup.c	-	entry-point for ARM programs
- *
- */
-#include <string.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "libbase/kl26/cmsis/system_MKL26Z4.h"
 #include "libbase/kl26/watchdog_c.h"

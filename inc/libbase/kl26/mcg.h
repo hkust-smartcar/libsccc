@@ -25,10 +25,10 @@ public:
 		Config();
 
 		uint32_t external_oscillator_khz;
+		/// The core and the system clock
 		uint32_t core_clock_khz;
+		/// The bus and the flash clock
 		uint32_t bus_clock_khz;
-		uint32_t flexbus_clock_khz;
-		uint32_t flash_clock_khz;
 	};
 
 	static Mcg& Get()
