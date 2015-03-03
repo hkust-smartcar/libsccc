@@ -7,6 +7,7 @@
  */
 
 #include "libbase/k60/ftm_quad_decoder.h"
+#include "libbase/k60/soft_quad_decoder.h"
 
 #include "libsc/config.h"
 #include "libsc/k60/dir_encoder.h"
