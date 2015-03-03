@@ -9,10 +9,11 @@
 #include "libbase/k60/hardware.h"
 
 #include <cassert>
-#include <cstddef>
+#include <cstdint>
+
+#include <functional>
 
 #include "libbase/k60/clock_utils.h"
-#include "libbase/k60/misc_utils.h"
 #include "libbase/k60/vectors.h"
 #include "libbase/k60/watchdog.h"
 #include "libbase/k60/watchdog_c.h"
@@ -37,21 +38,19 @@ inline void Unlock()
 	__enable_irq();
 }
 
-Watchdog* g_instance = nullptr;
-
 }
 
-Watchdog::Watchdog(const Config &config)
+void Watchdog::Init()
 {
 	Unlock();
+
+	const Config &config = GetWatchdogConfig();
 	if (config.is_enable)
 	{
 		InitTimeOutReg(config);
-		InitPrescReg(config);
+		InitPrescReg();
 	}
 	InitStctrlReg(config);
-
-	g_instance = this;
 }
 
 void Watchdog::InitStctrlReg(const Config &config)
@@ -59,26 +58,20 @@ void Watchdog::InitStctrlReg(const Config &config)
 	SET_BIT(WDOG->STCTRLL, WDOG_STCTRLL_INTFLG_SHIFT);
 
 	uint16_t reg_h = 0;
-
 #if MK60DZ10 || MK60D10
 	SET_BIT(reg_h, WDOG_STCTRLH_STNDBYEN_SHIFT);
 #endif
 	SET_BIT(reg_h, WDOG_STCTRLH_WAITEN_SHIFT);
 	SET_BIT(reg_h, WDOG_STCTRLH_STOPEN_SHIFT);
-	if (config.is_allow_update)
-	{
-		SET_BIT(reg_h, WDOG_STCTRLH_ALLOWUPDATE_SHIFT);
-	}
-	if (config.isr)
-	{
-		m_isr = config.isr;
-
-		SetIsr(Watchdog_IRQn, IrqHandler);
-		SET_BIT(reg_h, WDOG_STCTRLH_IRQRSTEN_SHIFT);
-		EnableIrq(Watchdog_IRQn);
-	}
+	SET_BIT(reg_h, WDOG_STCTRLH_ALLOWUPDATE_SHIFT);
 	if (config.is_enable)
 	{
+		if (config.isr)
+		{
+			//SetIsr(Watchdog_IRQn, config.isr);
+			SET_BIT(reg_h, WDOG_STCTRLH_IRQRSTEN_SHIFT);
+			//EnableIrq(Watchdog_IRQn);
+		}
 		SET_BIT(reg_h, WDOG_STCTRLH_WDOGEN_SHIFT);
 	}
 
@@ -87,46 +80,15 @@ void Watchdog::InitStctrlReg(const Config &config)
 
 void Watchdog::InitTimeOutReg(const Config &config)
 {
-	assert(config.time_out_ms >= 50 && config.time_out_ms <= 8000);
+	assert(config.time_out_ms >= 2);
 
-	const uint32_t time_out_ms_ = Clamp<uint32_t>(50, config.time_out_ms, 8000);
-	// We'll be using prescaler for values > 1000
-	uint32_t tick;
-	if (time_out_ms_ <= 4000)
-	{
-		tick = ClockUtils::GetBusTickPerMs(time_out_ms_)
-				/ ((time_out_ms_ + 999) / 1000);
-	}
-	else
-	{
-		tick = ClockUtils::GetBusTickPerMs(time_out_ms_
-				/ ((time_out_ms_ + 999) / 1000));
-	}
-	WDOG->TOVALH = tick >> 16;
-	WDOG->TOVALL = tick & 0xFFFF;
+	WDOG->TOVALH = (config.time_out_ms & 0xFFFF0000) >> 16;
+	WDOG->TOVALL = config.time_out_ms;
 }
 
-void Watchdog::InitPrescReg(const Config &config)
+void Watchdog::InitPrescReg()
 {
-	const uint32_t time_out_ms_ = Clamp<uint32_t>(50, config.time_out_ms, 8000);
-	WDOG->PRESC = WDOG_PRESC_PRESCVAL((time_out_ms_ - 1) / 1000);
-}
-
-void Watchdog::StartupInitialize()
-{
-	Unlock();
-
-	// Disable but allow reconfig on startup
-	uint16_t reg_h = 0;
-	SET_BIT(reg_h, WDOG_STCTRLH_DISTESTWDOG_SHIFT);
-#if MK60DZ10 || MK60D10
-	SET_BIT(reg_h, WDOG_STCTRLH_STNDBYEN_SHIFT);
-#endif
-	SET_BIT(reg_h, WDOG_STCTRLH_WAITEN_SHIFT);
-	SET_BIT(reg_h, WDOG_STCTRLH_STOPEN_SHIFT);
-	SET_BIT(reg_h, WDOG_STCTRLH_ALLOWUPDATE_SHIFT);
-
-	WDOG->STCTRLH = reg_h;
+	WDOG->PRESC = 0;
 }
 
 void Watchdog::Refresh()
@@ -137,25 +99,15 @@ void Watchdog::Refresh()
 	__enable_irq();
 }
 
-__ISR void Watchdog::IrqHandler()
+Watchdog::Config Watchdog::GetWatchdogConfig()
 {
-	if (!g_instance)
-	{
-		// Something's wrong?
-		assert(false);
-		return;
-	}
-
-	if (g_instance->m_isr)
-	{
-		g_instance->m_isr();
-	}
+	return {};
 }
 
 }
 }
 
-void LibbaseK60WatchdogStartupInitialize()
+void LibbaseK60WatchdogInit()
 {
-	libbase::k60::Watchdog::StartupInitialize();
+	libbase::k60::Watchdog::Init();
 }

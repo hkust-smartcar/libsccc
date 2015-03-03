@@ -8,12 +8,7 @@
 
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
-
-#include <functional>
-
-#include "libbase/k60/misc_utils.h"
 
 namespace libbase
 {
@@ -23,44 +18,74 @@ namespace k60
 class Watchdog
 {
 public:
-	typedef std::function<void(void)> OnWatchdogTimeoutListener;
+	typedef void (*OnWatchdogTimeoutListener)();
 
 	struct Config
 	{
 		bool is_enable = false;
-		/// Set whether to allow updating the Watchdog after the initial write
-		bool is_allow_update = true;
 		/// Set the time out value, [50, 8000]
-		uint16_t time_out_ms = 1000;
+		uint32_t time_out_ms = 1000;
 
-		OnWatchdogTimeoutListener isr;
+		OnWatchdogTimeoutListener isr = nullptr;
 	};
 
-	explicit Watchdog(const Config &config);
-	Watchdog(const Watchdog&) = delete;
-	~Watchdog();
-
-	Watchdog& operator=(const Watchdog&) = delete;
+	Watchdog() = delete;
 
 	/**
 	 * Must be called at the very beginning in the startup routine
 	 */
-	static void StartupInitialize();
+	static void Init();
 
 	/**
 	 * Refresh the Watchdog to prevent it from resetting the system. Should be
 	 * called regularly among the time out value
 	 */
-	void Refresh();
+	static void Refresh();
+
+	///@{
+	/**
+	 * Alias of Refresh(), choose the one you like most! :)
+	 */
+	static void Feed()
+	{
+		Refresh();
+	}
+	static void Food()
+	{
+		Refresh();
+	}
+	static void Bone()
+	{
+		Refresh();
+	}
+	static void Play()
+	{
+		Refresh();
+	}
+	static void Hand()
+	{
+		Refresh();
+	}
+	static void Wan()
+	{
+		Refresh();
+	}
+	/// @}
 
 private:
-	void InitStctrlReg(const Config &config);
-	void InitTimeOutReg(const Config &config);
-	void InitPrescReg(const Config &config);
+	/**
+	 * Get the Config object used during initialization, could be optionally
+	 * implemented by user. The default implementation will simply disable the
+	 * watchdog
+	 *
+	 * @return
+	 */
+	__attribute__((__weak__))
+	static Config GetWatchdogConfig();
 
-	static __ISR void IrqHandler();
-
-	OnWatchdogTimeoutListener m_isr;
+	static void InitStctrlReg(const Config &config);
+	static void InitTimeOutReg(const Config &config);
+	static void InitPrescReg();
 };
 
 }

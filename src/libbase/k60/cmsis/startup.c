@@ -164,7 +164,7 @@ void __thumb_startup(void)
 {
 	uint32_t addr = (uint32_t)&__SP_INIT;
 
-	LibbaseK60WatchdogStartupInitialize();
+	LibbaseK60WatchdogInit();
 
 	// setup the stack before we attempt anything else
 	// skip stack setup if __SP_INIT is 0

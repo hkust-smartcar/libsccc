@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-void LibbaseK60WatchdogStartupInitialize(void);
+void LibbaseK60WatchdogInit(void);
 
 #ifdef __cplusplus
 }

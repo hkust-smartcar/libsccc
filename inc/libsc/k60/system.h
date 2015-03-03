@@ -10,8 +10,6 @@
 
 #include <cstdint>
 
-#include "libbase/k60/watchdog.h"
-
 #include "libsc/sys_tick_timer.h"
 #include "libsc/k60/dwt_delay.h"
 
@@ -30,9 +28,6 @@ public:
 			m_instance = new System;
 		}
 	}
-
-	__attribute__((__weak__))
-	static libbase::k60::Watchdog::Config GetWatchdogConfig();
 
 	static void DelayUs(const uint16_t us)
 	{
@@ -59,16 +54,8 @@ public:
 		return m_instance->m_timer.Time();
 	}
 
-	static void FeedDog()
-	{
-		//m_instance->m_watchdog.Refresh();
-	}
-
 private:
 	System();
-
-	// Watchdog is currently broken
-	//libbase::k60::Watchdog m_watchdog;
 
 	DwtDelay m_delay;
 	SysTickTimer m_timer;
