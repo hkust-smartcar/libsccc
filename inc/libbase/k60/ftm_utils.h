@@ -9,8 +9,7 @@
 #pragma once
 
 #include "libbase/k60/ftm.h"
-#include "libbase/k60/misc_utils.h"
-#include "libbase/k60/pinout.h"
+#include "libbase/misc_types.h"
 
 namespace libbase
 {
@@ -22,12 +21,12 @@ class FtmUtils
 public:
 	static Uint GetFtmModule(const Ftm::Name pin)
 	{
-		return static_cast<Uint>(pin) / PINOUT::GetFtmChannelCount();
+		return static_cast<Uint>(pin) / Ftm::GetMaxFtmChannelCount();
 	}
 
 	static Uint GetFtmChannel(const Ftm::Name pin)
 	{
-		return static_cast<Uint>(pin) % PINOUT::GetFtmChannelCount();
+		return static_cast<Uint>(pin) % Ftm::GetMaxFtmChannelCount();
 	}
 
 	static Uint GetFtmModule(const Ftm::QdName pin)
