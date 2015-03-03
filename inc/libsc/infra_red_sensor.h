@@ -1,6 +1,5 @@
 /*
  * infra_red_sensor.h
- * Infra-red sensor
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -13,11 +12,10 @@
 
 #include <functional>
 
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 namespace libsc
-{
-namespace k60
 {
 
 class InfraRedSensor
@@ -36,8 +34,7 @@ public:
 	bool IsDetected() const;
 
 private:
-	libbase::k60::Gpi m_pin;
+	LIBBASE_MODULE(Gpi) m_pin;
 };
 
-}
 }

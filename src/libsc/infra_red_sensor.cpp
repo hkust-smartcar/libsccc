@@ -13,16 +13,15 @@
 #include <functional>
 
 #include "libbase/log.h"
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 #include "libsc/config.h"
-#include "libsc/k60/infra_red_sensor.h"
+#include "libsc/infra_red_sensor.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_INFRA_RED_SENSOR
@@ -106,5 +105,4 @@ bool InfraRedSensor::IsDetected() const { return false; }
 
 #endif
 
-}
 }
