@@ -10,8 +10,6 @@
 
 #include <cstdint>
 
-#include "libbase/kl26/watchdog.h"
-
 #include "libsc/kl26/lptmr_timer.h"
 #include "libsc/sys_tick_delay.h"
 
@@ -54,11 +52,6 @@ public:
 	static Timer::TimerInt Time()
 	{
 		return m_instance->m_timer.Time();
-	}
-
-	static void FeedDog()
-	{
-		libbase::kl26::Watchdog::Refresh();
 	}
 
 private:
