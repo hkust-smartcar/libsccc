@@ -83,7 +83,7 @@ void RegFile::WriteSystem(const Uint seek, const Byte *data, const size_t size)
 		return;
 	}
 	void *to = ((Byte*)RFSYS->REG) + seek;
-	memcpy(to, data, std::min(size, sizeof(RFVBAT_Type) - seek));
+	memcpy(to, data, std::min(size, sizeof(RFSYS_Type) - seek));
 }
 
 void RegFile::WriteSystem(const Uint seek, const Byte data)
@@ -113,7 +113,7 @@ vector<Byte> RegFile::ReadSystem(const Uint seek, const size_t size)
 		assert(false);
 		return {};
 	}
-	vector<Byte> product(std::min(size, sizeof(RFVBAT_Type) - seek));
+	vector<Byte> product(std::min(size, sizeof(RFSYS_Type) - seek));
 	void *from = ((Byte*)RFSYS->REG) + seek;
 	memcpy(product.data(), from, product.size());
 	return product;
