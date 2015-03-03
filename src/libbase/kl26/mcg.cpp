@@ -31,14 +31,14 @@
 	#define PLL_REF_MIN_KHZ 2000
 	#define PLL_REF_MAX_KHZ 4000
 
-	#define PRDIV_MIN 0
+	#define PRDIV_MIN 1
 	#define PRDIV_MAX 25
 	#define VDIV_MIN 24
 	#define VDIV_MAX 55
 
 	#define CORE_CLOCK 48000000
 	#define BUS_CLOCK 24000000
-	#define MAX_CORE_CLOCK 100000000
+	#define MAX_CORE_CLOCK 150000000
 	#define MAX_BUS_CLOCK 28800000
 #endif
 
