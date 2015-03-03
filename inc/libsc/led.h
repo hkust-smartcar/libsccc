@@ -29,6 +29,12 @@ public:
 	void SetEnable(const bool flag);
 	void Switch();
 
+protected:
+	LIBBASE_MODULE(Gpo)* GetPin()
+	{
+		return &m_pin;
+	}
+
 private:
 	LIBBASE_MODULE(Gpo) m_pin;
 };
