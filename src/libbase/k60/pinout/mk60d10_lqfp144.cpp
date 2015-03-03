@@ -8,7 +8,6 @@
 
 #include <cassert>
 
-#include <array>
 #include <bitset>
 
 #include "libbase/k60/pinout/mk60d10_lqfp144.h"
@@ -16,9 +15,9 @@
 #include "libbase/k60/adc.h"
 #include "libbase/k60/dma_mux.h"
 #include "libbase/k60/ftm.h"
-#include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pin_utils.h"
+#include "libbase/misc_types.h"
 
 using namespace std;
 

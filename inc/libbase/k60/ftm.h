@@ -64,6 +64,11 @@ public:
 
 		kDisable
 	};
+
+	static constexpr int GetMaxFtmChannelCount()
+	{
+		return static_cast<int>(Name::kFtm1Ch0);
+	}
 };
 
 }
