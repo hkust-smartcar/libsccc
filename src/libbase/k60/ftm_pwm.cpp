@@ -93,7 +93,7 @@ void ModCalc::Calc(const uint32_t period, const Pwm::Config::Precision precision
 	}
 	// Check if prescaler is too large or not
 	assert(!(m_prescaler & ~FTM_SC_PS_MASK));
-	m_mod = ticks;
+	m_mod = ticks - 1;
 }
 
 class CvCalc
