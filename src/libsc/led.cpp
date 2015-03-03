@@ -70,7 +70,7 @@ inline Pin::Name GetPin(const uint8_t id)
 Gpo::Config GetGpoConfig(const Led::Config &config)
 {
 	Gpo::Config product;
-	product.pin = GetPin(id);
+	product.pin = GetPin(config.id);
 	// Default off
 	product.is_high = config.is_active_low;
 	return product;
