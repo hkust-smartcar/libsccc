@@ -235,7 +235,7 @@ FtmPwm::FtmPwm(const Config &config)
 
 	if (!is_module_init)
 	{
-		InitChannel(config, cc.GetCv());
+		InitChannel(cc.GetCv());
 		InitCounter(mc.GetMod());
 		InitScReg(config, mc.GetPrescaler());
 		InitConfReg();
@@ -243,7 +243,7 @@ FtmPwm::FtmPwm(const Config &config)
 	}
 	else
 	{
-		InitChannel(config, cc.GetCv());
+		InitChannel(cc.GetCv());
 	}
 
 	SetReadOnlyReg(true);
@@ -337,13 +337,11 @@ void FtmPwm::InitCounter(const uint16_t mod)
 	MEM_MAPS[m_module]->MOD = FTM_MOD_MOD(mod);
 }
 
-void FtmPwm::InitChannel(const Config &config, const uint16_t cv)
+void FtmPwm::InitChannel(const uint16_t cv)
 {
 	uint32_t csc_reg = 0;
-	if (config.alignment == Config::Alignment::kEdge)
-	{
-		SET_BIT(csc_reg, FTM_CnSC_MSB_SHIFT);
-	}
+	// Have to be set even for center-aligned mode
+	SET_BIT(csc_reg, FTM_CnSC_MSB_SHIFT);
 	SET_BIT(csc_reg, FTM_CnSC_ELSB_SHIFT);
 
 	MEM_MAPS[m_module]->CONTROLS[m_channel].CnSC = csc_reg;
