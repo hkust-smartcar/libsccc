@@ -183,11 +183,6 @@ bool Mpu6050::Update(bool clamp_)
 	return true;
 }
 
-bool Mpu6050::Update(){
-	return Update(true);
-}
-
-
 
 #else
 Mpu6050::Mpu6050(const Config&)
