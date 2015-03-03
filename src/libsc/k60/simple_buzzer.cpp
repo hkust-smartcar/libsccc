@@ -39,17 +39,19 @@ inline Pin::Name GetPin(const uint8_t id)
 
 #endif
 
-Gpo::Config GetGpoConfig(const uint8_t id)
+Gpo::Config GetGpoConfig(const SimpleBuzzer::Config &config)
 {
-	Gpo::Config config;
-	config.pin = GetPin(id);
-	return config;
+	Gpo::Config product;
+	product.pin = GetPin(id);
+	// Default off
+	product.is_high = config.is_active_low;
+	return product;
 }
 
 }
 
 SimpleBuzzer::SimpleBuzzer(const Config &config)
-		: m_pin(GetGpoConfig(config.id)),
+		: m_pin(GetGpoConfig(config)),
 		  m_is_active_low(config.is_active_low)
 {}
 
