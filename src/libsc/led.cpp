@@ -78,12 +78,13 @@ Gpo::Config GetGpoConfig(const uint8_t id)
 }
 
 Led::Led(const Config &config)
-		: m_pin(GetGpoConfig(config.id))
+		: m_pin(GetGpoConfig(config.id)),
+		  m_is_active_low(config.is_active_low)
 {}
 
 void Led::SetEnable(const bool flag)
 {
-	m_pin.Set(!flag);
+	m_pin.Set(flag ^ m_is_active_low);
 }
 
 void Led::Switch()
@@ -93,7 +94,7 @@ void Led::Switch()
 
 #else
 Led::Led(const Config&)
-		: m_pin(nullptr)
+		: m_pin(nullptr), m_is_active_low(false)
 {
 	LOG_DL("Configured not to use Led");
 }

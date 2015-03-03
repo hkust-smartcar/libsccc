@@ -22,6 +22,7 @@ public:
 	struct Config
 	{
 		uint8_t id;
+		bool is_active_low;
 	};
 
 	explicit Led(const Config &config);
@@ -37,6 +38,7 @@ protected:
 
 private:
 	LIBBASE_MODULE(Gpo) m_pin;
+	bool m_is_active_low;
 };
 
 }
