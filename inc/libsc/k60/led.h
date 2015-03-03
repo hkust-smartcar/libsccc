@@ -24,6 +24,7 @@ public:
 	struct Config
 	{
 		uint8_t id;
+		bool is_active_low;
 	};
 
 	explicit Led(const Config &config);
@@ -42,6 +43,7 @@ public:
 
 private:
 	libbase::k60::Gpo m_pin;
+	bool m_is_active_low;
 };
 
 }
