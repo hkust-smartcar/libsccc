@@ -43,6 +43,8 @@ public:
 
 	explicit Mpu6050(const Config &config);
 
+	bool Update(bool clamp_);
+
 	bool Update();
 
 	const std::array<float, 3>& GetAccel()
@@ -62,6 +64,10 @@ public:
 
 	bool IsCalibrated(){
 		return m_is_calibrated;
+	}
+
+	std::array<float, 3>& GetOffset(){
+		return m_omega_offset;
 	}
 
 private:

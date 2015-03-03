@@ -9,6 +9,7 @@
 #include "libbase/k60/hardware.h"
 
 #include <cstdint>
+#include <cmath>
 #include <array>
 #include <vector>
 
@@ -87,9 +88,9 @@ Mpu6050::Mpu6050(const Config &config)
 		int samples = 0, target_samples = 512;
 		while(samples<target_samples){
 			t = System::Time();
-			if(t-pt >= 2){
+			if(t-pt >= 10){
 				pt = t;
-				Update();
+				Update(false);
 				if(samples>=target_samples/2){
 					std::array<float, 3> omega_ = GetOmega();
 					for(int i=0; i<3; i++){
@@ -146,7 +147,7 @@ float Mpu6050::GetAccelScaleFactor()
 	}
 }
 
-bool Mpu6050::Update()
+bool Mpu6050::Update(bool clamp_)
 {
 	const vector<Byte> &data = m_i2c.GetBytes(MPU6050_DEFAULT_ADDRESS,
 			MPU6050_RA_ACCEL_XOUT_H, 14);
@@ -162,24 +163,31 @@ bool Mpu6050::Update()
 		if (i <= 5)
 		{
 			const int j = i / 2;
-			raw_accel[j] = data[i] << 8 | data[i + 1];
+			raw_accel[j] = (data[i] << 8) | data[i + 1];
 			m_accel[j] = (float)raw_accel[j] / GetAccelScaleFactor();
 		}
 		else if (i == 6)
 		{
-			const int16_t raw_temp = data[i] << 8 | data[i + 1];
+			const int16_t raw_temp = (data[i] << 8) | data[i + 1];
 			m_temp = (float)raw_temp / 340 + 36.53;
 		}
 		else
 		{
 			const int j = (i - 8) / 2;
-			raw_gyro[j] = data[i] << 8 | data[i + 1];
-			raw_gyro[j] -= m_omega_offset[j];
+			raw_gyro[j] = (data[i] << 8) | data[i + 1];
 			m_omega[j] = (float)raw_gyro[j] / GetGyroScaleFactor();
+			m_omega[j] -= m_omega_offset[j];
+			if(clamp_) m_omega[j] = abs(m_omega[j]) < 1.0f ? 0.0f : m_omega[j];
 		}
 	}
 	return true;
 }
+
+bool Mpu6050::Update(){
+	return Update(true);
+}
+
+
 
 #else
 Mpu6050::Mpu6050(const Config&)
