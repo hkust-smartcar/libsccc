@@ -12,7 +12,7 @@
 #include <string>
 #include <type_traits>
 #include <vector>
-#ifdef MK60D10 || MK60DZ10 || MK60F15
+#if MK60D10 || MK60DZ10 || MK60F15
 #include "libbase/k60/misc_utils.h"
 
 namespace libsc
@@ -24,9 +24,8 @@ class UartDevice;
 
 }
 }
-#endif
 
-#ifdef MKL26Z4
+#elif MKL26Z4
 #include "libbase/kl26/misc_utils.h"
 
 namespace libsc
@@ -38,6 +37,7 @@ class UartDevice;
 
 }
 }
+
 #endif
 
 namespace libutil

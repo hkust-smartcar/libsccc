@@ -14,15 +14,16 @@
 
 #include "libbase/log.h"
 
-#ifdef MK60D10 || MK60DZ10 || MK60F15
+#if MK60D10 || MK60DZ10 || MK60F15
 #include "libbase/k60/misc_utils.h"
 #include "libsc/k60/uart_device.h"
 using namespace libsc::k60;
-#endif
-#ifdef MKL26Z4
+
+#elif MKL26Z4
 #include "libbase/kl26/misc_utils.h"
 #include "libsc/kl26/uart_device.h"
 using namespace libsc::kl26;
+
 #endif
 
 #include "libutil/endian_utils.h"
