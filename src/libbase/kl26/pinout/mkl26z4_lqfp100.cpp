@@ -16,9 +16,11 @@
 #include "libbase/kl26/adc.h"
 #include "libbase/kl26/pin.h"
 #include "libbase/kl26/pin_utils.h"
-#include "libbase/misc_types.h"
+
+#include "libutil/misc.h"
 
 using namespace std;
+using namespace libutil;
 
 namespace libbase
 {
@@ -313,6 +315,91 @@ Adc::Name Mkl26z4Lqfp100::GetAdc(const Pin::Name pin)
 
 	default:
 		return Adc::Name::kDisable;
+	}
+}
+
+Tpm::Name Mkl26z4Lqfp100::GetTpm(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta3:
+	case Pin::Name::kPtc1:
+	case Pin::Name::kPtd0:
+	case Pin::Name::kPte24:
+		return Tpm::Name::kTpm0Ch0;
+
+	case Pin::Name::kPta4:
+	case Pin::Name::kPtc2:
+	case Pin::Name::kPtd1:
+	case Pin::Name::kPte25:
+		return Tpm::Name::kTpm0Ch1;
+
+	case Pin::Name::kPta5:
+	case Pin::Name::kPtc3:
+	case Pin::Name::kPtd2:
+	case Pin::Name::kPte29:
+		return Tpm::Name::kTpm0Ch2;
+
+	case Pin::Name::kPta6:
+	case Pin::Name::kPtc4:
+	case Pin::Name::kPtd3:
+	case Pin::Name::kPte30:
+		return Tpm::Name::kTpm0Ch3;
+
+	case Pin::Name::kPta7:
+	case Pin::Name::kPtc8:
+	case Pin::Name::kPtd4:
+	case Pin::Name::kPte31:
+		return Tpm::Name::kTpm0Ch4;
+
+	case Pin::Name::kPta0:
+	case Pin::Name::kPtc9:
+	case Pin::Name::kPtd5:
+	case Pin::Name::kPte26:
+		return Tpm::Name::kTpm0Ch5;
+
+	case Pin::Name::kPta12:
+	case Pin::Name::kPtb0:
+	case Pin::Name::kPte20:
+		return Tpm::Name::kTpm1Ch0;
+
+	case Pin::Name::kPta13:
+	case Pin::Name::kPtb1:
+	case Pin::Name::kPte21:
+		return Tpm::Name::kTpm1Ch1;
+
+	case Pin::Name::kPta10:
+	case Pin::Name::kPtb2:
+	case Pin::Name::kPtb18:
+	case Pin::Name::kPte22:
+		return Tpm::Name::kTpm2Ch0;
+
+	case Pin::Name::kPta2:
+	case Pin::Name::kPtb3:
+	case Pin::Name::kPtb19:
+	case Pin::Name::kPte23:
+		return Tpm::Name::kTpm2Ch1;
+
+	default:
+		return Tpm::Name::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mkl26z4Lqfp100::GetTpmMux(const Pin::Name pin)
+{
+	const Uint pin_int = static_cast<Uint>(pin);
+	if (pin_int >= (Uint)Pin::Name::kPtc1 && pin_int <= (Uint)Pin::Name::kPtc4)
+	{
+		return Pin::Config::MuxControl::kAlt4;
+	}
+	else if (pin_int >= (Uint)Pin::Name::kPtd0
+			&& pin_int <= (Uint)Pin::Name::kPtd5)
+	{
+		return Pin::Config::MuxControl::kAlt4;
+	}
+	else
+	{
+		return Pin::Config::MuxControl::kAlt3;
 	}
 }
 

@@ -12,6 +12,8 @@
 
 #include "libbase/kl26/adc.h"
 #include "libbase/kl26/pin.h"
+#include "libbase/kl26/pinout/mkl26z4_lqfp100_macros.h"
+#include "libbase/kl26/tpm.h"
 #include "libbase/misc_types.h"
 
 namespace libbase
@@ -93,6 +95,8 @@ public:
 	}
 
 	static Adc::Name GetAdc(const Pin::Name pin);
+	static Tpm::Name GetTpm(const Pin::Name pin);
+	static Pin::Config::MuxControl GetTpmMux(const Pin::Name pin);
 
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;
