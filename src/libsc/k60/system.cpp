@@ -6,6 +6,8 @@
  * Refer to LICENSE for details
  */
 
+#include "libbase/k60/reg_file.h"
+
 #include "libsc/config.h"
 #include "libsc/k60/system.h"
 
@@ -20,7 +22,8 @@ System *System::m_instance = nullptr;
 
 System::System()
 		: m_delay(),
-		  m_timer()
+		  m_timer(),
+		  m_reg_file()
 {}
 
 }
