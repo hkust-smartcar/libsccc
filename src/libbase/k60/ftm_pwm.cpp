@@ -411,6 +411,7 @@ void FtmPwm::Uninit()
 	{
 		m_is_init = false;
 
+		m_pin = Pin(nullptr);
 		SetReadOnlyReg(false);
 		MEM_MAPS[m_module]->CONTROLS[m_channel].CnSC = 0;
 		SetReadOnlyReg(true);
@@ -418,7 +419,7 @@ void FtmPwm::Uninit()
 		UninitDeadtime();
 
 		g_instances[m_module][m_channel] = nullptr;
-		
+
 		bool is_all_free = true;
 		for (Uint i = 0; i < PINOUT::GetFtmChannelCount(); ++i)
 		{
