@@ -38,6 +38,8 @@ inline void Unlock()
 	__enable_irq();
 }
 
+Watchdog::OnWatchdogTimeoutListener g_isr = nullptr;
+
 }
 
 void Watchdog::Init()
@@ -66,12 +68,8 @@ void Watchdog::InitStctrlReg(const Config &config)
 	SET_BIT(reg_h, WDOG_STCTRLH_ALLOWUPDATE_SHIFT);
 	if (config.is_enable)
 	{
-		if (config.isr)
-		{
-			//SetIsr(Watchdog_IRQn, config.isr);
-			SET_BIT(reg_h, WDOG_STCTRLH_IRQRSTEN_SHIFT);
-			//EnableIrq(Watchdog_IRQn);
-		}
+		SET_BIT(reg_h, WDOG_STCTRLH_IRQRSTEN_SHIFT);
+		EnableIrq(Watchdog_IRQn);
 		SET_BIT(reg_h, WDOG_STCTRLH_WDOGEN_SHIFT);
 	}
 
@@ -99,6 +97,11 @@ void Watchdog::Refresh()
 	__enable_irq();
 }
 
+void Watchdog::SetIsr(OnWatchdogTimeoutListener isr)
+{
+	g_isr = isr;
+}
+
 Watchdog::Config Watchdog::GetWatchdogConfig()
 {
 	return {};
@@ -110,4 +113,12 @@ Watchdog::Config Watchdog::GetWatchdogConfig()
 void LibbaseK60WatchdogInit()
 {
 	libbase::k60::Watchdog::Init();
+}
+
+__ISR void LibbaseK60WatchdogIsr(void)
+{
+	if (libbase::k60::g_isr)
+	{
+		libbase::k60::g_isr();
+	}
 }

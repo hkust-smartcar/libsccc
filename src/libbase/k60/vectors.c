@@ -35,6 +35,7 @@
 #include "libbase/log.h"
 #include "libbase/k60/misc_utils_c.h"
 #include "libbase/k60/vectors.h"
+#include "libbase/k60/watchdog_c.h"
 
 __attribute__((__naked__)) void HardFaultHandlerAsm(void);
 
@@ -95,7 +96,7 @@ const tVectorTable __vect_table = { /* Interrupt vector table */
 		DefaultIsr,              /* 0x23  0x0000008C   -   ivINT_Read_Collision           unused by PE */
 		DefaultIsr,              /* 0x24  0x00000090   -   ivINT_LVD_LVW                  unused by PE */
 		DefaultIsr,              /* 0x25  0x00000094   -   ivINT_LLW                      unused by PE */
-		DefaultIsr,              /* 0x26  0x00000098   -   ivINT_Watchdog                 unused by PE */
+		LibbaseK60WatchdogIsr,   /* 0x26  0x00000098   -   ivINT_Watchdog                 unused by PE */
 		DefaultIsr,              /* 0x27  0x0000009C   -   ivINT_RNG                      unused by PE */
 		DefaultIsr,              /* 0x28  0x000000A0   -   ivINT_I2C0                     unused by PE */
 		DefaultIsr,              /* 0x29  0x000000A4   -   ivINT_I2C1                     unused by PE */
@@ -231,7 +232,7 @@ const tVectorTable __vect_table = { /* Interrupt vector table */
 		DefaultIsr,            /* 0x23  0x0000008C   -   ivINT_Read_Collision           unused by PE */
 		DefaultIsr,            /* 0x24  0x00000090   -   ivINT_LVD_LVW                  unused by PE */
 		DefaultIsr,            /* 0x25  0x00000094   -   ivINT_LLW                      unused by PE */
-		DefaultIsr,            /* 0x26  0x00000098   -   ivINT_Watchdog                 unused by PE */
+		LibbaseK60WatchdogIsr, /* 0x26  0x00000098   -   ivINT_Watchdog                 unused by PE */
 		DefaultIsr,            /* 0x27  0x0000009C   -   ivINT_RNG                      unused by PE */
 		DefaultIsr,            /* 0x28  0x000000A0   -   ivINT_I2C0                     unused by PE */
 		DefaultIsr,            /* 0x29  0x000000A4   -   ivINT_I2C1                     unused by PE */

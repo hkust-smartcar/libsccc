@@ -8,11 +8,14 @@
 
 #pragma once
 
+#include "libbase/k60/misc_utils_c.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 void LibbaseK60WatchdogInit(void);
+__ISR void LibbaseK60WatchdogIsr(void);
 
 #ifdef __cplusplus
 }

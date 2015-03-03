@@ -25,8 +25,6 @@ public:
 		bool is_enable = false;
 		/// Set the time out value, [50, 8000]
 		uint32_t time_out_ms = 1000;
-
-		OnWatchdogTimeoutListener isr = nullptr;
 	};
 
 	Watchdog() = delete;
@@ -41,6 +39,8 @@ public:
 	 * called regularly among the time out value
 	 */
 	static void Refresh();
+
+	static void SetIsr(OnWatchdogTimeoutListener isr);
 
 	///@{
 	/**
