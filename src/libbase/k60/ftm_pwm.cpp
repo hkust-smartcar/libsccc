@@ -417,9 +417,21 @@ void FtmPwm::Uninit()
 
 		UninitDeadtime();
 
-		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kFtm0, m_module),
-				false);
 		g_instances[m_module][m_channel] = nullptr;
+		
+		bool is_all_free = true;
+		for (Uint i = 0; i < PINOUT::GetFtmChannelCount(); ++i)
+		{
+			if (g_instances[m_module][i])
+			{
+				is_all_free = false;
+			}
+		}
+		if (is_all_free)
+		{
+			Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kFtm0, m_module),
+					false);
+		}
 	}
 }
 
