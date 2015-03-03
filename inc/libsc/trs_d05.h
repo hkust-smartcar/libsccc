@@ -1,6 +1,5 @@
 /*
- * tower_pro_mg995.h
- * TowerPro MG995 RC servo
+ * trs_d05.h
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -11,14 +10,15 @@
 
 #include <cstdint>
 
-#include "libsc/k60/servo.h"
+#include "libsc/servo.h"
 
 namespace libsc
 {
-namespace k60
-{
 
-class TowerProMg995 : public Servo
+/**
+ * TRS-D05 RC servo
+ */
+class TrsD05 : public Servo
 {
 public:
 	struct Config
@@ -26,8 +26,7 @@ public:
 		uint8_t id;
 	};
 
-	explicit TowerProMg995(const Config &config);
+	explicit TrsD05(const Config &config);
 };
 
-}
 }

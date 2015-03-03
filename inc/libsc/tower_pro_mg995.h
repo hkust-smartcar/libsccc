@@ -1,6 +1,5 @@
 /*
- * futaba_s3010.h
- * Futaba S3010 RC servo
+ * tower_pro_mg995.h
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -11,14 +10,15 @@
 
 #include <cstdint>
 
-#include "libsc/k60/servo.h"
+#include "libsc/servo.h"
 
 namespace libsc
 {
-namespace k60
-{
 
-class FutabaS3010 : public Servo
+/**
+ * TowerPro MG995 RC servo
+ */
+class TowerProMg995 : public Servo
 {
 public:
 	struct Config
@@ -26,8 +26,7 @@ public:
 		uint8_t id;
 	};
 
-	explicit FutabaS3010(const Config &config);
+	explicit TowerProMg995(const Config &config);
 };
 
-}
 }

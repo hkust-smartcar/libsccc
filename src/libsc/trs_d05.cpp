@@ -1,6 +1,5 @@
 /*
- * futaba_s3010.cpp
- * Futaba S3010 RC servo
+ * trs_d05.cpp
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -9,15 +8,14 @@
 
 #include <cstdint>
 
-#include "libsc/k60/futaba_s3010.h"
+#include "libsc/trs_d05.h"
 
-#define PERIOD 20000
-#define POS_WIDTH_MIN 1500 - 500
-#define POS_WIDTH_MAX 1500 + 500
+// 300 Hz
+#define PERIOD 3333
+#define POS_WIDTH_MIN 1500 - 900
+#define POS_WIDTH_MAX 1500 + 900
 
 namespace libsc
-{
-namespace k60
 {
 
 namespace
@@ -35,9 +33,8 @@ Servo::Config GetServoConfig(const uint8_t id)
 
 }
 
-FutabaS3010::FutabaS3010(const Config &config)
+TrsD05::TrsD05(const Config &config)
 		: Servo(GetServoConfig(config.id))
 {}
 
-}
 }

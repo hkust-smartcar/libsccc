@@ -1,6 +1,5 @@
 /*
  * servo.cpp
- * RC servo
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -11,18 +10,25 @@
 #include <cstdint>
 
 #include "libbase/log.h"
-#include "libbase/k60/ftm_pwm.h"
-#include "libbase/k60/misc_utils.h"
+#include "libbase/helper.h"
+#include "libbase/pinout_macros.h"
+#include LIBBASE_H(soft_pwm)
+
+#if PINOUT_FTM_COUNT
+#include LIBBASE_H(ftm_pwm)
+
+#elif PINOUT_TPM_COUNT
+#include LIBBASE_H(tpm_pwm)
+
+#endif // PINOUT_FTM_COUNT
 
 #include "libsc/config.h"
-#include "libsc/k60/servo.h"
+#include "libsc/servo.h"
 #include "libutil/misc.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_SERVO
@@ -59,7 +65,7 @@ inline Pin::Name GetPin(const uint8_t id)
 
 #endif // LIBSC_USE_SERVO
 
-#ifdef LIBSC_SERVO0_SOFT_PWM_PIT_CHANNEL
+#if LIBSC_USE_SOFT_SERVO_PWM
 #if LIBSC_USE_SERVO == 1
 inline uint8_t GetSoftPwmPitChannel(const uint8_t)
 {
@@ -83,34 +89,22 @@ inline uint8_t GetSoftPwmPitChannel(const uint8_t id)
 }
 
 #endif // LIBSC_USE_SERVO
-
-#endif // LIBSC_SERVO0_SOFT_PWM_PIT_CHANNEL
-
-#ifdef LIBSC_USE_SOFT_SERVO_PWM
-SoftPwm::Config GetPwmConfig(const uint8_t id, const uint16_t period,
-		const uint16_t high_time)
-{
-	SoftPwm::Config config;
-	config.pin = GetPin(id);
-	config.period = period;
-	config.pos_width = high_time;
-	config.pit_channel = GetSoftPwmPitChannel(id);
-	return config;
-}
-
-#else
-FtmPwm::Config GetPwmConfig(const uint8_t id, const uint16_t period,
-		const uint16_t high_time)
-{
-	FtmPwm::Config config;
-	config.pin = GetPin(id);
-	config.period = period;
-	config.pos_width = high_time;
-	config.alignment = FtmPwm::Config::Alignment::kEdge;
-	return config;
-}
-
 #endif // LIBSC_USE_SOFT_SERVO_PWM
+
+Servo::Pwm::Config GetPwmConfig(const uint8_t id, const uint16_t period,
+		const uint16_t high_time)
+{
+	Servo::Pwm::Config config;
+	config.pin = GetPin(id);
+	config.period = period;
+	config.pos_width = high_time;
+#if LIBSC_USE_SOFT_SERVO_PWM
+	config.pit_channel = GetSoftPwmPitChannel(id);
+#else
+	config.alignment = Servo::Pwm::Config::Alignment::kEdge;
+#endif
+	return config;
+}
 
 }
 
@@ -146,5 +140,4 @@ void Servo::SetDegree(const uint16_t) {}
 
 #endif
 
-}
 }
