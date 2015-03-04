@@ -60,7 +60,6 @@ private:
 
 	void OnTick(Gpi*);
 
-	bool m_is_invert_a_polarity;
 	bool m_is_invert_b_polarity;
 	bool m_is_dir_mode;
 

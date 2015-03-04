@@ -28,7 +28,8 @@ Gpi::Config GetQdaConfig(const SoftQuadDecoder::Config &config,
 {
 	Gpi::Config gc;
 	gc.pin = config.a_pin;
-	gc.interrupt = Pin::Config::Interrupt::kRising;
+	gc.interrupt = config.is_invert_a_polarity
+			? Pin::Config::Interrupt::kFalling : Pin::Config::Interrupt::kRising;
 	gc.isr = isr;
 	return gc;
 }
@@ -43,8 +44,7 @@ Gpi::Config GetQdbConfig(const SoftQuadDecoder::Config &config)
 }
 
 SoftQuadDecoder::SoftQuadDecoder(const Config &config)
-		: m_is_invert_a_polarity(config.is_invert_a_polarity),
-		  m_is_invert_b_polarity(config.is_invert_b_polarity),
+		: m_is_invert_b_polarity(config.is_invert_b_polarity),
 		  m_is_dir_mode(config.encoding_mode
 				  == Config::EncodingMode::kCountDirection),
 		  m_qda(GetQdaConfig(config, std::bind(&SoftQuadDecoder::OnTick, this,
@@ -61,8 +61,7 @@ SoftQuadDecoder::SoftQuadDecoder(SoftQuadDecoder &&rhs)
 }
 
 SoftQuadDecoder::SoftQuadDecoder(nullptr_t)
-		: m_is_invert_a_polarity(false),
-		  m_is_invert_b_polarity(false),
+		: m_is_invert_b_polarity(false),
 		  m_is_dir_mode(false),
 		  m_qda(nullptr),
 		  m_qdb(nullptr),
@@ -84,7 +83,6 @@ SoftQuadDecoder& SoftQuadDecoder::operator=(SoftQuadDecoder &&rhs)
 		{
 			rhs.m_is_init = false;
 
-			m_is_invert_a_polarity = rhs.m_is_invert_a_polarity;
 			m_is_invert_b_polarity = rhs.m_is_invert_b_polarity;
 			m_is_dir_mode = rhs.m_is_dir_mode;
 
