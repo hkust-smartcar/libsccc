@@ -247,7 +247,7 @@ void Uart::InitBaudRate(const Config::BaudRate br)
 			: ClockUtils::GetBusClock();
 	const float target = clock / (float)GetBaudRate(br) / 16.0f;
 	const int sbr = static_cast<int>(target);
-	assert(sbr <= 0x1FFF);
+	assert(sbr >= 1 && sbr <= 8191);
 
 	UART_Type* uart_ptr = MEM_MAPS[m_module];
 	uart_ptr->BDH = UART_BDH_SBR(sbr >> 8);
