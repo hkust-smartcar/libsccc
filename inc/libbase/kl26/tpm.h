@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "libbase/kl26/pinout_macros.h"
+
 namespace libbase
 {
 namespace kl26
@@ -46,6 +48,13 @@ public:
 		kTpm2Ch7,
 
 		kDisable = 24
+	};
+
+	enum struct ClkinName
+	{
+		kTpmClkin0 = 0,
+		kTpmClkin1,
+		kDisable
 	};
 
 	static constexpr int GetMaxTpmChannelCount()
