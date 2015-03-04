@@ -28,6 +28,12 @@ public:
 	{
 		return static_cast<Uint>(pin) % Tpm::GetMaxTpmChannelCount();
 	}
+
+	static Tpm::Name GetTpm(const Uint module, const Uint channel)
+	{
+		return static_cast<Tpm::Name>(module * Tpm::GetMaxTpmChannelCount()
+				+ channel);
+	}
 };
 
 }
