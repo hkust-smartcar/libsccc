@@ -75,9 +75,6 @@ Fpu::Config Fpu::GetFpuConfig()
 	return {};
 }
 
-#else
-void Fpu::Init() {}
-
 #endif
 
 }
