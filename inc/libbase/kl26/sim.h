@@ -72,6 +72,14 @@ public:
 		kMcgir,
 	};
 
+	enum struct UartClock
+	{
+		kDisable = 0,
+		kPll,
+		kOscer,
+		kMcgir,
+	};
+
 	static uint32_t GetRamBytes();
 	static Uint GetRamKBytes()
 	{
@@ -84,6 +92,7 @@ public:
 
 	static void SetEnableClockGate(const ClockGate cg, const bool flag);
 	static void SetTpmClockSource(const TpmClock clock_src);
+	static void SetUart0ClockSource(const UartClock clock_src);
 	static void SetTpmExternalClockPin(const Uint module, const Uint clock_pin);
 	static uint8_t GetCoreClockDivider();
 	static uint8_t GetBusClockDivider();

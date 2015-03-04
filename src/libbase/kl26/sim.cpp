@@ -255,6 +255,13 @@ void Sim::SetTpmExternalClockPin(const Uint module, const Uint clock_pin)
 	}
 }
 
+void Sim::SetUart0ClockSource(const UartClock clock_src)
+{
+	SET_BIT(SIM->SOPT2, SIM_SOPT2_PLLFLLSEL_SHIFT);
+	SIM->SOPT2 &= ~SIM_SOPT2_UART0SRC_MASK;
+	SIM->SOPT2 |= SIM_SOPT2_UART0SRC((int)clock_src);
+}
+
 uint8_t Sim::GetCoreClockDivider()
 {
 	return ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV1_MASK)
