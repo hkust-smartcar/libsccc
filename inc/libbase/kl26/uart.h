@@ -29,6 +29,18 @@ public:
 	typedef std::function<void(Uart *uart)> OnTxEmptyListener;
 	typedef std::function<void(Uart *uart)> OnRxFullListener;
 
+	enum struct Name
+	{
+		kUart0Rx = 0,
+		kUart0Tx,
+		kUart1Rx,
+		kUart1Tx,
+		kUart2Rx,
+		kUart2Tx,
+
+		kDisable
+	};
+
 	struct Config
 	{
 		enum struct BaudRate
