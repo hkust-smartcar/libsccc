@@ -426,7 +426,7 @@ Tpm::ClkinName Mkl26z4Lqfp100::GetTpmClkin(const Pin::Name pin)
 	}
 }
 
-Pin::Config::MuxControl Mkl26z4Lqfp100::GetTpmClkinMux(const Pin::Name pin)
+Pin::Config::MuxControl Mkl26z4Lqfp100::GetTpmClkinMux(const Pin::Name)
 {
 	return Pin::Config::MuxControl::kAlt4;
 }
