@@ -27,8 +27,8 @@ namespace k60
 class Uart
 {
 public:
-	typedef std::function<void(Uart *uart)> OnTxEmptyListener;
 	typedef std::function<void(Uart *uart)> OnRxFullListener;
+	typedef std::function<void(Uart *uart)> OnTxEmptyListener;
 
 	struct Config
 	{
@@ -59,24 +59,24 @@ public:
 			kSize,
 		};
 
-		Pin::Name tx_pin;
-		std::bitset<Pin::Config::ConfigBit::kSize> tx_config;
 		Pin::Name rx_pin;
 		std::bitset<Pin::Config::ConfigBit::kSize> rx_config;
+		Pin::Name tx_pin;
+		std::bitset<Pin::Config::ConfigBit::kSize> tx_config;
 		BaudRate baud_rate;
 		std::bitset<ConfigBit::kSize> config;
-
-		OnTxEmptyListener tx_isr;
-		/// The # bytes in the Tx buffer needed to fire the interrupt
-		uint8_t tx_irq_threshold = 0;
-		/// To treat tx_irq_threshold as a percentage of Tx buffer size
-		bool is_tx_irq_threshold_percentage = false;
 
 		OnRxFullListener rx_isr;
 		/// The # bytes in the Rx buffer needed to fire the interrupt
 		uint8_t rx_irq_threshold = 1;
 		/// To treat rx_irq_threshold as a percentage of Rx buffer size
 		bool is_rx_irq_threshold_percentage = false;
+
+		OnTxEmptyListener tx_isr;
+		/// The # bytes in the Tx buffer needed to fire the interrupt
+		uint8_t tx_irq_threshold = 0;
+		/// To treat tx_irq_threshold as a percentage of Tx buffer size
+		bool is_tx_irq_threshold_percentage = false;
 	};
 
 	explicit Uart(const Config &config);
@@ -107,14 +107,14 @@ public:
 		return PutBytes(bytes.data(), bytes.size());
 	}
 
-	uint8_t GetTxFifoSize() const
-	{
-		return m_tx_fifo_size;
-	}
-
 	uint8_t GetRxFifoSize() const
 	{
 		return m_rx_fifo_size;
+	}
+
+	uint8_t GetTxFifoSize() const
+	{
+		return m_tx_fifo_size;
 	}
 
 	/**
@@ -123,8 +123,8 @@ public:
 	 *
 	 * @param flag
 	 */
-	void SetEnableTxIrq(const bool flag);
 	void SetEnableRxIrq(const bool flag);
+	void SetEnableTxIrq(const bool flag);
 
 	/**
 	 * Config this Uart up to be ready to serve Tx as DMA destination, and set
@@ -152,7 +152,7 @@ private:
 		kUart5,
 	};
 
-	bool InitModule(const Pin::Name tx_pin, const Pin::Name rx_pin);
+	bool InitModule(const Pin::Name rx_pin, const Pin::Name tx_pin);
 	void InitPin(const Config &config);
 	void InitBaudRate(const Config::BaudRate br);
 	void InitC1Reg(const Config &config);
@@ -161,20 +161,20 @@ private:
 
 	void Uninit();
 
-	void SetInterrupt(const bool tx_flag, const bool rx_flag);
+	void SetInterrupt(const bool rx_flag, const bool tx_flag);
 
 	static __ISR void IrqHandler();
 
 	Module m_module;
-	bool m_is_fifo;
-
-	Pin m_tx;
-	uint8_t m_tx_fifo_size;
+	OnRxFullListener m_rx_isr;
 	OnTxEmptyListener m_tx_isr;
 
-	Pin m_rx;
+	bool m_is_fifo;
 	uint8_t m_rx_fifo_size;
-	OnRxFullListener m_rx_isr;
+	uint8_t m_tx_fifo_size;
+
+	Pin m_rx;
+	Pin m_tx;
 
 	bool m_is_init;
 };

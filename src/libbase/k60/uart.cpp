@@ -205,47 +205,8 @@ Uart& Uart::operator=(Uart &&rhs)
 	return *this;
 }
 
-bool Uart::InitModule(const Pin::Name tx_pin, const Pin::Name rx_pin)
+bool Uart::InitModule(const Pin::Name rx_pin, const Pin::Name tx_pin)
 {
-	int tx_module = -1;
-	switch (tx_pin)
-	{
-	case Pin::Name::kPta2:
-	case Pin::Name::kPta14:
-	case Pin::Name::kPtb17:
-	case Pin::Name::kPtd7:
-		tx_module = 0;
-		break;
-
-	case Pin::Name::kPtc4:
-	case Pin::Name::kPte0:
-		tx_module = 1;
-		break;
-
-	case Pin::Name::kPtd3:
-		tx_module = 2;
-		break;
-
-	case Pin::Name::kPtb11:
-	case Pin::Name::kPtc17:
-	case Pin::Name::kPte4:
-		tx_module = 3;
-		break;
-
-	case Pin::Name::kPtc15:
-	case Pin::Name::kPte24:
-		tx_module = 4;
-		break;
-
-	case Pin::Name::kPtd9:
-	case Pin::Name::kPte8:
-		tx_module = 5;
-		break;
-
-	default:
-		break;
-	}
-
 	int rx_module = -1;
 	switch (rx_pin)
 	{
@@ -285,9 +246,48 @@ bool Uart::InitModule(const Pin::Name tx_pin, const Pin::Name rx_pin)
 		break;
 	}
 
-	if (tx_module == rx_module && tx_module != -1)
+	int tx_module = -1;
+	switch (tx_pin)
 	{
-		m_module = (Module)tx_module;
+	case Pin::Name::kPta2:
+	case Pin::Name::kPta14:
+	case Pin::Name::kPtb17:
+	case Pin::Name::kPtd7:
+		tx_module = 0;
+		break;
+
+	case Pin::Name::kPtc4:
+	case Pin::Name::kPte0:
+		tx_module = 1;
+		break;
+
+	case Pin::Name::kPtd3:
+		tx_module = 2;
+		break;
+
+	case Pin::Name::kPtb11:
+	case Pin::Name::kPtc17:
+	case Pin::Name::kPte4:
+		tx_module = 3;
+		break;
+
+	case Pin::Name::kPtc15:
+	case Pin::Name::kPte24:
+		tx_module = 4;
+		break;
+
+	case Pin::Name::kPtd9:
+	case Pin::Name::kPte8:
+		tx_module = 5;
+		break;
+
+	default:
+		break;
+	}
+
+	if (rx_module == tx_module && rx_module != -1)
+	{
+		m_module = (Module)rx_module;
 		return true;
 	}
 	else
@@ -298,28 +298,28 @@ bool Uart::InitModule(const Pin::Name tx_pin, const Pin::Name rx_pin)
 
 void Uart::InitPin(const Config &config)
 {
-	Pin::Config tx_config, rx_config;
-	tx_config.pin = config.tx_pin;
+	Pin::Config rx_config, tx_config;
 	rx_config.pin = config.rx_pin;
+	tx_config.pin = config.tx_pin;
 	if (m_module == 0)
 	{
-		tx_config.mux = (config.tx_pin == Pin::Name::kPta2)
+		rx_config.mux = (config.rx_pin == Pin::Name::kPta1)
 				? Pin::Config::MuxControl::kAlt2
 						: Pin::Config::MuxControl::kAlt3;
-		rx_config.mux = (config.rx_pin == Pin::Name::kPta1)
+		tx_config.mux = (config.tx_pin == Pin::Name::kPta2)
 				? Pin::Config::MuxControl::kAlt2
 						: Pin::Config::MuxControl::kAlt3;
 	}
 	else
 	{
-		tx_config.mux = Pin::Config::MuxControl::kAlt3;
 		rx_config.mux = Pin::Config::MuxControl::kAlt3;
+		tx_config.mux = Pin::Config::MuxControl::kAlt3;
 	}
-	tx_config.config = config.tx_config;
 	rx_config.config = config.rx_config;
+	tx_config.config = config.tx_config;
 
-	m_tx = Pin(tx_config);
 	m_rx = Pin(rx_config);
+	m_tx = Pin(tx_config);
 }
 
 void Uart::InitBaudRate(const Config::BaudRate br)
@@ -358,17 +358,6 @@ void Uart::InitFifo(const Config &config)
 	m_is_fifo = config.config[Config::ConfigBit::kFifo];
 	if (m_is_fifo)
 	{
-		SET_BIT(uart_ptr->PFIFO, UART_PFIFO_TXFE_SHIFT);
-		m_tx_fifo_size = GetFifoSize((uart_ptr->PFIFO
-				& UART_PFIFO_TXFIFOSIZE_MASK) >> UART_PFIFO_TXFIFOSIZE_SHIFT);
-		uint8_t twfifo = config.tx_irq_threshold;
-		if (config.is_tx_irq_threshold_percentage)
-		{
-			twfifo = std::min<uint8_t>(twfifo, 100);
-			twfifo = m_tx_fifo_size * (twfifo / 100.0f);
-		}
-		uart_ptr->TWFIFO = libutil::Clamp<uint8_t>(0, twfifo, m_tx_fifo_size - 1);
-
 		SET_BIT(uart_ptr->PFIFO, UART_PFIFO_RXFE_SHIFT);
 		m_rx_fifo_size = GetFifoSize((uart_ptr->PFIFO
 				& UART_PFIFO_RXFIFOSIZE_MASK) >> UART_PFIFO_RXFIFOSIZE_SHIFT);
@@ -379,6 +368,17 @@ void Uart::InitFifo(const Config &config)
 			rwfifo = m_tx_fifo_size * (rwfifo / 100.0f);
 		}
 		uart_ptr->RWFIFO = libutil::Clamp<uint8_t>(1, rwfifo, m_rx_fifo_size);
+
+		SET_BIT(uart_ptr->PFIFO, UART_PFIFO_TXFE_SHIFT);
+		m_tx_fifo_size = GetFifoSize((uart_ptr->PFIFO
+				& UART_PFIFO_TXFIFOSIZE_MASK) >> UART_PFIFO_TXFIFOSIZE_SHIFT);
+		uint8_t twfifo = config.tx_irq_threshold;
+		if (config.is_tx_irq_threshold_percentage)
+		{
+			twfifo = std::min<uint8_t>(twfifo, 100);
+			twfifo = m_tx_fifo_size * (twfifo / 100.0f);
+		}
+		uart_ptr->TWFIFO = libutil::Clamp<uint8_t>(0, twfifo, m_tx_fifo_size - 1);
 	}
 	else
 	{
@@ -389,10 +389,10 @@ void Uart::InitFifo(const Config &config)
 
 void Uart::InitInterrupt(const Config &config)
 {
-	m_tx_isr = config.tx_isr;
 	m_rx_isr = config.rx_isr;
+	m_tx_isr = config.tx_isr;
 
-	SetInterrupt((bool)m_tx_isr, (bool)m_rx_isr);
+	SetInterrupt((bool)m_rx_isr, (bool)m_tx_isr);
 }
 
 void Uart::Uninit()
@@ -429,8 +429,8 @@ void Uart::SetInterrupt(const bool tx_flag, const bool rx_flag)
 {
 	// If we init the interrupt here, Tx isr will be called immediately which
 	// may not be intended
-	SetEnableTxIrq(false);
 	SetEnableRxIrq(false);
+	SetEnableTxIrq(false);
 
 	if (tx_flag || rx_flag)
 	{
@@ -441,20 +441,6 @@ void Uart::SetInterrupt(const bool tx_flag, const bool rx_flag)
 	{
 		DisableIrq(EnumAdvance(UART0_RX_TX_IRQn, m_module << 1));
 		SetIsr(EnumAdvance(UART0_RX_TX_IRQn, m_module << 1), nullptr);
-	}
-}
-
-void Uart::SetEnableTxIrq(const bool flag)
-{
-	STATE_GUARD(Uart, VOID);
-
-	if (flag)
-	{
-		SET_BIT(MEM_MAPS[m_module]->C2, UART_C2_TIE_SHIFT);
-	}
-	else
-	{
-		CLEAR_BIT(MEM_MAPS[m_module]->C2, UART_C2_TIE_SHIFT);
 	}
 }
 
@@ -469,6 +455,20 @@ void Uart::SetEnableRxIrq(const bool flag)
 	else
 	{
 		CLEAR_BIT(MEM_MAPS[m_module]->C2, UART_C2_RIE_SHIFT);
+	}
+}
+
+void Uart::SetEnableTxIrq(const bool flag)
+{
+	STATE_GUARD(Uart, VOID);
+
+	if (flag)
+	{
+		SET_BIT(MEM_MAPS[m_module]->C2, UART_C2_TIE_SHIFT);
+	}
+	else
+	{
+		CLEAR_BIT(MEM_MAPS[m_module]->C2, UART_C2_TIE_SHIFT);
 	}
 }
 
@@ -618,22 +618,9 @@ __ISR void Uart::IrqHandler()
 	{
 		// Something wrong?
 		assert(false);
-		CLEAR_BIT(MEM_MAPS[module]->C2, UART_C2_TIE_SHIFT);
-		CLEAR_BIT(MEM_MAPS[module]->C2, UART_C2_RIE_SHIFT);
+		that->SetEnableRxIrq(false);
+		that->SetEnableTxIrq(false);
 		return;
-	}
-
-	if (GET_BIT(MEM_MAPS[module]->C2, UART_C2_TIE_SHIFT)
-			&& GET_BIT(MEM_MAPS[module]->S1, UART_S1_TDRE_SHIFT))
-	{
-		if (that->m_tx_isr)
-		{
-			that->m_tx_isr(that);
-		}
-		else
-		{
-			CLEAR_BIT(MEM_MAPS[module]->C2, UART_C2_TIE_SHIFT);
-		}
 	}
 
 	if (GET_BIT(MEM_MAPS[module]->C2, UART_C2_RIE_SHIFT)
@@ -646,6 +633,19 @@ __ISR void Uart::IrqHandler()
 		else
 		{
 			CLEAR_BIT(MEM_MAPS[module]->C2, UART_C2_RIE_SHIFT);
+		}
+	}
+
+	if (GET_BIT(MEM_MAPS[module]->C2, UART_C2_TIE_SHIFT)
+			&& GET_BIT(MEM_MAPS[module]->S1, UART_S1_TDRE_SHIFT))
+	{
+		if (that->m_tx_isr)
+		{
+			that->m_tx_isr(that);
+		}
+		else
+		{
+			CLEAR_BIT(MEM_MAPS[module]->C2, UART_C2_TIE_SHIFT);
 		}
 	}
 }
