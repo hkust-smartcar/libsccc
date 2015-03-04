@@ -19,6 +19,9 @@
 #if PINOUT_FTM_COUNT
 #include LIBBASE_H(ftm_quad_decoder)
 
+#elif PINOUT_TPM_COUNT
+#include LIBBASE_H(tpm_quad_decoder)
+
 #else
 #define LIBSC_USE_SOFT_ENCODER 1
 
@@ -37,6 +40,9 @@ public:
 
 #elif PINOUT_FTM_COUNT
 	typedef LIBBASE_MODULE(FtmQuadDecoder) QuadDecoder;
+
+#elif PINOUT_TPM_COUNT
+	typedef LIBBASE_MODULE(TpmQuadDecoder) QuadDecoder;
 
 #endif // LIBSC_USE_SOFT_ENCODER
 

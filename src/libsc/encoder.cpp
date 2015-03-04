@@ -14,12 +14,18 @@
 
 #include "libbase/log.h"
 #include "libbase/helper.h"
+#include "libbase/pinout_macros.h"
 #include LIBBASE_H(gpio)
 #include LIBBASE_H(soft_quad_decoder)
 #include LIBBASE_H(vectors)
-#if MK60DZ10 || MK60D10 || MK60F15
+
+#if PINOUT_FTM_COUNT
 #include LIBBASE_H(ftm_quad_decoder)
-#endif
+
+#elif PINOUT_TPM_COUNT
+#include LIBBASE_H(tpm_quad_decoder)
+
+#endif // PINOUT_FTM_COUNT
 
 #include "libsc/config.h"
 #include "libsc/encoder.h"
@@ -88,27 +94,46 @@ inline Pin::Name GetQdb(const uint8_t id)
 
 #endif // LIBSC_USE_ENCODER
 
-#if LIBSC_USE_SOFT_ENCODER
-inline SoftQuadDecoder::Config GetQuadDecoderConfig_(const uint8_t id)
+#if PINOUT_TPM_COUNT
+#if LIBSC_USE_ENCODER == 1
+inline uint8_t GetEncoderTpmModule(const uint8_t)
 {
-	SoftQuadDecoder::Config config;
-	config.a_pin = GetQda(id);
-	config.b_pin = GetQdb(id);
-	return config;
+	return LIBSC_ENCODER0_TPM_MODULE;
 }
 
 #else
-inline FtmQuadDecoder::Config GetQuadDecoderConfig_(const uint8_t id)
+inline uint8_t GetEncoderTpmModule(const uint8_t id)
 {
-	FtmQuadDecoder::Config config;
-	config.a_pin = GetQda(id);
-	config.b_pin = GetQdb(id);
-	config.a_filter_length = 1;
-	config.b_filter_length = 1;
-	return config;
+	switch (id)
+	{
+	default:
+		assert(false);
+		// no break
+
+	case 0:
+		return LIBSC_ENCODER0_TPM_MODULE;
+
+	case 1:
+		return LIBSC_ENCODER1_TPM_MODULE;
+	}
 }
 
+#endif // LIBSC_USE_ENCODER
+#endif // PINOUT_TPM_COUNT
+
+inline Encoder::QuadDecoder::Config GetQuadDecoderConfig_(const uint8_t id)
+{
+	Encoder::QuadDecoder::Config config;
+	config.a_pin = GetQda(id);
+	config.b_pin = GetQdb(id);
+#if PINOUT_FTM_COUNT
+	config.a_filter_length = 1;
+	config.b_filter_length = 1;
+#elif PINOUT_TPM_COUNT
+	config.tpm_module = GetEncoderTpmModule(id);
 #endif
+	return config;
+}
 
 }
 
