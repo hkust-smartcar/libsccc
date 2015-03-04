@@ -403,5 +403,33 @@ Pin::Config::MuxControl Mkl26z4Lqfp100::GetTpmMux(const Pin::Name pin)
 	}
 }
 
+Tpm::ClkinName Mkl26z4Lqfp100::GetTpmClkin(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta18:
+	case Pin::Name::kPtb16:
+	case Pin::Name::kPtc12:
+	case Pin::Name::kPte16:
+	case Pin::Name::kPte29:
+		return Tpm::ClkinName::kTpmClkin0;
+
+	case Pin::Name::kPta19:
+	case Pin::Name::kPtb17:
+	case Pin::Name::kPtc13:
+	case Pin::Name::kPte17:
+	case Pin::Name::kPte30:
+		return Tpm::ClkinName::kTpmClkin1;
+
+	default:
+		return Tpm::ClkinName::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mkl26z4Lqfp100::GetTpmClkinMux(const Pin::Name pin)
+{
+	return Pin::Config::MuxControl::kAlt4;
+}
+
 }
 }

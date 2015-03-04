@@ -97,6 +97,8 @@ public:
 	static Adc::Name GetAdc(const Pin::Name pin);
 	static Tpm::Name GetTpm(const Pin::Name pin);
 	static Pin::Config::MuxControl GetTpmMux(const Pin::Name pin);
+	static Tpm::ClkinName GetTpmClkin(const Pin::Name pin);
+	static Pin::Config::MuxControl GetTpmClkinMux(const Pin::Name pin);
 
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;
