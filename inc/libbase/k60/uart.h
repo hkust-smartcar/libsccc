@@ -153,8 +153,8 @@ private:
 	};
 
 	bool InitModule(const Pin::Name tx_pin, const Pin::Name rx_pin);
-	void InitBaudRate(const Config::BaudRate br);
 	void InitPin(const Config &config);
+	void InitBaudRate(const Config::BaudRate br);
 	void InitC1Reg(const Config &config);
 	void InitFifo(const Config &config);
 	void InitInterrupt(const Config &config);

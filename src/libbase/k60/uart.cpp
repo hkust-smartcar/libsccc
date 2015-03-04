@@ -77,6 +77,10 @@ uint32_t GetBaudRate(Uart::Config::BaudRate br)
 	case Uart::Config::BaudRate::k76800:
 		return 76800;
 
+	default:
+		assert(false);
+		// no break
+
 	case Uart::Config::BaudRate::k115200:
 		return 115200;
 
@@ -85,9 +89,6 @@ uint32_t GetBaudRate(Uart::Config::BaudRate br)
 
 	case Uart::Config::BaudRate::k460800:
 		return 460800;
-
-	default:
-		return 0;
 	}
 }
 
@@ -98,16 +99,22 @@ uint8_t GetFifoSize(const uint8_t buf_depth_reg)
 	default:
 	case 0x0:
 		return 1;
+
 	case 0x1:
 		return 4;
+
 	case 0x2:
 		return 8;
+
 	case 0x3:
 		return 16;
+
 	case 0x4:
 		return 32;
+
 	case 0x5:
 		return 64;
+
 	case 0x6:
 		return 128;
 	}
@@ -133,14 +140,15 @@ Uart::Uart(const Config &config)
 	MEM_MAPS[m_module]->C2 = 0;
 
 	g_instances[m_module] = this;
-	InitBaudRate(config.baud_rate);
 	InitPin(config);
-
+	InitBaudRate(config.baud_rate);
 	InitC1Reg(config);
 	// Clear DMA bit in case it was set before
 	CLEAR_BIT(MEM_MAPS[m_module]->C5, UART_C5_TDMAS_SHIFT);
 	InitFifo(config);
 	InitInterrupt(config);
+
+	// Enable UART
 	MEM_MAPS[m_module]->C2 |= UART_C2_TE_MASK | UART_C2_RE_MASK;
 }
 
@@ -288,24 +296,6 @@ bool Uart::InitModule(const Pin::Name tx_pin, const Pin::Name rx_pin)
 	}
 }
 
-void Uart::InitBaudRate(const Config::BaudRate br)
-{
-	const uint32_t clock = (m_module < 2) ? ClockUtils::GetCoreClock()
-			: ClockUtils::GetBusClock();
-	const float target = clock / (float)GetBaudRate(br) / 16.0f;
-	const int sbr = static_cast<int>(target);
-	assert(sbr <= 0x1FFF);
-
-	UART_Type* uart_ptr = MEM_MAPS[m_module];
-	uart_ptr->BDH = UART_BDH_SBR(sbr >> 8);
-	uart_ptr->BDL = UART_BDL_SBR(sbr);
-
-	float null;
-	const int brfa = roundf(modf(target, &null) * 32);
-	uart_ptr->C4 &= ~UART_C4_BRFA_MASK;
-	uart_ptr->C4 |= brfa;
-}
-
 void Uart::InitPin(const Config &config)
 {
 	Pin::Config tx_config, rx_config;
@@ -330,6 +320,24 @@ void Uart::InitPin(const Config &config)
 
 	m_tx = Pin(tx_config);
 	m_rx = Pin(rx_config);
+}
+
+void Uart::InitBaudRate(const Config::BaudRate br)
+{
+	const uint32_t clock = (m_module < 2) ? ClockUtils::GetCoreClock()
+			: ClockUtils::GetBusClock();
+	const float target = clock / (float)GetBaudRate(br) / 16.0f;
+	const int sbr = static_cast<int>(target);
+	assert(sbr <= 0x1FFF);
+
+	UART_Type* uart_ptr = MEM_MAPS[m_module];
+	uart_ptr->BDH = UART_BDH_SBR(sbr >> 8);
+	uart_ptr->BDL = UART_BDL_SBR(sbr);
+
+	float null;
+	const int brfa = roundf(modf(target, &null) * 32);
+	uart_ptr->C4 &= ~UART_C4_BRFA_MASK;
+	uart_ptr->C4 |= brfa;
 }
 
 void Uart::InitC1Reg(const Config &config)
