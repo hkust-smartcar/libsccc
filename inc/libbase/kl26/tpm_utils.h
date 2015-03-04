@@ -19,14 +19,14 @@ namespace kl26
 class TpmUtils
 {
 public:
-	static Uint GetTpmModule(const Tpm::Name pin)
+	static Uint GetTpmModule(const Tpm::Name tpm)
 	{
-		return static_cast<Uint>(pin) / Tpm::GetMaxTpmChannelCount();
+		return static_cast<Uint>(tpm) / Tpm::GetMaxTpmChannelCount();
 	}
 
-	static Uint GetTpmChannel(const Tpm::Name pin)
+	static Uint GetTpmChannel(const Tpm::Name tpm)
 	{
-		return static_cast<Uint>(pin) % Tpm::GetMaxTpmChannelCount();
+		return static_cast<Uint>(tpm) % Tpm::GetMaxTpmChannelCount();
 	}
 
 	static Tpm::Name GetTpm(const Uint module, const Uint channel)
