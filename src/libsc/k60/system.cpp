@@ -6,7 +6,6 @@
  * Refer to LICENSE for details
  */
 
-#include "libbase/k60/reg_file.h"
 #include "libbase/k60/watchdog.h"
 
 #include "libsc/config.h"
@@ -24,8 +23,7 @@ System *System::m_instance = nullptr;
 System::System()
 		: //m_watchdog(GetWatchdogConfig()),
 		  m_delay(),
-		  m_timer(),
-		  m_reg_file()
+		  m_timer()
 {}
 
 __attribute__((__weak__)) Watchdog::Config System::GetWatchdogConfig()

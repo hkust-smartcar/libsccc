@@ -22,7 +22,13 @@ namespace k60
 class RegFile
 {
 public:
-	RegFile();
+	static RegFile& Get()
+	{
+		static RegFile inst;
+		return inst;
+	}
+
+	void Init();
 
 	void WriteVbat(const Uint seek, const Byte *data, const size_t size);
 	void WriteVbat(const Uint seek, const Byte data);
@@ -33,6 +39,9 @@ public:
 	void WriteSystem(const Uint seek, const Byte data);
 	Byte ReadSystem(const Uint seek);
 	std::vector<Byte> ReadSystem(const Uint seek, const size_t size);
+
+private:
+	RegFile();
 };
 
 }
