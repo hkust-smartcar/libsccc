@@ -42,9 +42,22 @@ public:
 		 * affect how often new bytes are pushed to the internal buffer, or your
 		 * listener being triggered, depending on the config
 		 */
-		uint8_t rx_irq_threshold;
+		uint8_t rx_irq_threshold = 1;
 		/// To treat rx_irq_threshold as a percentage of Rx buffer size
 		bool is_rx_irq_threshold_percentage = false;
+
+		/**
+		 * The size of the Tx buffer. Old data will be poped when the buffer
+		 * overflows. Notice that this size is not in bytes, but rather the
+		 * number of Send* calls. Depending on the use case, the actualy buffer
+		 * size in bytes will vary
+		 */
+		uint8_t tx_buf_size = 14;
+		/**
+		 * (Experimental) If value != -1, DMA will be enabled for this UART's Tx,
+		 * using the DMA channel specified here
+		 */
+		uint8_t tx_dma_channel = static_cast<uint8_t>(-1);
 	};
 
 	virtual ~UartDevice();
@@ -114,45 +127,8 @@ public:
 	void DisableRx();
 	bool PeekChar(char *out_char);
 
-	void SetLoopMode(const bool flag)
-	{
-		m_uart.SetLoopMode(flag);
-	}
-
-protected:
-	/**
-	 * Use to initialize the UartDevice in possibly a polymorphic way, notice
-	 * that Initializer::config is stored as a reference only
-	 */
-	struct Initializer
-	{
-		explicit Initializer(const Config &config)
-				: config(config)
-		{}
-
-		virtual libbase::kl26::Uart::Config GetUartConfig() const;
-
-		const Config &config;
-	};
-
-	explicit UartDevice(const Initializer &initializer);
-
-private:
-	struct RxBuffer;
-
-	inline void EnableTx();
-	inline void DisableTx();
-
-	void OnTxEmpty(libbase::kl26::Uart *uart);
-	void OnRxFull(libbase::kl26::Uart *uart);
-
-	std::unique_ptr<volatile RxBuffer> m_rx_buf;
-	OnReceiveListener m_listener;
-
-	libutil::DynamicBlockBuffer m_tx_buf;
-	volatile bool m_is_tx_idle;
-
-	libbase::kl26::Uart m_uart;
+	void SetLoopMode(const bool)
+	{}
 };
 
 }
