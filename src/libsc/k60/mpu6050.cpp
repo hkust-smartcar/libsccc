@@ -49,9 +49,10 @@ SoftI2cMaster::Config GetI2cConfig()
 
 Mpu6050::Mpu6050(const Config &config)
 		: m_i2c(GetI2cConfig()),
+		  m_temp(0.0f),
+		  m_is_calibrated(false),
 		  m_gyro_range(config.gyro_range),
-		  m_accel_range(config.accel_range),
-		  m_is_calibrated(false)
+		  m_accel_range(config.accel_range)
 {
 	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, 0x00);
 
