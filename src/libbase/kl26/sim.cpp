@@ -250,6 +250,33 @@ void Sim::SetTpmClockSource(const TpmClock clock_src)
 	}
 }
 
+void Sim::SetTpmExternalClockPin(const Uint module, const Uint clock_pin)
+{
+	switch (module)
+	{
+	case 0:
+		SIM->SOPT4 &= ~SIM_SOPT4_TPM0CLKSEL_MASK;
+		SIM->SOPT4 |= (clock_pin << SIM_SOPT4_TPM0CLKSEL_SHIFT)
+				& SIM_SOPT4_TPM0CLKSEL_MASK;
+		break;
+
+	case 1:
+		SIM->SOPT4 &= ~SIM_SOPT4_TPM1CLKSEL_MASK;
+		SIM->SOPT4 |= (clock_pin << SIM_SOPT4_TPM1CLKSEL_SHIFT)
+				& SIM_SOPT4_TPM1CLKSEL_MASK;
+		break;
+
+	case 2:
+		SIM->SOPT4 &= ~SIM_SOPT4_TPM2CLKSEL_MASK;
+		SIM->SOPT4 |= (clock_pin << SIM_SOPT4_TPM2CLKSEL_SHIFT)
+				& SIM_SOPT4_TPM2CLKSEL_MASK;
+		break;
+
+	default:
+		assert(false);
+	}
+}
+
 uint8_t Sim::GetCoreClockDivider()
 {
 	return ((SIM->CLKDIV1 & SIM_CLKDIV1_OUTDIV1_MASK)

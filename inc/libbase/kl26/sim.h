@@ -85,6 +85,7 @@ public:
 
 	static void SetEnableClockGate(const ClockGate cg, const bool flag);
 	static void SetTpmClockSource(const TpmClock clock_src);
+	static void SetTpmExternalClockPin(const Uint module, const Uint clock_pin);
 	static uint8_t GetCoreClockDivider();
 	static uint8_t GetBusClockDivider();
 	static uint8_t GetFlashClockDivider();
