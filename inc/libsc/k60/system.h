@@ -10,8 +10,6 @@
 
 #include <cstdint>
 
-#include "libbase/k60/reg_file.h"
-
 #include "libsc/sys_tick_timer.h"
 #include "libsc/k60/dwt_delay.h"
 
@@ -56,17 +54,11 @@ public:
 		return m_instance->m_timer.Time();
 	}
 
-	static libbase::k60::RegFile* GetRegFile()
-	{
-		return &m_instance->m_reg_file;
-	}
-
 private:
 	System();
 
 	DwtDelay m_delay;
 	SysTickTimer m_timer;
-	libbase::k60::RegFile m_reg_file;
 
 	static System *m_instance;
 };

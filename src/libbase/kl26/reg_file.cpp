@@ -52,6 +52,9 @@ namespace kl26
 RegFile::RegFile()
 {}
 
+void RegFile::Init()
+{}
+
 void RegFile::WriteSystem(const Uint seek, const Byte *data, const size_t size)
 {
 	if (seek >= sizeof(RFSYS_Type))

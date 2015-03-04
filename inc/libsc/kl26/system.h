@@ -10,8 +10,6 @@
 
 #include <cstdint>
 
-#include "libbase/kl26/reg_file.h"
-
 #include "libsc/kl26/lptmr_timer.h"
 #include "libsc/sys_tick_delay.h"
 
@@ -56,17 +54,11 @@ public:
 		return m_instance->m_timer.Time();
 	}
 
-	static libbase::kl26::RegFile* GetRegFile()
-	{
-		return &m_instance->m_reg_file;
-	}
-
 private:
 	System();
 
 	SysTickDelay m_delay;
 	LptmrTimer m_timer;
-	libbase::kl26::RegFile m_reg_file;
 
 	static System *m_instance;
 };

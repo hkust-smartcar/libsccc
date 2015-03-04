@@ -27,6 +27,9 @@ namespace k60
 {
 
 RegFile::RegFile()
+{}
+
+void RegFile::Init()
 {
 	Sim::SetEnableClockGate(Sim::ClockGate::kRegFile, true);
 }

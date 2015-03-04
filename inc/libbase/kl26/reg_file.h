@@ -22,12 +22,21 @@ namespace kl26
 class RegFile
 {
 public:
-	RegFile();
+	static RegFile& Get()
+	{
+		static RegFile inst;
+		return inst;
+	}
+
+	void Init();
 
 	void WriteSystem(const Uint seek, const Byte *data, const size_t size);
 	void WriteSystem(const Uint seek, const Byte data);
 	Byte ReadSystem(const Uint seek);
 	std::vector<Byte> ReadSystem(const Uint seek, const size_t size);
+
+private:
+	RegFile();
 };
 
 }
