@@ -112,7 +112,14 @@ void SoftQuadDecoder::Uninit()
 
 int32_t SoftQuadDecoder::GetCount()
 {
-	return m_count * 4;
+	if (!m_is_dir_mode)
+	{
+		return m_count * 4;
+	}
+	else
+	{
+		return m_count;
+	}
 }
 
 void SoftQuadDecoder::ResetCount()
