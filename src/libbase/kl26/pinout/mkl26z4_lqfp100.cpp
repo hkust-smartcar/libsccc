@@ -16,6 +16,8 @@
 #include "libbase/kl26/adc.h"
 #include "libbase/kl26/pin.h"
 #include "libbase/kl26/pin_utils.h"
+#include "libbase/kl26/tpm.h"
+#include "libbase/kl26/uart.h"
 
 #include "libutil/misc.h"
 
@@ -429,6 +431,68 @@ Tpm::ClkinName Mkl26z4Lqfp100::GetTpmClkin(const Pin::Name pin)
 Pin::Config::MuxControl Mkl26z4Lqfp100::GetTpmClkinMux(const Pin::Name)
 {
 	return Pin::Config::MuxControl::kAlt4;
+}
+
+Uart::Name Mkl26z4Lqfp100::GetUart(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta1:
+	case Pin::Name::kPta15:
+	case Pin::Name::kPtb16:
+	case Pin::Name::kPtd6:
+	case Pin::Name::kPte21:
+		return Uart::Name::kUart0Rx;
+
+	case Pin::Name::kPta2:
+	case Pin::Name::kPta14:
+	case Pin::Name::kPtb17:
+	case Pin::Name::kPtd7:
+	case Pin::Name::kPte20:
+		return Uart::Name::kUart0Tx;
+
+	case Pin::Name::kPta18:
+	case Pin::Name::kPtc3:
+	case Pin::Name::kPte1:
+		return Uart::Name::kUart1Rx;
+
+	case Pin::Name::kPta19:
+	case Pin::Name::kPtc4:
+	case Pin::Name::kPte0:
+		return Uart::Name::kUart1Tx;
+
+	case Pin::Name::kPtd2:
+	case Pin::Name::kPtd4:
+	case Pin::Name::kPte17:
+	case Pin::Name::kPte23:
+		return Uart::Name::kUart2Rx;
+
+	case Pin::Name::kPtd3:
+	case Pin::Name::kPtd5:
+	case Pin::Name::kPte16:
+	case Pin::Name::kPte22:
+		return Uart::Name::kUart2Tx;
+
+	default:
+		return Uart::Name::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mkl26z4Lqfp100::GetUartMux(const Pin::Name pin)
+{
+	const Uint pin_int = static_cast<Uint>(pin);
+	if (pin_int >= (Uint)Pin::Name::kPte20 && pin_int <= (Uint)Pin::Name::kPte23)
+	{
+		return Pin::Config::MuxControl::kAlt4;
+	}
+	else if (pin == Pin::Name::kPta1 || pin == Pin::Name::kPta2)
+	{
+		return Pin::Config::MuxControl::kAlt2;
+	}
+	else
+	{
+		return Pin::Config::MuxControl::kAlt3;
+	}
 }
 
 }
