@@ -320,18 +320,8 @@ void TpmPwm::Uninit()
 		MEM_MAPS[m_module]->CONTROLS[m_channel].CnSC = 0;
 
 		g_instances[m_module][m_channel] = nullptr;
-
-		bool is_all_free = true;
-		for (Uint i = 0; i < PINOUT::GetTpmChannelCount(); ++i)
+		if (Tpm::Get().UnregTpm(TpmUtils::GetTpm(m_module, m_channel)))
 		{
-			if (g_instances[m_module][i])
-			{
-				is_all_free = false;
-			}
-		}
-		if (is_all_free)
-		{
-			SetEnableCounter(false);
 			Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kTpm0, m_module),
 					false);
 		}
