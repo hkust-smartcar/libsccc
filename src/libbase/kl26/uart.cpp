@@ -274,10 +274,10 @@ void Uart::InitUart0C4Reg()
 
 void Uart::InitInterrupt(const Config &config)
 {
-	m_tx_isr = config.tx_isr;
 	m_rx_isr = config.rx_isr;
+	m_tx_isr = config.tx_isr;
 
-	SetInterrupt((bool)m_tx_isr, (bool)m_rx_isr);
+	SetInterrupt((bool)m_rx_isr, (bool)m_tx_isr);
 }
 
 void Uart::Uninit()
