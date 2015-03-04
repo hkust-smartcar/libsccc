@@ -57,10 +57,38 @@ public:
 		kDisable
 	};
 
+	static Tpm& Get()
+	{
+		static Tpm tpm;
+		return tpm;
+	}
+
 	static constexpr int GetMaxTpmChannelCount()
 	{
 		return static_cast<int>(Name::kTpm1Ch0);
 	}
+
+	bool RegTpm(const Tpm::Name tpm, const bool is_exclusive_module);
+	/**
+	 * Unregister a TPM channel and return whether the module is free or not
+	 *
+	 * @param tpm
+	 * @return
+	 */
+	bool UnregTpm(const Tpm::Name tpm);
+
+private:
+	enum struct ModuleLockMode
+	{
+		kFree,
+		kExclusive,
+		kShared,
+	};
+
+	Tpm();
+
+	ModuleLockMode m_module_lock[PINOUT_TPM_COUNT];
+	bool m_channel_lock[PINOUT_TPM_COUNT][PINOUT_TPM_CHANNEL_COUNT];
 };
 
 }
