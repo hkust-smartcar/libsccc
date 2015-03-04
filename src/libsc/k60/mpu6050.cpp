@@ -147,7 +147,7 @@ float Mpu6050::GetAccelScaleFactor()
 	}
 }
 
-bool Mpu6050::Update(bool clamp_)
+bool Mpu6050::Update(const bool clamp_)
 {
 	const vector<Byte> &data = m_i2c.GetBytes(MPU6050_DEFAULT_ADDRESS,
 			MPU6050_RA_ACCEL_XOUT_H, 14);
@@ -192,7 +192,7 @@ Mpu6050::Mpu6050(const Config&)
 {
 	LOG_DL("Configured not to use Mpu6050");
 }
-bool Mpu6050::Update(bool clamp_) { return false; }
+bool Mpu6050::Update(const bool) { return false; }
 
 #endif /* LIBSC_USE_MPU6050 */
 
