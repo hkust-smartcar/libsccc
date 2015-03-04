@@ -19,14 +19,14 @@ namespace k60
 class FtmUtils
 {
 public:
-	static Uint GetFtmModule(const Ftm::Name pin)
+	static Uint GetFtmModule(const Ftm::Name ftm)
 	{
-		return static_cast<Uint>(pin) / Ftm::GetMaxFtmChannelCount();
+		return static_cast<Uint>(ftm) / Ftm::GetMaxFtmChannelCount();
 	}
 
-	static Uint GetFtmChannel(const Ftm::Name pin)
+	static Uint GetFtmChannel(const Ftm::Name ftm)
 	{
-		return static_cast<Uint>(pin) % Ftm::GetMaxFtmChannelCount();
+		return static_cast<Uint>(ftm) % Ftm::GetMaxFtmChannelCount();
 	}
 
 	static Ftm::Name GetFtm(const Uint module, const Uint channel)
@@ -35,14 +35,14 @@ public:
 				+ channel);
 	}
 
-	static Uint GetFtmModule(const Ftm::QdName pin)
+	static Uint GetFtmModule(const Ftm::QdName ftm_qd)
 	{
-		return static_cast<Uint>(pin) >> 1;
+		return static_cast<Uint>(ftm_qd) >> 1;
 	}
 
-	static Uint GetFtmPhase(const Ftm::QdName pin)
+	static Uint GetFtmPhase(const Ftm::QdName ftm_qd)
 	{
-		return static_cast<Uint>(pin) % 2;
+		return static_cast<Uint>(ftm_qd) % 2;
 	}
 };
 

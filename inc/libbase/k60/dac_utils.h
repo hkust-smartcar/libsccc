@@ -21,9 +21,9 @@ namespace k60
 class DacUtils
 {
 public:
-	static Uint GetModule(const Dac::Name pin)
+	static Uint GetModule(const Dac::Name dac)
 	{
-		return static_cast<Uint>(pin);
+		return static_cast<Uint>(dac);
 	}
 
 	static Dac::Name GetPin(const Uint module)
