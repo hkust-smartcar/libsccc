@@ -124,8 +124,11 @@ uint8_t GetFifoSize(const uint8_t buf_depth_reg)
 }
 
 Uart::Uart(const Config &config)
-		: m_is_fifo(false), m_tx(nullptr), m_tx_fifo_size(1), m_tx_isr(nullptr),
-		  m_rx(nullptr), m_rx_fifo_size(1), m_rx_isr(nullptr),
+		: m_is_fifo(false),
+		  m_rx_fifo_size(1),
+		  m_tx_fifo_size(1),
+		  m_rx(nullptr),
+		  m_tx(nullptr),
 		  m_is_init(false)
 {
 	if (!InitModule(config.tx_pin, config.rx_pin) || g_instances[m_module])
@@ -162,12 +165,10 @@ Uart::Uart(Uart &&rhs)
 Uart::Uart(nullptr_t)
 		: m_module(0),
 		  m_is_fifo(false),
-
-		  m_tx(nullptr),
-		  m_tx_fifo_size(0),
-
-		  m_rx(nullptr),
 		  m_rx_fifo_size(0),
+		  m_tx_fifo_size(0),
+		  m_rx(nullptr),
+		  m_tx(nullptr),
 
 		  m_is_init(false)
 {}
