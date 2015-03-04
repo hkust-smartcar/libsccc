@@ -88,7 +88,7 @@ Mpu6050::Mpu6050(const Config &config)
 		int samples = 0, target_samples = 512;
 		while(samples<target_samples){
 			t = System::Time();
-			if(t-pt >= 10){
+			if(t-pt >= 5){
 				pt = t;
 				Update(false);
 				if(samples>=target_samples/2){
