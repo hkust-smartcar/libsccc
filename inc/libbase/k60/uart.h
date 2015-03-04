@@ -30,6 +30,24 @@ public:
 	typedef std::function<void(Uart *uart)> OnRxFullListener;
 	typedef std::function<void(Uart *uart)> OnTxEmptyListener;
 
+	enum struct Name
+	{
+		kUart0Rx = 0,
+		kUart0Tx,
+		kUart1Rx,
+		kUart1Tx,
+		kUart2Rx,
+		kUart2Tx,
+		kUart3Rx,
+		kUart3Tx,
+		kUart4Rx,
+		kUart4Tx,
+		kUart5Rx,
+		kUart5Tx,
+
+		kDisable
+	};
+
 	struct Config
 	{
 		enum struct BaudRate
@@ -142,16 +160,6 @@ public:
 	void ConfigTxAsDmaDst(Dma::Config *config);
 
 private:
-	enum Module
-	{
-		kUart0 = 0,
-		kUart1,
-		kUart2,
-		kUart3,
-		kUart4,
-		kUart5,
-	};
-
 	bool InitModule(const Pin::Name rx_pin, const Pin::Name tx_pin);
 	void InitPin(const Config &config);
 	void InitBaudRate(const Config::BaudRate br);
@@ -165,7 +173,7 @@ private:
 
 	static __ISR void IrqHandler();
 
-	Module m_module;
+	uint8_t m_module;
 	OnRxFullListener m_rx_isr;
 	OnTxEmptyListener m_tx_isr;
 

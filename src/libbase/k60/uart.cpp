@@ -26,6 +26,7 @@
 #include "libbase/k60/pinout.h"
 #include "libbase/k60/sim.h"
 #include "libbase/k60/uart.h"
+#include "libbase/k60/uart_utils.h"
 #include "libbase/k60/vectors.h"
 
 #include "libutil/misc.h"
@@ -159,7 +160,7 @@ Uart::Uart(Uart &&rhs)
 }
 
 Uart::Uart(nullptr_t)
-		: m_module(Module::kUart0),
+		: m_module(0),
 		  m_is_fifo(false),
 
 		  m_tx(nullptr),
@@ -207,87 +208,15 @@ Uart& Uart::operator=(Uart &&rhs)
 
 bool Uart::InitModule(const Pin::Name rx_pin, const Pin::Name tx_pin)
 {
-	int rx_module = -1;
-	switch (rx_pin)
+	const Name rx = PINOUT::GetUart(rx_pin);
+	const int rx_module = UartUtils::GetUartModule(rx);
+
+	const Name tx = PINOUT::GetUart(tx_pin);
+	const int tx_module = UartUtils::GetUartModule(tx);
+
+	if (rx_module == tx_module && rx != Name::kDisable)
 	{
-	case Pin::Name::kPta1:
-	case Pin::Name::kPta15:
-	case Pin::Name::kPtb16:
-	case Pin::Name::kPtd6:
-		rx_module = 0;
-		break;
-
-	case Pin::Name::kPtc3:
-	case Pin::Name::kPte1:
-		rx_module = 1;
-		break;
-
-	case Pin::Name::kPtd2:
-		rx_module = 2;
-		break;
-
-	case Pin::Name::kPtb10:
-	case Pin::Name::kPtc16:
-	case Pin::Name::kPte5:
-		rx_module = 3;
-		break;
-
-	case Pin::Name::kPtc14:
-	case Pin::Name::kPte25:
-		rx_module = 4;
-		break;
-
-	case Pin::Name::kPtd8:
-	case Pin::Name::kPte9:
-		rx_module = 5;
-		break;
-
-	default:
-		break;
-	}
-
-	int tx_module = -1;
-	switch (tx_pin)
-	{
-	case Pin::Name::kPta2:
-	case Pin::Name::kPta14:
-	case Pin::Name::kPtb17:
-	case Pin::Name::kPtd7:
-		tx_module = 0;
-		break;
-
-	case Pin::Name::kPtc4:
-	case Pin::Name::kPte0:
-		tx_module = 1;
-		break;
-
-	case Pin::Name::kPtd3:
-		tx_module = 2;
-		break;
-
-	case Pin::Name::kPtb11:
-	case Pin::Name::kPtc17:
-	case Pin::Name::kPte4:
-		tx_module = 3;
-		break;
-
-	case Pin::Name::kPtc15:
-	case Pin::Name::kPte24:
-		tx_module = 4;
-		break;
-
-	case Pin::Name::kPtd9:
-	case Pin::Name::kPte8:
-		tx_module = 5;
-		break;
-
-	default:
-		break;
-	}
-
-	if (rx_module == tx_module && rx_module != -1)
-	{
-		m_module = (Module)rx_module;
+		m_module = rx_module;
 		return true;
 	}
 	else
@@ -300,22 +229,11 @@ void Uart::InitPin(const Config &config)
 {
 	Pin::Config rx_config, tx_config;
 	rx_config.pin = config.rx_pin;
-	tx_config.pin = config.tx_pin;
-	if (m_module == 0)
-	{
-		rx_config.mux = (config.rx_pin == Pin::Name::kPta1)
-				? Pin::Config::MuxControl::kAlt2
-						: Pin::Config::MuxControl::kAlt3;
-		tx_config.mux = (config.tx_pin == Pin::Name::kPta2)
-				? Pin::Config::MuxControl::kAlt2
-						: Pin::Config::MuxControl::kAlt3;
-	}
-	else
-	{
-		rx_config.mux = Pin::Config::MuxControl::kAlt3;
-		tx_config.mux = Pin::Config::MuxControl::kAlt3;
-	}
+	rx_config.mux = PINOUT::GetUartMux(config.rx_pin);
 	rx_config.config = config.rx_config;
+
+	tx_config.pin = config.tx_pin;
+	tx_config.mux = PINOUT::GetUartMux(config.tx_pin);
 	tx_config.config = config.tx_config;
 
 	m_rx = Pin(rx_config);
