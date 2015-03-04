@@ -10,12 +10,20 @@
 #pragma once
 
 #define LIBSC_USE_BUTTON 1
+#define LIBSC_USE_ENCODER 2
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
 //#define LIBSC_USE_UART 1
 
 #define LIBSC_BUTTON0 libbase::kl26::Pin::Name::kPta20
+
+#define LIBSC_ENCODER0_QDA libbase::kl26::Pin::Name::kPtc12
+#define LIBSC_ENCODER0_QDB libbase::kl26::Pin::Name::kPtc18
+#define LIBSC_ENCODER0_TPM_MODULE 1
+#define LIBSC_ENCODER1_QDA libbase::kl26::Pin::Name::kPta12
+#define LIBSC_ENCODER1_QDB libbase::kl26::Pin::Name::kPta13
+#define LIBSC_ENCODER1_TPM_MODULE 2
 
 #define LIBSC_LED0 libbase::kl26::Pin::Name::kPtd4
 #define LIBSC_LED1 libbase::kl26::Pin::Name::kPtd5
