@@ -29,6 +29,12 @@ public:
 		return static_cast<Uint>(pin) % Ftm::GetMaxFtmChannelCount();
 	}
 
+	static Ftm::Name GetFtm(const Uint module, const Uint channel)
+	{
+		return static_cast<Ftm::Name>(module * Ftm::GetMaxFtmChannelCount()
+				+ channel);
+	}
+
 	static Uint GetFtmModule(const Ftm::QdName pin)
 	{
 		return static_cast<Uint>(pin) >> 1;

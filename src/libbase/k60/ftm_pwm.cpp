@@ -188,7 +188,8 @@ FtmPwm::FtmPwm(const Config &config)
 {
 	assert(config.period > 0);
 	assert(config.pos_width <= config.period);
-	if (!InitModule(config.pin))
+	if (!InitModule(config.pin)
+			|| Ftm::Get().RegFtm(FtmUtils::GetFtm(m_module, m_channel), false))
 	{
 		assert(false);
 		return;
@@ -418,15 +419,7 @@ void FtmPwm::Uninit()
 
 		g_instances[m_module][m_channel] = nullptr;
 
-		bool is_all_free = true;
-		for (Uint i = 0; i < PINOUT::GetFtmChannelCount(); ++i)
-		{
-			if (g_instances[m_module][i])
-			{
-				is_all_free = false;
-			}
-		}
-		if (is_all_free)
+		if (Ftm::Get().UnregFtm(FtmUtils::GetFtm(m_module, m_channel)))
 		{
 			Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kFtm0, m_module),
 					false);

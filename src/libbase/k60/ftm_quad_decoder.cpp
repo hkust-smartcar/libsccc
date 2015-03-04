@@ -53,7 +53,8 @@ FtmQuadDecoder::FtmQuadDecoder(const Config &config)
 		  m_overflow(0),
 		  m_is_init(false)
 {
-	if (!InitModule(config.a_pin, config.b_pin))
+	if (!InitModule(config.a_pin, config.b_pin)
+			|| Ftm::Get().RegFtm(FtmUtils::GetFtm(m_module, 0), true))
 	{
 		assert(false);
 		return;
@@ -237,9 +238,12 @@ void FtmQuadDecoder::Uninit()
 		MEM_MAPS[m_module]->QDCTRL = 0;
 		SetReadOnlyReg(true);
 
-		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kFtm0, m_module),
-				false);
 		g_instances[m_module] = nullptr;
+		if (Ftm::Get().UnregFtm(FtmUtils::GetFtm(m_module, 0)))
+		{
+			Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kFtm0, m_module),
+					false);
+		}
 	}
 }
 
