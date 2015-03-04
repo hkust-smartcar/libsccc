@@ -66,8 +66,7 @@ public:
 
 	enum struct TpmClock
 	{
-		kDisable,
-		kFll,
+		kDisable = 0,
 		kPll,
 		kOscer,
 		kMcgir,
