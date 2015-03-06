@@ -56,21 +56,21 @@ int _close(int file)
 
 caddr_t _sbrk(int incr)
 {
-	extern char _end;		/* Defined by the linker */
+	// Defined by the linker
+	extern uint32_t _end;
 	extern uint32_t __stack_end;
 	static char *heap_end;
 	char *prev_heap_end;
 
 	if (heap_end == 0)
 	{
-		heap_end = &_end;
+		heap_end = (char*)&_end;
 	}
 	prev_heap_end = heap_end;
-	if ((uint32_t)(heap_end + incr) > __stack_end)
+	if ((uint32_t)(heap_end + incr) > (uint32_t)&__stack_end)
 	{
-		//write(1, "Heap and stack collision\n", 25);
-		//abort();
-		assert(1);
+		// Heap and stack collision
+		assert(0);
 	}
 
 	heap_end += incr;
