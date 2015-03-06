@@ -391,89 +391,138 @@ inline bool UartDevice::IsUseDma()
 	return (m_tx_dma_channel != static_cast<uint8_t>(-1));
 }
 
-void UartDevice::SendStr(const char *str)
+bool UartDevice::SendStr(const char *str)
 {
 	const size_t size = strlen(str);
 	if (size == 0)
 	{
-		return;
+		return true;
 	}
 	Byte *data = new Byte[size];
 	memcpy(data, str, size);
 
-	m_tx_buf->PushBlock(TxBuffer::Block(data, size));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(data, size)))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendStr(unique_ptr<char[]> &&str)
+bool UartDevice::SendStr(unique_ptr<char[]> &&str)
 {
 	const size_t size = strlen(str.get());
 	if (size == 0)
 	{
-		return;
+		return true;
 	}
 
-	m_tx_buf->PushBlock(TxBuffer::Block(reinterpret_cast<Byte*>(str.release()),
-			size));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(reinterpret_cast<Byte*>(str.release()),
+			size)))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendStr(string &&str)
+bool UartDevice::SendStr(string &&str)
 {
 	if (str.size() == 0)
 	{
-		return;
+		return true;
 	}
 
-	m_tx_buf->PushBlock(TxBuffer::Block(new string(std::move(str))));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(new string(std::move(str)))))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendBuffer(const Byte *buf, const size_t len)
+bool UartDevice::SendBuffer(const Byte *buf, const size_t len)
 {
 	if (len == 0)
 	{
-		return;
+		return true;
 	}
 	Byte *data = new Byte[len];
 	memcpy(data, buf, len);
 
-	m_tx_buf->PushBlock(TxBuffer::Block(data, len));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(data, len)))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendBuffer(unique_ptr<Byte[]> &&buf, const size_t len)
+bool UartDevice::SendBuffer(unique_ptr<Byte[]> &&buf, const size_t len)
 {
 	if (len == 0)
 	{
-		return;
+		return true;
 	}
 
-	m_tx_buf->PushBlock(TxBuffer::Block(buf.release(), len));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(buf.release(), len)))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendBuffer(vector<Byte> &&buf)
+bool UartDevice::SendBuffer(vector<Byte> &&buf)
 {
 	if (buf.size() == 0)
 	{
-		return;
+		return true;
 	}
 
-	m_tx_buf->PushBlock(TxBuffer::Block(new vector<Byte>(std::move(buf))));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(new vector<Byte>(std::move(buf)))))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendStrLiteral(const char *str)
+bool UartDevice::SendStrLiteral(const char *str)
 {
 	const size_t size = strlen(str);
 	if (size == 0)
 	{
-		return;
+		return true;
 	}
 
-	m_tx_buf->PushBlock(TxBuffer::Block((Byte*)str, size, false));
-	EnableTx();
+	if (m_tx_buf->PushBlock(TxBuffer::Block((Byte*)str, size, false)))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void UartDevice::OnTxEmpty(Uart *uart)
@@ -599,12 +648,12 @@ UartDevice::UartDevice(nullptr_t)
 	LOG_DL("Configured not to use UartDevice");
 }
 UartDevice::~UartDevice() {}
-void UartDevice::SendStr(const char*) {}
-void UartDevice::SendStr(unique_ptr<char[]>&&) {}
-void UartDevice::SendStr(string&&) {}
-void UartDevice::SendBuffer(const Byte*, const size_t) {}
-void UartDevice::SendBuffer(unique_ptr<Byte[]>&&, const size_t) {}
-void UartDevice::SendBuffer(vector<Byte>&&) {}
+bool UartDevice::SendStr(const char*) { return false; }
+bool UartDevice::SendStr(unique_ptr<char[]>&&) { return false; }
+bool UartDevice::SendStr(string&&) { return false; }
+bool UartDevice::SendBuffer(const Byte*, const size_t) { return false; }
+bool UartDevice::SendBuffer(unique_ptr<Byte[]>&&, const size_t) { return false; }
+bool UartDevice::SendBuffer(vector<Byte>&&) { return false; }
 bool UartDevice::PeekChar(char*) { return false; }
 
 #endif /* LIBSC_USE_UART */
