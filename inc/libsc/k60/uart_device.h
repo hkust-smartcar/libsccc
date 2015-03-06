@@ -38,15 +38,17 @@ public:
 	{
 		uint8_t id;
 		libbase::k60::Uart::Config::BaudRate baud_rate;
+
 		/**
-		 * The # bytes in the Rx buffer needed to fire the interrupt. This will
-		 * affect how often new bytes are pushed to the internal buffer, or your
-		 * listener being triggered, depending on the config
+		 * The number of bytes in the Rx buffer needed to fire the interrupt.
+		 * This will affect how often new bytes are pushed to the internal
+		 * buffer, or your listener being triggered, depending on the config. If
+		 * a buffer is not available for your device, this setting has no effect
 		 */
 		uint8_t rx_irq_threshold = 1;
 		/// To treat rx_irq_threshold as a percentage of Rx buffer size
 		bool is_rx_irq_threshold_percentage = false;
-		
+
 		/**
 		 * The size of the Tx buffer. Old data will be poped when the buffer
 		 * overflows. Notice that this size is not in bytes, but rather the
