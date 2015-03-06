@@ -31,7 +31,7 @@ namespace k60
 class UartDevice
 {
 public:
-	typedef std::function<void(const Byte *bytes,
+	typedef std::function<bool(const Byte *bytes,
 			const size_t size)> OnReceiveListener;
 
 	struct Config
@@ -62,6 +62,11 @@ public:
 		 */
 		uint8_t tx_dma_channel = static_cast<uint8_t>(-1);
 
+		/**
+		 * The listener for Rx events. Return true if the listener has consumed
+		 * the data. In that case, the data won't be pushed to the internal
+		 * buffer
+		 */
 		OnReceiveListener rx_isr;
 	};
 
