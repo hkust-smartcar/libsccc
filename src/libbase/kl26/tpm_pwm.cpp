@@ -144,7 +144,8 @@ TpmPwm::TpmPwm(const Config &config)
 {
 	assert(config.period > 0);
 	assert(config.pos_width <= config.period);
-	if (!InitModule(config.pin))
+	if (!InitModule(config.pin)
+			|| !Tpm::Get().RegTpm(TpmUtils::GetTpm(m_module, m_channel), false))
 	{
 		assert(false);
 		return;
