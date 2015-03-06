@@ -388,7 +388,7 @@ void UartDevice::OnRxFull(Uart *uart)
 		return;
 	}
 
-	if (!m_rx_isr || !m_rx_isr(bytes.data(), bytes.size()))
+	if (!m_rx_isr || !m_rx_isr(bytes))
 	{
 		for (size_t i = 0; i < bytes.size(); ++i)
 		{
