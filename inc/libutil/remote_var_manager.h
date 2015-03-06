@@ -86,16 +86,11 @@ public:
 	Var* Register(const std::string &name, const Var::Type type);
 	Var* Register(std::string &&name, const Var::Type type);
 
-	void Start(const bool is_broadcast);
-	void Start()
-	{
-		Start(true);
-	}
-	void Stop();
+	void Broadcast();
+
+	bool OnUartReceiveChar(const std::vector<Byte> &data);
 
 private:
-	void OnUartReceiveChar(const Byte *bytes, const size_t count);
-
 	libsc::k60::UartDevice *m_uart;
 	std::vector<Var> m_vars;
 	Byte m_buffer[5];
