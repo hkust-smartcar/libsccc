@@ -49,14 +49,14 @@ struct UartDevice::RxBuffer
 		memset(data, 0, RX_BUFFER_SIZE);
 	}
 
-	Uint GetSize() const volatile
+	uint32_t GetSize() const volatile
 	{
-		return (Uint)(end - start);
+		return (uint32_t)(end - start);
 	}
 
 	Byte data[RX_BUFFER_SIZE];
-	Uint start;
-	Uint end;
+	uint32_t start;
+	uint32_t end;
 };
 
 namespace
