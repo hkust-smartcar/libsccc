@@ -549,11 +549,14 @@ void UartDevice::OnRxFull(Uart *uart)
 struct UartDevice::RxBuffer
 {};
 
+struct UartDevice::TxBuffer
+{};
+
 UartDevice::UartDevice(const Initializer&)
 		: UartDevice(nullptr)
 {}
 UartDevice::UartDevice(nullptr_t)
-		: m_tx_buf(0), m_is_tx_idle(true), m_uart(nullptr)
+		: m_is_tx_idle(true), m_uart(nullptr)
 {
 	LOG_DL("Configured not to use UartDevice");
 }
