@@ -86,8 +86,18 @@ public:
 	Var* Register(const std::string &name, const Var::Type type);
 	Var* Register(std::string &&name, const Var::Type type);
 
+	/**
+	 * Broadcast the currectly registered variables
+	 */
 	void Broadcast();
 
+	/**
+	 * Process new data. You should set this method as the Rx ISR while
+	 * initializing the UartDevice, or call it manually
+	 *
+	 * @param data
+	 * @return true
+	 */
 	bool OnUartReceiveChar(const std::vector<Byte> &data);
 
 private:
