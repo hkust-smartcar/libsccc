@@ -261,13 +261,16 @@ void Uart::InitBaudRate(const Config::BaudRate br)
 
 void Uart::InitC1Reg(const Config &config)
 {
-	UART_Type* uart_ptr = MEM_MAPS[m_module];
-	uart_ptr->C1 = 0;
-	SetLoopMode(config.config[Config::ConfigBit::kLoopMode]);
+	uint8_t reg = 0;
 	if (config.config[Config::ConfigBit::kEnableEvenParity])
 	{
-		SET_BIT(uart_ptr->C1, UART_C1_PE_MASK);
+		SET_BIT(reg, UART_C1_PE_SHIFT);
 	}
+	SET_BIT(reg, UART_C1_ILT_SHIFT);
+
+	MEM_MAPS[m_module]->C1 = reg;
+
+	SetLoopMode(config.config[Config::ConfigBit::kLoopMode]);
 }
 
 void Uart::InitFifo(const Config &config)
