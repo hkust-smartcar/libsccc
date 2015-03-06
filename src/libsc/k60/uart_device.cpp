@@ -136,7 +136,7 @@ Uart::Config UartDevice::Initializer::GetUartConfig() const
 
 UartDevice::UartDevice(const Initializer &initializer)
 		: m_rx_buf{new RxBuffer},
-		  m_listener(nullptr),
+		  m_rx_isr(initializer.config.rx_isr),
 		  m_tx_buf(initializer.config.tx_buf_size),
 		  m_is_tx_idle(true),
 		  m_tx_dma_channel(initializer.config.tx_dma_channel),
@@ -369,18 +369,6 @@ void UartDevice::NextTxDma()
 	m_dma->Start();
 }
 
-void UartDevice::EnableRx(const OnReceiveListener &listener)
-{
-	DisableRx();
-	m_listener = listener;
-	m_uart.SetEnableRxIrq(true);
-}
-
-void UartDevice::DisableRx()
-{
-	m_uart.SetEnableRxIrq(false);
-}
-
 bool UartDevice::PeekChar(char *out_char)
 {
 	if (m_rx_buf->GetSize() == 0)
@@ -400,7 +388,7 @@ void UartDevice::OnRxFull(Uart *uart)
 		return;
 	}
 
-	if (!m_listener)
+	if (!m_rx_isr)
 	{
 		for (size_t i = 0; i < bytes.size(); ++i)
 		{
@@ -414,7 +402,7 @@ void UartDevice::OnRxFull(Uart *uart)
 	}
 	else
 	{
-		m_listener(bytes.data(), bytes.size());
+		m_rx_isr(bytes.data(), bytes.size());
 	}
 }
 

@@ -59,6 +59,8 @@ public:
 		 * using the DMA channel specified here
 		 */
 		uint8_t tx_dma_channel = static_cast<uint8_t>(-1);
+
+		OnReceiveListener rx_isr;
 	};
 
 	virtual ~UartDevice();
@@ -120,12 +122,6 @@ public:
 		SendBuffer(buf.data(), buf.size());
 	}
 
-	void EnableRx(const OnReceiveListener &listener);
-	void EnableRx()
-	{
-		EnableRx(nullptr);
-	}
-	void DisableRx();
 	bool PeekChar(char *out_char);
 
 	void SetLoopMode(const bool flag)
@@ -166,7 +162,7 @@ private:
 	void OnRxFull(libbase::k60::Uart *uart);
 
 	std::unique_ptr<volatile RxBuffer> m_rx_buf;
-	OnReceiveListener m_listener;
+	OnReceiveListener m_rx_isr;
 
 	libutil::DynamicBlockBuffer m_tx_buf;
 	volatile bool m_is_tx_idle;
