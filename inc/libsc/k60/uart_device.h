@@ -21,8 +21,6 @@
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/uart.h"
 
-#include "libutil/dynamic_block_buffer.h"
-
 namespace libsc
 {
 namespace k60
@@ -156,6 +154,7 @@ protected:
 
 private:
 	struct RxBuffer;
+	class TxBuffer;
 
 	inline void EnableTx();
 	inline void DisableTx();
@@ -170,7 +169,7 @@ private:
 	std::unique_ptr<volatile RxBuffer> m_rx_buf;
 	OnReceiveListener m_rx_isr;
 
-	libutil::DynamicBlockBuffer m_tx_buf;
+	std::unique_ptr<TxBuffer> m_tx_buf;
 	volatile bool m_is_tx_idle;
 
 	uint8_t m_tx_dma_channel;
