@@ -189,7 +189,7 @@ FtmPwm::FtmPwm(const Config &config)
 	assert(config.period > 0);
 	assert(config.pos_width <= config.period);
 	if (!InitModule(config.pin)
-			|| Ftm::Get().RegFtm(FtmUtils::GetFtm(m_module, m_channel), false))
+			|| !Ftm::Get().RegFtm(FtmUtils::GetFtm(m_module, m_channel), false))
 	{
 		assert(false);
 		return;

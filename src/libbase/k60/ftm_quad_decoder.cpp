@@ -54,7 +54,7 @@ FtmQuadDecoder::FtmQuadDecoder(const Config &config)
 		  m_is_init(false)
 {
 	if (!InitModule(config.a_pin, config.b_pin)
-			|| Ftm::Get().RegFtm(FtmUtils::GetFtm(m_module, 0), true))
+			|| !Ftm::Get().RegFtm(FtmUtils::GetFtm(m_module, 0), true))
 	{
 		assert(false);
 		return;
