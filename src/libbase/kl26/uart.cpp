@@ -262,6 +262,7 @@ void Uart::InitC1Reg(const Config &config)
 		SET_BIT(reg, UART_C1_PE_MASK);
 	}
 	SetLoopMode(config.config[Config::ConfigBit::kLoopMode]);
+	SET_BIT(reg, UART_C1_ILT_SHIFT);
 
 	MEM_MAPS[m_module]->C1 = reg;
 }
