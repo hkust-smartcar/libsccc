@@ -363,8 +363,13 @@ Byte Uart::GetByte() const
 
 	while (!GET_BIT(MEM_MAPS[m_module]->S1, UART_S1_RDRF_SHIFT))
 	{}
-	SET_BIT(MEM_MAPS[m_module]->S1, UART_S1_OR_SHIFT);
-	return MEM_MAPS[m_module]->D;
+	const Byte data = MEM_MAPS[m_module]->D;
+	// OR bit won't auto clear on UART0
+	if (m_module == 0)
+	{
+		UART0->S1 |= UART_S1_OR_MASK;
+	}
+	return data;
 }
 
 bool Uart::PeekByte(Byte *out_byte) const
@@ -373,8 +378,12 @@ bool Uart::PeekByte(Byte *out_byte) const
 
 	if (GET_BIT(MEM_MAPS[m_module]->S1, UART_S1_RDRF_SHIFT))
 	{
-		SET_BIT(MEM_MAPS[m_module]->S1, UART_S1_OR_SHIFT);
 		*out_byte = MEM_MAPS[m_module]->D;
+		// OR bit won't auto clear on UART0
+		if (m_module == 0)
+		{
+			UART0->S1 |= UART_S1_OR_MASK;
+		}
 		return true;
 	}
 	else
