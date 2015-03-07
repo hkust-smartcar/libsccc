@@ -6,6 +6,7 @@
  * Refer to LICENSE for details
  */
 
+#include <cassert>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -25,7 +26,6 @@
 
 #include "libsc/config.h"
 #include "libsc/k60/uart_device.h"
-#include "libutil/dynamic_block_buffer.h"
 #include "libutil/misc.h"
 
 using namespace libbase::k60;
@@ -49,15 +49,205 @@ struct UartDevice::RxBuffer
 		memset(data, 0, RX_BUFFER_SIZE);
 	}
 
-	Uint GetSize() const volatile
+	uint32_t GetSize() const volatile
 	{
-		return (Uint)(end - start);
+		return (uint32_t)(end - start);
 	}
 
 	Byte data[RX_BUFFER_SIZE];
-	Uint start;
-	Uint end;
+	uint32_t start;
+	uint32_t end;
 };
+
+class UartDevice::TxBuffer
+{
+public:
+	struct Block
+	{
+		Block(Byte* const data, const size_t size, const bool is_mem_owned)
+				: type(kByteAry),
+				  size(size),
+				  it(0),
+				  is_mem_owned(is_mem_owned)
+		{
+			this->data.byte_ = data;
+		}
+
+		Block(Byte* const data, const size_t size)
+				: Block(data, size, true)
+		{}
+
+		explicit Block(std::string* const data)
+				: type(kString),
+				  size(data->size()),
+				  it(0),
+				  is_mem_owned(true)
+		{
+			this->data.string_ = data;
+		}
+
+		explicit Block(std::vector<Byte>* const data)
+				: type(kVector),
+				  size(data->size()),
+				  it(0),
+				  is_mem_owned(true)
+		{
+			this->data.vector_ = data;
+		}
+
+		Block()
+				: type(kByteAry),
+				  size(0),
+				  it(0),
+				  is_mem_owned(false)
+		{
+			this->data.byte_ = nullptr;
+		}
+
+		Block(const Block&) = delete;
+		Block(Block &&rhs)
+				: data(rhs.data),
+				  type(rhs.type),
+				  size(rhs.size),
+				  it(rhs.it),
+				  is_mem_owned(rhs.is_mem_owned)
+		{
+			rhs.data.byte_ = nullptr;
+			rhs.is_mem_owned = false;
+		}
+
+		~Block()
+		{
+			Recycle();
+		}
+
+		Block& operator=(const Block&) = delete;
+		Block& operator=(Block &&rhs);
+
+		void Recycle();
+
+		union
+		{
+			Byte *byte_;
+			std::string *string_;
+			std::vector<Byte> *vector_;
+		} data;
+		enum : uint8_t
+		{
+			kByteAry,
+			kString,
+			kVector,
+		} type;
+		size_t size;
+		volatile uint8_t it;
+		bool is_mem_owned;
+	};
+
+	explicit TxBuffer(const size_t capacity)
+			: m_capacity(capacity),
+			  m_data(new Block[capacity]),
+			  m_start(0),
+			  m_end(0)
+	{}
+
+	uint32_t GetSize() const
+	{
+		return (uint32_t)(m_end - m_start);
+	}
+
+	bool PushBlock(Block &&block);
+	Block* GetActiveBlock();
+	Block* NextBlock();
+
+private:
+	const size_t m_capacity;
+	unique_ptr<Block[]> m_data;
+	volatile uint32_t m_start;
+	volatile uint32_t m_end;
+};
+
+
+UartDevice::TxBuffer::Block& UartDevice::TxBuffer::Block::operator=(Block &&rhs)
+{
+	if (this != &rhs)
+	{
+		Byte* const data_ = rhs.data.byte_;
+		bool is_mem_owned_ = rhs.is_mem_owned;
+		Recycle();
+		rhs.data.byte_ = nullptr;
+		rhs.is_mem_owned = false;
+
+		data.byte_ = data_;
+		type = rhs.type;
+		size = rhs.size;
+		it = rhs.it;
+		is_mem_owned = is_mem_owned_;
+	}
+	return *this;
+}
+
+void UartDevice::TxBuffer::Block::Recycle()
+{
+	if (is_mem_owned && data.byte_)
+	{
+		switch (type)
+		{
+		case kByteAry:
+			delete[] data.byte_;
+			break;
+
+		case kString:
+			delete data.string_;
+			break;
+
+		case kVector:
+			delete data.vector_;
+			break;
+
+		default:
+			assert(false);
+		}
+		data.byte_ = nullptr;
+	}
+}
+
+bool UartDevice::TxBuffer::PushBlock(Block &&block)
+{
+	if (GetSize() == m_capacity)
+	{
+		return false;
+	}
+	else
+	{
+		m_data[m_end++ % m_capacity] = std::move(block);
+		return true;
+	}
+}
+
+UartDevice::TxBuffer::Block* UartDevice::TxBuffer::GetActiveBlock()
+{
+	if (GetSize() == 0)
+	{
+		return nullptr;
+	}
+	else
+	{
+		return &m_data[m_start % m_capacity];
+	}
+}
+
+UartDevice::TxBuffer::Block* UartDevice::TxBuffer::NextBlock()
+{
+	if (GetSize() == 0)
+	{
+		return nullptr;
+	}
+	else
+	{
+		++m_start;
+		return GetActiveBlock();
+	}
+}
 
 namespace
 {
@@ -136,8 +326,8 @@ Uart::Config UartDevice::Initializer::GetUartConfig() const
 
 UartDevice::UartDevice(const Initializer &initializer)
 		: m_rx_buf{new RxBuffer},
-		  m_listener(nullptr),
-		  m_tx_buf(initializer.config.tx_buf_size),
+		  m_rx_isr(initializer.config.rx_isr),
+		  m_tx_buf(new TxBuffer(initializer.config.tx_buf_size)),
 		  m_is_tx_idle(true),
 		  m_tx_dma_channel(initializer.config.tx_dma_channel),
 		  m_dma(nullptr),
@@ -201,119 +391,166 @@ inline bool UartDevice::IsUseDma()
 	return (m_tx_dma_channel != static_cast<uint8_t>(-1));
 }
 
-void UartDevice::SendStr(const char *str)
+bool UartDevice::SendStr(const char *str)
 {
 	const size_t size = strlen(str);
 	if (size == 0)
 	{
-		return;
+		return true;
 	}
 	Byte *data = new Byte[size];
 	memcpy(data, str, size);
 
-	m_tx_buf.PushBuffer(DynamicBlockBuffer::Block(data, size));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(data, size)))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendStr(unique_ptr<char[]> &&str)
+bool UartDevice::SendStr(unique_ptr<char[]> &&str)
 {
 	const size_t size = strlen(str.get());
 	if (size == 0)
 	{
-		return;
+		return true;
 	}
 
-	m_tx_buf.PushBuffer(DynamicBlockBuffer::Block(reinterpret_cast<Byte*>(
-			str.release()), size));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(reinterpret_cast<Byte*>(str.release()),
+			size)))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendStr(string &&str)
+bool UartDevice::SendStr(string &&str)
 {
 	if (str.size() == 0)
 	{
-		return;
+		return true;
 	}
 
-	m_tx_buf.PushBuffer(DynamicBlockBuffer::Block(new string(std::move(str))));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(new string(std::move(str)))))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendBuffer(const Byte *buf, const size_t len)
+bool UartDevice::SendBuffer(const Byte *buf, const size_t len)
 {
 	if (len == 0)
 	{
-		return;
+		return true;
 	}
 	Byte *data = new Byte[len];
 	memcpy(data, buf, len);
 
-	m_tx_buf.PushBuffer(DynamicBlockBuffer::Block(data, len));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(data, len)))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendBuffer(unique_ptr<Byte[]> &&buf, const size_t len)
+bool UartDevice::SendBuffer(unique_ptr<Byte[]> &&buf, const size_t len)
 {
 	if (len == 0)
 	{
-		return;
+		return true;
 	}
 
-	m_tx_buf.PushBuffer(DynamicBlockBuffer::Block(buf.release(), len));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(buf.release(), len)))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendBuffer(vector<Byte> &&buf)
+bool UartDevice::SendBuffer(vector<Byte> &&buf)
 {
 	if (buf.size() == 0)
 	{
-		return;
+		return true;
 	}
 
-	m_tx_buf.PushBuffer(DynamicBlockBuffer::Block(new vector<Byte>(std::move(buf))));
-	EnableTx();
+	if(m_tx_buf->PushBlock(TxBuffer::Block(new vector<Byte>(std::move(buf)))))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void UartDevice::SendStrLiteral(const char *str)
+bool UartDevice::SendStrLiteral(const char *str)
 {
 	const size_t size = strlen(str);
 	if (size == 0)
 	{
-		return;
+		return true;
 	}
 
-	m_tx_buf.PushBuffer(DynamicBlockBuffer::Block((Byte*)str, size, false));
-	EnableTx();
+	if (m_tx_buf->PushBlock(TxBuffer::Block((Byte*)str, size, false)))
+	{
+		EnableTx();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void UartDevice::OnTxEmpty(Uart *uart)
 {
-	volatile DynamicBlockBuffer::Block *block = m_tx_buf.GetActiveBlock();
-	if (m_tx_buf.GetSize() == 0 && (!block || block->it == block->size))
+	TxBuffer::Block *block = m_tx_buf->GetActiveBlock();
+	while (block && block->it == block->size)
+	{
+		block = m_tx_buf->NextBlock();
+	}
+	if (!block)
 	{
 		DisableTx();
 		return;
 	}
 
-	while (!block || block->it == block->size)
-	{
-		m_tx_buf.Acquire();
-		block = m_tx_buf.GetActiveBlock();
-	}
-
 	const size_t size = block->size - block->it;
 	switch (block->type)
 	{
-	case DynamicBlockBuffer::Block::kByteAry:
+	case TxBuffer::Block::kByteAry:
 		block->it += uart->PutBytes(block->data.byte_ + block->it, size);
 		break;
 
-	case DynamicBlockBuffer::Block::kString:
+	case TxBuffer::Block::kString:
 		block->it += uart->PutBytes((const Byte*)block->data.string_->data()
 				+ block->it, size);
 		break;
 
-	case DynamicBlockBuffer::Block::kVector:
+	case TxBuffer::Block::kVector:
 		block->it += uart->PutBytes(block->data.vector_->data() + block->it,
 				size);
 		break;
@@ -322,40 +559,35 @@ void UartDevice::OnTxEmpty(Uart *uart)
 
 void UartDevice::OnTxDmaComplete(Dma*)
 {
-	volatile DynamicBlockBuffer::Block *block = m_tx_buf.GetActiveBlock();
-	if (block)
-	{
-		block->it = block->size;
-	}
+	TxBuffer::Block *block = m_tx_buf->GetActiveBlock();
+	block->it = block->size;
 	NextTxDma();
 }
 
 void UartDevice::NextTxDma()
 {
-	volatile DynamicBlockBuffer::Block *block = m_tx_buf.GetActiveBlock();
-	if (m_tx_buf.GetSize() == 0 && (!block || block->it == block->size))
+	TxBuffer::Block *block = m_tx_buf->GetActiveBlock();
+	while (block && block->it == block->size)
+	{
+		block = m_tx_buf->NextBlock();
+	}
+	if (!block)
 	{
 		DisableTx();
 		return;
 	}
 
-	while (!block || block->it == block->size)
-	{
-		m_tx_buf.Acquire();
-		block = m_tx_buf.GetActiveBlock();
-	}
-
 	switch (block->type)
 	{
-	case DynamicBlockBuffer::Block::kByteAry:
+	case TxBuffer::Block::kByteAry:
 		m_dma_config->src.addr = block->data.byte_;
 		break;
 
-	case DynamicBlockBuffer::Block::kString:
+	case TxBuffer::Block::kString:
 		m_dma_config->src.addr = (void*)block->data.string_->data();
 		break;
 
-	case DynamicBlockBuffer::Block::kVector:
+	case TxBuffer::Block::kVector:
 		m_dma_config->src.addr = block->data.vector_->data();
 		break;
 	}
@@ -367,18 +599,6 @@ void UartDevice::NextTxDma()
 	}
 	m_dma = DmaManager::New(*m_dma_config, m_tx_dma_channel);
 	m_dma->Start();
-}
-
-void UartDevice::EnableRx(const OnReceiveListener &listener)
-{
-	DisableRx();
-	m_listener = listener;
-	m_uart.SetEnableRxIrq(true);
-}
-
-void UartDevice::DisableRx()
-{
-	m_uart.SetEnableRxIrq(false);
 }
 
 bool UartDevice::PeekChar(char *out_char)
@@ -400,7 +620,7 @@ void UartDevice::OnRxFull(Uart *uart)
 		return;
 	}
 
-	if (!m_listener)
+	if (!m_rx_isr || !m_rx_isr(bytes))
 	{
 		for (size_t i = 0; i < bytes.size(); ++i)
 		{
@@ -412,10 +632,6 @@ void UartDevice::OnRxFull(Uart *uart)
 			m_rx_buf->data[m_rx_buf->end++ % RX_BUFFER_SIZE] = bytes[i];
 		}
 	}
-	else
-	{
-		m_listener(bytes.data(), bytes.size());
-	}
 }
 
 #else /* LIBSC_USE_UART */
@@ -423,23 +639,24 @@ void UartDevice::OnRxFull(Uart *uart)
 struct UartDevice::RxBuffer
 {};
 
+struct UartDevice::TxBuffer
+{};
+
 UartDevice::UartDevice(const Initializer&)
 		: UartDevice(nullptr)
 {}
 UartDevice::UartDevice(nullptr_t)
-		: m_tx_buf(0), m_is_tx_idle(true), m_uart(nullptr)
+		: m_is_tx_idle(true), m_uart(nullptr)
 {
 	LOG_DL("Configured not to use UartDevice");
 }
 UartDevice::~UartDevice() {}
-void UartDevice::SendStr(const char*) {}
-void UartDevice::SendStr(unique_ptr<char[]>&&) {}
-void UartDevice::SendStr(string&&) {}
-void UartDevice::SendBuffer(const Byte*, const size_t) {}
-void UartDevice::SendBuffer(unique_ptr<Byte[]>&&, const size_t) {}
-void UartDevice::SendBuffer(vector<Byte>&&) {}
-void UartDevice::EnableRx(const OnReceiveListener&) {}
-void UartDevice::DisableRx() {}
+bool UartDevice::SendStr(const char*) { return false; }
+bool UartDevice::SendStr(unique_ptr<char[]>&&) { return false; }
+bool UartDevice::SendStr(string&&) { return false; }
+bool UartDevice::SendBuffer(const Byte*, const size_t) { return false; }
+bool UartDevice::SendBuffer(unique_ptr<Byte[]>&&, const size_t) { return false; }
+bool UartDevice::SendBuffer(vector<Byte>&&) { return false; }
 bool UartDevice::PeekChar(char*) { return false; }
 
 #endif /* LIBSC_USE_UART */
