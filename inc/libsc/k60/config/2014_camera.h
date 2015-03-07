@@ -26,6 +26,7 @@
 #define LIBSC_USE_MMA8451Q 1
 //#define LIBSC_USE_TEMPERATURE_SENSOR 0
 #define LIBSC_USE_UART 1
+#define LIBSC_USE_LINEAR_CCD 1
 
 #define LIBSC_ACCELEROMETER_RX libbase::k60::Adc::Name::kAdc0Ad17
 
@@ -80,5 +81,9 @@
 
 #define LIBSC_MMA8451Q0_SCL libbase::k60::Pin::Name::kPta12
 #define LIBSC_MMA8451Q0_SDA libbase::k60::Pin::Name::kPtd4
+
+#define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPta7
+#define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtc0
+#define LIBSC_LINEAR_CCD0_AD libbase::k60::Pin::Name::kPte0
 
 #endif /* LIBSC_2014_CAMERA_H_ */
