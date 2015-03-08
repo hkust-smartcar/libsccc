@@ -16,6 +16,13 @@
 namespace libsc
 {
 
+/**
+ * LED
+ *
+ * Example:
+ * @snippet test/src/k60/led_test.cpp conf
+ * @snippet test/src/k60/led_test.cpp code
+ */
 class Led
 {
 public:

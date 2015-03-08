@@ -17,6 +17,13 @@
 namespace libutil
 {
 
+/**
+ * Manage the main loop of a program, and invoke registered functions at the
+ * time specified
+ *
+ * Example:
+ * @snippet test/src/kl26/looper_test.cpp code
+ */
 class Looper
 {
 public:
