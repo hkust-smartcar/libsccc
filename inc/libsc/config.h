@@ -45,6 +45,9 @@
 #elif defined(K60_2015_MAGNETIC)
 #include "libsc/k60/config/2015_magnetic.h"
 
+#elif defined(K60_2015_CCD)
+#include "libsc/k60/config/2015_ccd.h"
+
 #else
 #error Unknown board
 

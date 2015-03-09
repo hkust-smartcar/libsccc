@@ -1,6 +1,5 @@
 /*
  * simple_buzzer.cpp
- * Simple Buzzer
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -17,11 +16,6 @@
 #include "libsc/k60/simple_buzzer.h"
 
 using namespace libbase::k60;
-
-// Default to active high
-#ifndef LIBSC_BUZZER_ACIVE_LEVEL
-	#define LIBSC_BUZZER_ACIVE_LEVEL 1
-#endif
 
 namespace libsc
 {
@@ -55,22 +49,23 @@ Gpo::Config GetGpoConfig(const uint8_t id)
 }
 
 SimpleBuzzer::SimpleBuzzer(const Config &config)
-		: m_pin(GetGpoConfig(config.id))
+		: m_pin(GetGpoConfig(config.id)),
+		  m_is_active_low(config.is_active_low)
 {}
 
 void SimpleBuzzer::SetBeep(const bool is_beep)
 {
-	m_pin.Set(!(is_beep ^ LIBSC_BUZZER_ACIVE_LEVEL));
+	m_pin.Set(is_beep ^ m_is_active_low);
 }
 
 bool SimpleBuzzer::GetBeep() const
 {
-	return !(m_pin.Get() ^ LIBSC_BUZZER_ACIVE_LEVEL);
+	return (m_pin.Get() ^ m_is_active_low);
 }
 
 #else
 SimpleBuzzer::SimpleBuzzer(const Config&)
-		: m_pin(nullptr)
+		: m_pin(nullptr), m_is_active_low(false)
 {
 	LOG_DL("Configured not to use SimpleBuzzer");
 }

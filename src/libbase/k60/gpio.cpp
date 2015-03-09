@@ -21,6 +21,7 @@
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pin_isr_manager.h"
 #include "libbase/k60/pin_utils.h"
+#include "libbase/k60/pinout.h"
 
 #include "libutil/misc.h"
 
