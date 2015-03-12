@@ -17,8 +17,7 @@
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_LINEAR_CCD 1
 #define LIBSC_USE_I2C 1
-#define LIBSC_USE_DIRMOTOR 1
-//#define LIBSC_USE_ALTERMOTOR 1
+#define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_MAGSEN 6
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
@@ -66,6 +65,8 @@
 #define LIBSC_I2C0_SCL libbase::k60::Pin::Name::kPtc10
 #define LIBSC_I2C0_SDA libbase::k60::Pin::Name::kPtc11
 
+#define LIBSC_MOTOR0_DIRMOTOR 1
+//#define LIBSC_MOTOR0_ALTERMOTOR 1
 #define LIBSC_MOTOR0_PWM libbase::k60::Pin::Name::kPtc8
 #define LIBSC_MOTOR0_DIR libbase::k60::Pin::Name::kPtc12
 #define LIBSC_MOTOR0_SPARE_PWM libbase::k60::Pin::Name::kPtc9
