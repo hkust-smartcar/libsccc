@@ -64,6 +64,39 @@ public:
 
 		kDisable
 	};
+
+	static Ftm& Get()
+	{
+		static Ftm ftm;
+		return ftm;
+	}
+
+	static constexpr int GetMaxFtmChannelCount()
+	{
+		return static_cast<int>(Name::kFtm1Ch0);
+	}
+
+	bool RegFtm(const Ftm::Name ftm, const bool is_exclusive_module);
+	/**
+	 * Unregister a FTM channel and return whether the module is free or not
+	 *
+	 * @param ftm
+	 * @return
+	 */
+	bool UnregFtm(const Ftm::Name ftm);
+
+private:
+	enum struct ModuleLockMode
+	{
+		kFree,
+		kExclusive,
+		kShared,
+	};
+
+	Ftm();
+
+	ModuleLockMode m_module_lock[PINOUT_FTM_COUNT];
+	bool m_channel_lock[PINOUT_FTM_COUNT][PINOUT_FTM_CHANNEL_COUNT];
 };
 
 }

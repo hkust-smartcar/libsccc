@@ -26,6 +26,26 @@ float KalmanFilter::Filter(const float data)
 	return m_x;
 }
 
+void KalmanFilter::SetQ(const float lpQ)
+{
+	m_q = lpQ;
+}
+
+void KalmanFilter::SetR(const float lpR)
+{
+	m_r = lpR;
+}
+
+void KalmanFilter::SetX(const float lpX)
+{
+	m_x = lpX;
+}
+
+void KalmanFilter::SetP(const float lpP)
+{
+	m_p = lpP;
+}
+
 void KalmanFilter::PredictState()
 {
 	m_lx = m_x;

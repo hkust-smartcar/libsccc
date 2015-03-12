@@ -16,40 +16,21 @@
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pinout.h"
+#include "libbase/k60/spi_master_interface.h"
 
 namespace libbase
 {
 namespace k60
 {
 
-class SpiMaster
+class SpiMaster : public SpiMasterInterface
 {
 public:
 	typedef std::function<void(SpiMaster *spi)> OnTxFillListener;
 	typedef std::function<void(SpiMaster *spi)> OnRxDrainListener;
 
-	static constexpr Uint kSlaveCount = 6;
-
-	struct Config
+	struct Config : public SpiMasterInterface::Config
 	{
-		struct Slave
-		{
-			/**
-			 * Set the chip select/slave select pin, Pin::Name::kDisable will
-			 * be ignored
-			 */
-			Pin::Name cs_pin = Pin::Name::kDisable;
-			/**
-			 * Set the chip select/slave select polarity
-			 */
-			bool is_active_high = false;
-		};
-
-		// At least one among SIN/SOUT have to be set
-		Pin::Name sin_pin = Pin::Name::kDisable;
-		Pin::Name sout_pin = Pin::Name::kDisable;
-		Pin::Name sck_pin;
-
 		/**
 		 * Baud rate hint, the closest possible value will be used
 		 */
@@ -78,33 +59,9 @@ public:
 		 * halfway through the cycle to give the peripheral more setup time
 		 */
 		bool is_modified_timing = false;
-		/**
-		 * # bits transfered per frame, [4, 16]
-		 */
-		uint8_t frame_size = 8;
-		/**
-		 * Set the clock polarity
-		 */
-		bool is_sck_idle_low = true;
-		/**
-		 * Set the clock phase, if true, data is captured on the leading edge of
-		 * SCK and changed on the following edge
-		 */
-		bool is_sck_capture_first = true;
-		/**
-		 * Specifies whether the LSB or MSB of the frame is transferred first
-		 */
-		bool is_msb_firt = true;
 
 		OnTxFillListener tx_isr;
 		OnRxDrainListener rx_isr;
-
-		/**
-		 * Slaves connected to this SPI instance, a maximum of 6 slaves are
-		 * supported. The array should be filled in sequence (from [0] to [5]).
-		 * The position will serve as the slave id used in Exchange()
-		 */
-		Slave slaves[kSlaveCount];
 	};
 
 	explicit SpiMaster(const Config &config);
@@ -115,30 +72,18 @@ public:
 
 	SpiMaster& operator=(const SpiMaster&) = delete;
 	SpiMaster& operator=(SpiMaster &&rhs);
-	operator bool() const
+	operator bool() const override
 	{
 		return m_is_init;
 	}
 
-	/**
-	 * Exchange data with slave, this is a blocking operation. Do NOT use this
-	 * method with listeners being setup
-	 *
-	 * @param slave_id The target slave, see Config::slaves for details
-	 * @param data The data to be sent, in 3-wire setup without sout, this value
-	 * will be ignored
-	 * @return The received data, or 0 in 3-wire setup without sin
-	 */
-	uint16_t ExchangeData(const uint8_t slave_id, const uint16_t data);
+	uint16_t ExchangeData(const uint8_t slave_id, const uint16_t data) override;
 
-	/**
-	 * Use with listeners, ensure SPI is enabled and running
-	 */
-	void KickStart();
+	void KickStart() override;
 	size_t PushData(const uint8_t slave_id, const uint16_t *data,
-			const size_t size);
+			const size_t size) override;
 	size_t PushData(const uint8_t slave_id, const uint8_t *data,
-			const size_t size);
+			const size_t size) override;
 
 	uint8_t GetFrameSize() const
 	{

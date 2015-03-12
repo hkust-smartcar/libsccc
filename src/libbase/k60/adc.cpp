@@ -294,14 +294,7 @@ void Adc::InitSpeed()
 		break;
 	}
 
-	if (clock_divider >= 4)
-	{
-		MEM_MAPS[module]->CFG1 |= ADC_CFG1_ADIV(3) | ADC_CFG1_ADICLK(1);
-	}
-	else
-	{
-		MEM_MAPS[module]->CFG1 |= ADC_CFG1_ADIV(clock_divider);
-	}
+	MEM_MAPS[module]->CFG1 |= ADC_CFG1_ADIV(std::min<Uint>(clock_divider, 3));
 
 	if (long_sample_time != -1)
 	{

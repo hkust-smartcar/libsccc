@@ -23,8 +23,10 @@
 #include "libbase/k60/dma_mux.h"
 #include "libbase/k60/ftm.h"
 #include "libbase/k60/i2c.h"
-#include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
+#include "libbase/k60/pinout/mk60d10_lqfp144_macros.h"
+#include "libbase/k60/uart.h"
+#include "libbase/misc_types.h"
 
 namespace libbase
 {
@@ -145,6 +147,8 @@ public:
 	 * @return
 	 */
 	static uint8_t GetDmaMuxSource(const DmaMux::Source src, const Uint mux);
+	static Uart::Name GetUart(const Pin::Name pin);
+	static Pin::Config::MuxControl GetUartMux(const Pin::Name pin);
 
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;

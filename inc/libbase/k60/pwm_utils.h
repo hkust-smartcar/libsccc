@@ -10,7 +10,7 @@
 
 #include <cstdint>
 
-#include "libbase/k60/misc_utils.h"
+#include "libbase/misc_types.h"
 
 namespace libbase
 {

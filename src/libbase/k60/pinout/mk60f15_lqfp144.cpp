@@ -8,7 +8,6 @@
 
 #include <cassert>
 
-#include <array>
 #include <bitset>
 
 #include "libbase/k60/pinout/mk60f15_lqfp144.h"
@@ -17,9 +16,10 @@
 #include "libbase/k60/dma_mux.h"
 #include "libbase/k60/ftm.h"
 #include "libbase/k60/i2c.h"
-#include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pin_utils.h"
+#include "libbase/k60/uart.h"
+#include "libbase/misc_types.h"
 
 using namespace std;
 
@@ -818,6 +818,79 @@ uint8_t Mk60f15Lqfp144::GetDmaMuxSource(const DmaMux::Source src, const Uint mux
 	else
 	{
 		return static_cast<uint8_t>(-1);
+	}
+}
+
+Uart::Name Mk60f15Lqfp144::GetUart(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta1:
+	case Pin::Name::kPta15:
+	case Pin::Name::kPtb16:
+	case Pin::Name::kPtd6:
+		return Uart::Name::kUart0Rx;
+
+	case Pin::Name::kPta2:
+	case Pin::Name::kPta14:
+	case Pin::Name::kPtb17:
+	case Pin::Name::kPtd7:
+		return Uart::Name::kUart0Tx;
+
+	case Pin::Name::kPtc3:
+	case Pin::Name::kPte1:
+		return Uart::Name::kUart1Rx;
+
+	case Pin::Name::kPtc4:
+	case Pin::Name::kPte0:
+		return Uart::Name::kUart1Tx;
+
+	case Pin::Name::kPtd2:
+		return Uart::Name::kUart2Rx;
+
+	case Pin::Name::kPtd3:
+		return Uart::Name::kUart2Tx;
+
+	case Pin::Name::kPtb10:
+	case Pin::Name::kPtc16:
+	case Pin::Name::kPte5:
+		return Uart::Name::kUart3Rx;
+
+	case Pin::Name::kPtb11:
+	case Pin::Name::kPtc17:
+	case Pin::Name::kPte4:
+		return Uart::Name::kUart3Tx;
+
+	case Pin::Name::kPtc14:
+	case Pin::Name::kPte25:
+		return Uart::Name::kUart4Rx;
+
+	case Pin::Name::kPtc15:
+	case Pin::Name::kPte24:
+		return Uart::Name::kUart4Tx;
+
+	case Pin::Name::kPtd8:
+	case Pin::Name::kPte9:
+		return Uart::Name::kUart5Rx;
+
+	case Pin::Name::kPtd9:
+	case Pin::Name::kPte8:
+		return Uart::Name::kUart5Tx;
+
+	default:
+		return Uart::Name::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mk60f15Lqfp144::GetUartMux(const Pin::Name pin)
+{
+	if (pin == Pin::Name::kPta1 || pin == Pin::Name::kPta2)
+	{
+		return Pin::Config::MuxControl::kAlt2;
+	}
+	else
+	{
+		return Pin::Config::MuxControl::kAlt3;
 	}
 }
 

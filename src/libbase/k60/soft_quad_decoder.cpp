@@ -45,6 +45,8 @@ Gpi::Config GetQdbConfig(const SoftQuadDecoder::Config &config)
 SoftQuadDecoder::SoftQuadDecoder(const Config &config)
 		: m_is_invert_a_polarity(config.is_invert_a_polarity),
 		  m_is_invert_b_polarity(config.is_invert_b_polarity),
+		  m_is_dir_mode(config.encoding_mode
+				  == Config::EncodingMode::kCountDirection),
 		  m_qda(GetQdaConfig(config, std::bind(&SoftQuadDecoder::OnTick, this,
 				  std::placeholders::_1))),
 		  m_qdb(GetQdbConfig(config)),
@@ -61,6 +63,7 @@ SoftQuadDecoder::SoftQuadDecoder(SoftQuadDecoder &&rhs)
 SoftQuadDecoder::SoftQuadDecoder(nullptr_t)
 		: m_is_invert_a_polarity(false),
 		  m_is_invert_b_polarity(false),
+		  m_is_dir_mode(false),
 		  m_qda(nullptr),
 		  m_qdb(nullptr),
 		  m_count(0),
@@ -83,6 +86,7 @@ SoftQuadDecoder& SoftQuadDecoder::operator=(SoftQuadDecoder &&rhs)
 
 			m_is_invert_a_polarity = rhs.m_is_invert_a_polarity;
 			m_is_invert_b_polarity = rhs.m_is_invert_b_polarity;
+			m_is_dir_mode = rhs.m_is_dir_mode;
 
 			m_qda = std::move(rhs.m_qda);
 			m_qdb = std::move(rhs.m_qdb);
@@ -108,7 +112,14 @@ void SoftQuadDecoder::Uninit()
 
 int32_t SoftQuadDecoder::GetCount()
 {
-	return m_count * 4;
+	if (!m_is_dir_mode)
+	{
+		return m_count * 4;
+	}
+	else
+	{
+		return m_count;
+	}
 }
 
 void SoftQuadDecoder::ResetCount()
@@ -118,7 +129,8 @@ void SoftQuadDecoder::ResetCount()
 
 void SoftQuadDecoder::OnTick(Gpi*)
 {
-	if (!(m_qdb.Get() ^ m_is_invert_b_polarity))
+	// Under dir mode, the relation between qdb and dir is inverted
+	if ((!(m_qdb.Get() ^ m_is_invert_b_polarity)) ^ m_is_dir_mode)
 	{
 		++m_count;
 	}
