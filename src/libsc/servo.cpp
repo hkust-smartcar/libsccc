@@ -133,7 +133,7 @@ void Servo::SetDegree(const uint16_t degree)
 
 #else
 Servo::Servo(const Config&)
-		: m_pos_width_min(0), m_pos_width_diff(0), m_degree(0)
+		: m_pos_width_min(0), m_pos_width_diff(0), m_pwm(nullptr), m_degree(0)
 {
 	LOG_DL("Configured not to use Servo");
 }
