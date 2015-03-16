@@ -385,9 +385,10 @@ void I2cMaster::Stop()
 
 bool I2cMaster::SendByte_(const Byte byte)
 {
+	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
 	MEM_MAPS[m_module]->D = byte;
 	// Wait until data is sent
-	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_TCF_SHIFT))
+	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT))
 	{
 		if (GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
 		{
@@ -395,6 +396,7 @@ bool I2cMaster::SendByte_(const Byte byte)
 			return false;
 		}
 	}
+	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
 	return !GET_BIT(MEM_MAPS[m_module]->S, I2C_S_RXAK_SHIFT);
 }
 
@@ -416,9 +418,10 @@ bool I2cMaster::ReadByte_(const bool is_last_byte, Byte *out_byte)
 	}
 
 	// Initiate receive
+	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
 	*out_byte = MEM_MAPS[m_module]->D;
 	// Wait until data is received
-	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_TCF_SHIFT))
+	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT))
 	{
 		if (GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
 		{
@@ -426,6 +429,8 @@ bool I2cMaster::ReadByte_(const bool is_last_byte, Byte *out_byte)
 			return false;
 		}
 	}
+	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
+	
 	if (is_last_byte)
 	{
 		Stop();
