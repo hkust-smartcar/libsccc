@@ -61,29 +61,35 @@ Mpu6050::Mpu6050(const Config &config)
 		  m_is_calibrated(false)
 {
 	assert(Verify());
+	System::DelayUs(1);
 
 	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, 0x00));
+	System::DelayUs(1);
 
 	//Register 25 – Sample Rate Divider: Sample Rate = Gyroscope Output Rate / (1 + SMPLRT_DIV)
 	//Gyroscope Output Rate = 8kHz when the DLPF is disabled (DLPF_CFG = 0 or 7)
 	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_SMPLRT_DIV, 0x00));
+	System::DelayUs(1);
 
 	//Register 26 - CONFIG: EXT_SYNC_SET[2:0]<<3 | DLPF_CFG[2:0];
 	//EXT_SYNC_SET=0, Input disabled;
 	//DLPF_CFG=0, Accel = 260Hz, Gyroscope = 256Hz;
 	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_CONFIG, 0x00));
+	System::DelayUs(1);
 
 	//Register 27 - GYRO_CONFIG: FS_SEL[1:0] << 3;
 	//FS_SEL=0, ± 250 °/s; FS_SEL=1, ± 500 °/s; FS_SEL=2, ± 1000 °/s; FS_SEL=3, ± 2000 °/s;
 	uint8_t gyro_config = static_cast<int>(m_gyro_range) << 3;
 	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG,
 			gyro_config));
+	System::DelayUs(1);
 
 	//Register 28 - ACCEL_CONFIG: AFS_SEL[1:0] << 3;
 	//AFS_SEL=0, ±2g; AFS_SEL=1, ±4g; AFS_SEL=2, ±8g; AFS_SEL=3, ±16g;
 	uint8_t accel_config = static_cast<int>(m_accel_range) << 3;
 	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG,
 			accel_config));
+	System::DelayUs(1);
 
 	for(int i=0; i<3; i++){
 		m_omega_offset[i] = 0;
