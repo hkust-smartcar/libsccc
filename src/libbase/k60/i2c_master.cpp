@@ -455,10 +455,10 @@ vector<Byte> I2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
 	bytes.reserve(size);
 
 	Start();
-	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, {});
+	SEND_BYTE_GUARDED(slave_addr << 1, {});
 	SEND_BYTE_GUARDED(reg_addr, {});
 	RepeatStart();
-	SEND_BYTE_GUARDED(((slave_addr << 1) & 0xFE) | 0x1, {});
+	SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, {});
 	for (uint8_t i = 0; i < size; ++i)
 	{
 		Byte byte;
@@ -480,7 +480,7 @@ bool I2cMaster::SendByte(const Byte slave_addr, const Byte reg_addr,
 	STATE_GUARD(I2cMaster, false);
 
 	Start();
-	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, false);
+	SEND_BYTE_GUARDED(slave_addr << 1, false);
 	SEND_BYTE_GUARDED(reg_addr, false);
 	SEND_BYTE_GUARDED(byte, false);
 	Stop();
@@ -493,7 +493,7 @@ bool I2cMaster::SendBytes(const Byte slave_addr, const Byte reg_addr,
 	STATE_GUARD(I2cMaster, false);
 
 	Start();
-	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, false);
+	SEND_BYTE_GUARDED(slave_addr << 1, false);
 	SEND_BYTE_GUARDED(reg_addr, false);
 	for (size_t i = 0; i < size; ++i)
 	{
