@@ -17,6 +17,7 @@
 #include "libbase/k60/dac.h"
 #include "libbase/k60/dma_mux.h"
 #include "libbase/k60/ftm.h"
+#include "libbase/k60/i2c.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pinout/mk60f15_lqfp144_macros.h"
 #include "libbase/k60/uart.h"
@@ -95,6 +96,11 @@ public:
 		return PINOUT_FTM_CHANNEL_COUNT;
 	}
 
+	static constexpr Uint GetI2cCount()
+	{
+		return PINOUT_I2C_COUNT;
+	}
+
 	static constexpr Uint GetPinCount()
 	{
 		return kPinCount;
@@ -125,6 +131,8 @@ public:
 	static Pin::Config::MuxControl GetFtmMux(const Pin::Name pin);
 	static Ftm::QdName GetFtmQd(const Pin::Name pin);
 	static Pin::Config::MuxControl GetFtmQdMux(const Pin::Name pin);
+	static I2c::Name GetI2c(const Pin::Name pin);
+	static Pin::Config::MuxControl GetI2cMux(const Pin::Name pin);
 	/**
 	 * Return the source number for the specific module @a mux, or -1 if @a src
 	 * doesn't exist in the module
