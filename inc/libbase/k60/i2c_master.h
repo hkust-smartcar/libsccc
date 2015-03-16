@@ -80,7 +80,7 @@ private:
 	void RepeatStart();
 	void Stop();
 	bool SendByte_(const Byte byte);
-	bool ReadByte_(const bool is_ack, Byte *out_byte);
+	bool ReadByte_(const bool is_last_byte, Byte *out_byte);
 
 	uint8_t m_module;
 
