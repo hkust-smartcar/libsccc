@@ -349,6 +349,7 @@ void I2cMaster::Start()
 		// Already started, generate a restart
 		Stop();
 	}
+	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
 	// Wait until started
 	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_BUSY_SHIFT))
@@ -384,7 +385,6 @@ void I2cMaster::Stop()
 
 bool I2cMaster::SendByte_(const Byte byte)
 {
-	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	MEM_MAPS[m_module]->D = byte;
 	// Wait until data is sent
 	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_TCF_SHIFT))
