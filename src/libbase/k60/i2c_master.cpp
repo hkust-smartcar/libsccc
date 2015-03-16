@@ -207,6 +207,9 @@ I2cMaster::I2cMaster(const Config &config)
 
 	Sim::SetEnableClockGate(EnumAdvance(CLOCKGATE0, m_module), true);
 
+	// Disable
+	MEM_MAPS[m_module]->C1 = 0;
+
 	g_instances[m_module] = this;
 	InitPin(config.scl_pin, config.sda_pin);
 	InitBaudRate(config);
