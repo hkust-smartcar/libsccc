@@ -8,12 +8,14 @@
 
 #include "libbase/k60/hardware.h"
 
-#include <cstdint>
+#include <cassert>
 #include <cmath>
+#include <cstdint>
 #include <array>
 #include <vector>
 
 #include "libbase/log.h"
+#include "libbase/k60/i2c_master.h"
 #include "libbase/k60/soft_i2c_master.h"
 
 #include "libsc/config.h"
@@ -36,12 +38,17 @@ namespace k60
 namespace
 {
 
-SoftI2cMaster::Config GetI2cConfig()
+Mpu6050::I2cMaster::Config GetI2cConfig()
 {
-	SoftI2cMaster::Config config;
+	Mpu6050::I2cMaster::Config config;
 	config.scl_pin = LIBSC_MPU6050_SCL;
 	config.sda_pin = LIBSC_MPU6050_SDA;
-	config.freq_khz = 400;
+	config.baud_rate_khz = 400;
+	config.scl_low_timeout = 1000;
+#if !LIBSC_USE_SOFT_MPU6050
+	config.min_scl_start_hold_time_ns = 600;
+	config.min_scl_stop_hold_time_ns = 600;
+#endif
 	return config;
 }
 
@@ -53,27 +60,36 @@ Mpu6050::Mpu6050(const Config &config)
 		  m_accel_range(config.accel_range),
 		  m_is_calibrated(false)
 {
-	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, 0x00);
+	assert(Verify());
+	System::DelayUs(1);
+
+	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, 0x00));
+	System::DelayUs(1);
 
 	//Register 25 – Sample Rate Divider: Sample Rate = Gyroscope Output Rate / (1 + SMPLRT_DIV)
 	//Gyroscope Output Rate = 8kHz when the DLPF is disabled (DLPF_CFG = 0 or 7)
-	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_SMPLRT_DIV, 0x00);
+	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_SMPLRT_DIV, 0x00));
+	System::DelayUs(1);
 
 	//Register 26 - CONFIG: EXT_SYNC_SET[2:0]<<3 | DLPF_CFG[2:0];
 	//EXT_SYNC_SET=0, Input disabled;
 	//DLPF_CFG=0, Accel = 260Hz, Gyroscope = 256Hz;
-	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_CONFIG, 0x00);
+	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_CONFIG, 0x00));
+	System::DelayUs(1);
 
 	//Register 27 - GYRO_CONFIG: FS_SEL[1:0] << 3;
 	//FS_SEL=0, ± 250 °/s; FS_SEL=1, ± 500 °/s; FS_SEL=2, ± 1000 °/s; FS_SEL=3, ± 2000 °/s;
 	uint8_t gyro_config = static_cast<int>(m_gyro_range) << 3;
-	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG, gyro_config);
+	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG,
+			gyro_config));
+	System::DelayUs(1);
 
 	//Register 28 - ACCEL_CONFIG: AFS_SEL[1:0] << 3;
 	//AFS_SEL=0, ±2g; AFS_SEL=1, ±4g; AFS_SEL=2, ±8g; AFS_SEL=3, ±16g;
 	uint8_t accel_config = static_cast<int>(m_accel_range) << 3;
-	m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG,
-			accel_config);
+	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG,
+			accel_config));
+	System::DelayUs(1);
 
 	for(int i=0; i<3; i++){
 		m_omega_offset[i] = 0;
@@ -104,6 +120,19 @@ Mpu6050::Mpu6050(const Config &config)
 			m_omega_offset[i] = omega_sum[i] / (target_samples/2);
 		}
 		m_is_calibrated = true;
+	}
+}
+
+bool Mpu6050::Verify()
+{
+	Byte who_am_i;
+	if (!m_i2c.GetByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_WHO_AM_I, &who_am_i))
+	{
+		return false;
+	}
+	else
+	{
+		return (who_am_i == 0x68);
 	}
 }
 
@@ -182,7 +211,6 @@ bool Mpu6050::Update(bool clamp_)
 	}
 	return true;
 }
-
 
 #else
 Mpu6050::Mpu6050(const Config&)

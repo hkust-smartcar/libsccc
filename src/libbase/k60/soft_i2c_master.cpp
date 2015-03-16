@@ -40,7 +40,7 @@ namespace
 
 Uint GetDelayUs(const SoftI2cMaster::Config &config)
 {
-	const Uint freq2 = config.freq_khz * 2;
+	const Uint freq2 = config.baud_rate_khz * 2;
 	return (1000 + freq2 - 1) / freq2;
 }
 
@@ -70,7 +70,7 @@ inline void SoftI2cMaster::Delay()
 SoftI2cMaster::SoftI2cMaster(const Config &config)
 		: m_is_use_repeated_start(config.is_use_repeated_start),
 		  m_delay_us(GetDelayUs(config)),
-		  m_scl_low_timeout_ms((config.scl_low_timeout * m_delay_us + 999)
+		  m_scl_low_timeout_ms((config.scl_low_timeout * (m_delay_us * 2) + 999)
 				/ 1000),
 		  m_scl(GetSclConfig(config)),
 		  m_sda(GetSdaConfig(config)),
