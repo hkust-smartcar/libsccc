@@ -13,6 +13,7 @@
 #include <array>
 #include <vector>
 
+#include "libbase/k60/i2c_master.h"
 #include "libbase/k60/soft_i2c_master.h"
 #include "libbase/misc_types.h"
 
@@ -24,6 +25,14 @@ namespace k60
 class Mma8451q
 {
 public:
+#if LIBSC_USE_SOFT_MMA8451Q
+	typedef libbase::k60::SoftI2cMaster I2cMaster;
+
+#else
+	typedef libbase::k60::I2cMaster I2cMaster;
+
+#endif // LIBSC_USE_SOFT_MMA8451Q
+
 	struct Config
 	{
 		enum struct Sensitivity
@@ -97,7 +106,7 @@ private:
 	void WriteRegByte(const Byte reg, const Byte data);
 	std::vector<Byte> ReadRegBytes(const Byte reg, const Byte length);
 
-	libbase::k60::SoftI2cMaster m_i2c_master;
+	I2cMaster m_i2c_master;
 	Config::Sensitivity m_sensitivity;
 	float m_scale_factor;
 

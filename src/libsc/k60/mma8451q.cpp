@@ -6,6 +6,8 @@
  * Refer to LICENSE for details
  */
 
+#include "libbase/k60/hardware.h"
+
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -14,6 +16,8 @@
 #include <vector>
 
 #include "libbase/log.h"
+#include "libbase/k60/i2c_master.h"
+#include "libbase/k60/soft_i2c_master.h"
 
 #include "libsc/config.h"
 #include "libsc/device_h/mma8451q.h"
@@ -58,11 +62,17 @@ inline Pin::Name GetSdaPin(const uint8_t id)
 
 #endif
 
-SoftI2cMaster::Config GetI2cMasterConfig(const Mma8451q::Config &config)
+Mma8451q::I2cMaster::Config GetI2cMasterConfig(const Mma8451q::Config &config)
 {
-	SoftI2cMaster::Config product;
+	Mma8451q::I2cMaster::Config product;
 	product.scl_pin = GetSclPin(config.id);
 	product.sda_pin = GetSdaPin(config.id);
+	product.baud_rate_khz = 400;
+	product.scl_low_timeout = 1000;
+#if !LIBSC_USE_SOFT_MMA8451Q
+	product.min_scl_start_hold_time_ns = 600;
+	product.min_scl_stop_hold_time_ns = 600;
+#endif
 	return product;
 }
 
