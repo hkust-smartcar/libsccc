@@ -104,35 +104,9 @@ Mpu6050::Mpu6050(const Config &config)
 			accel_config));
 	System::DelayUs(1);
 
-	for(int i=0; i<3; i++){
-		m_omega_offset[i] = 0;
-	}
-
-	/**
-	 * Decide if calibrate gyro drift
-	 */
-	if(config.cal_drift){
-		Timer::TimerInt t = 0, pt = 0;
-		std::array<float, 3> omega_sum;
-		int samples = 0, target_samples = 512;
-		while(samples<target_samples){
-			t = System::Time();
-			if(t-pt >= 5){
-				pt = t;
-				Update(false);
-				if(samples>=target_samples/2){
-					std::array<float, 3> omega_ = GetOmega();
-					for(int i=0; i<3; i++){
-						omega_sum[i] += omega_[i];
-					}
-				}
-				samples++;
-			}
-		}
-		for(int i=0; i<3; i++){
-			m_omega_offset[i] = omega_sum[i] / (target_samples/2);
-		}
-		m_is_calibrated = true;
+	if (config.cal_drift)
+	{
+		Calibrate();
 	}
 }
 
@@ -147,6 +121,36 @@ bool Mpu6050::Verify()
 	{
 		return (who_am_i == 0x68);
 	}
+}
+
+void Mpu6050::Calibrate()
+{
+	Timer::TimerInt t = 0, pt = 0;
+	std::array<float, 3> omega_sum;
+	int samples = 0, target_samples = 512;
+	while (samples < target_samples)
+	{
+		t = System::Time();
+		if (t - pt >= 5)
+		{
+			pt = t;
+			Update(false);
+			if (samples >= target_samples / 2)
+			{
+				std::array<float, 3> omega_ = GetOmega();
+				for (int i = 0; i < 3; i++)
+				{
+					omega_sum[i] += omega_[i];
+				}
+			}
+			samples++;
+		}
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		m_omega_offset[i] = omega_sum[i] / (target_samples/2);
+	}
+	m_is_calibrated = true;
 }
 
 float Mpu6050::GetGyroScaleFactor()
@@ -227,7 +231,7 @@ bool Mpu6050::Update(const bool clamp_)
 
 #else
 Mpu6050::Mpu6050(const Config&)
-		: m_i2c(nullptr), m_temp(0),
+		: m_i2c(nullptr), m_temp(0), m_is_calibrated(false),
 		  m_gyro_range(Config::Range::kSmall),
 		  m_accel_range(Config::Range::kSmall)
 {

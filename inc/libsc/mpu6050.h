@@ -47,39 +47,43 @@ public:
 		// kSmall -> kExtreme = ±2g, ±4g, ±8g, ±16g
 		Range accel_range;
 
+		/// Calibrate the gyroscope while initializing
 		bool cal_drift = false;
 
 	};
 
 	explicit Mpu6050(const Config &config);
 
-	bool Update(const bool clamp_ = true);
+	bool Update(bool clamp_ = true);
 
-	const std::array<float, 3>& GetAccel()
+	const std::array<float, 3>& GetAccel() const
 	{
 		return m_accel;
 	}
 
-	const std::array<float, 3>& GetOmega()
+	const std::array<float, 3>& GetOmega() const
 	{
 		return m_omega;
 	}
 
-	float GetCelsius()
+	float GetCelsius() const
 	{
 		return m_temp;
 	}
 
-	bool IsCalibrated(){
+	bool IsCalibrated() const
+	{
 		return m_is_calibrated;
 	}
 
-	std::array<float, 3>& GetOffset(){
+	const std::array<float, 3>& GetOffset() const
+	{
 		return m_omega_offset;
 	}
 
 private:
 	bool Verify();
+	void Calibrate();
 
 	float GetGyroScaleFactor();
 	float GetAccelScaleFactor();
@@ -90,8 +94,6 @@ private:
 	std::array<float, 3> m_omega_offset;
 	float m_temp;
 	bool m_is_calibrated;
-
-	float gyro_drift;
 
 	Config::Range m_gyro_range;
 	Config::Range m_accel_range;

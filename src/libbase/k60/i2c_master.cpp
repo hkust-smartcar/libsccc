@@ -347,7 +347,7 @@ void I2cMaster::Start()
 	if (GET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT))
 	{
 		// Already started, generate a restart
-		Stop();
+		return;
 	}
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
@@ -431,7 +431,7 @@ bool I2cMaster::ReadByte_(const bool is_last_byte, Byte *out_byte)
 		}
 	}
 	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
-	
+
 	if (is_last_byte)
 	{
 		Stop();
