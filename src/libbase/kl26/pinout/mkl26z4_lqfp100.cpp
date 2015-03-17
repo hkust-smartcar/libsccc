@@ -320,6 +320,53 @@ Adc::Name Mkl26z4Lqfp100::GetAdc(const Pin::Name pin)
 	}
 }
 
+I2c::Name Mkl26z4Lqfp100::GetI2c(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPtb0:
+	case Pin::Name::kPtb2:
+	case Pin::Name::kPtc8:
+	case Pin::Name::kPte19:
+	case Pin::Name::kPte24:
+		return I2c::Name::kI2c0Scl;
+
+	case Pin::Name::kPtb1:
+	case Pin::Name::kPtb3:
+	case Pin::Name::kPtc9:
+	case Pin::Name::kPte18:
+	case Pin::Name::kPte25:
+		return I2c::Name::kI2c0Sda;
+
+	case Pin::Name::kPta3:
+	case Pin::Name::kPtc1:
+	case Pin::Name::kPtc10:
+	case Pin::Name::kPte1:
+		return I2c::Name::kI2c1Scl;
+
+	case Pin::Name::kPta4:
+	case Pin::Name::kPtc2:
+	case Pin::Name::kPtc11:
+	case Pin::Name::kPte0:
+		return I2c::Name::kI2c1Sda;
+
+	default:
+		return I2c::Name::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mkl26z4Lqfp100::GetI2cMux(const Pin::Name pin)
+{
+	if (pin == Pin::Name::kPte0 || pin == Pin::Name::kPte1)
+	{
+		return Pin::Config::MuxControl::kAlt6;
+	}
+	else
+	{
+		return Pin::Config::MuxControl::kAlt2;
+	}
+}
+
 Tpm::Name Mkl26z4Lqfp100::GetTpm(const Pin::Name pin)
 {
 	switch (pin)
