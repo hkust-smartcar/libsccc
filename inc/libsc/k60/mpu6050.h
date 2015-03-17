@@ -46,8 +46,8 @@ public:
 		// kSmall -> kExtreme = ±2g, ±4g, ±8g, ±16g
 		Range accel_range;
 
+		/// Calibrate the gyroscope while initializing
 		bool cal_drift = false;
-
 	};
 
 	explicit Mpu6050(const Config &config);
@@ -81,6 +81,7 @@ public:
 
 private:
 	bool Verify();
+	void Calibrate();
 
 	float GetGyroScaleFactor();
 	float GetAccelScaleFactor();
