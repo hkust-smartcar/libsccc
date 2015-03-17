@@ -92,8 +92,6 @@ private:
 	float m_temp;
 	bool m_is_calibrated;
 
-	float m_gyro_drift;
-
 	Config::Range m_gyro_range;
 	Config::Range m_accel_range;
 };
