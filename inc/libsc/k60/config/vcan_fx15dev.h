@@ -49,5 +49,5 @@
 #define LIBSC_ST7735R_SDAT libbase::k60::Pin::Name::kPta16
 #define LIBSC_ST7735R_SCLK libbase::k60::Pin::Name::kPta15
 
-#define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtd7
-#define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtd6
+#define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtb16
+#define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtb17
