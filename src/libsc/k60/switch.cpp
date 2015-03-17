@@ -34,7 +34,7 @@ inline Pin::Name GetPin(const uint8_t id)
 	{
 		assert(false);
 	}
-	return LIBSC_BUTTON0;
+	return LIBSC_SWITCH0;
 }
 
 #else
