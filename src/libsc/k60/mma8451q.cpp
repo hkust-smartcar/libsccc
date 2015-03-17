@@ -131,10 +131,18 @@ bool Mma8451q::Update()
 
 void Mma8451q::GetAllAccel()
 {
-	const vector<Byte> &bytes = ReadRegBytes(MMA8451Q_RA_REG_OUT_ALL, 0x06);
+	const vector<Byte> &data = m_i2c_master.GetBytes(MMA8451Q_DEFAULT_ADDRESS,
+			MMA8451Q_RA_REG_OUT_ALL, 0x06);
+	if (data.empty())
+	{
+		LOG_W("MMA8451Q Failed reading 0x%X", MMA8451Q_RA_REG_OUT_ALL);
+		return;
+	}
 
 	for (int i = 0, j = 0; i < 3; i++, j += 2)
-		m_last_accel[i] = (int16_t)(bytes[j] << 8 | bytes[j + 1]) / m_scale_factor;
+	{
+		m_last_accel[i] = (int16_t)(data[j] << 8 | data[j + 1]) / m_scale_factor;
+	}
 }
 
 void Mma8451q::GetAllAngle()
@@ -163,17 +171,6 @@ void Mma8451q::SetActive(const bool flag)
 	}
 
 	WriteRegByte(MMA8451Q_RA_CTRL_REG1, reg);
-}
-
-vector<Byte> Mma8451q::ReadRegBytes(const Byte reg, const Byte length)
-{
-	vector<Byte> data;
-	data = m_i2c_master.GetBytes(MMA8451Q_DEFAULT_ADDRESS, reg, length);
-	if (data.empty())
-	{
-		LOG_W("MMA8451Q Failed reading 0x%X", reg);
-	}
-	return data;
 }
 
 Byte Mma8451q::ReadRegByte(const Byte reg)

@@ -101,7 +101,6 @@ private:
 
 	Byte ReadRegByte(const Byte reg);
 	void WriteRegByte(const Byte reg, const Byte data);
-	std::vector<Byte> ReadRegBytes(const Byte reg, const Byte length);
 
 	I2cMaster m_i2c_master;
 	Config::Sensitivity m_sensitivity;
