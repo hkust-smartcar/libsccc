@@ -15,6 +15,7 @@
 #include "libbase/k60/adc.h"
 #include "libbase/k60/dma_mux.h"
 #include "libbase/k60/ftm.h"
+#include "libbase/k60/i2c.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pin_utils.h"
 #include "libbase/k60/uart.h"
@@ -531,6 +532,45 @@ Pin::Config::MuxControl Mk60d10Lqfp144::GetFtmQdMux(const Pin::Name pin)
 	else
 	{
 		return Pin::Config::MuxControl::kAlt6;
+	}
+}
+
+I2c::Name Mk60d10Lqfp144::GetI2c(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPtb0:
+	case Pin::Name::kPtb2:
+	case Pin::Name::kPtd8:
+		return I2c::Name::kI2c0Scl;
+
+	case Pin::Name::kPtb1:
+	case Pin::Name::kPtb3:
+	case Pin::Name::kPtd9:
+		return I2c::Name::kI2c0Sda;
+
+	case Pin::Name::kPte1:
+	case Pin::Name::kPtc10:
+		return I2c::Name::kI2c1Scl;
+
+	case Pin::Name::kPte0:
+	case Pin::Name::kPtc11:
+		return I2c::Name::kI2c1Sda;
+
+	default:
+		return I2c::Name::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mk60d10Lqfp144::GetI2cMux(const Pin::Name pin)
+{
+	if (pin == Pin::Name::kPte0 || pin == Pin::Name::kPte1)
+	{
+		return Pin::Config::MuxControl::kAlt6;
+	}
+	else
+	{
+		return Pin::Config::MuxControl::kAlt2;
 	}
 }
 
