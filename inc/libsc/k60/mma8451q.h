@@ -79,8 +79,6 @@ public:
 
 	explicit Mma8451q(const Mma8451q::Config &config);
 
-	bool IsConnected();
-
 	// 13ms
 	bool Update();
 
@@ -95,6 +93,8 @@ public:
 	}
 
 private:
+	bool Verify();
+
 	// 2ms
 	void GetAllAccel();
 	// 0ms

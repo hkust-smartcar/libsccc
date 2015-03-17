@@ -83,6 +83,8 @@ Mma8451q::Mma8451q(const Mma8451q::Config &config)
 		  m_sensitivity(config.sensitivity),
 		  m_scale_factor((float)(1 << ((Byte)m_sensitivity + 0x0C)))
 {
+	assert(Verify());
+
 	SetActive(false);
 
 	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (Byte)config.sensitivity);
@@ -95,11 +97,18 @@ Mma8451q::Mma8451q(const Mma8451q::Config &config)
 	SetActive(true);
 }
 
-bool Mma8451q::IsConnected()
+bool Mma8451q::Verify()
 {
-	Byte devId = 0;
-	devId = ReadRegByte(MMA8451Q_RA_REG_WHO_AM_I);
-	return (devId == 0x1A);
+	Byte who_am_i;
+	if (!m_i2c_master.GetByte(MMA8451Q_DEFAULT_ADDRESS, MMA8451Q_RA_REG_WHO_AM_I,
+			&who_am_i))
+	{
+		return false;
+	}
+	else
+	{
+		return (who_am_i == 0x1A);
+	}
 }
 
 bool Mma8451q::Update()
