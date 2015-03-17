@@ -84,17 +84,22 @@ Mma8451q::Mma8451q(const Mma8451q::Config &config)
 		  m_scale_factor((float)(1 << ((Byte)m_sensitivity + 0x0C)))
 {
 	assert(Verify());
+	System::DelayUs(1);
 
 	SetActive(false);
+	System::DelayUs(1);
 
 	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (Byte)config.sensitivity);
+	System::DelayUs(1);
 
 //	WriteRegByte(MMA8451Q_RA_CTRL_REG2, (Byte)config.power_mode);
 //
 //	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate << 3 | MMA8451Q_CR1_LNOISE);
 	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate << 3);
+	System::DelayUs(1);
 
 	SetActive(true);
+	System::DelayUs(1);
 }
 
 bool Mma8451q::Verify()
