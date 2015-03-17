@@ -13,25 +13,24 @@
 #include <array>
 #include <vector>
 
-#include "libbase/k60/i2c_master.h"
-#include "libbase/k60/soft_i2c_master.h"
+#include "libbase/helper.h"
 #include "libbase/misc_types.h"
+#include LIBBASE_H(i2c_master)
+#include LIBBASE_H(soft_i2c_master)
 
 #include "libsc/config.h"
 
 namespace libsc
-{
-namespace k60
 {
 
 class Mma8451q
 {
 public:
 #if LIBSC_USE_SOFT_MMA8451Q
-	typedef libbase::k60::SoftI2cMaster I2cMaster;
+	typedef LIBBASE_MODULE(SoftI2cMaster) I2cMaster;
 
 #else
-	typedef libbase::k60::I2cMaster I2cMaster;
+	typedef LIBBASE_MODULE(I2cMaster) I2cMaster;
 
 #endif // LIBSC_USE_SOFT_MMA8451Q
 
@@ -79,7 +78,7 @@ public:
 		OutputDataRate output_data_rate = OutputDataRate::k200Hz;
 	};
 
-	explicit Mma8451q(const Mma8451q::Config &config);
+	explicit Mma8451q(const Config &config);
 
 	bool Update();
 
@@ -112,7 +111,5 @@ private:
 	std::array<float, 3> m_last_angle;
 
 };
-
-}
 
 }

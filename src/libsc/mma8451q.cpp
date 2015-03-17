@@ -6,8 +6,6 @@
  * Refer to LICENSE for details
  */
 
-#include "libbase/k60/hardware.h"
-
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -16,25 +14,39 @@
 #include <vector>
 
 #include "libbase/log.h"
-#include "libbase/k60/i2c_master.h"
-#include "libbase/k60/soft_i2c_master.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(i2c_master)
+#include LIBBASE_H(soft_i2c_master)
 
 #include "libsc/config.h"
 #include "libsc/device_h/mma8451q.h"
-#include "libsc/k60/mma8451q.h"
-#include "libsc/k60/system.h"
+#include "libsc/mma8451q.h"
 #include "libutil/math.h"
 #include "libutil/misc.h"
 
-using namespace libbase::k60;
+#if MK60DZ10 || MK60D10 || MK60F15
+#include "libsc/k60/system.h"
+
+#elif MKL26Z4
+#include "libsc/kl26/system.h"
+
+#endif
+
+using namespace LIBBASE_NS;
 using namespace libutil;
 using namespace std;
+
+#if MK60DZ10 || MK60D10 || MK60F15
+using namespace libsc::k60;
+
+#elif MKL26Z4
+using namespace libsc::kl26;
+
+#endif
 
 #define HALF_PI 1.57079633f
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_MMA8451Q
@@ -79,7 +91,7 @@ Mma8451q::I2cMaster::Config GetI2cMasterConfig(const Mma8451q::Config &config)
 
 }
 
-Mma8451q::Mma8451q(const Mma8451q::Config &config)
+Mma8451q::Mma8451q(const Config &config)
 		: m_i2c_master(GetI2cMasterConfig(config)),
 		  m_sensitivity(config.sensitivity),
 		  m_scale_factor((float)(1 << ((Byte)m_sensitivity + 0x0C)))
@@ -201,5 +213,4 @@ bool Mma8451q::Update() { return false; }
 
 #endif
 
-}
 }
