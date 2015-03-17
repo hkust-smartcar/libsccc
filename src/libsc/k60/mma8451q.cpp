@@ -198,7 +198,6 @@ Mma8451q::Mma8451q(const Config&)
 {
 	LOG_DL("Configured not to use Mma8451q");
 }
-bool Mma8451q::IsConnected() { return false; }
 bool Mma8451q::Update() { return false; }
 
 #endif
