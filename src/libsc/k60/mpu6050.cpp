@@ -92,10 +92,6 @@ Mpu6050::Mpu6050(const Config &config)
 			accel_config));
 	System::DelayUs(1);
 
-	for(int i=0; i<3; i++){
-		m_omega_offset[i] = 0;
-	}
-
 	/**
 	 * Decide if calibrate gyro drift
 	 */
