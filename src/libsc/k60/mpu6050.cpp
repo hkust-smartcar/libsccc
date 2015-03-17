@@ -21,9 +21,8 @@
 #include "libsc/config.h"
 #include "libsc/device_h/mpu6050.h"
 #include "libsc/k60/mpu6050.h"
-#include "libutil/misc.h"
-
 #include "libsc/k60/system.h"
+#include "libutil/misc.h"
 
 using namespace libbase::k60;
 using namespace std;

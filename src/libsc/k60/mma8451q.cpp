@@ -27,7 +27,6 @@
 #include "libutil/misc.h"
 
 using namespace libbase::k60;
-using namespace libsc::k60;
 using namespace libutil;
 using namespace std;
 
