@@ -79,7 +79,6 @@ public:
 
 	explicit Mma8451q(const Mma8451q::Config &config);
 
-	// 13ms
 	bool Update();
 
 	const std::array<float, 3>& GetAccel() const
@@ -95,9 +94,7 @@ public:
 private:
 	bool Verify();
 
-	// 2ms
 	void GetAllAccel();
-	// 0ms
 	void GetAllAngle();
 
 	void SetActive(const bool flag);
