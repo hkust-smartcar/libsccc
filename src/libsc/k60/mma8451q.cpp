@@ -22,10 +22,12 @@
 #include "libsc/config.h"
 #include "libsc/device_h/mma8451q.h"
 #include "libsc/k60/mma8451q.h"
+#include "libsc/k60/system.h"
 #include "libutil/math.h"
 #include "libutil/misc.h"
 
 using namespace libbase::k60;
+using namespace libsc::k60;
 using namespace libutil;
 using namespace std;
 
