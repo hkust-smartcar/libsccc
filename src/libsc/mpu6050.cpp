@@ -6,31 +6,43 @@
  * Refer to LICENSE for details
  */
 
-#include "libbase/k60/hardware.h"
-
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+
 #include <array>
 #include <vector>
 
 #include "libbase/log.h"
-#include "libbase/k60/i2c_master.h"
-#include "libbase/k60/soft_i2c_master.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(i2c_master)
+#include LIBBASE_H(soft_i2c_master)
 
 #include "libsc/config.h"
 #include "libsc/device_h/mpu6050.h"
-#include "libsc/k60/mpu6050.h"
+#include "libsc/mpu6050.h"
 #include "libutil/misc.h"
 
+#if MK60DZ10 || MK60D10 || MK60F15
 #include "libsc/k60/system.h"
 
-using namespace libbase::k60;
+#elif MKL26Z4
+#include "libsc/kl26/system.h"
+
+#endif
+
+using namespace LIBBASE_NS;
 using namespace std;
 
+#if MK60DZ10 || MK60D10 || MK60F15
+using namespace libsc::k60;
+
+#elif MKL26Z4
+using namespace libsc::kl26;
+
+#endif
+
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_MPU6050
@@ -225,5 +237,4 @@ bool Mpu6050::Update(const bool) { return false; }
 
 #endif /* LIBSC_USE_MPU6050 */
 
-} /* namespace k60 */
-} /* namespace libsc */
+}

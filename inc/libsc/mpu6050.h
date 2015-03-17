@@ -11,23 +11,24 @@
 #include <cstdint>
 #include <array>
 
-#include "libbase/k60/i2c_master.h"
-#include "libbase/k60/soft_i2c_master.h"
+#include "libbase/helper.h"
 #include "libbase/misc_types.h"
+#include LIBBASE_H(i2c_master)
+#include LIBBASE_H(soft_i2c_master)
+
+#include "libsc/config.h"
 
 namespace libsc
-{
-namespace k60
 {
 
 class Mpu6050
 {
 public:
 #if LIBSC_USE_SOFT_MPU6050
-	typedef libbase::k60::SoftI2cMaster I2cMaster;
+	typedef LIBBASE_MODULE(SoftI2cMaster) I2cMaster;
 
 #else
-	typedef libbase::k60::I2cMaster I2cMaster;
+	typedef LIBBASE_MODULE(I2cMaster) I2cMaster;
 
 #endif // LIBSC_USE_SOFT_MPU6050
 
@@ -96,5 +97,4 @@ private:
 	Config::Range m_accel_range;
 };
 
-} /* namespace k60 */
-} /* namespace libsc */
+}
