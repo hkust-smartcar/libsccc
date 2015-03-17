@@ -56,9 +56,11 @@ Mpu6050::I2cMaster::Config GetI2cConfig()
 
 Mpu6050::Mpu6050(const Config &config)
 		: m_i2c(GetI2cConfig()),
+		  m_temp(0.0f),
+		  m_is_calibrated(false),
+		  m_gyro_drift(0.0f),
 		  m_gyro_range(config.gyro_range),
-		  m_accel_range(config.accel_range),
-		  m_is_calibrated(false)
+		  m_accel_range(config.accel_range)
 {
 	assert(Verify());
 	System::DelayUs(1);
@@ -214,7 +216,7 @@ bool Mpu6050::Update(bool clamp_)
 
 #else
 Mpu6050::Mpu6050(const Config&)
-		: m_i2c(nullptr), m_temp(0),
+		: m_i2c(nullptr), m_temp(0), m_is_calibrated(false), m_gyro_drift(0.0f),
 		  m_gyro_range(Config::Range::kSmall),
 		  m_accel_range(Config::Range::kSmall)
 {

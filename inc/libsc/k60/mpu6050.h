@@ -69,11 +69,13 @@ public:
 		return m_temp;
 	}
 
-	bool IsCalibrated(){
+	bool IsCalibrated()
+	{
 		return m_is_calibrated;
 	}
 
-	std::array<float, 3>& GetOffset(){
+	std::array<float, 3>& GetOffset()
+	{
 		return m_omega_offset;
 	}
 
@@ -90,7 +92,7 @@ private:
 	float m_temp;
 	bool m_is_calibrated;
 
-	float gyro_drift;
+	float m_gyro_drift;
 
 	Config::Range m_gyro_range;
 	Config::Range m_accel_range;
