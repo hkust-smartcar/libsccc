@@ -54,27 +54,27 @@ public:
 
 	bool Update(bool clamp_ = true);
 
-	const std::array<float, 3>& GetAccel()
+	const std::array<float, 3>& GetAccel() const
 	{
 		return m_accel;
 	}
 
-	const std::array<float, 3>& GetOmega()
+	const std::array<float, 3>& GetOmega() const
 	{
 		return m_omega;
 	}
 
-	float GetCelsius()
+	float GetCelsius() const
 	{
 		return m_temp;
 	}
 
-	bool IsCalibrated()
+	bool IsCalibrated() const
 	{
 		return m_is_calibrated;
 	}
 
-	std::array<float, 3>& GetOffset()
+	const std::array<float, 3>& GetOffset() const
 	{
 		return m_omega_offset;
 	}
