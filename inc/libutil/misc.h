@@ -7,16 +7,16 @@
  * Refer to LICENSE for details
  */
 
-#ifndef LIBUTIL_MISC_H_
-#define LIBUTIL_MISC_H_
+#pragma once
 
 #include <cstdint>
 
 #include <algorithm>
 
-#if MK60DZ10 || MK60D10 || MK60F15
-#include "libbase/k60/misc_utils.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(misc_utils)
 
+#if MK60DZ10 || MK60D10 || MK60F15
 namespace libsc
 {
 namespace k60
@@ -28,7 +28,15 @@ class UartDevice;
 }
 
 #elif MKL26Z4
-#include "libbase/kl26/misc_utils.h"
+namespace libsc
+{
+namespace kl26
+{
+
+class UartDevice;
+
+}
+}
 
 #endif
 
@@ -38,9 +46,16 @@ class UartDevice;
 
 namespace libutil
 {
-#if defined(MK60DZ10) || defined(MK60D10) || defined(MK60F15)
+
+#if MK60DZ10 || MK60D10 || MK60F15
 void InitDefaultFwriteHandler(libsc::k60::UartDevice *uart);
+
+#elif MKL26Z4
+void InitDefaultFwriteHandler(libsc::kl26::UartDevice *uart);
+
 #endif
+
+void UninitDefaultFwriteHandler();
 
 template<typename T>
 inline T Clamp(const T &min, const T &x, const T &max)
@@ -59,9 +74,6 @@ inline uint16_t GetRgb565(const uint8_t r, const uint8_t g, const uint8_t b)
 	return ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
 }
 
-
-void UninitDefaultFwriteHandler();
-
 template<typename T>
 inline T EnumAdvance(const T e, const int n)
 {
@@ -75,5 +87,3 @@ inline T EnumAdvance(const T e, const U n)
 }
 
 }
-
-#endif /* LIBUTIL_MISC_H_ */

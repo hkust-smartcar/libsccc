@@ -6,16 +6,29 @@
  * Copyright (c) 2014-2015 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
-#ifndef MKL26Z4
+
 #include <cstdint>
 
+#include "libbase/helper.h"
 #include "libbase/syscall.h"
-#include "libbase/k60/misc_utils.h"
 
+#if MK60DZ10 || MK60D10 || MK60F15
 #include "libsc/k60/uart_device.h"
+
+#elif MKL26Z4
+#include "libsc/kl26/uart_device.h"
+
+#endif
+
 #include "libutil/misc.h"
 
+#if MK60DZ10 || MK60D10 || MK60F15
 using namespace libsc::k60;
+
+#elif MKL26Z4
+using namespace libsc::kl26;
+
+#endif
 
 namespace libutil
 {
@@ -49,4 +62,3 @@ void UninitDefaultFwriteHandler()
 }
 
 }
-#endif
