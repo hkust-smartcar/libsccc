@@ -1,6 +1,5 @@
 /*
  * ds18b20.h
- * DS18B20 digital thermometer
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -17,6 +16,9 @@
 namespace libsc
 {
 
+/**
+ * DS18B20 digital thermometer
+ */
 class Ds18b20
 {
 public:
