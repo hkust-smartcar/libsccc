@@ -11,11 +11,10 @@
 
 #include <cstdint>
 
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 namespace libsc
-{
-namespace k60
 {
 
 class Ds18b20
@@ -40,9 +39,8 @@ private:
 	void SendByte(const uint8_t byte);
 	uint8_t ReceiveByte();
 
-	libbase::k60::Gpio m_pin;
+	LIBBASE_MODULE(Gpio) m_pin;
 	float m_temperature;
 };
 
-}
 }
