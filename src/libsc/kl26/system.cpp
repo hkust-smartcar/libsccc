@@ -6,6 +6,7 @@
  * Refer to LICENSE for details
  */
 
+#include <cassert>
 #include <cstdint>
 
 #include "libsc/config.h"
@@ -37,21 +38,25 @@ void System::Init()
 
 void System::DelayUs(const uint16_t us)
 {
+	assert(m_instance);
 	m_instance->delay.DelayUs(us);
 }
 
 void System::DelayMs(const uint16_t ms)
 {
+	assert(m_instance);
 	m_instance->delay.DelayMs(ms);
 }
 
 void System::DelayS(const uint16_t s)
 {
+	assert(m_instance);
 	m_instance->delay.DelayS(s);
 }
 
 Timer::TimerInt System::Time()
 {
+	assert(m_instance);
 	return m_instance->timer.Time();
 }
 
