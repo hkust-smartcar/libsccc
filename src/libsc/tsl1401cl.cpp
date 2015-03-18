@@ -1,6 +1,5 @@
 /*
- * linear_ccd.h
- * Linear CCD (for TSL1401CL)
+ * tsl1401cl.cpp
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -18,8 +17,8 @@
 #include LIBBASE_H(pin)
 
 #include "libsc/config.h"
-#include "libsc/linear_ccd.h"
 #include "libsc/system.h"
+#include "libsc/tsl1401cl.h"
 #include "libutil/misc.h"
 
 using namespace LIBBASE_NS;
@@ -135,14 +134,14 @@ Gpo::Config GetSiGpoConfig(const uint8_t id)
 
 }
 
-LinearCcd::LinearCcd(const uint8_t id)
+Tsl1401cl::Tsl1401cl(const uint8_t id)
 		: m_ad_pin(GetAdConfig(id)),
 		  m_clk_pin(GetClkGpoConfig(id)),
 		  m_si_pin(GetSiGpoConfig(id)),
 		  m_index(0)
 {}
 
-void LinearCcd::Delay()
+void Tsl1401cl::Delay()
 {
 	// 50ns under 180MHz
 	for (int i = 0; i < 9; ++i)
@@ -151,12 +150,12 @@ void LinearCcd::Delay()
 	}
 }
 
-void LinearCcd::StartSample()
+void Tsl1401cl::StartSample()
 {
 	m_index = 0;
 }
 
-bool LinearCcd::SampleProcess()
+bool Tsl1401cl::SampleProcess()
 {
 	if (IsImageReady())
 	{
@@ -197,13 +196,13 @@ bool LinearCcd::SampleProcess()
 }
 
 #else
-LinearCcd::LinearCcd(const uint8_t)
+Tsl1401cl::Tsl1401cl(const uint8_t)
 		: m_ad_pin(nullptr), m_clk_pin(nullptr), m_si_pin(nullptr), m_index(0)
 {
-	LOG_DL("Configured not to use LinearCcd");
+	LOG_DL("Configured not to use Tsl1401cl");
 }
-void LinearCcd::StartSample() {}
-bool LinearCcd::SampleProcess() { return false; }
+void Tsl1401cl::StartSample() {}
+bool Tsl1401cl::SampleProcess() { return false; }
 
 #endif
 

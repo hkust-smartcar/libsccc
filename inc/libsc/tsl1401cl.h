@@ -1,6 +1,5 @@
 /*
- * linear_ccd.h
- * Linear CCD (for TSL1401CL)
+ * tsl1401cl.h
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -19,12 +18,15 @@
 namespace libsc
 {
 
-class LinearCcd
+/**
+ * TSL1401CL linear CCD
+ */
+class Tsl1401cl
 {
 public:
 	static constexpr int kSensorW = 128;
 
-	explicit LinearCcd(const uint8_t id);
+	explicit Tsl1401cl(const uint8_t id);
 
 	void StartSample();
 	bool SampleProcess();
