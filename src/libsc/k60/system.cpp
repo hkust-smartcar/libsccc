@@ -6,23 +6,32 @@
  * Refer to LICENSE for details
  */
 
+#include <cstdint>
+
 #include "libbase/k60/cache.h"
 
 #include "libsc/config.h"
-#include "libsc/k60/system.h"
+#include "libsc/k60/dwt_delay.h"
+#include "libsc/system.h"
+#include "libsc/sys_tick_timer.h"
 
 using namespace libbase::k60;
+using namespace libsc::k60;
 
 namespace libsc
 {
-namespace k60
+
+System::Impl *System::m_instance = nullptr;
+
+struct System::Impl
 {
+	Impl();
 
-System *System::m_instance = nullptr;
+	DwtDelay delay;
+	SysTickTimer timer;
+};
 
-System::System()
-		: m_delay(),
-		  m_timer()
+System::Impl::Impl()
 {
 	// Enable cache unless otherwise disabled
 #if !LIBSC_NOT_USE_CACHE && MK60F15
@@ -32,5 +41,32 @@ System::System()
 #endif
 }
 
+void System::Init()
+{
+	if (!m_instance)
+	{
+		m_instance = new Impl;
+	}
 }
+
+void System::DelayUs(const uint16_t us)
+{
+	m_instance->delay.DelayUs(us);
+}
+
+void System::DelayMs(const uint16_t ms)
+{
+	m_instance->delay.DelayMs(ms);
+}
+
+void System::DelayS(const uint16_t s)
+{
+	m_instance->delay.DelayS(s);
+}
+
+Timer::TimerInt System::Time()
+{
+	return m_instance->timer.Time();
+}
+
 }

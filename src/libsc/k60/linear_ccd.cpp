@@ -18,7 +18,7 @@
 
 #include "libsc/config.h"
 #include "libsc/k60/linear_ccd.h"
-#include "libsc/k60/system.h"
+#include "libsc/system.h"
 #include "libutil/misc.h"
 
 using namespace libbase::k60;

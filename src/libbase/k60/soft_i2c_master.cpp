@@ -21,11 +21,10 @@
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/soft_i2c_master.h"
 
-#include "libsc/k60/system.h"
+#include "libsc/system.h"
 
 using namespace std;
 using namespace libsc;
-using namespace libsc::k60;
 
 #define SEND_BYTE_GUARDED(x, ret) do { if (!SendByte_(x)) { Stop(); return ret; } } while (false)
 

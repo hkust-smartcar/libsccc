@@ -30,7 +30,7 @@
 #include "libsc/config.h"
 #include "libsc/device_h/ov7725.h"
 #include "libsc/k60/ov7725.h"
-#include "libsc/k60/system.h"
+#include "libsc/system.h"
 #include "libutil/misc.h"
 
 using namespace libbase::k60;

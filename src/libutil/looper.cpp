@@ -9,25 +9,12 @@
 #include <functional>
 #include <list>
 
-#if MK60DZ10 || MK60D10 || MK60F15
-#include "libsc/k60/system.h"
-
-#elif MKL26Z4
-#include "libsc/kl26/system.h"
-
-#endif
-
+#include "libsc/system.h"
 #include "libsc/timer.h"
 #include "libutil/looper.h"
 
 using namespace libsc;
 using namespace std;
-
-#if MK60DZ10 || MK60D10 || MK60F15
-using namespace libsc::k60;
-#elif MKL26Z4
-using namespace libsc::kl26;
-#endif
 
 namespace libutil
 {

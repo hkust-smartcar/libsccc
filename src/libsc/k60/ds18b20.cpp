@@ -16,7 +16,7 @@
 #include "libsc/config.h"
 #include "libsc/device_h/ds18b20.h"
 #include "libsc/k60/ds18b20.h"
-#include "libsc/k60/system.h"
+#include "libsc/system.h"
 
 using namespace libbase::k60;
 

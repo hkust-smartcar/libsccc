@@ -21,28 +21,13 @@
 #include "libsc/config.h"
 #include "libsc/device_h/mma8451q.h"
 #include "libsc/mma8451q.h"
+#include "libsc/system.h"
 #include "libutil/math.h"
 #include "libutil/misc.h"
-
-#if MK60DZ10 || MK60D10 || MK60F15
-#include "libsc/k60/system.h"
-
-#elif MKL26Z4
-#include "libsc/kl26/system.h"
-
-#endif
 
 using namespace LIBBASE_NS;
 using namespace libutil;
 using namespace std;
-
-#if MK60DZ10 || MK60D10 || MK60F15
-using namespace libsc::k60;
-
-#elif MKL26Z4
-using namespace libsc::kl26;
-
-#endif
 
 #define HALF_PI 1.57079633f
 

@@ -21,26 +21,11 @@
 #include "libsc/config.h"
 #include "libsc/device_h/mpu6050.h"
 #include "libsc/mpu6050.h"
+#include "libsc/system.h"
 #include "libutil/misc.h"
-
-#if MK60DZ10 || MK60D10 || MK60F15
-#include "libsc/k60/system.h"
-
-#elif MKL26Z4
-#include "libsc/kl26/system.h"
-
-#endif
 
 using namespace LIBBASE_NS;
 using namespace std;
-
-#if MK60DZ10 || MK60D10 || MK60F15
-using namespace libsc::k60;
-
-#elif MKL26Z4
-using namespace libsc::kl26;
-
-#endif
 
 namespace libsc
 {
