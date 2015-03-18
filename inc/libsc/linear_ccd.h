@@ -34,7 +34,7 @@ public:
 	 *
 	 * @return
 	 */
-	const std::array<uint16_t,kSensorW>& GetData() const
+	const std::array<uint16_t, kSensorW>& GetData() const
 	{
 		return m_front_buffer;
 	}

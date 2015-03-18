@@ -24,13 +24,6 @@
 
 using namespace LIBBASE_NS;
 
-// The output is nominally 0V for no light input
-#ifndef LIBSC_NEGATE_LINEAR_CCD
-#define CCD_DARK false
-#else
-#define CCD_DARK true
-#endif
-
 namespace libsc
 {
 
