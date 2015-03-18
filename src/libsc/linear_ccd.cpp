@@ -12,16 +12,17 @@
 #include <bitset>
 
 #include "libbase/log.h"
-#include "libbase/k60/adc.h"
-#include "libbase/k60/gpio.h"
-#include "libbase/k60/pin.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(adc)
+#include LIBBASE_H(gpio)
+#include LIBBASE_H(pin)
 
 #include "libsc/config.h"
-#include "libsc/k60/linear_ccd.h"
+#include "libsc/linear_ccd.h"
 #include "libsc/system.h"
 #include "libutil/misc.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 // The output is nominally 0V for no light input
 #ifndef LIBSC_NEGATE_LINEAR_CCD
@@ -31,8 +32,6 @@ using namespace libbase::k60;
 #endif
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_LINEAR_CCD
@@ -215,5 +214,4 @@ bool LinearCcd::SampleProcess() { return false; }
 
 #endif
 
-}
 }

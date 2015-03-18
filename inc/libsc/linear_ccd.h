@@ -12,12 +12,11 @@
 #include <cstdint>
 #include <array>
 
-#include <libbase/k60/adc.h>
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(adc)
+#include LIBBASE_H(gpio)
 
 namespace libsc
-{
-namespace k60
 {
 
 class LinearCcd
@@ -48,9 +47,9 @@ public:
 private:
 	inline void Delay();
 
-	libbase::k60::Adc m_ad_pin;
-	libbase::k60::Gpo m_clk_pin;
-	libbase::k60::Gpo m_si_pin;
+	LIBBASE_MODULE(Adc) m_ad_pin;
+	LIBBASE_MODULE(Gpo) m_clk_pin;
+	LIBBASE_MODULE(Gpo) m_si_pin;
 
 	std::array<uint16_t, kSensorW> m_front_buffer;
 	std::array<uint16_t, kSensorW> m_back_buffer;
@@ -58,5 +57,4 @@ private:
 	int m_index;
 };
 
-}
 }
