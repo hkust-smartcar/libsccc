@@ -1,6 +1,5 @@
 /*
  * ds18b20.h
- * DS18B20 digital thermometer
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -11,18 +10,17 @@
 #include <cmath>
 
 #include "libbase/log.h"
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 #include "libsc/config.h"
 #include "libsc/device_h/ds18b20.h"
-#include "libsc/k60/ds18b20.h"
-#include "libsc/k60/system.h"
+#include "libsc/ds18b20.h"
+#include "libsc/system.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_TEMPERATURE_SENSOR
@@ -153,5 +151,4 @@ void Ds18b20::UpdateTemperature() {}
 
 #endif /* LIBSC_USE_TEMPERATURE_SENSOR */
 
-}
 }

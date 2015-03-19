@@ -10,16 +10,15 @@
 #include <cstdint>
 
 #include "libbase/log.h"
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 #include "libsc/config.h"
-#include "libsc/k60/switch.h"
+#include "libsc/switch.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_SWITCH
@@ -34,7 +33,7 @@ inline Pin::Name GetPin(const uint8_t id)
 	{
 		assert(false);
 	}
-	return LIBSC_BUTTON0;
+	return LIBSC_SWITCH0;
 }
 
 #else
@@ -106,5 +105,4 @@ bool Switch::IsOn() const { return false; }
 
 #endif /* LIBSC_USE_SWITCH */
 
-}
 }

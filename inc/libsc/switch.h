@@ -10,11 +10,10 @@
 
 #include <cstdint>
 
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
 
 namespace libsc
-{
-namespace k60
 {
 
 class Switch
@@ -36,9 +35,8 @@ public:
 	}
 
 private:
-	libbase::k60::Gpi m_pin;
+	LIBBASE_MODULE(Gpi) m_pin;
 	bool m_is_active_low;
 };
 
-}
 }

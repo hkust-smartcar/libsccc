@@ -14,22 +14,24 @@
 #include <vector>
 
 #include "libbase/log.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(i2c_master)
+#include LIBBASE_H(soft_i2c_master)
 
 #include "libsc/config.h"
 #include "libsc/device_h/mma8451q.h"
-#include "libsc/k60/mma8451q.h"
+#include "libsc/mma8451q.h"
+#include "libsc/system.h"
 #include "libutil/math.h"
 #include "libutil/misc.h"
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 using namespace libutil;
 using namespace std;
 
 #define HALF_PI 1.57079633f
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_MMA8451Q
@@ -58,38 +60,58 @@ inline Pin::Name GetSdaPin(const uint8_t id)
 
 #endif
 
-SoftI2cMaster::Config GetI2cMasterConfig(const Mma8451q::Config &config)
+Mma8451q::I2cMaster::Config GetI2cMasterConfig(const Mma8451q::Config &config)
 {
-	SoftI2cMaster::Config product;
+	Mma8451q::I2cMaster::Config product;
 	product.scl_pin = GetSclPin(config.id);
 	product.sda_pin = GetSdaPin(config.id);
+	product.baud_rate_khz = 400;
+	product.scl_low_timeout = 1000;
+#if !LIBSC_USE_SOFT_MMA8451Q
+	product.min_scl_start_hold_time_ns = 600;
+	product.min_scl_stop_hold_time_ns = 600;
+#endif
 	return product;
 }
 
 }
 
-Mma8451q::Mma8451q(const Mma8451q::Config &config)
+Mma8451q::Mma8451q(const Config &config)
 		: m_i2c_master(GetI2cMasterConfig(config)),
 		  m_sensitivity(config.sensitivity),
 		  m_scale_factor((float)(1 << ((Byte)m_sensitivity + 0x0C)))
 {
+	assert(Verify());
+	System::DelayUs(1);
+
 	SetActive(false);
+	System::DelayUs(1);
 
 	WriteRegByte(MMA8451Q_RA_XYZ_DATA_CFG, 2 - (Byte)config.sensitivity);
+	System::DelayUs(1);
 
 //	WriteRegByte(MMA8451Q_RA_CTRL_REG2, (Byte)config.power_mode);
 //
 //	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate << 3 | MMA8451Q_CR1_LNOISE);
 	WriteRegByte(MMA8451Q_RA_CTRL_REG1, (Byte)config.output_data_rate << 3);
+	System::DelayUs(1);
 
 	SetActive(true);
+	System::DelayUs(1);
 }
 
-bool Mma8451q::IsConnected()
+bool Mma8451q::Verify()
 {
-	Byte devId = 0;
-	devId = ReadRegByte(MMA8451Q_RA_REG_WHO_AM_I);
-	return (devId == 0x1A);
+	Byte who_am_i;
+	if (!m_i2c_master.GetByte(MMA8451Q_DEFAULT_ADDRESS, MMA8451Q_RA_REG_WHO_AM_I,
+			&who_am_i))
+	{
+		return false;
+	}
+	else
+	{
+		return (who_am_i == 0x1A);
+	}
 }
 
 bool Mma8451q::Update()
@@ -105,10 +127,18 @@ bool Mma8451q::Update()
 
 void Mma8451q::GetAllAccel()
 {
-	const vector<Byte> &bytes = ReadRegBytes(MMA8451Q_RA_REG_OUT_ALL, 0x06);
+	const vector<Byte> &data = m_i2c_master.GetBytes(MMA8451Q_DEFAULT_ADDRESS,
+			MMA8451Q_RA_REG_OUT_ALL, 0x06);
+	if (data.empty())
+	{
+		LOG_W("MMA8451Q Failed reading 0x%X", MMA8451Q_RA_REG_OUT_ALL);
+		return;
+	}
 
 	for (int i = 0, j = 0; i < 3; i++, j += 2)
-		m_last_accel[i] = (int16_t)(bytes[j] << 8 | bytes[j + 1]) / m_scale_factor;
+	{
+		m_last_accel[i] = (int16_t)(data[j] << 8 | data[j + 1]) / m_scale_factor;
+	}
 }
 
 void Mma8451q::GetAllAngle()
@@ -139,17 +169,6 @@ void Mma8451q::SetActive(const bool flag)
 	WriteRegByte(MMA8451Q_RA_CTRL_REG1, reg);
 }
 
-vector<Byte> Mma8451q::ReadRegBytes(const Byte reg, const Byte length)
-{
-	vector<Byte> data;
-	data = m_i2c_master.GetBytes(MMA8451Q_DEFAULT_ADDRESS, reg, length);
-	if (data.empty())
-	{
-		LOG_W("MMA8451Q Failed reading 0x%X", reg);
-	}
-	return data;
-}
-
 Byte Mma8451q::ReadRegByte(const Byte reg)
 {
 	Byte data = 0;
@@ -175,10 +194,8 @@ Mma8451q::Mma8451q(const Config&)
 {
 	LOG_DL("Configured not to use Mma8451q");
 }
-bool Mma8451q::IsConnected() { return false; }
 bool Mma8451q::Update() { return false; }
 
 #endif
 
-}
 }

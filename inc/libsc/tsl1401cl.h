@@ -1,6 +1,5 @@
 /*
- * linear_ccd.h
- * Linear CCD (for TSL1401CL)
+ * tsl1401cl.h
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -12,20 +11,22 @@
 #include <cstdint>
 #include <array>
 
-#include <libbase/k60/adc.h>
-#include "libbase/k60/gpio.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(adc)
+#include LIBBASE_H(gpio)
 
 namespace libsc
 {
-namespace k60
-{
 
-class LinearCcd
+/**
+ * TSL1401CL linear CCD
+ */
+class Tsl1401cl
 {
 public:
 	static constexpr int kSensorW = 128;
 
-	explicit LinearCcd(const uint8_t id);
+	explicit Tsl1401cl(const uint8_t id);
 
 	void StartSample();
 	bool SampleProcess();
@@ -35,7 +36,7 @@ public:
 	 *
 	 * @return
 	 */
-	const std::array<uint16_t,kSensorW>& GetData() const
+	const std::array<uint16_t, kSensorW>& GetData() const
 	{
 		return m_front_buffer;
 	}
@@ -48,9 +49,9 @@ public:
 private:
 	inline void Delay();
 
-	libbase::k60::Adc m_ad_pin;
-	libbase::k60::Gpo m_clk_pin;
-	libbase::k60::Gpo m_si_pin;
+	LIBBASE_MODULE(Adc) m_ad_pin;
+	LIBBASE_MODULE(Gpo) m_clk_pin;
+	LIBBASE_MODULE(Gpo) m_si_pin;
 
 	std::array<uint16_t, kSensorW> m_front_buffer;
 	std::array<uint16_t, kSensorW> m_back_buffer;
@@ -58,5 +59,4 @@ private:
 	int m_index;
 };
 
-}
 }

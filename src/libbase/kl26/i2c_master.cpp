@@ -6,7 +6,7 @@
  * Refer to LICENSE for details
  */
 
-#include "libbase/k60/hardware.h"
+#include "libbase/kl26/hardware.h"
 
 #include <cassert>
 #include <cstddef>
@@ -16,30 +16,24 @@
 #include <vector>
 
 #include "libbase/log.h"
-#include "libbase/k60/clock_utils.h"
-#include "libbase/k60/i2c.h"
-#include "libbase/k60/i2c_master.h"
-#include "libbase/k60/i2c_master_interface.h"
-#include "libbase/k60/i2c_utils.h"
-#include "libbase/k60/pinout.h"
-#include "libbase/k60/sim.h"
+#include "libbase/kl26/clock_utils.h"
+#include "libbase/kl26/i2c.h"
+#include "libbase/kl26/i2c_master.h"
+#include "libbase/kl26/i2c_master_interface.h"
+#include "libbase/kl26/i2c_utils.h"
+#include "libbase/kl26/pinout.h"
+#include "libbase/kl26/sim.h"
 
 #include "libutil/misc.h"
 
 using namespace std;
 using namespace libutil;
 
-#if MK60DZ10 || MK60D10
-	#define CLOCKGATE0 Sim::ClockGate::kI2c0
-#elif MK60F15
-	#define CLOCKGATE0 Sim::ClockGate::kIic0
-#endif
-
 #define SEND_BYTE_GUARDED(x, ret) do { if (!SendByte_(x)) { Stop(); return ret; } } while (false)
 
 namespace libbase
 {
-namespace k60
+namespace kl26
 {
 
 namespace
@@ -188,6 +182,8 @@ void BaudRateCalculator::Calc(const I2cMaster::Config &config)
 				m_best_icr = j;
 			}
 		}
+		// On KL26, MULT must be 0 in oreder to use repeat start correctly (errata e2030)
+		break;
 	}
 }
 
@@ -205,7 +201,7 @@ I2cMaster::I2cMaster(const Config &config)
 
 	m_is_init = true;
 
-	Sim::SetEnableClockGate(EnumAdvance(CLOCKGATE0, m_module), true);
+	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kI2c0, m_module), true);
 
 	// Disable
 	MEM_MAPS[m_module]->C1 = 0;
@@ -214,6 +210,7 @@ I2cMaster::I2cMaster(const Config &config)
 	InitPin(config.scl_pin, config.sda_pin);
 	InitBaudRate(config);
 	InitC2Reg(config);
+	InitFltReg();
 	InitSltReg(config);
 
 	// Enable
@@ -301,6 +298,14 @@ void I2cMaster::InitC2Reg(const Config &config)
 	MEM_MAPS[m_module]->C2 = reg;
 }
 
+void I2cMaster::InitFltReg()
+{
+	uint8_t reg = 0;
+	SET_BIT(reg, I2C_FLT_SHEN_SHIFT);
+
+	MEM_MAPS[m_module]->FLT = reg;
+}
+
 void I2cMaster::InitSmbReg()
 {
 	uint8_t reg = 0;
@@ -337,7 +342,8 @@ void I2cMaster::Uninit()
 		// Disable
 		CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_IICEN_SHIFT);
 
-		Sim::SetEnableClockGate(EnumAdvance(CLOCKGATE0, m_module), false);
+		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kI2c0, m_module),
+				false);
 		g_instances[m_module] = nullptr;
 	}
 }
@@ -347,7 +353,7 @@ void I2cMaster::Start()
 	if (GET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT))
 	{
 		// Already started, generate a restart
-		return;
+		Stop();
 	}
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);

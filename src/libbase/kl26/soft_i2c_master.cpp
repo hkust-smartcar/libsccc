@@ -6,7 +6,7 @@
  * Refer to LICENSE for details
  */
 
-#include "libbase/k60/hardware.h"
+#include "libbase/kl26/hardware.h"
 
 #include <cassert>
 #include <cstddef>
@@ -15,11 +15,10 @@
 #include <vector>
 
 #include "libbase/log.h"
-#include "libbase/k60/dwt.h"
-#include "libbase/k60/gpio.h"
-#include "libbase/k60/i2c_master_interface.h"
-#include "libbase/k60/misc_utils.h"
-#include "libbase/k60/soft_i2c_master.h"
+#include "libbase/kl26/gpio.h"
+#include "libbase/kl26/i2c_master_interface.h"
+#include "libbase/kl26/misc_utils.h"
+#include "libbase/kl26/soft_i2c_master.h"
 
 #include "libsc/system.h"
 
@@ -32,7 +31,7 @@ using namespace libsc;
 
 namespace libbase
 {
-namespace k60
+namespace kl26
 {
 
 namespace
@@ -48,7 +47,6 @@ Gpi::Config GetSclConfig(const SoftI2cMaster::Config &config)
 {
 	Gpi::Config gc;
 	gc.pin = config.scl_pin;
-	gc.config[Pin::Config::ConfigBit::kOpenDrain] = true;
 	return gc;
 }
 
@@ -56,7 +54,6 @@ Gpi::Config GetSdaConfig(const SoftI2cMaster::Config &config)
 {
 	Gpi::Config gc;
 	gc.pin = config.sda_pin;
-	gc.config[Pin::Config::ConfigBit::kOpenDrain] = true;
 	return gc;
 }
 
@@ -64,7 +61,7 @@ Gpi::Config GetSdaConfig(const SoftI2cMaster::Config &config)
 
 inline void SoftI2cMaster::Delay()
 {
-	Dwt::DelayUs(m_delay_us);
+	System::DelayUs(m_delay_us);
 }
 
 SoftI2cMaster::SoftI2cMaster(const Config &config)

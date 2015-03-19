@@ -11,6 +11,7 @@
 #include <bitset>
 
 #include "libbase/kl26/adc.h"
+#include "libbase/kl26/i2c.h"
 #include "libbase/kl26/pin.h"
 #include "libbase/kl26/pinout/mkl26z4_lqfp100_macros.h"
 #include "libbase/kl26/tpm.h"
@@ -60,6 +61,11 @@ public:
 		return PINOUT_ADC_COUNT;
 	}
 
+	static constexpr Uint GetI2cCount()
+	{
+		return PINOUT_I2C_COUNT;
+	}
+
 	static constexpr Uint GetPinCount()
 	{
 		return kPinCount;
@@ -102,6 +108,8 @@ public:
 	static Pin::Config::MuxControl GetTpmClkinMux(const Pin::Name pin);
 	static Uart::Name GetUart(const Pin::Name pin);
 	static Pin::Config::MuxControl GetUartMux(const Pin::Name pin);
+	static I2c::Name GetI2c(const Pin::Name pin);
+	static Pin::Config::MuxControl GetI2cMux(const Pin::Name pin);
 
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;

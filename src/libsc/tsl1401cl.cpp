@@ -1,6 +1,5 @@
 /*
- * linear_ccd.h
- * Linear CCD (for TSL1401CL)
+ * tsl1401cl.cpp
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -12,27 +11,19 @@
 #include <bitset>
 
 #include "libbase/log.h"
-#include "libbase/k60/adc.h"
-#include "libbase/k60/gpio.h"
-#include "libbase/k60/pin.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(adc)
+#include LIBBASE_H(gpio)
+#include LIBBASE_H(pin)
 
 #include "libsc/config.h"
-#include "libsc/k60/linear_ccd.h"
-#include "libsc/k60/system.h"
+#include "libsc/system.h"
+#include "libsc/tsl1401cl.h"
 #include "libutil/misc.h"
 
-using namespace libbase::k60;
-
-// The output is nominally 0V for no light input
-#ifndef LIBSC_NEGATE_LINEAR_CCD
-#define CCD_DARK false
-#else
-#define CCD_DARK true
-#endif
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_LINEAR_CCD
@@ -143,14 +134,14 @@ Gpo::Config GetSiGpoConfig(const uint8_t id)
 
 }
 
-LinearCcd::LinearCcd(const uint8_t id)
+Tsl1401cl::Tsl1401cl(const uint8_t id)
 		: m_ad_pin(GetAdConfig(id)),
 		  m_clk_pin(GetClkGpoConfig(id)),
 		  m_si_pin(GetSiGpoConfig(id)),
 		  m_index(0)
 {}
 
-void LinearCcd::Delay()
+void Tsl1401cl::Delay()
 {
 	// 50ns under 180MHz
 	for (int i = 0; i < 9; ++i)
@@ -159,12 +150,12 @@ void LinearCcd::Delay()
 	}
 }
 
-void LinearCcd::StartSample()
+void Tsl1401cl::StartSample()
 {
 	m_index = 0;
 }
 
-bool LinearCcd::SampleProcess()
+bool Tsl1401cl::SampleProcess()
 {
 	if (IsImageReady())
 	{
@@ -205,15 +196,14 @@ bool LinearCcd::SampleProcess()
 }
 
 #else
-LinearCcd::LinearCcd(const uint8_t)
+Tsl1401cl::Tsl1401cl(const uint8_t)
 		: m_ad_pin(nullptr), m_clk_pin(nullptr), m_si_pin(nullptr), m_index(0)
 {
-	LOG_DL("Configured not to use LinearCcd");
+	LOG_DL("Configured not to use Tsl1401cl");
 }
-void LinearCcd::StartSample() {}
-bool LinearCcd::SampleProcess() { return false; }
+void Tsl1401cl::StartSample() {}
+bool Tsl1401cl::SampleProcess() { return false; }
 
 #endif
 
-}
 }

@@ -13,8 +13,9 @@
 #define LIBSC_USE_ENCODER 2
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 1
+#define LIBSC_USE_MPU6050 1
 #define LIBSC_USE_SERVO 1
-//#define LIBSC_USE_UART 1
+#define LIBSC_USE_UART 1
 
 #define LIBSC_BUTTON0 libbase::kl26::Pin::Name::kPta20
 
@@ -36,7 +37,10 @@
 #define LIBSC_MOTOR0_PWMA libbase::kl26::Pin::Name::kPte20
 #define LIBSC_MOTOR0_PWMB libbase::kl26::Pin::Name::kPte21
 
+#define LIBSC_MPU6050_SCL libbase::kl26::Pin::Name::kPtb0
+#define LIBSC_MPU6050_SDA libbase::kl26::Pin::Name::kPtb1
+
 #define LIBSC_SERVO0 libbase::kl26::Pin::Name::kPte20
 
-//#define LIBSC_UART0_TX libbase::kl26::Pin::Name::kPta14
-//#define LIBSC_UART0_RX libbase::kl26::Pin::Name::kPta15
+#define LIBSC_UART0_TX libbase::kl26::Pin::Name::kPte0
+#define LIBSC_UART0_RX libbase::kl26::Pin::Name::kPte1

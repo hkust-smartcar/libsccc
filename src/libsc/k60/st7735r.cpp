@@ -20,7 +20,7 @@
 #include "libsc/config.h"
 #include "libsc/device_h/st7735r.h"
 #include "libsc/k60/st7735r.h"
-#include "libsc/k60/system.h"
+#include "libsc/system.h"
 #include "libsc/lcd_font.h"
 #include "libutil/misc.h"
 
