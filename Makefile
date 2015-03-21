@@ -61,6 +61,8 @@ CCFLAGS+=-fmessage-length=0
 CCFLAGS+=-flto -ffunction-sections -fdata-sections
 CCFLAGS+=-fno-strict-aliasing
 CCFLAGS+=-Wall -Wextra
+# Wmissing-field-initializers is causing too much false warnings
+CCFLAGS+=-Wno-missing-field-initializers
 
 ifeq ($(SCCC_BUILD),DEBUG)
 BIN_SUFFIX:=$(BIN_SUFFIX)-d
