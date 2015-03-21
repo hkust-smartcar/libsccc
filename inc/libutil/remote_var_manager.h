@@ -101,7 +101,7 @@ public:
 		friend class RemoteVarManager;
 	};
 
-	RemoteVarManager(UartDevice *uart, const size_t var_count);
+	explicit RemoteVarManager(const size_t var_count);
 	~RemoteVarManager();
 
 	Var* Register(const std::string &name, const Var::Type type);
@@ -109,8 +109,10 @@ public:
 
 	/**
 	 * Broadcast the currectly registered variables
+	 *
+	 * @param uart
 	 */
-	void Broadcast();
+	void Broadcast(UartDevice *uart);
 
 	/**
 	 * Process new data. You should set this method as the Rx ISR while
@@ -122,7 +124,6 @@ public:
 	bool OnUartReceiveChar(const std::vector<Byte> &data);
 
 private:
-	UartDevice *m_uart;
 	std::vector<Var> m_vars;
 	Byte m_buffer[5];
 	int m_buffer_it;

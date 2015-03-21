@@ -70,8 +70,8 @@ RemoteVarManager::Var& RemoteVarManager::Var::operator=(Var &&rhs)
 	return *this;
 }
 
-RemoteVarManager::RemoteVarManager(UartDevice *uart, const size_t var_count)
-		: m_uart(uart), m_buffer_it(0)
+RemoteVarManager::RemoteVarManager(const size_t var_count)
+		: m_buffer_it(0)
 {
 	m_vars.reserve(var_count);
 }
@@ -115,19 +115,19 @@ RemoteVarManager::Var* RemoteVarManager::Register(string &&name,
 	return &m_vars.back();
 }
 
-void RemoteVarManager::Broadcast()
+void RemoteVarManager::Broadcast(UartDevice *uart)
 {
 	for (size_t i = 0; i < m_vars.size(); ++i)
 	{
 		if (m_vars[i].m_type == Var::Type::kInt)
 		{
-			m_uart->SendStr(String::Format("%s,int,%d,%d\n",
+			uart->SendStr(String::Format("%s,int,%d,%d\n",
 					m_vars[i].m_name.c_str(), m_vars[i].m_id,
 					EndianUtils::HostToBe(m_vars[i].m_val)));
 		}
 		else
 		{
-			m_uart->SendStr(String::Format("%s,real,%d,%.3f\n",
+			uart->SendStr(String::Format("%s,real,%d,%.3f\n",
 					m_vars[i].m_name.c_str(), m_vars[i].m_id,
 					AsFloat(EndianUtils::HostToBe(m_vars[i].m_val))));
 		}
