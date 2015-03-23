@@ -9,7 +9,6 @@
 
 #pragma once
 
-#define LIBSC_USE_BUTTON 1
 #define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_ENCODER 1
 #define LIBSC_USE_LED 4
@@ -18,8 +17,6 @@
 #define LIBSC_USE_UART 2
 #define LIBSC_USE_LCD 1
 #define LIBSC_ENCODER0_TPM_MODULE 0
-
-//#define LIBSC_BUTTON0 libbase::kl26::Pin::Name::kPta20
 
 #define LIBSC_JOYSTICK0_UP libbase::kl26::Pin::Name::kPta5
 #define LIBSC_JOYSTICK0_DOWN libbase::kl26::Pin::Name::kPta6
