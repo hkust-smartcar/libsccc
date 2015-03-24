@@ -122,6 +122,7 @@ public:
 	 * @return true
 	 */
 	bool OnUartReceiveChar(const std::vector<Byte> &data);
+	bool OnUartReceiveSingleChar(const Byte data);
 
 private:
 	std::vector<Var> m_vars;
