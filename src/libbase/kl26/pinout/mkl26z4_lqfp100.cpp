@@ -361,6 +361,9 @@ Pin::Config::MuxControl Mkl26z4Lqfp100::GetI2cMux(const Pin::Name pin)
 	{
 		return Pin::Config::MuxControl::kAlt6;
 	}
+	else if (pin == Pin::Name::kPte24 || pin == Pin::Name::kPte25){
+		return Pin::Config::MuxControl::kAlt5;
+	}
 	else
 	{
 		return Pin::Config::MuxControl::kAlt2;
