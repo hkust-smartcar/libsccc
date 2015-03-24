@@ -138,14 +138,20 @@ bool RemoteVarManager::OnUartReceiveChar(const vector<Byte> &data)
 {
 	for (size_t i = 0; i < data.size(); ++i)
 	{
-		m_buffer[m_buffer_it] = data[i];
-		if (++m_buffer_it >= 5)
-		{
-			const uint32_t val = m_buffer[1] << 24 | m_buffer[2] << 16
-					| m_buffer[3] << 8 | m_buffer[4];
-			m_vars[(size_t)m_buffer[0]].m_val = val;
-			m_buffer_it = 0;
-		}
+		OnUartReceiveSingleChar(data[i]);
+	}
+	return true;
+}
+
+bool RemoteVarManager::OnUartReceiveSingleChar(const Byte data)
+{
+	m_buffer[m_buffer_it] = data;
+	if (++m_buffer_it >= 5)
+	{
+		const uint32_t val = m_buffer[1] << 24 | m_buffer[2] << 16
+				| m_buffer[3] << 8 | m_buffer[4];
+		m_vars[(size_t)m_buffer[0]].m_val = val;
+		m_buffer_it = 0;
 	}
 	return true;
 }
