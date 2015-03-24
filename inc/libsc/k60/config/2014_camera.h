@@ -23,7 +23,9 @@
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 2
 #define LIBSC_USE_MPU6050 1
+//#define LIBSC_USE_SOFT_MPU6050 0
 #define LIBSC_USE_MMA8451Q 1
+#define LIBSC_USE_SOFT_MMA8451Q 0
 //#define LIBSC_USE_TEMPERATURE_SENSOR 0
 #define LIBSC_USE_UART 1
 #define LIBSC_USE_LINEAR_CCD 1
@@ -79,8 +81,8 @@
 #define LIBSC_MPU6050_SCL libbase::k60::Pin::Name::kPtb0
 #define LIBSC_MPU6050_SDA libbase::k60::Pin::Name::kPtb1
 
-#define LIBSC_MMA8451Q0_SCL libbase::k60::Pin::Name::kPta12
-#define LIBSC_MMA8451Q0_SDA libbase::k60::Pin::Name::kPtd4
+#define LIBSC_MMA8451Q0_SCL libbase::k60::Pin::Name::kPtb2
+#define LIBSC_MMA8451Q0_SDA libbase::k60::Pin::Name::kPtb3
 
 #define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPta7
 #define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtc0
