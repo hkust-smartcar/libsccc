@@ -58,6 +58,12 @@ CPPFLAGS+=-DKL26_VCAN_Z4DEV=1
 SCCC_MCU=MKL26Z4
 $(info Config = VCAN_Z4DEV)
 
+else ifeq ($(SCCC_CONFIG),2015_CCD2)
+BIN_SUFFIX:=$(BIN_SUFFIX)-2015_ccd2
+CPPFLAGS+=-DKL26_2015_CCD2=1
+SCCC_MCU=MKL26Z4
+$(info Config = 2015_CCD2)
+
 else
 $(error Missing/Unknown config '$(SCCC_CONFIG)' (set SCCC_CONFIG))
 

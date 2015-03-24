@@ -51,6 +51,9 @@
 #elif defined(K60_2015_CCD)
 #include "libsc/k60/config/2015_ccd.h"
 
+#elif defined(KL26_2015_CCD2)
+#include "libsc/kl26/config/2015_ccd2.h"
+
 #else
 #error Unknown board
 
