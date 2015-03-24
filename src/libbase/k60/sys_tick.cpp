@@ -169,7 +169,7 @@ void SysTick::SetEnable(const bool flag)
 void SysTick::SetCount(const uint32_t count)
 {
 	STATE_GUARD(SysTick, VOID);
-	assert(config.count > 0);
+	assert(count > 0);
 
 	SYST_RVR = SYST_RVR_RELOAD(count);
 	SYST_CVR = 0;
