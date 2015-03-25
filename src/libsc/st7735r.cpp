@@ -49,8 +49,12 @@ St7735r::SpiMaster::Config GetSpiConfig()
 	St7735r::SpiMaster::Config config;
 	config.sout_pin = LIBSC_ST7735R_SDAT;
 	config.sck_pin = LIBSC_ST7735R_SCLK;
+
+	#if !LIBSC_USE_SOFT_ST7735R
 	// Max freq of ST7735R == 15MHz
-//	config.baud_rate_khz = 15000;
+	config.baud_rate_khz = 15000;
+	#endif
+
 	config.frame_size = 8;
 	config.is_sck_idle_low = true;
 	config.is_sck_capture_first = true;
