@@ -61,18 +61,18 @@ Mpu6050::Mpu6050(const Config &config)
 	assert(Verify());
 	System::DelayUs(1);
 
-	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, 0x00));
+	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, 0x03));
 	System::DelayUs(1);
 
 	//Register 25 – Sample Rate Divider: Sample Rate = Gyroscope Output Rate / (1 + SMPLRT_DIV)
 	//Gyroscope Output Rate = 8kHz when the DLPF is disabled (DLPF_CFG = 0 or 7)
-	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_SMPLRT_DIV, 0x04));
+	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_SMPLRT_DIV, 0x01));
 	System::DelayUs(1);
 
 	//Register 26 - CONFIG: EXT_SYNC_SET[2:0]<<3 | DLPF_CFG[2:0];
 	//EXT_SYNC_SET=0, Input disabled;
 	//DLPF_CFG=0, Accel = 260Hz, Gyroscope = 256Hz;
-	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_CONFIG, 0x06));
+	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_CONFIG, 0x03));
 	System::DelayUs(1);
 
 	//Register 27 - GYRO_CONFIG: FS_SEL[1:0] << 3;
@@ -115,7 +115,8 @@ bool Mpu6050::Verify()
 void Mpu6050::Calibrate()
 {
 	Timer::TimerInt t = 0, pt = 0;
-	std::array<float, 3> omega_sum;
+	std::array<float, 3> omega_sum{};
+
 	int samples = 0, target_samples = 512;
 	while (samples < target_samples)
 	{
