@@ -79,7 +79,9 @@ Mma8451q::I2cMaster::Config GetI2cMasterConfig(const Mma8451q::Config &config)
 Mma8451q::Mma8451q(const Config &config)
 		: m_i2c_master(GetI2cMasterConfig(config)),
 		  m_sensitivity(config.sensitivity),
-		  m_scale_factor((float)(1 << ((Byte)m_sensitivity + 0x0C)))
+		  m_scale_factor((float)(1 << ((Byte)m_sensitivity + 0x0C))),
+		  m_last_accel{},
+		  m_last_angle{}
 {
 	assert(Verify());
 	System::DelayUs(1);

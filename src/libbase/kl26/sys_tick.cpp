@@ -65,13 +65,15 @@ SysTick::SysTick(const Config &config)
 		: m_is_init(true)
 {
 	assert(!g_instance);
-	assert(config.count > 0);
 	g_instance = this;
 
 	SetEnable(false);
 	InitCsrReg(config);
-	SetCount(config.count);
-	ConsumeInterrupt();
+	if (config.is_enable)
+	{
+		SetCount(config.count);
+	}
+	ConsumeInterrupt_();
 	SetIsr(config.isr);
 	if (config.is_enable)
 	{
@@ -167,6 +169,7 @@ void SysTick::SetEnable(const bool flag)
 void SysTick::SetCount(const uint32_t count)
 {
 	STATE_GUARD(SysTick, VOID);
+	assert(count > 0);
 
 	SYST_RVR = SYST_RVR_RELOAD(count);
 	SYST_CVR = 0;

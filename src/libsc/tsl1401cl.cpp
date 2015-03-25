@@ -138,6 +138,8 @@ Tsl1401cl::Tsl1401cl(const uint8_t id)
 		: m_ad_pin(GetAdConfig(id)),
 		  m_clk_pin(GetClkGpoConfig(id)),
 		  m_si_pin(GetSiGpoConfig(id)),
+		  m_front_buffer{},
+		  m_back_buffer{},
 		  m_index(0)
 {}
 

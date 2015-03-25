@@ -53,6 +53,9 @@ Mpu6050::I2cMaster::Config GetI2cConfig()
 
 Mpu6050::Mpu6050(const Config &config)
 		: m_i2c(GetI2cConfig()),
+		  m_accel{},
+		  m_omega{},
+		  m_omega_offset{},
 		  m_temp(0.0f),
 		  m_is_calibrated(false),
 		  m_gyro_range(config.gyro_range),
