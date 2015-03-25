@@ -56,7 +56,7 @@ TpmQuadDecoder::TpmQuadDecoder(const Config &config)
 		  m_is_init(true)
 {
 	// TpmQuadDecoder only works with DIR encoder
-	assert(!m_is_dir_mode);
+	assert(m_is_dir_mode);
 }
 
 TpmQuadDecoder::TpmQuadDecoder(TpmQuadDecoder &&rhs)
