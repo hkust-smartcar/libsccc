@@ -15,8 +15,6 @@
 
 namespace libsc
 {
-namespace k60
-{
 
 class Lcd
 {
@@ -126,5 +124,4 @@ public:
 	virtual void Clear(const uint16_t color) = 0;
 };
 
-}
 }

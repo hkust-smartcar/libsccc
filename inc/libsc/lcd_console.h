@@ -13,14 +13,13 @@
 
 #include <memory>
 
-#include "libsc/k60/lcd_typewriter.h"
-#include "libsc/k60/st7735r.h"
+#include "libsc/lcd_typewriter.h"
+#include "libsc/st7735r.h"
 #include "libutil/misc.h"
 
 namespace libsc
 {
-namespace k60
-{
+
 
 /**
  * Print text on screen with a managed buffer. Only changed contents are updated
@@ -88,5 +87,4 @@ private:
 	std::unique_ptr<CellData[]> m_buffer;
 };
 
-}
 }

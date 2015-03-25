@@ -14,12 +14,17 @@
 
 #include <algorithm>
 
+#include "libbase/helper.h"
+
 #include "libbase/log.h"
-#include "libbase/k60/soft_spi_master.h"
+#include LIBBASE_H(soft_spi_master)
+#if MK60DZ10 || MK60D10 || MK60F15
+#include LIBBASE_H(spi_master)
+#endif
 
 #include "libsc/config.h"
 #include "libsc/device_h/st7735r.h"
-#include "libsc/k60/st7735r.h"
+#include "libsc/st7735r.h"
 #include "libsc/system.h"
 #include "libsc/lcd_font.h"
 #include "libutil/misc.h"
@@ -27,13 +32,11 @@
 #define SEND_COMMAND(dat) Send(true, dat)
 #define SEND_DATA(dat) Send(false, dat)
 
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 using namespace libutil;
 using namespace std;
 
 namespace libsc
-{
-namespace k60
 {
 
 #ifdef LIBSC_USE_LCD
@@ -47,7 +50,7 @@ St7735r::SpiMaster::Config GetSpiConfig()
 	config.sout_pin = LIBSC_ST7735R_SDAT;
 	config.sck_pin = LIBSC_ST7735R_SCLK;
 	// Max freq of ST7735R == 15MHz
-	config.baud_rate_khz = 15000;
+//	config.baud_rate_khz = 15000;
 	config.frame_size = 8;
 	config.is_sck_idle_low = true;
 	config.is_sck_capture_first = true;
@@ -434,5 +437,5 @@ void St7735r::Clear(const uint16_t) {}
 
 #endif /* LIBSC_USE_LCD */
 
-}
+
 }

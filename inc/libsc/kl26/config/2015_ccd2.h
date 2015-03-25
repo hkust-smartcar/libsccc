@@ -18,6 +18,8 @@
 #define LIBSC_USE_SOFT_MPU6050 0
 #define LIBSC_USE_LINEAR_CCD 1
 #define LIBSC_USE_BATTERY_METER 1
+#define LIBSC_USE_LCD 1
+#define LIBSC_USE_SOFT_ST7735R 1
 
 #define LIBSC_MOTOR0_PWM libbase::kl26::Pin::Name::kPta4
 #define LIBSC_MOTOR0_DIR libbase::kl26::Pin::Name::kPta5
@@ -38,6 +40,14 @@
 #define LIBSC_JOYSTICK0_LEFT libbase::kl26::Pin::Name::kPtd2
 #define LIBSC_JOYSTICK0_RIGHT libbase::kl26::Pin::Name::kPtd3
 #define LIBSC_JOYSTICK0_SELECT libbase::kl26::Pin::Name::kPtd4
+
+#define LIBSC_ST7735R_RST  libbase::kl26::Pin::Name::kPtc8
+#define LIBSC_ST7735R_DC  libbase::kl26::Pin::Name::kPtc7
+#define LIBSC_ST7735R_CS libbase::kl26::Pin::Name::kPtc4
+#define LIBSC_ST7735R_SDAT  libbase::kl26::Pin::Name::kPtc6
+#define LIBSC_ST7735R_SCLK  libbase::kl26::Pin::Name::kPtc5
+
+
 
 #define LIBSC_LED0 libbase::kl26::Pin::Name::kPtb20
 #define LIBSC_LED1 libbase::kl26::Pin::Name::kPtb21

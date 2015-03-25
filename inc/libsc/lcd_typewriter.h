@@ -11,14 +11,14 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "libbase/helper.h"
 #include "libbase/misc_types.h"
 
-#include "libsc/k60/st7735r.h"
+#include "libsc/st7735r.h"
 
 namespace libsc
 {
-namespace k60
-{
+
 
 /**
  * Draw text on Lcd. Working only with the Lcd interface, this class is rather
@@ -100,4 +100,4 @@ private:
 };
 
 }
-}
+

@@ -11,26 +11,28 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "libbase/k60/soft_spi_master.h"
-#include "libbase/k60/spi_master.h"
+#include "libbase/helper.h"
+#include LIBBASE_H(soft_spi_master)
+#if MK60DZ10 || MK60D10 || MK60F15
+#include LIBBASE_H(spi_master)
+#endif
 #include "libbase/misc_types.h"
 
 #include "libsc/config.h"
-#include "libsc/k60/lcd.h"
+#include "libsc/lcd.h"
 
 namespace libsc
 {
-namespace k60
-{
+
 
 class St7735r : public Lcd
 {
 public:
 #if LIBSC_USE_SOFT_ST7735R
-	typedef libbase::k60::SoftSpiMaster SpiMaster;
+	typedef LIBBASE_MODULE(SoftSpiMaster) SpiMaster;
 
 #else
-	typedef libbase::k60::SpiMaster SpiMaster;
+	typedef LIBBASE_MODULE(SpiMaster) SpiMaster;
 
 #endif // LIBSC_USE_SOFT_ST7735R
 
@@ -45,6 +47,8 @@ public:
 	};
 
 	explicit St7735r(const Config &config);
+
+	~St7735r() override{}
 
 	void SetRegion(const Rect &rect) override
 	{
@@ -98,11 +102,11 @@ private:
 	inline void Send(const bool is_cmd, const uint8_t data);
 
 	SpiMaster m_spi;
-	libbase::k60::Gpo m_rst;
-	libbase::k60::Gpo m_dc;
+	LIBBASE_MODULE(Gpo) m_rst;
+	LIBBASE_MODULE(Gpo) m_dc;
 
 	Rect m_region;
 };
 
-}
+
 }
