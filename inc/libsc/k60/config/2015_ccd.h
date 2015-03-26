@@ -8,7 +8,7 @@
 #define LIBSC_USE_MOTOR 2
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
-//#define LIBSC_USE_LINEAR_CCD 1
+#define LIBSC_USE_LINEAR_CCD 1
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_ENCODER 2
 #define LIBSC_USE_MPU6050 1
@@ -27,9 +27,9 @@
 #define LIBSC_ST7735R_BGR_PANEL 1
 
 
-//#define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtb18
-//#define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPtb19
-//#define LIBSC_LINEAR_CCD0_AD libbase::k60::Pin::Name::kPtc11
+#define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtc9
+#define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPtc10
+#define LIBSC_LINEAR_CCD0_AD libbase::k60::Pin::Name::kPtc11
 
 #define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc1Ad17
 
