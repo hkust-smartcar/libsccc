@@ -24,7 +24,8 @@
 #include "libbase/k60/pinout.h"
 #include "libbase/k60/sim.h"
 #include "libbase/k60/gpio.h"
-#include "libsc/system.h"
+#include "libsc/k60/system.h"
+#include "libsc/k60/timer.h"
 
 #include "libutil/misc.h"
 
@@ -354,10 +355,10 @@ void I2cMaster::Start()
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
 	// Wait until started
-	libsc::Timer::TimerInt st = libsc::System::Time();
+	libsc::k60::Timer::TimerInt st = libsc::k60::System::Time();
 	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_BUSY_SHIFT))
 	{
-		uint32_t t = libsc::System::Time() - st;
+		uint32_t t = libsc::k60::System::Time() - st;
 		if(t >= 2){
 			printf("GGed");
 			ResetI2C();
@@ -391,10 +392,10 @@ void I2cMaster::Stop()
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	// Wait until stopped
-	libsc::Timer::TimerInt st = libsc::System::Time();
+	libsc::k60::Timer::TimerInt st = libsc::k60::System::Time();
 	while (GET_BIT(MEM_MAPS[m_module]->S, I2C_S_BUSY_SHIFT))
 	{
-		uint32_t t = libsc::System::Time() - st;
+		uint32_t t = libsc::k60::System::Time() - st;
 		if(t >= 2){
 			ResetI2C();
 			printf("GGed");
@@ -418,9 +419,9 @@ void I2cMaster::ResetI2C(){
 
 	sda->Set(true);
 	scl->Clear();
-	libsc::System::DelayUs(1);
+	libsc::k60::System::DelayUs(1);
 	scl->Set(true);
-	libsc::System::DelayUs(1);
+	libsc::k60::System::DelayUs(1);
 
 	delete sda;
 	delete scl;
