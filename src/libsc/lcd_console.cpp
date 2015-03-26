@@ -12,13 +12,11 @@
 
 #include <algorithm>
 
-#include "libsc/k60/lcd_console.h"
-#include "libsc/k60/lcd_typewriter.h"
-#include "libsc/k60/st7735r.h"
+#include "libsc/lcd_console.h"
+#include "libsc/lcd_typewriter.h"
+#include "libsc/st7735r.h"
 
 namespace libsc
-{
-namespace k60
 {
 
 namespace
@@ -125,5 +123,4 @@ inline void LcdConsole::NewLine()
 	m_cursor_x = 0;
 }
 
-}
 }

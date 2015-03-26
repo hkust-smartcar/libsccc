@@ -19,16 +19,15 @@
 #include "libbase/misc_types.h"
 
 #include "libsc/config.h"
-#include "libsc/k60/lcd.h"
-#include "libsc/k60/lcd_typewriter.h"
+#include "libsc/lcd.h"
+#include "libsc/lcd_typewriter.h"
 #include "libsc/lcd_font.h"
 
 using namespace std;
 
 namespace libsc
 {
-namespace k60
-{
+
 
 LcdTypewriter::LcdTypewriter(const Config &config)
 		: m_lcd(config.lcd),
@@ -282,4 +281,4 @@ const Byte LcdTypewriter::kFontData[1520] =
 };
 
 }
-}
+
