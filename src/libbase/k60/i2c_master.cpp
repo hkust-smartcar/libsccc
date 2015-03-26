@@ -23,6 +23,8 @@
 #include "libbase/k60/i2c_utils.h"
 #include "libbase/k60/pinout.h"
 #include "libbase/k60/sim.h"
+#include "libbase/k60/gpio.h"
+#include "libsc/system.h"
 
 #include "libutil/misc.h"
 
@@ -286,8 +288,8 @@ void I2cMaster::InitPin(const Pin::Name scl_pin, const Pin::Name sda_pin)
 	sda_config.pin = sda_pin;
 	sda_config.mux = PINOUT::GetI2cMux(sda_pin);
 
-	m_scl = Pin(scl_config);
-	m_sda = Pin(sda_config);
+	m_scl = new Pin(scl_config);
+	m_sda = new Pin(sda_config);
 }
 
 void I2cMaster::InitC2Reg(const Config &config)
@@ -352,8 +354,17 @@ void I2cMaster::Start()
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
 	// Wait until started
+	libsc::Timer::TimerInt st = libsc::System::Time();
 	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_BUSY_SHIFT))
-	{}
+	{
+		uint32_t t = libsc::System::Time() - st;
+		if(t >= 2){
+			printf("GGed");
+			ResetI2C();
+			break;
+		}
+
+	}
 }
 
 void I2cMaster::RepeatStart()
@@ -380,8 +391,41 @@ void I2cMaster::Stop()
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	// Wait until stopped
+	libsc::Timer::TimerInt st = libsc::System::Time();
 	while (GET_BIT(MEM_MAPS[m_module]->S, I2C_S_BUSY_SHIFT))
-	{}
+	{
+		uint32_t t = libsc::System::Time() - st;
+		if(t >= 2){
+			ResetI2C();
+			printf("GGed");
+		}
+
+	}
+}
+
+void I2cMaster::ResetI2C(){
+	delete m_scl;
+	delete m_sda;
+
+	Gpo::Config scl_cfg;
+	scl_cfg.pin = m_config.scl_pin;
+	Gpo* scl = new Gpo(scl_cfg);
+
+	Gpo::Config sda_cfg;
+	sda_cfg.pin = m_config.sda_pin;
+	Gpo* sda = new Gpo(sda_cfg);
+
+
+	sda->Set(true);
+	scl->Clear();
+	libsc::System::DelayUs(1);
+	scl->Set(true);
+	libsc::System::DelayUs(1);
+
+	delete sda;
+	delete scl;
+
+	InitPin(m_config.scl_pin, m_config.sda_pin);
 }
 
 bool I2cMaster::SendByte_(const Byte byte)
