@@ -143,5 +143,18 @@ uint16_t SoftSpiMaster::ExchangeData(const uint8_t slave_id, const uint16_t data
 	return receive;
 }
 
+void SoftSpiMaster::KickStart()
+{}
+
+size_t SoftSpiMaster::PushData(const uint8_t, const uint16_t*, const size_t)
+{
+	return 0;
+}
+
+size_t SoftSpiMaster::PushData(const uint8_t, const uint8_t*, const size_t)
+{
+	return 0;
+}
+
 }
 }

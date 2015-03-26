@@ -192,9 +192,9 @@ void BaudRateCalculator::Calc(const I2cMaster::Config &config)
 }
 
 I2cMaster::I2cMaster(const Config &config)
-		: m_is_use_repeated_start(config.is_use_repeated_start),
-		  m_is_init(false),
-		  m_config(config)
+		: m_config(config),
+		  m_is_use_repeated_start(config.is_use_repeated_start),
+		  m_is_init(false)
 {
 	if (!InitModule(config.scl_pin, config.sda_pin))
 	{
