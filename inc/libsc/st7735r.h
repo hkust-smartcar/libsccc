@@ -12,11 +12,16 @@
 #include <cstdint>
 
 #include "libbase/helper.h"
+#include "libbase/misc_types.h"
+
 #include LIBBASE_H(soft_spi_master)
 #if MK60DZ10 || MK60D10 || MK60F15
 #include LIBBASE_H(spi_master)
+
+#elif MKL26Z4
+#define LIBSC_USE_SOFT_ST7735R 1
+
 #endif
-#include "libbase/misc_types.h"
 
 #include "libsc/config.h"
 #include "libsc/lcd.h"
