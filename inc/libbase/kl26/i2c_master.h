@@ -86,8 +86,8 @@ private:
 
 	uint8_t m_module;
 
-	Pin m_scl;
-	Pin m_sda;
+	Pin* m_scl;
+	Pin* m_sda;
 
 	Config m_config;
 

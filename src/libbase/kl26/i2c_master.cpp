@@ -286,8 +286,8 @@ void I2cMaster::InitPin(const Pin::Name scl_pin, const Pin::Name sda_pin, bool m
 	sda_config.pin = sda_pin;
 	if(mux) sda_config.mux = PINOUT::GetI2cMux(sda_pin);
 
-	m_scl = Pin(scl_config);
-	m_sda = Pin(sda_config);
+	m_scl = new Pin(scl_config);
+	m_sda = new Pin(sda_config);
 }
 
 void I2cMaster::InitC2Reg(const Config &config)
@@ -366,6 +366,7 @@ void I2cMaster::Start()
 	{
 		uint32_t t = libsc::System::Time() - st;
 		if(t >= 2){
+			printf("GGed");
 			ResetI2C();
 			break;
 		}
@@ -404,6 +405,7 @@ void I2cMaster::Stop()
 		uint32_t t = libsc::System::Time() - st;
 		if(t >= 2){
 			ResetI2C();
+			printf("GGed");
 		}
 
 	}
@@ -411,26 +413,26 @@ void I2cMaster::Stop()
 }
 
 void I2cMaster::ResetI2C(){
-	m_scl.Uninit();
-	m_sda.Uninit();
+	delete m_scl;
+	delete m_sda;
 
 	Gpo::Config scl_cfg;
 	scl_cfg.pin = m_config.scl_pin;
-	Gpo scl(scl_cfg);
+	Gpo* scl = new Gpo(scl_cfg);
 
 	Gpo::Config sda_cfg;
 	sda_cfg.pin = m_config.sda_pin;
-	Gpo sda(sda_cfg);
+	Gpo* sda = new Gpo(sda_cfg);
 
 
-	sda.Set(true);
-	scl.Clear();
+	sda->Set(true);
+	scl->Clear();
 	libsc::System::DelayUs(1);
-	scl.Set(true);
+	scl->Set(true);
 	libsc::System::DelayUs(1);
 
-	sda.Uninit();
-	scl.Uninit();
+	delete sda;
+	delete scl;
 
 	InitPin(m_config.scl_pin, m_config.sda_pin);
 }
