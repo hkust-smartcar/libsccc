@@ -23,6 +23,8 @@
 #include "libbase/kl26/i2c_utils.h"
 #include "libbase/kl26/pinout.h"
 #include "libbase/kl26/sim.h"
+#include "libbase/kl26/gpio.h"
+#include "libsc/system.h"
 
 #include "libutil/misc.h"
 
@@ -191,7 +193,8 @@ void BaudRateCalculator::Calc(const I2cMaster::Config &config)
 
 I2cMaster::I2cMaster(const Config &config)
 		: m_is_use_repeated_start(config.is_use_repeated_start),
-		  m_is_init(false)
+		  m_is_init(false),
+		  m_config(config)
 {
 	if (!InitModule(config.scl_pin, config.sda_pin))
 	{
@@ -275,13 +278,13 @@ bool I2cMaster::InitModule(const Pin::Name scl_pin, const Pin::Name sda_pin)
 	}
 }
 
-void I2cMaster::InitPin(const Pin::Name scl_pin, const Pin::Name sda_pin)
+void I2cMaster::InitPin(const Pin::Name scl_pin, const Pin::Name sda_pin, bool mux)
 {
 	Pin::Config scl_config, sda_config;
 	scl_config.pin = scl_pin;
-	scl_config.mux = PINOUT::GetI2cMux(scl_pin);
+	if(mux) scl_config.mux = PINOUT::GetI2cMux(scl_pin);
 	sda_config.pin = sda_pin;
-	sda_config.mux = PINOUT::GetI2cMux(sda_pin);
+	if(mux) sda_config.mux = PINOUT::GetI2cMux(sda_pin);
 
 	m_scl = Pin(scl_config);
 	m_sda = Pin(sda_config);
@@ -358,8 +361,17 @@ void I2cMaster::Start()
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
 	// Wait until started
+	libsc::Timer::TimerInt st = libsc::System::Time();
 	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_BUSY_SHIFT))
-	{}
+	{
+		uint32_t t = libsc::System::Time() - st;
+		if(t >= 2){
+			ResetI2C();
+			break;
+		}
+
+	}
+
 }
 
 void I2cMaster::RepeatStart()
@@ -386,8 +398,41 @@ void I2cMaster::Stop()
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	// Wait until stopped
+	libsc::Timer::TimerInt st = libsc::System::Time();
 	while (GET_BIT(MEM_MAPS[m_module]->S, I2C_S_BUSY_SHIFT))
-	{}
+	{
+		uint32_t t = libsc::System::Time() - st;
+		if(t >= 2){
+			ResetI2C();
+		}
+
+	}
+
+}
+
+void I2cMaster::ResetI2C(){
+	m_scl.Uninit();
+	m_sda.Uninit();
+
+	Gpo::Config scl_cfg;
+	scl_cfg.pin = m_config.scl_pin;
+	Gpo scl(scl_cfg);
+
+	Gpo::Config sda_cfg;
+	sda_cfg.pin = m_config.sda_pin;
+	Gpo sda(sda_cfg);
+
+
+	sda.Set(true);
+	scl.Clear();
+	libsc::System::DelayUs(1);
+	scl.Set(true);
+	libsc::System::DelayUs(1);
+
+	sda.Uninit();
+	scl.Uninit();
+
+	InitPin(m_config.scl_pin, m_config.sda_pin);
 }
 
 bool I2cMaster::SendByte_(const Byte byte)

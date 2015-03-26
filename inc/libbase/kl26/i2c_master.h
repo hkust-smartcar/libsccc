@@ -68,7 +68,7 @@ public:
 
 private:
 	bool InitModule(const Pin::Name scl_pin, const Pin::Name sda_pin);
-	void InitPin(const Pin::Name scl_pin, const Pin::Name sda_pin);
+	void InitPin(const Pin::Name scl_pin, const Pin::Name sda_pin, bool mux = true);
 	void InitC2Reg(const Config &config);
 	void InitFltReg();
 	void InitSmbReg();
@@ -80,6 +80,7 @@ private:
 	void Start();
 	void RepeatStart();
 	void Stop();
+	void ResetI2C();
 	bool SendByte_(const Byte byte);
 	bool ReadByte_(const bool is_last_byte, Byte *out_byte);
 
@@ -87,6 +88,8 @@ private:
 
 	Pin m_scl;
 	Pin m_sda;
+
+	Config m_config;
 
 	bool m_is_use_repeated_start;
 
