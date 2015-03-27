@@ -50,11 +50,11 @@ public:
 
 	uint16_t ExchangeData(const uint8_t slave_id, const uint16_t data) override;
 
-	void KickStart() override {}
+	void KickStart() override;
 	size_t PushData(const uint8_t slave_id, const uint16_t *data,
-			const size_t size) override {}
+			const size_t size) override;
 	size_t PushData(const uint8_t slave_id, const uint8_t *data,
-			const size_t size) override {}
+			const size_t size) override;
 
 	uint8_t GetFrameSize() const
 	{
