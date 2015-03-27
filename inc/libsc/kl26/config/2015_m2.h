@@ -15,8 +15,8 @@
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 2
-#define LIBSC_USE_LCD 1
-#define LIBSC_ENCODER0_TPM_MODULE 0
+//#define LIBSC_USE_LCD 1
+#define LIBSC_USE_BATTERY_METER 1
 
 #define LIBSC_JOYSTICK0_UP libbase::kl26::Pin::Name::kPta5
 #define LIBSC_JOYSTICK0_DOWN libbase::kl26::Pin::Name::kPta6
@@ -25,7 +25,7 @@
 #define LIBSC_JOYSTICK0_SELECT libbase::kl26::Pin::Name::kPta13
 
 #define LIBSC_ENCODER0_QDA libbase::kl26::Pin::Name::kPte30
-#define LIBSC_ENCODER0_QDB libbase::kl26::Pin::Name::kPte31
+#define LIBSC_ENCODER0_QDB libbase::kl26::Pin::Name::kPtc18
 #define LIBSC_ENCODER0_TPM_MODULE 0
 
 #define LIBSC_UART0_TX libbase::kl26::Pin::Name::kPta14
@@ -34,11 +34,11 @@
 #define LIBSC_UART1_TX libbase::kl26::Pin::Name::kPte0
 #define LIBSC_UART1_RX libbase::kl26::Pin::Name::kPte1
 
-#define LIBSC_ST7735R_RST  libbase::kl26::Pin::Name::kPtd3
-#define LIBSC_ST7735R_DC  libbase::kl26::Pin::Name::kPtc18
-#define LIBSC_ST7735R_CS  libbase::kl26::Pin::Name::kPtd0
-#define LIBSC_ST7735R_SDAT  libbase::kl26::Pin::Name::kPtd2
-#define LIBSC_ST7735R_SCLK  libbase::kl26::Pin::Name::kPtd1
+#define LIBSC_ST7735R_RST  libbase::kl26::Pin::Name::kPtd3 //DIN
+#define LIBSC_ST7735R_DC  libbase::kl26::Pin::Name::kPtc18 //CS0
+#define LIBSC_ST7735R_CS  liwbbase::kl26::Pin::Name::kPtd0 //CS2
+#define LIBSC_ST7735R_SDAT  libbase::kl26::Pin::Name::kPtd2 //DOUT
+#define LIBSC_ST7735R_SCLK  libbase::kl26::Pin::Name::kPtd1 //CLK
 
 #define LIBSC_LED0 libbase::kl26::Pin::Name::kPtc10
 #define LIBSC_LED1 libbase::kl26::Pin::Name::kPtc11
@@ -49,5 +49,7 @@
 #define LIBSC_MOTOR0_DIR libbase::kl26::Pin::Name::kPtb0
 
 #define LIBSC_SERVO0 libbase::kl26::Pin::Name::kPtb2
+
+#define LIBSC_BATTERY_METER libbase::kl26::Adc::Name::kAdc0DAd3
 
 
