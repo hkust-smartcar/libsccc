@@ -366,7 +366,6 @@ void I2cMaster::Start()
 	{
 		uint32_t t = libsc::System::Time() - st;
 		if(t >= 2){
-			printf("GGed");
 			ResetI2C();
 			break;
 		}
@@ -405,7 +404,6 @@ void I2cMaster::Stop()
 		uint32_t t = libsc::System::Time() - st;
 		if(t >= 2){
 			ResetI2C();
-			printf("GGed");
 		}
 
 	}
