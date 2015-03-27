@@ -8,7 +8,7 @@
  */
 
 #pragma once
-
+#define LIBSC_USE_SOFT_ST7735R 1
 #define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_ENCODER 1
 #define LIBSC_USE_LED 4
