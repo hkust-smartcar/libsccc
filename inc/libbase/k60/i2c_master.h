@@ -79,13 +79,16 @@ private:
 	void Start();
 	void RepeatStart();
 	void Stop();
+	void ResetI2C();
 	bool SendByte_(const Byte byte);
 	bool ReadByte_(const bool is_last_byte, Byte *out_byte);
 
 	uint8_t m_module;
 
-	Pin m_scl;
-	Pin m_sda;
+	Pin* m_scl;
+	Pin* m_sda;
+
+	Config m_config;
 
 	bool m_is_use_repeated_start;
 
