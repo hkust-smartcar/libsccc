@@ -24,8 +24,8 @@
 #include "libbase/k60/pinout.h"
 #include "libbase/k60/sim.h"
 #include "libbase/k60/gpio.h"
-#include "libsc/k60/system.h"
-#include "libsc/k60/timer.h"
+#include "libsc/system.h"
+#include "libsc/timer.h"
 
 #include "libutil/misc.h"
 
@@ -33,9 +33,9 @@ using namespace std;
 using namespace libutil;
 
 #if MK60DZ10 || MK60D10
-	#define CLOCKGATE0 Sim::ClockGate::kI2c0
+#define CLOCKGATE0 Sim::ClockGate::kI2c0
 #elif MK60F15
-	#define CLOCKGATE0 Sim::ClockGate::kIic0
+#define CLOCKGATE0 Sim::ClockGate::kIic0
 #endif
 
 #define SEND_BYTE_GUARDED(x, ret) do { if (!SendByte_(x)) { Stop(); return ret; } } while (false)
@@ -78,70 +78,70 @@ private:
 // Find a better way to do this
 const uint16_t BaudRateCalculator::kIcrTable[0x40][4] =
 {
-	{20, 7, 6, 11},
-	{22, 7, 7, 12},
-	{24, 8, 8, 13},
-	{26, 8, 9, 14},
-	{28, 9, 10, 15},
-	{30, 9, 11, 16},
-	{34, 10, 13, 18},
-	{40, 10, 16, 21},
-	{28, 7, 10, 15},
-	{32, 7, 12, 17},
-	{36, 9, 14, 19},
-	{40, 9, 16, 21},
-	{44, 11, 18, 23},
-	{48, 11, 20, 25},
-	{56, 13, 24, 29},
-	{68, 13, 30, 35},
-	{48, 9, 18, 25},
-	{56, 9, 22, 29},
-	{64, 13, 26, 33},
-	{72, 13, 30, 37},
-	{80, 17, 34, 41},
-	{88, 17, 38, 45},
-	{104, 21, 46, 53},
-	{128, 21, 58, 65},
-	{80, 9, 38, 41},
-	{96, 9, 46, 49},
-	{112, 17, 54, 57},
-	{128, 17, 62, 65},
-	{144, 25, 70, 73},
-	{160, 25, 78, 81},
-	{192, 33, 94, 97},
-	{240, 33, 118, 121},
-	{160, 17, 78, 81},
-	{192, 17, 94, 97},
-	{224, 33, 110, 113},
-	{256, 33, 126, 129},
-	{288, 49, 142, 145},
-	{320, 49, 158, 161},
-	{384, 65, 190, 193},
-	{480, 65, 238, 241},
-	{320, 33, 158, 161},
-	{384, 33, 190, 193},
-	{448, 65, 222, 225},
-	{512, 65, 254, 257},
-	{576, 97, 286, 289},
-	{640, 97, 318, 321},
-	{768, 129, 382, 385},
-	{960, 129, 478, 481},
-	{640, 65, 318, 321},
-	{768, 65, 382, 385},
-	{896, 129, 446, 449},
-	{1024, 129, 510, 513},
-	{1152, 193, 574, 577},
-	{1280, 193, 638, 641},
-	{1536, 257, 766, 769},
-	{1920, 257, 958, 961},
-	{1280, 129, 638, 641},
-	{1536, 129, 766, 769},
-	{1792, 257, 894, 897},
-	{2048, 257, 1022, 1025},
-	{2304, 385, 1150, 1153},
-	{2560, 385, 1278, 1281},
-	{3072, 513, 1534, 1537},
-	{3840, 513, 1918, 1921},
+		{20, 7, 6, 11},
+		{22, 7, 7, 12},
+		{24, 8, 8, 13},
+		{26, 8, 9, 14},
+		{28, 9, 10, 15},
+		{30, 9, 11, 16},
+		{34, 10, 13, 18},
+		{40, 10, 16, 21},
+		{28, 7, 10, 15},
+		{32, 7, 12, 17},
+		{36, 9, 14, 19},
+		{40, 9, 16, 21},
+		{44, 11, 18, 23},
+		{48, 11, 20, 25},
+		{56, 13, 24, 29},
+		{68, 13, 30, 35},
+		{48, 9, 18, 25},
+		{56, 9, 22, 29},
+		{64, 13, 26, 33},
+		{72, 13, 30, 37},
+		{80, 17, 34, 41},
+		{88, 17, 38, 45},
+		{104, 21, 46, 53},
+		{128, 21, 58, 65},
+		{80, 9, 38, 41},
+		{96, 9, 46, 49},
+		{112, 17, 54, 57},
+		{128, 17, 62, 65},
+		{144, 25, 70, 73},
+		{160, 25, 78, 81},
+		{192, 33, 94, 97},
+		{240, 33, 118, 121},
+		{160, 17, 78, 81},
+		{192, 17, 94, 97},
+		{224, 33, 110, 113},
+		{256, 33, 126, 129},
+		{288, 49, 142, 145},
+		{320, 49, 158, 161},
+		{384, 65, 190, 193},
+		{480, 65, 238, 241},
+		{320, 33, 158, 161},
+		{384, 33, 190, 193},
+		{448, 65, 222, 225},
+		{512, 65, 254, 257},
+		{576, 97, 286, 289},
+		{640, 97, 318, 321},
+		{768, 129, 382, 385},
+		{960, 129, 478, 481},
+		{640, 65, 318, 321},
+		{768, 65, 382, 385},
+		{896, 129, 446, 449},
+		{1024, 129, 510, 513},
+		{1152, 193, 574, 577},
+		{1280, 193, 638, 641},
+		{1536, 257, 766, 769},
+		{1920, 257, 958, 961},
+		{1280, 129, 638, 641},
+		{1536, 129, 766, 769},
+		{1792, 257, 894, 897},
+		{2048, 257, 1022, 1025},
+		{2304, 385, 1150, 1153},
+		{2560, 385, 1278, 1281},
+		{3072, 513, 1534, 1537},
+		{3840, 513, 1918, 1921},
 };
 
 void BaudRateCalculator::Calc(const I2cMaster::Config &config)
@@ -154,7 +154,7 @@ void BaudRateCalculator::Calc(const I2cMaster::Config &config)
 		for (int j = 0; j < 0x40; ++j)
 		{
 			const uint32_t this_baud_rate_khz = ClockUtils::GetBusClockKhz()
-					/ (this_mult * kIcrTable[j][0]);
+			/ (this_mult * kIcrTable[j][0]);
 			const Uint this_baud_rate_diff = abs((int32_t)(this_baud_rate_khz
 					- config.baud_rate_khz));
 			if (this_baud_rate_diff < min_baud_rate_diff)
@@ -197,8 +197,8 @@ void BaudRateCalculator::Calc(const I2cMaster::Config &config)
 }
 
 I2cMaster::I2cMaster(const Config &config)
-		: m_is_use_repeated_start(config.is_use_repeated_start),
-		  m_is_init(false)
+: m_is_use_repeated_start(config.is_use_repeated_start),
+  m_is_init(false)
 {
 	if (!InitModule(config.scl_pin, config.sda_pin))
 	{
@@ -224,17 +224,17 @@ I2cMaster::I2cMaster(const Config &config)
 }
 
 I2cMaster::I2cMaster(I2cMaster &&rhs)
-		: I2cMaster(nullptr)
+: I2cMaster(nullptr)
 {
 	*this = std::move(rhs);
 }
 
 I2cMaster::I2cMaster(nullptr_t)
-		: m_module(0),
-		  m_scl(nullptr),
-		  m_sda(nullptr),
-		  m_is_use_repeated_start(false),
-		  m_is_init(false)
+: m_module(0),
+  m_scl(nullptr),
+  m_sda(nullptr),
+  m_is_use_repeated_start(false),
+  m_is_init(false)
 {}
 
 I2cMaster::~I2cMaster()
@@ -291,6 +291,9 @@ void I2cMaster::InitPin(const Pin::Name scl_pin, const Pin::Name sda_pin)
 
 	m_scl = new Pin(scl_config);
 	m_sda = new Pin(sda_config);
+	m_config.scl_pin = scl_pin;
+	m_config.sda_pin = sda_pin;
+
 }
 
 void I2cMaster::InitC2Reg(const Config &config)
@@ -355,10 +358,10 @@ void I2cMaster::Start()
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
 	// Wait until started
-	libsc::k60::Timer::TimerInt st = libsc::k60::System::Time();
+	libsc::Timer::TimerInt st = libsc::System::Time();
 	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_BUSY_SHIFT))
 	{
-		uint32_t t = libsc::k60::System::Time() - st;
+		uint32_t t = libsc::System::Time() - st;
 		if(t >= 2){
 			printf("GGed");
 			ResetI2C();
@@ -392,19 +395,20 @@ void I2cMaster::Stop()
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	// Wait until stopped
-	libsc::k60::Timer::TimerInt st = libsc::k60::System::Time();
+	libsc::Timer::TimerInt st = libsc::System::Time();
 	while (GET_BIT(MEM_MAPS[m_module]->S, I2C_S_BUSY_SHIFT))
 	{
-		uint32_t t = libsc::k60::System::Time() - st;
+		uint32_t t = libsc::System::Time() - st;
 		if(t >= 2){
 			ResetI2C();
-			printf("GGed");
 		}
 
 	}
 }
 
 void I2cMaster::ResetI2C(){
+	m_scl->~Pin();
+	m_sda->~Pin();
 	delete m_scl;
 	delete m_sda;
 
@@ -419,9 +423,11 @@ void I2cMaster::ResetI2C(){
 
 	sda->Set(true);
 	scl->Clear();
-	libsc::k60::System::DelayUs(1);
+	libsc::System::DelayUs(1);
 	scl->Set(true);
-	libsc::k60::System::DelayUs(1);
+	libsc::System::DelayUs(1);
+	sda->~Gpo();
+	scl->~Gpo();
 
 	delete sda;
 	delete scl;
@@ -434,125 +440,133 @@ bool I2cMaster::SendByte_(const Byte byte)
 	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
 	MEM_MAPS[m_module]->D = byte;
 	// Wait until data is sent
+	libsc::Timer::TimerInt st = libsc::System::Time();
 	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT))
 	{
-		if (GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
-		{
-			LOG_DL("i2c scl timeout");
+		uint32_t t = libsc::System::Time() - st;
+		if(t >= 2){
+//			printf("GGed");
+			ResetI2C();
 			return false;
 		}
-	}
-	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
-	return !GET_BIT(MEM_MAPS[m_module]->S, I2C_S_RXAK_SHIFT);
-}
-
-bool I2cMaster::ReadByte_(const bool is_last_byte, Byte *out_byte)
-{
-	if (GET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT))
-	{
-		CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
-	}
-	if (!is_last_byte)
-	{
-		// ACK
-		CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TXAK_SHIFT);
-	}
-	else
-	{
-		// NACK
-		SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TXAK_SHIFT);
-	}
-
-	// Initiate receive
-	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
-	*out_byte = MEM_MAPS[m_module]->D;
-	// Wait until data is received
-	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT))
-	{
-		if (GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
-		{
-			LOG_DL("i2c scl timeout");
-			return false;
+			//		if (GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
+			//		{
+			//			LOG_DL("i2c scl timeout");
+			//
+			//			return false;
+			//		}
 		}
+		SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
+		return !GET_BIT(MEM_MAPS[m_module]->S, I2C_S_RXAK_SHIFT);
 	}
-	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
 
-	if (is_last_byte)
+	bool I2cMaster::ReadByte_(const bool is_last_byte, Byte *out_byte)
 	{
-		Stop();
-	}
-	*out_byte = MEM_MAPS[m_module]->D;
-	return true;
-}
+		if (GET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT))
+		{
+			CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
+		}
+		if (!is_last_byte)
+		{
+			// ACK
+			CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TXAK_SHIFT);
+		}
+		else
+		{
+			// NACK
+			SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TXAK_SHIFT);
+		}
 
-bool I2cMaster::GetByte(const Byte slave_addr, const Byte reg_addr,
-		Byte *out_byte)
-{
-	STATE_GUARD(I2cMaster, false);
+		// Initiate receive
+		SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
+		*out_byte = MEM_MAPS[m_module]->D;
+		// Wait until data is received
+		while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT))
+		{
+			if (GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
+			{
+				LOG_DL("i2c scl timeout");
+				return false;
+			}
+		}
+		SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
 
-	Start();
-	SEND_BYTE_GUARDED(slave_addr << 1, false);
-	SEND_BYTE_GUARDED(reg_addr, false);
-	RepeatStart();
-	SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, false);
-	return ReadByte_(true, out_byte);
-}
-
-vector<Byte> I2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
-		const uint8_t size)
-{
-	STATE_GUARD(I2cMaster, {});
-
-	vector<Byte> bytes;
-	bytes.reserve(size);
-
-	Start();
-	SEND_BYTE_GUARDED(slave_addr << 1, {});
-	SEND_BYTE_GUARDED(reg_addr, {});
-	RepeatStart();
-	SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, {});
-	for (uint8_t i = 0; i < size; ++i)
-	{
-		Byte byte;
-		// NACK if last bit
-		if (!ReadByte_((i == size - 1), &byte))
+		if (is_last_byte)
 		{
 			Stop();
-			return bytes;
 		}
-		bytes.push_back(byte);
+		*out_byte = MEM_MAPS[m_module]->D;
+		return true;
 	}
-	return bytes;
-}
 
-bool I2cMaster::SendByte(const Byte slave_addr, const Byte reg_addr,
-		const Byte byte)
-{
-	STATE_GUARD(I2cMaster, false);
-
-	Start();
-	SEND_BYTE_GUARDED(slave_addr << 1, false);
-	SEND_BYTE_GUARDED(reg_addr, false);
-	SEND_BYTE_GUARDED(byte, false);
-	Stop();
-	return true;
-}
-
-bool I2cMaster::SendBytes(const Byte slave_addr, const Byte reg_addr,
-		const Byte *bytes, const size_t size)
-{
-	STATE_GUARD(I2cMaster, false);
-
-	Start();
-	SEND_BYTE_GUARDED(slave_addr << 1, false);
-	SEND_BYTE_GUARDED(reg_addr, false);
-	for (size_t i = 0; i < size; ++i)
+	bool I2cMaster::GetByte(const Byte slave_addr, const Byte reg_addr,
+			Byte *out_byte)
 	{
-		SEND_BYTE_GUARDED(bytes[i], false);
+		STATE_GUARD(I2cMaster, false);
+
+		Start();
+		SEND_BYTE_GUARDED(slave_addr << 1, false);
+		SEND_BYTE_GUARDED(reg_addr, false);
+		RepeatStart();
+		SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, false);
+		return ReadByte_(true, out_byte);
 	}
-	Stop();
-	return true;
-}
+
+	vector<Byte> I2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
+			const uint8_t size)
+	{
+		STATE_GUARD(I2cMaster, {});
+
+		vector<Byte> bytes;
+		bytes.reserve(size);
+
+		Start();
+		SEND_BYTE_GUARDED(slave_addr << 1, {});
+		SEND_BYTE_GUARDED(reg_addr, {});
+		RepeatStart();
+		SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, {});
+		for (uint8_t i = 0; i < size; ++i)
+		{
+			Byte byte;
+			// NACK if last bit
+			if (!ReadByte_((i == size - 1), &byte))
+			{
+				Stop();
+				return bytes;
+			}
+			bytes.push_back(byte);
+		}
+		return bytes;
+	}
+
+	bool I2cMaster::SendByte(const Byte slave_addr, const Byte reg_addr,
+			const Byte byte)
+	{
+		STATE_GUARD(I2cMaster, false);
+
+		Start();
+		SEND_BYTE_GUARDED(slave_addr << 1, false);
+		SEND_BYTE_GUARDED(reg_addr, false);
+		SEND_BYTE_GUARDED(byte, false);
+		Stop();
+		return true;
+	}
+
+	bool I2cMaster::SendBytes(const Byte slave_addr, const Byte reg_addr,
+			const Byte *bytes, const size_t size)
+	{
+		STATE_GUARD(I2cMaster, false);
+
+		Start();
+		SEND_BYTE_GUARDED(slave_addr << 1, false);
+		SEND_BYTE_GUARDED(reg_addr, false);
+		for (size_t i = 0; i < size; ++i)
+		{
+			SEND_BYTE_GUARDED(bytes[i], false);
+		}
+		Stop();
+		return true;
+	}
 
 }
 }
