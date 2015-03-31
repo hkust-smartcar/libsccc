@@ -29,7 +29,7 @@ private:
 	void UpdateState(const float z);
 	void UpdateCovariance();
 	void Gain();
-
+protected:
 	float m_q, m_r, m_k, m_x, m_lx, m_p, m_lp;
 };
 
