@@ -426,8 +426,11 @@ void I2cMaster::ResetI2C(){
 	libsc::System::DelayUs(1);
 	scl->Set(true);
 	libsc::System::DelayUs(1);
+<<<<<<< HEAD
 	sda->~Gpo();
 	scl->~Gpo();
+=======
+>>>>>>> branch 'happy-birthday-cupcake' of https://github.com/hkust-smartcar/libsccc.git
 
 	delete sda;
 	delete scl;

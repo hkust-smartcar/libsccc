@@ -111,10 +111,10 @@ $(info MCU sub-family = MK60F15)
 else ifeq ($(SCCC_MCU),MKL26Z4)
 CPPFLAGS+=-DMKL26Z4=1
 CCFLAGS+=-mthumb -mcpu=cortex-m0plus
-#CCFLAGS+=-msoft-float -mfloat-abi=soft
+CCFLAGS+=-msoft-float -mfloat-abi=soft
 LDFLAGS+=-mthumb -mcpu=cortex-m0plus
 # -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections
-#LDFLAGS+=-msoft-float -mfloat-abi=soft
+LDFLAGS+=-msoft-float -mfloat-abi=soft
 SCCC_MCU_DIR=kl26
 $(info MCU sub-family = MKL26Z4)
 
