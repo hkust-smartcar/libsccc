@@ -75,7 +75,7 @@ Mpu6050::Mpu6050(const Config &config)
 	//Register 26 - CONFIG: EXT_SYNC_SET[2:0]<<3 | DLPF_CFG[2:0];
 	//EXT_SYNC_SET=0, Input disabled;
 	//DLPF_CFG=0, Accel = 260Hz, Gyroscope = 256Hz;
-	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_CONFIG, 0x03));
+	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_CONFIG, 0x00));
 	System::DelayUs(1);
 
 	//Register 27 - GYRO_CONFIG: FS_SEL[1:0] << 3;
@@ -195,8 +195,8 @@ bool Mpu6050::Update(const bool clamp_)
 		return false;
 	}
 
-	int16_t raw_accel[3];
-	int16_t raw_gyro[3];
+	int16_t raw_accel[3]={0};
+	int16_t raw_gyro[3]={0};
 	for (size_t i = 0; i < data.size(); i += 2)
 	{
 		if (i <= 5)
