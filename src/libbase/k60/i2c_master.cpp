@@ -445,7 +445,8 @@ bool I2cMaster::SendByte_(const Byte byte)
 	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT))
 	{
 		uint32_t t = libsc::System::Time() - st;
-		if(t >= 2){
+		if(t >= 2)
+		{
 //			printf("GGed");
 			ResetI2C();
 			return false;
@@ -456,118 +457,118 @@ bool I2cMaster::SendByte_(const Byte byte)
 			//
 			//			return false;
 			//		}
-		}
-		SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
-		return !GET_BIT(MEM_MAPS[m_module]->S, I2C_S_RXAK_SHIFT);
+	}
+	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
+	return !GET_BIT(MEM_MAPS[m_module]->S, I2C_S_RXAK_SHIFT);
+}
+
+bool I2cMaster::ReadByte_(const bool is_last_byte, Byte *out_byte)
+{
+	if (GET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT))
+	{
+		CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
+	}
+	if (!is_last_byte)
+	{
+		// ACK
+		CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TXAK_SHIFT);
+	}
+	else
+	{
+		// NACK
+		SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TXAK_SHIFT);
 	}
 
-	bool I2cMaster::ReadByte_(const bool is_last_byte, Byte *out_byte)
+	// Initiate receive
+	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
+	*out_byte = MEM_MAPS[m_module]->D;
+	// Wait until data is received
+	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT))
 	{
-		if (GET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT))
+		if (GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
 		{
-			CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
+			LOG_DL("i2c scl timeout");
+			return false;
 		}
-		if (!is_last_byte)
-		{
-			// ACK
-			CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TXAK_SHIFT);
-		}
-		else
-		{
-			// NACK
-			SET_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TXAK_SHIFT);
-		}
+	}
+	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
 
-		// Initiate receive
-		SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
-		*out_byte = MEM_MAPS[m_module]->D;
-		// Wait until data is received
-		while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT))
-		{
-			if (GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
-			{
-				LOG_DL("i2c scl timeout");
-				return false;
-			}
-		}
-		SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
+	if (is_last_byte)
+	{
+		Stop();
+	}
+	*out_byte = MEM_MAPS[m_module]->D;
+	return true;
+}
 
-		if (is_last_byte)
+bool I2cMaster::GetByte(const Byte slave_addr, const Byte reg_addr,
+		Byte *out_byte)
+{
+	STATE_GUARD(I2cMaster, false);
+
+	Start();
+	SEND_BYTE_GUARDED(slave_addr << 1, false);
+	SEND_BYTE_GUARDED(reg_addr, false);
+	RepeatStart();
+	SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, false);
+	return ReadByte_(true, out_byte);
+}
+
+vector<Byte> I2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
+		const uint8_t size)
+{
+	STATE_GUARD(I2cMaster, {});
+
+	vector<Byte> bytes;
+	bytes.reserve(size);
+
+	Start();
+	SEND_BYTE_GUARDED(slave_addr << 1, {});
+	SEND_BYTE_GUARDED(reg_addr, {});
+	RepeatStart();
+	SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, {});
+	for (uint8_t i = 0; i < size; ++i)
+	{
+		Byte byte;
+		// NACK if last bit
+		if (!ReadByte_((i == size - 1), &byte))
 		{
 			Stop();
+			return bytes;
 		}
-		*out_byte = MEM_MAPS[m_module]->D;
-		return true;
+		bytes.push_back(byte);
 	}
+	return bytes;
+}
 
-	bool I2cMaster::GetByte(const Byte slave_addr, const Byte reg_addr,
-			Byte *out_byte)
+bool I2cMaster::SendByte(const Byte slave_addr, const Byte reg_addr,
+		const Byte byte)
+{
+	STATE_GUARD(I2cMaster, false);
+
+	Start();
+	SEND_BYTE_GUARDED(slave_addr << 1, false);
+	SEND_BYTE_GUARDED(reg_addr, false);
+	SEND_BYTE_GUARDED(byte, false);
+	Stop();
+	return true;
+}
+
+bool I2cMaster::SendBytes(const Byte slave_addr, const Byte reg_addr,
+		const Byte *bytes, const size_t size)
+{
+	STATE_GUARD(I2cMaster, false);
+
+	Start();
+	SEND_BYTE_GUARDED(slave_addr << 1, false);
+	SEND_BYTE_GUARDED(reg_addr, false);
+	for (size_t i = 0; i < size; ++i)
 	{
-		STATE_GUARD(I2cMaster, false);
-
-		Start();
-		SEND_BYTE_GUARDED(slave_addr << 1, false);
-		SEND_BYTE_GUARDED(reg_addr, false);
-		RepeatStart();
-		SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, false);
-		return ReadByte_(true, out_byte);
+		SEND_BYTE_GUARDED(bytes[i], false);
 	}
-
-	vector<Byte> I2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
-			const uint8_t size)
-	{
-		STATE_GUARD(I2cMaster, {});
-
-		vector<Byte> bytes;
-		bytes.reserve(size);
-
-		Start();
-		SEND_BYTE_GUARDED(slave_addr << 1, {});
-		SEND_BYTE_GUARDED(reg_addr, {});
-		RepeatStart();
-		SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, {});
-		for (uint8_t i = 0; i < size; ++i)
-		{
-			Byte byte;
-			// NACK if last bit
-			if (!ReadByte_((i == size - 1), &byte))
-			{
-				Stop();
-				return bytes;
-			}
-			bytes.push_back(byte);
-		}
-		return bytes;
-	}
-
-	bool I2cMaster::SendByte(const Byte slave_addr, const Byte reg_addr,
-			const Byte byte)
-	{
-		STATE_GUARD(I2cMaster, false);
-
-		Start();
-		SEND_BYTE_GUARDED(slave_addr << 1, false);
-		SEND_BYTE_GUARDED(reg_addr, false);
-		SEND_BYTE_GUARDED(byte, false);
-		Stop();
-		return true;
-	}
-
-	bool I2cMaster::SendBytes(const Byte slave_addr, const Byte reg_addr,
-			const Byte *bytes, const size_t size)
-	{
-		STATE_GUARD(I2cMaster, false);
-
-		Start();
-		SEND_BYTE_GUARDED(slave_addr << 1, false);
-		SEND_BYTE_GUARDED(reg_addr, false);
-		for (size_t i = 0; i < size; ++i)
-		{
-			SEND_BYTE_GUARDED(bytes[i], false);
-		}
-		Stop();
-		return true;
-	}
+	Stop();
+	return true;
+}
 
 }
 }
