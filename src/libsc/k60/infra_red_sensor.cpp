@@ -76,16 +76,16 @@ Gpi::Config GetGpiConfig(const uint8_t id,
 }
 
 InfraRedSensor::InfraRedSensor(const Config &config)
-		: m_isr(config.listener),
-		  m_pin(nullptr)
+		: m_pin(nullptr)
 {
 	Gpi::OnGpiEventListener listener;
 	if (config.listener)
 	{
 		const uint8_t id = config.id;
-		listener = [this, id](Gpi*)
+		InfraRedSensor::OnDetectListener ir_listener = config.listener;
+		listener = [ir_listener, id](Gpi*)
 				{
-					m_isr(id);
+					ir_listener(id);
 				};
 	}
 	m_pin = Gpi(GetGpiConfig(config.id, listener));

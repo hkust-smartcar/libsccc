@@ -13,6 +13,7 @@
 
 #include <functional>
 
+#include "libbase/k60/dma.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pinout_macros.h"
@@ -123,7 +124,7 @@ public:
 		 * @note Having listener and continuous mode both set will most likely
 		 * result in the listener being called in a dead lock manner
 		 */
-		OnConversionCompleteListener conversion_listener;
+		OnConversionCompleteListener conversion_isr;
 	};
 
 	static constexpr int kModuleChannelCount = 36;
@@ -182,6 +183,19 @@ public:
 	{
 		m_config.avg_pass = avg_pass;
 	}
+
+	/**
+	 * Config this Adc up to be ready to serve conversion result as DMA source,
+	 * and set @a config accordingly. The following options are also set besides
+	 * mux_src and src:<br>
+	 * Dma::Config::minor_bytes = 1 or 2 (depending on the resolution)
+	 *
+	 * @note To use DMA, Config::conversion_isr must NOT be set for this Adc.
+	 * Otherwise, the operation will fail and no changes would be made to
+	 * @a config
+	 * @param config
+	 */
+	void ConfigResultAsDmaSrc(Dma::Config *config);
 
 private:
 	bool InitModule(const Pin::Name pin);

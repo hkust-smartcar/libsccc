@@ -1,6 +1,5 @@
 /*
  * simple_buzzer.h
- * Simple Buzzer
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -24,6 +23,7 @@ public:
 	struct Config
 	{
 		uint8_t id;
+		bool is_active_low;
 	};
 
 	explicit SimpleBuzzer(const Config &config);
@@ -33,6 +33,7 @@ public:
 
 private:
 	libbase::k60::Gpo m_pin;
+	bool m_is_active_low;
 };
 
 }

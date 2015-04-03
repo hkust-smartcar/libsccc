@@ -24,6 +24,8 @@
 
 #include "libutil/misc.h"
 
+#define PIT_COUNT 4
+
 using namespace libutil;
 
 namespace libbase
@@ -39,14 +41,14 @@ inline void ConsumeInterrupt_(const int channel)
 	SET_BIT(PIT->CHANNEL[channel].TFLG, PIT_TFLG_TIF_SHIFT);
 }
 
-Pit* g_instances[4] = {};
+Pit* g_instances[PIT_COUNT] = {};
 
 }
 
 Pit::Pit(const Config &config)
 		: m_channel(config.channel), m_is_init(true)
 {
-	assert(m_channel < 4);
+	assert(m_channel < PIT_COUNT);
 	assert(!g_instances[m_channel]);
 	assert(config.count > 0);
 	g_instances[m_channel] = this;
@@ -160,21 +162,18 @@ void Pit::SetCount(const uint32_t count)
 uint32_t Pit::GetCountLeft() const
 {
 	STATE_GUARD(Pit, 0);
-
 	return PIT->CHANNEL[m_channel].CVAL;
 }
 
 void Pit::ConsumeInterrupt()
 {
 	STATE_GUARD(Pit, VOID);
-
 	ConsumeInterrupt_(m_channel);
 }
 
 bool Pit::IsInterruptRequested() const
 {
 	STATE_GUARD(Pit, false);
-
 	return GET_BIT(PIT->CHANNEL[m_channel].TFLG, PIT_TFLG_TIF_SHIFT);
 }
 

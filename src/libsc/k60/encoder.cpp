@@ -8,6 +8,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 #include <cstdio>
 #include <cstdint>
 
@@ -120,6 +121,14 @@ Encoder::Encoder(const Initializer &initializer)
 		  m_quad_decoder(initializer.GetQuadDecoderConfig())
 {}
 
+Encoder::Encoder(Encoder &&rhs)
+		: m_count(rhs.m_count),
+		  m_quad_decoder(std::move(rhs.m_quad_decoder))
+{}
+
+Encoder::~Encoder()
+{}
+
 void Encoder::Update()
 {
 	m_count = m_quad_decoder.GetCount();
@@ -128,10 +137,17 @@ void Encoder::Update()
 
 #else
 Encoder::Encoder(const Initializer&)
+		: Encoder(nullptr)
+{}
+Encoder::Encoder(Encoder&&)
+		: Encoder(nullptr)
+{}
+Encoder::Encoder(nullptr_t)
 		: m_count(0), m_quad_decoder(nullptr)
 {
 	LOG_DL("Configured not to use Encoder");
 }
+Encoder::~Encoder() {}
 void Encoder::Update() {}
 
 #endif /* LIBSC_USE_ENCODER */

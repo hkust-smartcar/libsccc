@@ -7,8 +7,9 @@
 
 #include "libbase/k60/hardware.h"
 
-#include <string.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "libbase/k60/cmsis/system.h"
 #include "libbase/k60/watchdog_c.h"
@@ -16,7 +17,7 @@
 
 extern void __libc_init_array(void);
 extern int main(void);
-extern char __SP_INIT[];
+extern uint32_t __SP_INIT;
 
 void __thumb_startup(void);
 
@@ -161,7 +162,7 @@ void __iar_program_start(void)
 
 void __thumb_startup(void)
 {
-	int addr = (int)__SP_INIT;
+	uint32_t addr = (uint32_t)&__SP_INIT;
 
 	LibbaseK60WatchdogStartupInitialize();
 

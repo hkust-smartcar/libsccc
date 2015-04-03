@@ -18,6 +18,7 @@
 #include "libbase/k60/clock_utils.h"
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
+#include "libbase/k60/pinout.h"
 #include "libbase/k60/sim.h"
 #include "libbase/k60/spi_master.h"
 #include "libbase/k60/spi_utils.h"
@@ -557,13 +558,15 @@ size_t SpiMaster::PushData(const uint8_t slave_id, const uint8_t *data,
 {
 	STATE_GUARD(SpiMaster, 0);
 
-	const size_t send = std::min<Uint>(TX_FIFO_SIZE - GET_BITS(
-			MEM_MAPS[m_module]->SR, SPI_SR_TXCTR_SHIFT, SPI_SR_TXCTR_MASK),
-			((m_frame_size > 8) ? (size / 2) : size));
-	if (send == 0)
+	const size_t space = TX_FIFO_SIZE - GET_BITS(MEM_MAPS[m_module]->SR,
+			SPI_SR_TXCTR_SHIFT, SPI_SR_TXCTR_MASK);
+	if (space == 0)
 	{
+		// FIFO is full
 		return 0;
 	}
+	const size_t send = std::min<size_t>(space, (m_frame_size > 8) ? (size / 2)
+			: size);
 
 	const uint8_t csn = SpiUtils::GetCsNumber(m_cs[slave_id].GetName());
 	for (size_t i = 0; i < send; ++i)

@@ -21,6 +21,7 @@
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pin_isr_manager.h"
 #include "libbase/k60/pin_utils.h"
+#include "libbase/k60/pinout.h"
 
 #include "libutil/misc.h"
 
@@ -231,6 +232,19 @@ Gpi Gpo::ToGpi()
 	STATE_GUARD(Gpo, Gpi(nullptr));
 
 	return Gpi(std::move(m_pin));
+}
+
+void Gpo::ConfigToggleAsDmaDst(Dma::Config *config)
+{
+	STATE_GUARD(Gpo, VOID);
+
+	config->dst.addr = (void*)&MEM_MAPS[PinUtils::GetPort(m_pin.GetName())]
+			->PTOR;
+	config->dst.offset = 0;
+	config->dst.size = Dma::Config::TransferSize::k4Byte;
+	config->dst.major_offset = 0;
+	config->minor_bytes = 4;
+	config->major_count = 1;
 }
 
 Gpio::Gpio(const Gpi::Config &config)

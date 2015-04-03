@@ -6,6 +6,7 @@
  * Refer to LICENSE for details
  */
 
+#include "libbase/k60/cache.h"
 #include "libbase/k60/watchdog.h"
 
 #include "libsc/config.h"
@@ -24,7 +25,14 @@ System::System()
 		: //m_watchdog(GetWatchdogConfig()),
 		  m_delay(),
 		  m_timer()
-{}
+{
+	// Enable cache unless otherwise disabled
+#if !LIBSC_NOT_USE_CACHE && MK60F15
+	Cache::Config cache_conf;
+	cache_conf.is_enable = true;
+	Cache::Get().Init(cache_conf);
+#endif
+}
 
 __attribute__((__weak__)) Watchdog::Config System::GetWatchdogConfig()
 {

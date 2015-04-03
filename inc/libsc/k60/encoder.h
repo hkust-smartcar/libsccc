@@ -1,8 +1,5 @@
 /*
  * encoder.h
- * Phase A/B encoder. Provides two mechanisms to read the feedback value,
- * interrupt based software emulation and hardware quadrature decoding. Software
- * emulation will pose a large overhead to the system
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -11,6 +8,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include "libbase/k60/ftm_quad_decoder.h"
@@ -39,6 +37,8 @@ public:
 	{
 		uint8_t id;
 	};
+
+	virtual ~Encoder();
 
 	void Update();
 
@@ -69,6 +69,8 @@ protected:
 	};
 
 	explicit Encoder(const Initializer &initializer);
+	explicit Encoder(nullptr_t);
+	Encoder(Encoder &&rhs);
 
 private:
 	int32_t m_count;

@@ -16,6 +16,7 @@
 #include "libbase/k60/misc_utils.h"
 
 #include "libsc/k60/uart_device.h"
+#include "libutil/endian_utils.h"
 #include "libutil/remote_var_manager.h"
 #include "libutil/string.h"
 
@@ -59,16 +60,14 @@ RemoteVarManager::Var& RemoteVarManager::Var::operator=(Var &&rhs)
 	return *this;
 }
 
-RemoteVarManager::RemoteVarManager(UartDevice *uart, const size_t var_count)
-		: m_uart(uart), m_buffer_it(0)
+RemoteVarManager::RemoteVarManager(const size_t var_count)
+		: m_buffer_it(0)
 {
 	m_vars.reserve(var_count);
 }
 
 RemoteVarManager::~RemoteVarManager()
-{
-	m_uart->DisableRx();
-}
+{}
 
 RemoteVarManager::Var* RemoteVarManager::Register(const string &name,
 		const Var::Type type)
@@ -106,43 +105,30 @@ RemoteVarManager::Var* RemoteVarManager::Register(string &&name,
 	return &m_vars.back();
 }
 
-void RemoteVarManager::Start(const bool is_broadcast)
+void RemoteVarManager::Broadcast(UartDevice *uart)
 {
-	m_uart->EnableRx([this](const Byte *bytes, const size_t count)
-			{
-				OnUartReceiveChar(bytes, count);
-			});
-
-	if (is_broadcast)
+	for (size_t i = 0; i < m_vars.size(); ++i)
 	{
-		for (size_t i = 0; i < m_vars.size(); ++i)
+		if (m_vars[i].m_type == Var::Type::kInt)
 		{
-			if (m_vars[i].m_type == Var::Type::kInt)
-			{
-				m_uart->SendStr(String::Format("%s,int,%d,%d\n",
-						m_vars[i].m_name.c_str(), m_vars[i].m_id,
-						htobe32(m_vars[i].m_val)));
-			}
-			else
-			{
-				m_uart->SendStr(String::Format("%s,real,%d,%.3f\n",
-						m_vars[i].m_name.c_str(), m_vars[i].m_id,
-						AsFloat(htobe32(m_vars[i].m_val))));
-			}
+			uart->SendStr(String::Format("%s,int,%d,%d\n",
+					m_vars[i].m_name.c_str(), m_vars[i].m_id,
+					EndianUtils::HostToBe(m_vars[i].m_val)));
+		}
+		else
+		{
+			uart->SendStr(String::Format("%s,real,%d,%.3f\n",
+					m_vars[i].m_name.c_str(), m_vars[i].m_id,
+					AsFloat(EndianUtils::HostToBe(m_vars[i].m_val))));
 		}
 	}
 }
 
-void RemoteVarManager::Stop()
+bool RemoteVarManager::OnUartReceiveChar(const vector<Byte> &data)
 {
-	m_uart->DisableRx();
-}
-
-void RemoteVarManager::OnUartReceiveChar(const Byte *bytes, const size_t count)
-{
-	for (size_t i = 0; i < count; ++i)
+	for (size_t i = 0; i < data.size(); ++i)
 	{
-		m_buffer[m_buffer_it] = bytes[i];
+		m_buffer[m_buffer_it] = data[i];
 		if (++m_buffer_it >= 5)
 		{
 			const uint32_t val = m_buffer[1] << 24 | m_buffer[2] << 16
@@ -151,6 +137,7 @@ void RemoteVarManager::OnUartReceiveChar(const Byte *bytes, const size_t count)
 			m_buffer_it = 0;
 		}
 	}
+	return true;
 }
 
 }

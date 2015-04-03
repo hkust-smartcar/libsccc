@@ -7,7 +7,10 @@
  */
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
+
+#include <functional>
 
 #include "libbase/log.h"
 #include "libbase/k60/gpio.h"
@@ -78,19 +81,64 @@ inline Pin::Name GetPin(const uint8_t id)
 
 #endif
 
-Gpi::Config GetGpiConfig(const uint8_t id)
+Gpi::Config GetGpiConfig(const Button::Config &config,
+		const Gpi::OnGpiEventListener &listener)
 {
-	Gpi::Config config;
-	config.pin = GetPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
+	Gpi::Config product;
+	product.pin = GetPin(config.id);
+	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	if (config.is_use_pull_resistor)
+	{
+		product.config.set(Pin::Config::ConfigBit::kPullEnable);
+		product.config.set(Pin::Config::ConfigBit::kPullUp, config.is_active_low);
+	}
+	if (listener)
+	{
+		switch (config.listener_trigger)
+		{
+		default:
+		case Button::Config::Trigger::kDown:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kFalling
+					: Pin::Config::Interrupt::kRising);
+			break;
+
+		case Button::Config::Trigger::kUp:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kRising
+					: Pin::Config::Interrupt::kFalling);
+			break;
+
+		case Button::Config::Trigger::kBoth:
+			product.interrupt = Pin::Config::Interrupt::kBoth;
+			break;
+		}
+		product.isr = listener;
+	}
+	return product;
 }
 
 }
 
 Button::Button(const Config &config)
-		: m_pin(GetGpiConfig(config.id)),
+		: m_pin(nullptr),
 		  m_is_active_low(config.is_active_low)
+{
+	Gpi::OnGpiEventListener listener;
+	if (config.listener)
+	{
+		const uint8_t id = config.id;
+		Button::Listener btn_listener = config.listener;
+		listener = [btn_listener, id](Gpi*)
+				{
+					btn_listener(id);
+				};
+	}
+	m_pin = Gpi(GetGpiConfig(config, listener));
+}
+
+Button::Button(nullptr_t)
+		: m_pin(nullptr), m_is_active_low(false)
 {}
 
 bool Button::IsDown() const
@@ -100,6 +148,9 @@ bool Button::IsDown() const
 
 #else
 Button::Button(const Config&)
+		: Button(nullptr)
+{}
+Button::Button(nullptr_t)
 		: m_pin(nullptr), m_is_active_low(false)
 {
 	LOG_DL("Configured not to use Button");

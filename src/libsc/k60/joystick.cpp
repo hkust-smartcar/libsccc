@@ -7,6 +7,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 
 #include "libbase/log.h"
@@ -75,93 +76,111 @@ inline Pin::Name GetSelectPin(const uint8_t id)
 
 #endif
 
-Gpi::Config GetUpGpiConfig(const uint8_t id)
+Pin::Name GetStatePin(const Joystick::State state, const uint8_t id)
 {
-	Gpi::Config config;
-	config.pin = GetUpPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
+	switch (state)
+	{
+	default:
+		assert(false);
+		// no break
+
+	case Joystick::State::kUp:
+		return GetUpPin(id);
+
+	case Joystick::State::kDown:
+		return GetDownPin(id);
+
+	case Joystick::State::kLeft:
+		return GetLeftPin(id);
+
+	case Joystick::State::kRight:
+		return GetRightPin(id);
+
+	case Joystick::State::kSelect:
+		return GetSelectPin(id);
+	}
 }
 
-Gpi::Config GetDownGpiConfig(const uint8_t id)
+Gpi::Config GetPinGpiConfig(const Joystick::State state,
+		const Joystick::Config &config, const Gpi::OnGpiEventListener &listener)
 {
-	Gpi::Config config;
-	config.pin = GetDownPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
-}
+	Gpi::Config product;
+	product.pin = GetStatePin(state, config.id);
+	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	if (listener)
+	{
+		switch (config.listener_triggers[static_cast<int>(state)])
+		{
+		default:
+		case Joystick::Config::Trigger::kDown:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kFalling
+					: Pin::Config::Interrupt::kRising);
+			break;
 
-Gpi::Config GetLeftGpiConfig(const uint8_t id)
-{
-	Gpi::Config config;
-	config.pin = GetLeftPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
-}
+		case Joystick::Config::Trigger::kUp:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kRising
+					: Pin::Config::Interrupt::kFalling);
+			break;
 
-Gpi::Config GetRightGpiConfig(const uint8_t id)
-{
-	Gpi::Config config;
-	config.pin = GetRightPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
-}
-
-Gpi::Config GetSelectGpiConfig(const uint8_t id)
-{
-	Gpi::Config config;
-	config.pin = GetSelectPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
-	return config;
+		case Joystick::Config::Trigger::kBoth:
+			product.interrupt = Pin::Config::Interrupt::kBoth;
+			break;
+		}
+		product.isr = listener;
+	}
+	return product;
 }
 
 }
 
 Joystick::Joystick(const Config &config)
-		: m_pins{Gpi(GetUpGpiConfig(config.id)),
-				Gpi(GetDownGpiConfig(config.id)),
-				Gpi(GetLeftGpiConfig(config.id)),
-				Gpi(GetRightGpiConfig(config.id)),
-				Gpi(GetSelectGpiConfig(config.id))},
-		  m_is_active_low(config.is_active_low)
+		: m_is_active_low(config.is_active_low)
+{
+	for (int i = 0; i < 5; ++i)
+	{
+		Gpi::OnGpiEventListener listener;
+		if (config.listeners[i])
+		{
+			const uint8_t id = config.id;
+			Joystick::Listener js_listener = config.listeners[i];
+			listener = [js_listener, id, i](Gpi*)
+					{
+						js_listener(id);
+					};
+		}
+		m_pins[i] = Gpi(GetPinGpiConfig(static_cast<Joystick::State>(i), config,
+				listener));
+	}
+}
+
+Joystick::Joystick(nullptr_t)
+		: m_is_active_low(false)
 {}
 
 Joystick::State Joystick::GetState() const
 {
-	if (m_pins[0].Get() ^ m_is_active_low)
+	for (int i = 0; i < 5; ++i)
 	{
-		return State::UP;
+		if (m_pins[i].Get() ^ m_is_active_low)
+		{
+			return static_cast<State>(i);
+		}
 	}
-	else if (m_pins[1].Get() ^ m_is_active_low)
-	{
-		return State::DOWN;
-	}
-	else if (m_pins[2].Get() ^ m_is_active_low)
-	{
-		return State::LEFT;
-	}
-	else if (m_pins[3].Get() ^ m_is_active_low)
-	{
-		return State::RIGHT;
-	}
-	else if (m_pins[4].Get() ^ m_is_active_low)
-	{
-		return State::SELECT;
-	}
-	else
-	{
-		return State::IDLE;
-	}
+	return State::kIdle;
 }
 
 #else
 Joystick::Joystick(const Config&)
-		: m_pins{Gpi(nullptr), Gpi(nullptr), Gpi(nullptr), Gpi(nullptr),
-				  Gpi(nullptr)}
+		: Joystick(nullptr)
+{}
+Joystick::Joystick(nullptr_t)
+		: m_is_active_low(false)
 {
 	LOG_DL("Configured not to use Joystick");
 }
-Joystick::State Joystick::GetState() const { return State::IDLE; }
+Joystick::State Joystick::GetState() const { return State::kIdle; }
 
 #endif /* LIBSC_USE_BUTTON */
 

@@ -13,19 +13,19 @@
 #include <cstdint>
 
 #include "libbase/k60/gpio.h"
-#include "libbase/k60/spi_master.h"
+#include "libbase/k60/spi_master_interface.h"
 
 namespace libbase
 {
 namespace k60
 {
 
-class SoftSpiMaster
+class SoftSpiMaster : public SpiMasterInterface
 {
 public:
-	typedef SpiMaster::Config Config;
+	typedef SpiMasterInterface::Config Config;
 
-	static constexpr Uint kSlaveCount = SpiMaster::kSlaveCount;
+	static constexpr Uint kSlaveCount = SpiMasterInterface::kSlaveCount;
 
 	/**
 	 * Construct a new instance. Only the following parameters are supported,
@@ -43,26 +43,18 @@ public:
 
 	SoftSpiMaster& operator=(const SoftSpiMaster&) = delete;
 	SoftSpiMaster& operator=(SoftSpiMaster &&rhs);
-	operator bool() const
+	operator bool() const override
 	{
 		return m_is_init;
 	}
 
-	uint16_t ExchangeData(const uint8_t slave_id, const uint16_t data);
+	uint16_t ExchangeData(const uint8_t slave_id, const uint16_t data) override;
 
-	void KickStart();
-	/**
-	 * In SoftSpiMaster, all data will be sent in a blocking manner
-	 *
-	 * @param slave_id
-	 * @param data
-	 * @param size
-	 * @return
-	 */
+	void KickStart() override;
 	size_t PushData(const uint8_t slave_id, const uint16_t *data,
-			const size_t size);
+			const size_t size) override;
 	size_t PushData(const uint8_t slave_id, const uint8_t *data,
-			const size_t size);
+			const size_t size) override;
 
 	uint8_t GetFrameSize() const
 	{

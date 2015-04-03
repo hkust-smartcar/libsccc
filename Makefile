@@ -7,7 +7,7 @@ OUT_OBJ_PATH=obj
 TOOLCHAIN_PREFIX=arm-none-eabi-
 CC=$(TOOLCHAIN_PREFIX)gcc
 CXX=$(TOOLCHAIN_PREFIX)g++
-AR=$(TOOLCHAIN_PREFIX)ar
+AR=$(TOOLCHAIN_PREFIX)gcc-ar
 
 # Additional include dirs
 ALL_INC_PATHS=$(INC_PATH) $(SRC_PATH)
@@ -35,6 +35,14 @@ $(info Make version = $(MAKE_VERSION))
 
 endif
 
+ifdef WIN32
+# TODO Also print CC version on win32
+
+else ifdef UNIX
+$(info CC = $(shell $(CC) --version | (read -r line; echo $$line)))
+
+endif
+
 $(info User include paths = $(ALL_INC_PATHS))
 $(info User symbols = $(ALL_SYMBOLS))
 
@@ -53,6 +61,8 @@ CCFLAGS+=-fmessage-length=0
 CCFLAGS+=-flto -ffunction-sections -fdata-sections
 CCFLAGS+=-fno-strict-aliasing
 CCFLAGS+=-Wall -Wextra
+# Wmissing-field-initializers is causing too much false warnings
+CCFLAGS+=-Wno-missing-field-initializers
 
 ifeq ($(SCCC_BUILD),DEBUG)
 BIN_SUFFIX:=$(BIN_SUFFIX)-d

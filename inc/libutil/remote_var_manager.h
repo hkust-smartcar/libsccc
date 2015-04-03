@@ -80,23 +80,29 @@ public:
 		friend class RemoteVarManager;
 	};
 
-	RemoteVarManager(libsc::k60::UartDevice *uart, const size_t var_count);
+	explicit RemoteVarManager(const size_t var_count);
 	~RemoteVarManager();
 
 	Var* Register(const std::string &name, const Var::Type type);
 	Var* Register(std::string &&name, const Var::Type type);
 
-	void Start(const bool is_broadcast);
-	void Start()
-	{
-		Start(true);
-	}
-	void Stop();
+	/**
+	 * Broadcast the currectly registered variables
+	 *
+	 * @param uart
+	 */
+	void Broadcast(libsc::k60::UartDevice *uart);
+
+	/**
+	 * Process new data. You should set this method as the Rx ISR while
+	 * initializing the UartDevice, or call it manually
+	 *
+	 * @param data
+	 * @return true
+	 */
+	bool OnUartReceiveChar(const std::vector<Byte> &data);
 
 private:
-	void OnUartReceiveChar(const Byte *bytes, const size_t count);
-
-	libsc::k60::UartDevice *m_uart;
 	std::vector<Var> m_vars;
 	Byte m_buffer[5];
 	int m_buffer_it;

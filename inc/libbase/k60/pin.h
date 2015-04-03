@@ -222,15 +222,25 @@ public:
 
 		enum ConfigBit
 		{
+			/**
+			 * Select between high/low drive strength, effective only with
+			 * output pin
+			 */
 			kHighDriveStrength = 0,
+			/// Effective only with input pin
 			kOpenDrain,
 			/**
-			 * Disable the passive input filter when high speed interfaces of
-			 * more than 2 MHz are supported on the pin
+			 * Enable a low pass filter (10 MHz to 30 MHz bandwidth) on the pin.
+			 * Disable when supporting high speed interfaces (> 2MHz). Effective
+			 * only with input pin
 			 */
 			kPassiveFilter,
+			/// Effective only with output pin
 			kSlowSlewRate,
-			/// Enable the internal pull-up or pull-down resistor
+			/**
+			 * Enable the internal pull-up or pull-down resistor, depending on
+			 * ConfigBit::kPullUp. Effective only with input pin
+			 */
 			kPullEnable,
 			kPullUp,
 

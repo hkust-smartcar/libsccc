@@ -13,10 +13,15 @@
 #include "libbase/k60/pinout/mk60f15_lqfp144.h"
 
 #include "libbase/k60/adc.h"
+#include "libbase/k60/dma_mux.h"
 #include "libbase/k60/ftm.h"
-#include "libbase/k60/misc_utils.h"
+#include "libbase/k60/i2c.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pin_utils.h"
+#include "libbase/k60/uart.h"
+#include "libbase/misc_types.h"
+
+using namespace std;
 
 namespace libbase
 {
@@ -695,6 +700,197 @@ Pin::Config::MuxControl Mk60f15Lqfp144::GetFtmQdMux(const Pin::Name pin)
 	else
 	{
 		return Pin::Config::MuxControl::kAlt6;
+	}
+}
+
+I2c::Name Mk60f15Lqfp144::GetI2c(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPtb0:
+	case Pin::Name::kPtb2:
+	case Pin::Name::kPtd8:
+		return I2c::Name::kI2c0Scl;
+
+	case Pin::Name::kPtb1:
+	case Pin::Name::kPtb3:
+	case Pin::Name::kPtd9:
+		return I2c::Name::kI2c0Sda;
+
+	case Pin::Name::kPte1:
+	case Pin::Name::kPtc10:
+		return I2c::Name::kI2c1Scl;
+
+	case Pin::Name::kPte0:
+	case Pin::Name::kPtc11:
+		return I2c::Name::kI2c1Sda;
+
+	default:
+		return I2c::Name::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mk60f15Lqfp144::GetI2cMux(const Pin::Name pin)
+{
+	if (pin == Pin::Name::kPte0 || pin == Pin::Name::kPte1)
+	{
+		return Pin::Config::MuxControl::kAlt6;
+	}
+	else
+	{
+		return Pin::Config::MuxControl::kAlt2;
+	}
+}
+
+uint8_t Mk60f15Lqfp144::GetDmaMuxSource(const DmaMux::Source src, const Uint mux)
+{
+	assert(mux < PINOUT_DMA_MUX_COUNT);
+
+	if ((Uint)src >= (Uint)DmaMux::Source::kUart0Rx
+			&& (Uint)src <= (Uint)DmaMux::Source::kUart5Tx)
+	{
+		return (Uint)src - (Uint)DmaMux::Source::kUart0Rx + 2;
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kSpi0Rx
+			&& (Uint)src <= (Uint)DmaMux::Source::kSpi2Tx)
+	{
+		return (Uint)src - (Uint)DmaMux::Source::kSpi0Rx + 16;
+	}
+	else if (src == DmaMux::Source::kI2c0)
+	{
+		return (mux == 0) ? 22 : static_cast<uint8_t>(-1);
+	}
+	else if (src == DmaMux::Source::kI2c1or2)
+	{
+		return (mux == 0) ? 23 : static_cast<uint8_t>(-1);
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kFtm0Ch0
+			&& (Uint)src <= (Uint)DmaMux::Source::kFtm2Ch1)
+	{
+		return (mux == 0) ? ((Uint)src - (Uint)DmaMux::Source::kFtm0Ch0 + 24)
+				: static_cast<uint8_t>(-1);
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kFtm3Ch0
+			&& (Uint)src <= (Uint)DmaMux::Source::kFtm3Ch7)
+	{
+		return (mux == 0) ? static_cast<uint8_t>(-1)
+				: ((Uint)src - (Uint)DmaMux::Source::kFtm3Ch0 + 24);
+	}
+	else if (src == DmaMux::Source::kAdc0)
+	{
+		return 40;
+	}
+	else if (src == DmaMux::Source::kAdc1)
+	{
+		return 41;
+	}
+	else if (src == DmaMux::Source::kAdc2)
+	{
+		return (mux == 0) ? static_cast<uint8_t>(-1) : 42;
+	}
+	else if (src == DmaMux::Source::kAdc3)
+	{
+		return (mux == 0) ? static_cast<uint8_t>(-1) : 43;
+	}
+	else if (src == DmaMux::Source::kDac0)
+	{
+		return 45;
+	}
+	else if (src == DmaMux::Source::kDac1)
+	{
+		return 46;
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kPortA
+			&& (Uint)src <= (Uint)DmaMux::Source::kPortE)
+	{
+		return (mux == 0) ? ((Uint)src - (Uint)DmaMux::Source::kPortA + 49)
+				: static_cast<uint8_t>(-1);
+	}
+	else if (src == DmaMux::Source::kPortF)
+	{
+		return (mux == 0) ? static_cast<uint8_t>(-1) : 53;
+	}
+	else if ((Uint)src >= (Uint)DmaMux::Source::kSoftware0
+			&& (Uint)src <= (Uint)DmaMux::Source::kSoftware9)
+	{
+		return (Uint)src - (Uint)DmaMux::Source::kSoftware0 + 54;
+	}
+	else
+	{
+		return static_cast<uint8_t>(-1);
+	}
+}
+
+Uart::Name Mk60f15Lqfp144::GetUart(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta1:
+	case Pin::Name::kPta15:
+	case Pin::Name::kPtb16:
+	case Pin::Name::kPtd6:
+		return Uart::Name::kUart0Rx;
+
+	case Pin::Name::kPta2:
+	case Pin::Name::kPta14:
+	case Pin::Name::kPtb17:
+	case Pin::Name::kPtd7:
+		return Uart::Name::kUart0Tx;
+
+	case Pin::Name::kPtc3:
+	case Pin::Name::kPte1:
+		return Uart::Name::kUart1Rx;
+
+	case Pin::Name::kPtc4:
+	case Pin::Name::kPte0:
+		return Uart::Name::kUart1Tx;
+
+	case Pin::Name::kPtd2:
+		return Uart::Name::kUart2Rx;
+
+	case Pin::Name::kPtd3:
+		return Uart::Name::kUart2Tx;
+
+	case Pin::Name::kPtb10:
+	case Pin::Name::kPtc16:
+	case Pin::Name::kPte5:
+		return Uart::Name::kUart3Rx;
+
+	case Pin::Name::kPtb11:
+	case Pin::Name::kPtc17:
+	case Pin::Name::kPte4:
+		return Uart::Name::kUart3Tx;
+
+	case Pin::Name::kPtc14:
+	case Pin::Name::kPte25:
+		return Uart::Name::kUart4Rx;
+
+	case Pin::Name::kPtc15:
+	case Pin::Name::kPte24:
+		return Uart::Name::kUart4Tx;
+
+	case Pin::Name::kPtd8:
+	case Pin::Name::kPte9:
+		return Uart::Name::kUart5Rx;
+
+	case Pin::Name::kPtd9:
+	case Pin::Name::kPte8:
+		return Uart::Name::kUart5Tx;
+
+	default:
+		return Uart::Name::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mk60f15Lqfp144::GetUartMux(const Pin::Name pin)
+{
+	if (pin == Pin::Name::kPta1 || pin == Pin::Name::kPta2)
+	{
+		return Pin::Config::MuxControl::kAlt2;
+	}
+	else
+	{
+		return Pin::Config::MuxControl::kAlt3;
 	}
 }
 

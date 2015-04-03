@@ -21,19 +21,19 @@ namespace k60
 class AdcUtils
 {
 public:
-	static Uint GetModule(const Adc::Name pin)
+	static Uint GetModule(const Adc::Name adc)
 	{
-		return static_cast<Uint>(pin) / Adc::kModuleChannelCount;
+		return static_cast<Uint>(adc) / Adc::kModuleChannelCount;
 	}
 
-	static Uint GetChannel(const Adc::Name pin)
+	static Uint GetChannel(const Adc::Name adc)
 	{
-		return static_cast<Uint>(pin) % Adc::kModuleChannelCount;
+		return static_cast<Uint>(adc) % Adc::kModuleChannelCount;
 	}
 
-	static Uint GetChannelNumber(const Adc::Name pin)
+	static Uint GetChannelNumber(const Adc::Name adc)
 	{
-		const Uint channel = GetChannel(pin);
+		const Uint channel = GetChannel(adc);
 		if (channel >= (Uint)Adc::Name::kAdc0Ad4B)
 		{
 			return channel - 4;

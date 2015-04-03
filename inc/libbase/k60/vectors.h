@@ -50,7 +50,18 @@ extern HardFaultHandler g_hard_fault_handler;
 #define VectorToIrq(x) (x - 16)
 #define GetActiveIrq() VectorToIrq(GetActiveVector())
 
+/**
+ * The default priority for all IRQs. The current value could be changed in the
+ * future, but a +-4 bound is guranteed
+ */
+#define __BASE_IRQ_PRIORITY 8
+
 void InitVectorTable(void);
+/**
+ * Set all IRQ priorities to __BASE_IRQ_PRIORITY (default is 0) to allow more
+ * flexibility in handling interrupts
+ */
+void InitIrqPriority(void);
 void SetIsr(IRQn_Type irq, tIsrFunc handler);
 void EnableIrq(IRQn_Type irq);
 void DisableIrq(IRQn_Type irq);

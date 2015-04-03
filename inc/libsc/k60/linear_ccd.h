@@ -10,8 +10,9 @@
 #pragma once
 
 #include <cstdint>
-#include <bitset>
+#include <array>
 
+#include <libbase/k60/adc.h>
 #include "libbase/k60/gpio.h"
 
 namespace libsc
@@ -34,7 +35,7 @@ public:
 	 *
 	 * @return
 	 */
-	const std::bitset<kSensorW>& GetData() const
+	const std::array<uint16_t,kSensorW>& GetData() const
 	{
 		return m_front_buffer;
 	}
@@ -47,12 +48,12 @@ public:
 private:
 	inline void Delay();
 
-	libbase::k60::Gpi m_ad_pin;
+	libbase::k60::Adc m_ad_pin;
 	libbase::k60::Gpo m_clk_pin;
 	libbase::k60::Gpo m_si_pin;
 
-	std::bitset<kSensorW> m_front_buffer;
-	std::bitset<kSensorW> m_back_buffer;
+	std::array<uint16_t, kSensorW> m_front_buffer;
+	std::array<uint16_t, kSensorW> m_back_buffer;
 
 	int m_index;
 };

@@ -7,6 +7,7 @@
  */
 
 #include "libbase/k60/ftm_quad_decoder.h"
+#include "libbase/k60/soft_quad_decoder.h"
 
 #include "libsc/config.h"
 #include "libsc/k60/dir_encoder.h"
@@ -18,26 +19,27 @@ namespace libsc
 namespace k60
 {
 
-#if LIBSC_USE_SOFT_ENCODER
-SoftQuadDecoder::Config AbEncoder::Initializer::GetQuadDecoderConfig() const
-{
-	return Encoder::Initializer::GetQuadDecoderConfig();
-}
+#if LIBSC_USE_ENCODER
 
-#else
-FtmQuadDecoder::Config DirEncoder::Initializer::GetQuadDecoderConfig() const
+Encoder::QuadDecoder::Config DirEncoder::Initializer::GetQuadDecoderConfig() const
 {
-	FtmQuadDecoder::Config product = Encoder::Initializer::GetQuadDecoderConfig();
+	Encoder::QuadDecoder::Config product =
+			Encoder::Initializer::GetQuadDecoderConfig();
 	product.encoding_mode =
-			FtmQuadDecoder::Config::EncodingMode::kCountDirection;
+			Encoder::QuadDecoder::Config::EncodingMode::kCountDirection;
 	return product;
 }
-
-#endif
 
 DirEncoder::DirEncoder(const Config &config)
 		: Encoder(Initializer(config))
 {}
+
+#else /* LIBSC_USE_ENCODER */
+DirEncoder::DirEncoder(const Config&)
+		: Encoder(nullptr)
+{}
+
+#endif /* LIBSC_USE_ENCODER */
 
 }
 }

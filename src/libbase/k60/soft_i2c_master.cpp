@@ -38,6 +38,12 @@ namespace k60
 namespace
 {
 
+Uint GetDelayUs(const SoftI2cMaster::Config &config)
+{
+	const Uint freq2 = config.baud_rate_khz * 2;
+	return (1000 + freq2 - 1) / freq2;
+}
+
 Gpi::Config GetSclConfig(const SoftI2cMaster::Config &config)
 {
 	Gpi::Config gc;
@@ -62,8 +68,10 @@ inline void SoftI2cMaster::Delay()
 }
 
 SoftI2cMaster::SoftI2cMaster(const Config &config)
-		: m_scl_low_timeout(config.scl_low_timeout),
-		  m_delay_us(config.delay_us),
+		: m_is_use_repeated_start(config.is_use_repeated_start),
+		  m_delay_us(GetDelayUs(config)),
+		  m_scl_low_timeout_ms((config.scl_low_timeout * (m_delay_us * 2) + 999)
+				/ 1000),
 		  m_scl(GetSclConfig(config)),
 		  m_sda(GetSdaConfig(config)),
 		  m_is_init(true)
@@ -76,8 +84,9 @@ SoftI2cMaster::SoftI2cMaster(SoftI2cMaster &&rhs)
 }
 
 SoftI2cMaster::SoftI2cMaster(nullptr_t)
-		: m_scl_low_timeout(0),
+		: m_is_use_repeated_start(false),
 		  m_delay_us(0),
+		  m_scl_low_timeout_ms(0),
 		  m_scl(nullptr),
 		  m_sda(nullptr),
 		  m_is_init(false)
@@ -97,7 +106,9 @@ SoftI2cMaster& SoftI2cMaster::operator=(SoftI2cMaster &&rhs)
 		{
 			rhs.m_is_init = false;
 
+			m_is_use_repeated_start = rhs.m_is_use_repeated_start;
 			m_delay_us = rhs.m_delay_us;
+			m_scl_low_timeout_ms = rhs.m_scl_low_timeout_ms;
 
 			m_scl = std::move(rhs.m_scl);
 			m_sda = std::move(rhs.m_sda);
@@ -143,7 +154,7 @@ void SoftI2cMaster::Start()
 	}
 
 	m_sda.Clear();
-	Delay();
+	//Delay();
 	m_scl.Clear();
 	Delay();
 }
@@ -176,7 +187,7 @@ void SoftI2cMaster::Stop()
 	}
 
 	m_sda.EnsureGpi();
-	Delay();
+	//Delay();
 }
 
 // Assume SCL is low when being called
@@ -224,12 +235,10 @@ bool SoftI2cMaster::ReadByte_(const bool is_ack, Byte *out_byte)
 
 		// TODO libbase should not depends on libsc
 		const Timer::TimerInt start = System::Time();
-		const Timer::TimerInt max = (m_scl_low_timeout * m_delay_us + 999)
-				/ 1000;
 		// Clock stretching
 		while (!m_scl.Get())
 		{
-			if (Timer::TimeDiff(System::Time(), start) >= max)
+			if (Timer::TimeDiff(System::Time(), start) >= m_scl_low_timeout_ms)
 			{
 				LOG_DL("i2c scl timeout");
 				return false;
@@ -262,6 +271,10 @@ bool SoftI2cMaster::GetByte(const Byte slave_addr, const Byte reg_addr,
 	Start();
 	SEND_BYTE_GUARDED(slave_addr << 1, false);
 	SEND_BYTE_GUARDED(reg_addr, false);
+	if (!m_is_use_repeated_start)
+	{
+		Stop();
+	}
 	Start();
 	SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, false);
 	if (!ReadByte_(false, out_byte))
@@ -287,21 +300,21 @@ vector<Byte> SoftI2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
 	Start();
 	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, {});
 	SEND_BYTE_GUARDED(reg_addr, {});
+	if (!m_is_use_repeated_start)
+	{
+		Stop();
+	}
 	Start();
 	SEND_BYTE_GUARDED(((slave_addr << 1) & 0xFE) | 0x1, {});
-	for (uint8_t i = 0; i < size - 1; ++i)
+	for (uint8_t i = 0; i < size; ++i)
 	{
 		Byte byte;
-		if (!ReadByte_(true, &byte))
+		// NACK if last bit
+		if (!ReadByte_((i != size - 1), &byte))
 		{
 			Stop();
 			return bytes;
 		}
-		bytes.push_back(byte);
-	}
-	Byte byte;
-	if (ReadByte_(true, &byte))
-	{
 		bytes.push_back(byte);
 	}
 	Stop();
@@ -322,14 +335,14 @@ bool SoftI2cMaster::SendByte(const Byte slave_addr, const Byte reg_addr,
 }
 
 bool SoftI2cMaster::SendBytes(const Byte slave_addr, const Byte reg_addr,
-		const vector<Byte> &bytes)
+		const Byte *bytes, const size_t size)
 {
 	STATE_GUARD(SoftI2cMaster, false);
 
 	Start();
 	SEND_BYTE_GUARDED((slave_addr << 1) & 0xFE, false);
 	SEND_BYTE_GUARDED(reg_addr, false);
-	for (size_t i = 0; i < bytes.size(); ++i)
+	for (size_t i = 0; i < size; ++i)
 	{
 		SEND_BYTE_GUARDED(bytes[i], false);
 	}

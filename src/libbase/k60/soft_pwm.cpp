@@ -56,6 +56,12 @@ SoftPwm::SoftPwm(const Config &config)
 	Setup(config.period, config.pos_width);
 }
 
+SoftPwm::SoftPwm(SoftPwm &&rhs)
+		: SoftPwm(nullptr)
+{
+	*this = std::move(rhs);
+}
+
 SoftPwm::SoftPwm(nullptr_t)
 		: m_precision(Pwm::Config::Precision::kUs),
 		  m_pit(nullptr),
@@ -67,6 +73,46 @@ SoftPwm::SoftPwm(nullptr_t)
 		  m_neg_count(0),
 		  m_is_init(false)
 {}
+
+SoftPwm::~SoftPwm()
+{
+	Uninit();
+}
+
+SoftPwm& SoftPwm::operator=(SoftPwm &&rhs)
+{
+	if (this != &rhs)
+	{
+		Uninit();
+		if (rhs)
+		{
+			rhs.m_is_init = false;
+
+			m_precision = rhs.m_precision;
+			m_flag = rhs.m_flag;
+			m_pos_width = rhs.m_pos_width;
+			m_pos_count = rhs.m_pos_count;
+			m_neg_width = rhs.m_neg_width;
+			m_neg_count = rhs.m_neg_count;
+
+			m_pin = std::move(rhs.m_pin);
+			m_pit = std::move(rhs.m_pit);
+
+			m_is_init = true;
+		}
+	}
+	return *this;
+}
+
+void SoftPwm::Uninit()
+{
+	if (m_is_init)
+	{
+		m_is_init = false;
+
+		m_pit = Pit(nullptr);
+	}
+}
 
 void SoftPwm::Setup(const uint32_t period, const uint32_t pos_width)
 {
