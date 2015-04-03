@@ -53,11 +53,6 @@ public:
 		 * size in bytes will vary
 		 */
 		uint8_t tx_buf_size = 14;
-		/**
-		 * (Experimental) If value != -1, DMA will be enabled for this UART's Tx,
-		 * using the DMA channel specified here
-		 */
-		uint8_t tx_dma_channel = static_cast<uint8_t>(-1);
 
 		/**
 		 * The listener for Rx events. Return true if the listener has consumed

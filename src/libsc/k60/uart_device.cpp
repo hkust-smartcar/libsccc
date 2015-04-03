@@ -329,7 +329,7 @@ UartDevice::UartDevice(const Initializer &initializer)
 		  m_rx_isr(initializer.config.rx_isr),
 		  m_tx_buf(new TxBuffer(initializer.config.tx_buf_size)),
 		  m_is_tx_idle(true),
-		  m_tx_dma_channel(initializer.config.tx_dma_channel),
+		  //m_tx_dma_channel(initializer.config.tx_dma_channel),
 		  m_dma(nullptr),
 		  m_uart(nullptr)
 {
