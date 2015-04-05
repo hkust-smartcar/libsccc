@@ -1,6 +1,8 @@
 libsccc
 ==============
 
+[![Build Status](https://travis-ci.org/hkust-smartcar/libsccc.svg?branch=happy-birthday-cupcake)](https://travis-ci.org/hkust-smartcar/libsccc)
+
 libsccc (previously libsmartcarcpp) is the library being used among the HKUST SmartCar Team
 
 ## What's Inside
