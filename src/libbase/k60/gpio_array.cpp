@@ -24,6 +24,7 @@
 #include "libutil/misc.h"
 
 using namespace libutil;
+using namespace std;
 
 namespace libbase
 {
@@ -125,6 +126,19 @@ void GpiArray::ConfigValueAsDmaSrc(Dma::Config *config)
 	config->src.major_offset = 0;
 	config->minor_bytes = size;
 	config->major_count = 1;
+}
+
+vector<bool> GpiArray::Get() const
+{
+	vector<bool> product(m_pins.size(), false);
+	for (Uint i = 0; i < m_pins.size(); ++i)
+	{
+		if (m_pins[i].Get())
+		{
+			product[i] = true;
+		}
+	}
+	return product;
 }
 
 }
