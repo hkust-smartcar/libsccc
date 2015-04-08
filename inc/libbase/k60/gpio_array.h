@@ -58,6 +58,11 @@ public:
 		return &m_pins[position];
 	}
 
+	size_t GetSize() const
+	{
+		return m_pins.size();
+	}
+
 	/**
 	 * Config this GpiArray up to be ready to serve as DMA source, and set
 	 * @a config accordingly. The following options are also set besides src:<br>
