@@ -12,6 +12,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 
 #include <vector>
 
@@ -139,6 +140,27 @@ vector<bool> GpiArray::Get() const
 		}
 	}
 	return product;
+}
+
+void GpiArray::Get(Byte *out_data, size_t size) const
+{
+	memset(out_data, 0, size);
+	size_t pos = 0;
+	Uint bit_pos = 0;
+	for (size_t i = 0; i < m_pins.size() && pos < size; ++i)
+	{
+		if (m_pins[i].Get())
+		{
+			out_data[pos] |= 1 << bit_pos;
+		}
+
+		if (++bit_pos >= 8)
+		{
+			++pos;
+			bit_pos = 0;
+		}
+	}
+	return;
 }
 
 }

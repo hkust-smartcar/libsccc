@@ -44,6 +44,14 @@ public:
 	}
 
 	std::vector<bool> Get() const;
+	/**
+	 * Return the data in a bit array
+	 *
+	 * @param out_data The bit array to store the data, each byte contains 8
+	 * bits
+	 * @param size The size of the array in byte
+	 */
+	void Get(Byte *out_data, size_t size) const;
 
 	Gpi* GetChild(const uint8_t position)
 	{
