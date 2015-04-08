@@ -151,7 +151,7 @@ void GpiArray::Get(Byte *out_data, size_t size) const
 	{
 		if (m_pins[i].Get())
 		{
-			out_data[pos] |= 1 << bit_pos;
+			out_data[pos] |= 1 << (7 - bit_pos);
 		}
 
 		if (++bit_pos >= 8)
@@ -160,7 +160,6 @@ void GpiArray::Get(Byte *out_data, size_t size) const
 			bit_pos = 0;
 		}
 	}
-	return;
 }
 
 }
