@@ -76,6 +76,11 @@ public:
 	const Byte* LockBuffer();
 	void UnlockBuffer();
 
+	Uint GetBufferSize() const
+	{
+		return m_buf_size;
+	}
+
 private:
 	bool Verify();
 
