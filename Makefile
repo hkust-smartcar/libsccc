@@ -91,32 +91,29 @@ include MakeConfig.inc
 
 ifeq ($(SCCC_MCU),MK60DZ10)
 CPPFLAGS+=-DMK60DZ10=1
-CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4
+CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4 -march=armv7e-m
 CCFLAGS+=-msoft-float -mfloat-abi=soft
 SCCC_MCU_DIR=k60
 $(info MCU sub-family = MK60DZ10)
 
 else ifeq ($(SCCC_MCU),MK60D10)
 CPPFLAGS+=-DMK60D10=1
-CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4
+CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4 -march=armv7e-m
 CCFLAGS+=-msoft-float -mfloat-abi=soft
 SCCC_MCU_DIR=k60
 $(info MCU sub-family = MK60D10)
 
 else ifeq ($(SCCC_MCU),MK60F15)
 CPPFLAGS+=-DMK60F15=1
-CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4
+CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4 -march=armv7e-m
 CCFLAGS+=-mfpu=fpv4-sp-d16 -mfloat-abi=hard
 SCCC_MCU_DIR=k60
 $(info MCU sub-family = MK60F15)
 
 else ifeq ($(SCCC_MCU),MKL26Z4)
 CPPFLAGS+=-DMKL26Z4=1
-CCFLAGS+=-mthumb -mcpu=cortex-m0plus
+CCFLAGS+=-mthumb -mcpu=cortex-m0plus -march=armv6-m
 CCFLAGS+=-msoft-float -mfloat-abi=soft
-LDFLAGS+=-mthumb -mcpu=cortex-m0plus
-# -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections
-LDFLAGS+=-msoft-float -mfloat-abi=soft
 SCCC_MCU_DIR=kl26
 $(info MCU sub-family = MKL26Z4)
 
