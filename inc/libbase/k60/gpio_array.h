@@ -1,6 +1,5 @@
 /*
  * gpio_array.h
- * Parallel GPIO
  *
  * Author: Ming Tsang
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -21,13 +20,28 @@ namespace libbase
 namespace k60
 {
 
+/**
+ * A continuous set of GPI pins doing parallel IO. A non byte-aligned set will
+ * result in pre- and post- padding of bits. Also, beware of the native
+ * endianess of the chip
+ */
 class GpiArray
 {
 public:
 	struct Config
 	{
+		/// The beginning pin of the set
 		Pin::Name start_pin;
+		/**
+		 * The number of pins in the set, such that (Config::start_pin
+		 * + Config::count) == (end_pin - 1)
+		 */
 		uint8_t count;
+		/**
+		 * The config to be applied to all pins
+		 *
+		 * @see Pin::Config::ConfigBit
+		 */
 		std::bitset<Pin::Config::ConfigBit::kSize> config;
 	};
 
