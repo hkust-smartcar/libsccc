@@ -118,19 +118,6 @@ void GpiArray::ConfigValueAsDmaSrc(Dma::Config *config)
 	config->major_count = 1;
 }
 
-vector<bool> GpiArray::Get() const
-{
-	vector<bool> product(m_pins.size(), false);
-	for (Uint i = 0; i < m_pins.size(); ++i)
-	{
-		if (m_pins[i].Get())
-		{
-			product[i] = true;
-		}
-	}
-	return product;
-}
-
 void GpiArray::Get(Byte *out_data, size_t size) const
 {
 	memset(out_data, 0, size);

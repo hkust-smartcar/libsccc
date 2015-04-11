@@ -43,7 +43,6 @@ public:
 		return !m_pins.empty();
 	}
 
-	std::vector<bool> Get() const;
 	/**
 	 * Return the data in a bit array
 	 *
