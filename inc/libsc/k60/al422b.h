@@ -69,6 +69,11 @@ public:
 		return m_data;
 	}
 
+	size_t GetDataSize() const
+	{
+		return m_data.size();
+	}
+
 	void ResetWrite();
 	void ResetRead();
 
