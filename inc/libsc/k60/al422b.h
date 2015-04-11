@@ -64,6 +64,15 @@ public:
 	 * @return
 	 */
 	bool ReadStep();
+	/**
+	 * Return if the read operation has finished
+	 *
+	 * @return
+	 */
+	bool IsReadEnd() const
+	{
+		return (m_it == m_data.end());
+	}
 
 	const std::vector<Byte>& GetData() const
 	{
