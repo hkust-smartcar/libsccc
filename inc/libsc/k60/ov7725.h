@@ -31,6 +31,7 @@ public:
 	{
 		typedef Ov7725Configurator::Config::Fps Fps;
 
+		uint8_t id;
 		/// Width of the image, [1, 640]
 		Uint w;
 		/// Height of the image, [1, 480]
@@ -72,6 +73,16 @@ public:
 	 */
 	const Byte* LockBuffer();
 	void UnlockBuffer();
+
+	Uint GetW() const
+	{
+		return m_w;
+	}
+
+	Uint GetH() const
+	{
+		return m_h;
+	}
 
 	Uint GetBufferSize() const
 	{
