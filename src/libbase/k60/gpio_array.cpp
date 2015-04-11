@@ -91,18 +91,7 @@ void GpiArray::ConfigValueAsDmaSrc(Dma::Config *config)
 	STATE_GUARD(GpiArray, VOID);
 
 	const int start_pin = PinUtils::GetPinNumber(m_pins[0].GetPin()->GetName());
-	const int last_pin = start_pin + m_pins.size() - 1;
-	config->src.addr =
-			(void*)&MEM_MAPS[PinUtils::GetPort(m_pins[0].GetPin()->GetName())]
-					->PDIR;
-	if (libutil::EndianUtils::IsBigEndian())
-	{
-		config->src.addr = (Byte*)config->src.addr + 3 - (last_pin / 8);
-	}
-	else
-	{
-		config->src.addr = (Byte*)config->src.addr + (start_pin / 8);
-	}
+	config->src.addr = GetSrcAddress();
 	config->src.offset = 0;
 	int size = (m_pins.size() + 7) / 8;
 	if (start_pin % 8 + m_pins.size() % 8 > 8)
@@ -161,6 +150,23 @@ void GpiArray::Get(Byte *out_data, size_t size) const
 		}
 	}
 	return;
+}
+
+void* GpiArray::GetSrcAddress() const
+{
+	const int start_pin = PinUtils::GetPinNumber(m_pins[0].GetPin()->GetName());
+	const int last_pin = start_pin + m_pins.size() - 1;
+	void *addr = (void*)&MEM_MAPS[PinUtils::GetPort(m_pins[0].GetPin()->GetName())]
+			->PDIR;
+	if (libutil::EndianUtils::IsBigEndian())
+	{
+		addr = (Byte*)addr + 3 - (last_pin / 8);
+	}
+	else
+	{
+		addr = (Byte*)addr + (start_pin / 8);
+	}
+	return addr;
 }
 
 }

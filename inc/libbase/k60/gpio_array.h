@@ -82,6 +82,8 @@ public:
 private:
 	void Uninit();
 
+	void* GetSrcAddress() const;
+
 	std::vector<Gpi> m_pins;
 };
 
