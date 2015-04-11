@@ -7,6 +7,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 
 #include "libbase/helper.h"
@@ -69,6 +70,10 @@ Ov7725Configurator::Ov7725Configurator(const Config &config)
 	m_sccb.SendByte(OV7725_SLAVE_ADDR, OV7725_REG16, 0x00);
 	m_sccb.SendByte(OV7725_SLAVE_ADDR, OV7725_COM10, 0x00);
 }
+
+Ov7725Configurator::Ov7725Configurator(nullptr_t)
+		: m_sccb(nullptr)
+{}
 
 bool Ov7725Configurator::Verify()
 {

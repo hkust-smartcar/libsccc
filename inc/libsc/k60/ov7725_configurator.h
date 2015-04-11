@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include "libbase/helper.h"
@@ -64,6 +65,7 @@ public:
 	};
 
 	explicit Ov7725Configurator(const Config &config);
+	explicit Ov7725Configurator(nullptr_t);
 	~Ov7725Configurator();
 
 	bool Verify();
