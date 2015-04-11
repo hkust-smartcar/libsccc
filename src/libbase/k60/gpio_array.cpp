@@ -134,22 +134,10 @@ vector<bool> GpiArray::Get() const
 void GpiArray::Get(Byte *out_data, size_t size) const
 {
 	memset(out_data, 0, size);
-	size_t pos = 0;
-	Uint bit_pos = 0;
-	for (size_t i = 0; i < m_pins.size() && pos < size; ++i)
-	{
-		if (m_pins[i].Get())
-		{
-			out_data[pos] |= 1 << bit_pos;
-		}
-
-		if (++bit_pos >= 8)
-		{
-			++pos;
-			bit_pos = 0;
-		}
-	}
-	return;
+	const void *src = GetSrcAddress();
+	const size_t copy_size = std::min<size_t>(std::min<size_t>(size,
+			(m_pins.size() + 7) / 8), 4);
+	memcpy(out_data, src, copy_size);
 }
 
 void* GpiArray::GetSrcAddress() const
