@@ -53,6 +53,7 @@ public:
 	};
 
 	explicit Al422b(const Config &config);
+	explicit Al422b(nullptr_t);
 	~Al422b();
 
 	void Start(const uint32_t size);

@@ -116,6 +116,10 @@ Al422b::Al422b(const Config &config)
 	System::DelayUs(100);
 }
 
+Al422b::Al422b(nullptr_t)
+		: m_do(nullptr)
+{}
+
 Al422b::~Al422b()
 {}
 
