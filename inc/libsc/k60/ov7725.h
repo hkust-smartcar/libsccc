@@ -16,7 +16,8 @@
 #include "libbase/k60/dma.h"
 #include "libbase/k60/gpio.h"
 #include "libbase/k60/gpio_array.h"
-#include "libbase/k60/soft_sccb_master.h"
+
+#include "libsc/k60/ov7725_configurator.h"
 
 namespace libsc
 {
@@ -28,12 +29,8 @@ class Ov7725
 public:
 	struct Config
 	{
-		enum struct Fps
-		{
-			kLow = 0,
-			kMid,
-			kHigh,
-		};
+		typedef Ov7725Configurator::Config::Fps Fps;
+
 		/// Width of the image, [1, 640]
 		Uint w;
 		/// Height of the image, [1, 480]
@@ -82,24 +79,12 @@ public:
 	}
 
 private:
-	bool Verify();
-
-	void InitCom2Reg();
-	void InitCom3Reg();
-	void InitClock(const Config &config);
-	void InitResolution();
-	void InitBandingFilter();
-	void InitLensCorrection();
-	void InitDsp();
-	void InitGamma();
-	void InitSecialDigitalEffect(const Config &config);
-	void InitAutoUv();
 	void InitDma();
 
 	void OnVsync(libbase::k60::Gpi *gpi);
 	void OnDmaComplete(libbase::k60::Dma *dma);
 
-	libbase::k60::SoftSccbMaster m_sccb;
+	libsc::k60::Ov7725Configurator m_config;
 	libbase::k60::GpiArray m_data_array;
 	libbase::k60::Gpi m_clock;
 	libbase::k60::Gpi m_vsync;
