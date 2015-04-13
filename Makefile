@@ -72,8 +72,9 @@ $(info Build = DEBUG)
 
 else ifeq ($(SCCC_BUILD),RELEASE)
 BIN_SUFFIX:=$(BIN_SUFFIX)-r
-CPPFLAGS+=-DRELEASE=1 -DNDEBUG
-CCFLAGS+=-O2 -g0
+#CPPFLAGS+=-DRELEASE=1 -DNDEBUG
+CPPFLAGS+=
+CCFLAGS+=-O3 -g0
 $(info Build = RELEASE)
 
 else
@@ -89,7 +90,7 @@ include MakeConfig.inc
 
 ifeq ($(SCCC_MCU),MK60DZ10)
 CPPFLAGS+=-DMK60DZ10=1
-CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4
+CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4 -march=armv7e-m
 CCFLAGS+=-msoft-float -mfloat-abi=soft
 SCCC_MCU_DIR=k60
 $(info MCU sub-family = MK60DZ10)
