@@ -113,7 +113,8 @@ inline Pin::Name GetSiPin(const uint8_t id)
 Adc::Config GetAdConfig(const uint8_t id)
 {
 	Adc::Config config;
-	config.resolution = Adc::Config::Resolution::k16Bit;
+	config.resolution = Adc::Config::Resolution::k8Bit;
+	config.speed = Adc::Config::SpeedMode::kExFast;
 	config.pin = GetAdPin(id);
 	return config;
 }
