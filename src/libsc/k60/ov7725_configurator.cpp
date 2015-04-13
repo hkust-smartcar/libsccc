@@ -75,6 +75,9 @@ Ov7725Configurator::Ov7725Configurator(nullptr_t)
 		: m_sccb(nullptr)
 {}
 
+Ov7725Configurator::~Ov7725Configurator()
+{}
+
 bool Ov7725Configurator::Verify()
 {
 	Byte pid, ver;
