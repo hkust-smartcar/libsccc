@@ -288,6 +288,8 @@ void I2cMaster::InitPin(const Pin::Name scl_pin, const Pin::Name sda_pin, bool m
 
 	m_scl = new Pin(scl_config);
 	m_sda = new Pin(sda_config);
+	m_config.scl_pin = scl_pin;
+	m_config.sda_pin = sda_pin;
 }
 
 void I2cMaster::InitC2Reg(const Config &config)
@@ -366,6 +368,7 @@ void I2cMaster::Start()
 	{
 		uint32_t t = libsc::System::Time() - st;
 		if(t >= 2){
+			LOG_DL("i2c scl timeout (start)");
 			ResetI2C();
 			break;
 		}
@@ -398,11 +401,13 @@ void I2cMaster::Stop()
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	// Wait until stopped
+	libsc::System::DelayMs(1);
 	libsc::Timer::TimerInt st = libsc::System::Time();
 	while (GET_BIT(MEM_MAPS[m_module]->S, I2C_S_BUSY_SHIFT))
 	{
 		uint32_t t = libsc::System::Time() - st;
 		if(t >= 2){
+			LOG_DL("i2c scl timeout (stop)");
 			ResetI2C();
 		}
 
@@ -440,13 +445,20 @@ bool I2cMaster::SendByte_(const Byte byte)
 	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
 	MEM_MAPS[m_module]->D = byte;
 	// Wait until data is sent
+	libsc::Timer::TimerInt st = libsc::System::Time();
 	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT))
 	{
-		if (GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
+		uint32_t t = libsc::System::Time() - st;
+		if(t >= 2){
+			LOG_DL("i2c scl timeout (sendbyte)");
+			ResetI2C();
+			return false;
+		}
+/*		if (GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
 		{
 			LOG_DL("i2c scl timeout");
 			return false;
-		}
+		}*/
 	}
 	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
 	return !GET_BIT(MEM_MAPS[m_module]->S, I2C_S_RXAK_SHIFT);
@@ -473,12 +485,15 @@ bool I2cMaster::ReadByte_(const bool is_last_byte, Byte *out_byte)
 	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);
 	*out_byte = MEM_MAPS[m_module]->D;
 	// Wait until data is received
+	libsc::Timer::TimerInt st = libsc::System::Time();
 	while (!GET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT))
 	{
-		if (GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
+		uint32_t t = libsc::System::Time() - st;
+		if (t >= 2 || GET_BIT(MEM_MAPS[m_module]->SMB, I2C_SMB_SLTF_SHIFT))
 		{
-			LOG_DL("i2c scl timeout");
-			return false;
+				LOG_DL("i2c scl timeout (readbyte)");
+				ResetI2C();
+				return false;
 		}
 	}
 	SET_BIT(MEM_MAPS[m_module]->S, I2C_S_IICIF_SHIFT);

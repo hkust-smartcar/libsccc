@@ -24,6 +24,7 @@ struct Looper::RunnerState
 	Timer::TimerInt request;
 	Timer::TimerInt start;
 	Callback callback;
+	Looper::RepeatMode mode;
 };
 
 Looper::Looper()
@@ -57,12 +58,27 @@ void Looper::Invoke()
 	list<RunnerState>::iterator it = m_states.begin();
 	while (it != m_states.end())
 	{
-		const Timer::TimerInt duration = Timer::TimeDiff(System::Time(),
-				it->start);
+		const Timer::TimerInt now = System::Time();
+		const Timer::TimerInt duration = Timer::TimeDiff(now, it->start);
 		if (duration >= it->request)
 		{
 			it->callback(it->request, duration);
-			it = m_states.erase(it);
+			switch (it->mode)
+			{
+			case RepeatMode::kOnce:
+				it = m_states.erase(it);
+				break;
+
+			case RepeatMode::kPrecise:
+				it->start += it->request;
+				++it;
+				break;
+
+			case RepeatMode::kLoose:
+				it->start = now;
+				++it;
+				break;
+			}
 		}
 		else
 		{
@@ -76,12 +92,14 @@ void Looper::Break()
 	m_is_run = false;
 }
 
-void Looper::RunAfter(const Timer::TimerInt ms, const Callback &c)
+void Looper::Repeat(const Timer::TimerInt ms, const Callback &c,
+		const RepeatMode mode)
 {
 	RunnerState rs;
 	rs.request = ms;
 	rs.start = System::Time();
 	rs.callback = c;
+	rs.mode = mode;
 	m_states.push_back(std::move(rs));
 }
 

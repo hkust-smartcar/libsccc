@@ -30,6 +30,16 @@ public:
 	typedef std::function<void(const libsc::Timer::TimerInt request,
 			const libsc::Timer::TimerInt actual)> Callback;
 
+	enum struct RepeatMode
+	{
+		/// Not repeating
+		kOnce = 0,
+		/// Reduce the time between two calls if the first is delayed
+		kPrecise,
+		/// Always wait for at least the specified period
+		kLoose,
+	};
+
 	Looper();
 	~Looper();
 
@@ -46,7 +56,20 @@ public:
 	 */
 	void Once();
 
-	void RunAfter(const libsc::Timer::TimerInt ms, const Callback &c);
+	void RunAfter(const libsc::Timer::TimerInt ms, const Callback &c)
+	{
+		Repeat(ms, c, RepeatMode::kOnce);
+	}
+	/**
+	 * Repeatly call @a c per @a ms ms
+	 *
+	 * @param ms
+	 * @param c
+	 * @param mode
+	 * @see Looper::RepeatMode
+	 */
+	void Repeat(const libsc::Timer::TimerInt ms, const Callback &c,
+			const RepeatMode mode);
 
 	/**
 	 * Reset the internal time

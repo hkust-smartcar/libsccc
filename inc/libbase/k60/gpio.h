@@ -61,6 +61,11 @@ public:
 		return &m_pin;
 	}
 
+	const Pin* GetPin() const
+	{
+		return &m_pin;
+	}
+
 private:
 	void Uninit();
 

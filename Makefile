@@ -1,4 +1,4 @@
-INC_PATH=inc
+INC_PATHS=inc src
 SRC_PATH=src
 OUT_LIB=sccc
 OUT_LIB_PATH=lib
@@ -9,11 +9,9 @@ CC=$(TOOLCHAIN_PREFIX)gcc
 CXX=$(TOOLCHAIN_PREFIX)g++
 AR=$(TOOLCHAIN_PREFIX)gcc-ar
 
-# Additional include dirs
-ALL_INC_PATHS=$(INC_PATH) $(SRC_PATH)
-
-# Additional symbols
-ALL_SYMBOLS=
+# Additional stuff
+USER_INC_PATHS?=
+USER_SYMBOLS?=
 
 # Basically you are not going to mess up with things below
 
@@ -43,26 +41,29 @@ $(info CC = $(shell $(CC) --version | (read -r line; echo $$line)))
 
 endif
 
-$(info User include paths = $(ALL_INC_PATHS))
-$(info User symbols = $(ALL_SYMBOLS))
+$(info User include paths = $(USER_INC_PATHS))
+$(info User symbols = $(USER_SYMBOLS))
 
 .DEFAULT_GOAL:=all
 
 CCFLAGS=
+CXXFLAGS=
 CPPFLAGS=
 ARFLAGS=
 BIN_SUFFIX=
 
-CPPFLAGS+=$(addprefix -I,$(ALL_INC_PATHS))
-CPPFLAGS+=$(addprefix -D,$(ALL_SYMBOLS))
+CPPFLAGS+=$(addprefix -I,$(INC_PATHS)) $(addprefix -I,$(USER_INC_PATHS))
+CPPFLAGS+=$(addprefix -D,$(USER_SYMBOLS))
 CPPFLAGS+=-MMD
 
 CCFLAGS+=-fmessage-length=0
-CCFLAGS+=-fsigned-char -ffunction-sections -fdata-sections 
-CCFLAGS+=-fno-strict-aliasing
+CCFLAGS+=-fno-strict-aliasing -ffunction-sections -fdata-sections
+CCFLAGS+=-fsigned-char
 CCFLAGS+=-Wall -Wextra
 # Wmissing-field-initializers is causing too much false warnings
 CCFLAGS+=-Wno-missing-field-initializers
+
+ARFLAGS+=-r
 
 ifeq ($(SCCC_BUILD),DEBUG)
 BIN_SUFFIX:=$(BIN_SUFFIX)-d
@@ -73,7 +74,6 @@ $(info Build = DEBUG)
 else ifeq ($(SCCC_BUILD),RELEASE)
 BIN_SUFFIX:=$(BIN_SUFFIX)-r
 #CPPFLAGS+=-DRELEASE=1 -DNDEBUG
-CPPFLAGS+=
 CCFLAGS+=-O3 -g0
 $(info Build = RELEASE)
 
@@ -86,6 +86,7 @@ $(info Build = DEBUG)
 
 endif
 
+
 include MakeConfig.inc
 
 ifeq ($(SCCC_MCU),MK60DZ10)
@@ -97,25 +98,22 @@ $(info MCU sub-family = MK60DZ10)
 
 else ifeq ($(SCCC_MCU),MK60D10)
 CPPFLAGS+=-DMK60D10=1
-CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4
+CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4 -march=armv7e-m
 CCFLAGS+=-msoft-float -mfloat-abi=soft
 SCCC_MCU_DIR=k60
 $(info MCU sub-family = MK60D10)
 
 else ifeq ($(SCCC_MCU),MK60F15)
 CPPFLAGS+=-DMK60F15=1
-CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4
+CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m4 -march=armv7e-m
 CCFLAGS+=-mfpu=fpv4-sp-d16 -mfloat-abi=hard
 SCCC_MCU_DIR=k60
 $(info MCU sub-family = MK60F15)
 
 else ifeq ($(SCCC_MCU),MKL26Z4)
 CPPFLAGS+=-DMKL26Z4=1
-CCFLAGS+=-mthumb -mcpu=cortex-m0plus
+CCFLAGS+=-mthumb -mcpu=cortex-m0plus -march=armv6-m
 CCFLAGS+=-msoft-float -mfloat-abi=soft
-LDFLAGS+=-mthumb -mcpu=cortex-m0plus
-# -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections
-LDFLAGS+=-msoft-float -mfloat-abi=soft
 SCCC_MCU_DIR=kl26
 $(info MCU sub-family = MKL26Z4)
 
@@ -123,6 +121,7 @@ else
 $(error Missing/Unknown MCU identifier '$(SCCC_MCU)' (set SCCC_MCU))
 
 endif
+
 
 ifeq ($(MAKECMDGOALS),dry)
 CCFLAGS+=-fsyntax-only
@@ -138,9 +137,8 @@ CXXFLAGS+=-std=gnu++11
 CXXFLAGS+=-pedantic
 CXXFLAGS+=-fno-exceptions -fno-rtti
 
-ARFLAGS+=-r
-
 # End setting flags
+
 
 $(info Building lib$(OUT_LIB)$(BIN_SUFFIX).a)
 
@@ -155,9 +153,10 @@ SRC_FILES:=$(shell find $(SRC_PATH) -type f -name *.c -o -name *.S -o -name *.cp
 
 endif
 
-not_contain=$(foreach v,$2,$(if $(findstring $1,$v),,$v))
 
 # Exclude files for other MCU
+not_contain=$(foreach v,$2,$(if $(findstring $1,$v),,$v))
+
 ifeq ($(SCCC_MCU_DIR),k60)
 SRC_FILES:=$(call not_contain,/kl26/,$(SRC_FILES))
 
@@ -182,6 +181,7 @@ SRC_FILES+=$(SRC_PATH)/libbase/kl26/pinout/mkl26z4_lqfp100.cpp
 
 endif
 
+
 OBJ_FILES:=$(SRC_FILES:$(SRC_PATH)/%.c=$(OUT_OBJ_PATH)/%.o)
 OBJ_FILES:=$(OBJ_FILES:$(SRC_PATH)/%.S=$(OUT_OBJ_PATH)/%.o)
 OBJ_FILES:=$(OBJ_FILES:$(SRC_PATH)/%.cpp=$(OUT_OBJ_PATH)/%.o)
@@ -190,6 +190,7 @@ OBJ_FILES:=$(OBJ_FILES:%.o=%$(BIN_SUFFIX).o)
 DEPENDS:=$(OBJ_FILES:.o=.d)
 -include $(DEPENDS)
 
+# Create all the DIRs
 OUT_DIRS:=$(sort $(dir $(OBJ_FILES)))
 ifdef WIN32
 $(shell mkdir $(subst /,\,$(OUT_DIRS)) lib > nul)
@@ -198,6 +199,7 @@ else ifdef UNIX
 $(shell mkdir -p $(OUT_DIRS) lib)
 
 endif
+
 
 .PHONY: all clean dry
 
