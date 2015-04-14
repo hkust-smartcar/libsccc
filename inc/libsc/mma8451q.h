@@ -72,10 +72,10 @@ public:
 		 * Mid - 4g
 		 * High - 8g
 		 */
-		Sensitivity sensitivity = Sensitivity::kMid;
+		Sensitivity sensitivity = Sensitivity::kLow;
 
-		PowerMode power_mode = PowerMode::kLowNoiseLowPower;
-		OutputDataRate output_data_rate = OutputDataRate::k200Hz;
+		PowerMode power_mode = PowerMode::kNormal;
+		OutputDataRate output_data_rate = OutputDataRate::k400Hz;
 	};
 
 	explicit Mma8451q(const Config &config);
