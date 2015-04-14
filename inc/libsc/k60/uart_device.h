@@ -163,6 +163,8 @@ private:
 	struct RxBuffer;
 	class TxBuffer;
 
+	inline void EnableRx();
+	inline void DisableRx();
 	inline void EnableTx();
 	inline void DisableTx();
 	inline bool IsUseDma();

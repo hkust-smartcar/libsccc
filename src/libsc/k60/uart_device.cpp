@@ -355,7 +355,7 @@ UartDevice::UartDevice(const Initializer &initializer)
 				this, placeholders::_1);
 	}
 
-	m_uart.SetEnableRxIrq(true);
+	EnableRx();
 }
 
 UartDevice::~UartDevice()
@@ -364,6 +364,17 @@ UartDevice::~UartDevice()
 	{
 		DmaManager::Delete(m_dma);
 	}
+	DisableRx();
+}
+
+inline void UartDevice::EnableRx()
+{
+	m_uart.SetEnableRxIrq(true);
+}
+
+inline void UartDevice::DisableRx()
+{
+	m_uart.SetEnableRxIrq(false);
 }
 
 inline void UartDevice::EnableTx()
