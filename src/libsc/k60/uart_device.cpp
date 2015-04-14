@@ -623,6 +623,13 @@ bool UartDevice::PeekChar(char *out_char)
 	return true;
 }
 
+void UartDevice::SetRxIsr(const OnReceiveListener &l)
+{
+	DisableRx();
+	m_rx_isr = l;
+	EnableRx();
+}
+
 void UartDevice::OnRxFull(Uart *uart)
 {
 	vector<Byte> bytes;
@@ -669,6 +676,7 @@ bool UartDevice::SendBuffer(const Byte*, const size_t) { return false; }
 bool UartDevice::SendBuffer(unique_ptr<Byte[]>&&, const size_t) { return false; }
 bool UartDevice::SendBuffer(vector<Byte>&&) { return false; }
 bool UartDevice::PeekChar(char*) { return false; }
+void UartDevice::SetRxIsr(const OnReceiveListener&) {}
 
 #endif /* LIBSC_USE_UART */
 
