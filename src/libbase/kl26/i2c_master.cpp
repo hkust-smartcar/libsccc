@@ -401,7 +401,7 @@ void I2cMaster::Stop()
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_MST_SHIFT);
 	CLEAR_BIT(MEM_MAPS[m_module]->C1, I2C_C1_TX_SHIFT);
 	// Wait until stopped
-	libsc::System::DelayMs(1);
+//	libsc::System::DelayMs(1);
 	libsc::Timer::TimerInt st = libsc::System::Time();
 	while (GET_BIT(MEM_MAPS[m_module]->S, I2C_S_BUSY_SHIFT))
 	{
