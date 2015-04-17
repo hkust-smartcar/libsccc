@@ -11,7 +11,8 @@
 
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_UART 1
-//#define LIBSC_USE_JOYSTICK 1
+#define LIBSC_USE_JOYSTICK 1
+#define LIBSC_USE_BUTTON 3
 #define LIBSC_USE_MOTOR 2
 #define LIBSC_USE_ENCODER 2
 #define LIBSC_USE_MPU6050 1
@@ -21,6 +22,7 @@
 #define LIBSC_USE_BATTERY_METER 1
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_SOFT_ST7735R 1
+#define LIBSC_USE_BUZZER 1
 
 #define LIBSC_MOTOR0_PWM libbase::kl26::Pin::Name::kPta5
 #define LIBSC_MOTOR0_DIR libbase::kl26::Pin::Name::kPte21
@@ -37,10 +39,14 @@
 #define LIBSC_ENCODER1_TPM_MODULE 2
 
 #define LIBSC_JOYSTICK0_UP libbase::kl26::Pin::Name::kPtd0
-#define LIBSC_JOYSTICK0_DOWN libbase::kl26::Pin::Name::kPtd1
-#define LIBSC_JOYSTICK0_LEFT libbase::kl26::Pin::Name::kPtd2
-#define LIBSC_JOYSTICK0_RIGHT libbase::kl26::Pin::Name::kPtd3
-#define LIBSC_JOYSTICK0_SELECT libbase::kl26::Pin::Name::kPtd4
+#define LIBSC_JOYSTICK0_LEFT libbase::kl26::Pin::Name::kPtd1
+#define LIBSC_JOYSTICK0_DOWN libbase::kl26::Pin::Name::kPtd2
+#define LIBSC_JOYSTICK0_SELECT libbase::kl26::Pin::Name::kPtd3
+#define LIBSC_JOYSTICK0_RIGHT libbase::kl26::Pin::Name::kPtd4
+
+#define LIBSC_BUTTON0 libbase::kl26::Pin::Name::kPtc9
+#define LIBSC_BUTTON1 libbase::kl26::Pin::Name::kPtc10
+#define LIBSC_BUTTON2 libbase::kl26::Pin::Name::kPtc11
 
 #define LIBSC_ST7735R_RST  libbase::kl26::Pin::Name::kPtc8
 #define LIBSC_ST7735R_DC  libbase::kl26::Pin::Name::kPtc7
@@ -69,3 +75,5 @@
 #define LIBSC_LINEAR_CCD0_AD libbase::kl26::Pin::Name::kPte16
 
 #define LIBSC_BATTERY_METER libbase::kl26::Adc::Name::kAdc0DAd3
+
+#define LIBSC_BUZZER0 libbase::kl26::Pin::Name::kPta12;
