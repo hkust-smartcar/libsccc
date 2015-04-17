@@ -52,7 +52,7 @@ Mpu6050::I2cMaster::Config GetI2cConfig()
 }
 
 Mpu6050::Mpu6050(const Config &config)
-		: m_i2c(GetI2cConfig()),
+		:
 		  m_accel{},
 		  m_omega{},
 		  m_omega_offset{},
@@ -61,34 +61,40 @@ Mpu6050::Mpu6050(const Config &config)
 		  m_gyro_range(config.gyro_range),
 		  m_accel_range(config.accel_range)
 {
+	if(!config.i2c_master_ptr){
+		m_i2c = new I2cMaster(GetI2cConfig());
+	}else{
+		m_i2c = config.i2c_master_ptr;
+	}
+
 	assert(Verify());
 	System::DelayUs(1);
 
-	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, 0x03));
+	assert(m_i2c->SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_PWR_MGMT_1, 0x03));
 	System::DelayUs(1);
 
 	//Register 25 – Sample Rate Divider: Sample Rate = Gyroscope Output Rate / (1 + SMPLRT_DIV)
 	//Gyroscope Output Rate = 8kHz when the DLPF is disabled (DLPF_CFG = 0 or 7)
-	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_SMPLRT_DIV, 0x01));
+	assert(m_i2c->SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_SMPLRT_DIV, 0x01));
 	System::DelayUs(1);
 
 	//Register 26 - CONFIG: EXT_SYNC_SET[2:0]<<3 | DLPF_CFG[2:0];
 	//EXT_SYNC_SET=0, Input disabled;
 	//DLPF_CFG=0, Accel = 260Hz, Gyroscope = 256Hz;
-	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_CONFIG, 0x00));
+	assert(m_i2c->SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_CONFIG, 0x00));
 	System::DelayUs(1);
 
 	//Register 27 - GYRO_CONFIG: FS_SEL[1:0] << 3;
 	//FS_SEL=0, ± 250 °/s; FS_SEL=1, ± 500 °/s; FS_SEL=2, ± 1000 °/s; FS_SEL=3, ± 2000 °/s;
 	uint8_t gyro_config = static_cast<int>(m_gyro_range) << 3;
-	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG,
+	assert(m_i2c->SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_GYRO_CONFIG,
 			gyro_config));
 	System::DelayUs(1);
 
 	//Register 28 - ACCEL_CONFIG: AFS_SEL[1:0] << 3;
 	//AFS_SEL=0, ±2g; AFS_SEL=1, ±4g; AFS_SEL=2, ±8g; AFS_SEL=3, ±16g;
 	uint8_t accel_config = static_cast<int>(m_accel_range) << 3;
-	assert(m_i2c.SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG,
+	assert(m_i2c->SendByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG,
 			accel_config));
 	System::DelayUs(1);
 
@@ -105,7 +111,7 @@ Mpu6050::Mpu6050(const Config &config)
 bool Mpu6050::Verify()
 {
 	Byte who_am_i;
-	if (!m_i2c.GetByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_WHO_AM_I, &who_am_i))
+	if (!m_i2c->GetByte(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_WHO_AM_I, &who_am_i))
 	{
 		return false;
 	}
@@ -120,7 +126,7 @@ void Mpu6050::Calibrate()
 	Timer::TimerInt t = 0, pt = 0;
 	std::array<float, 3> omega_sum{};
 
-	int samples = 0, target_samples = 512;
+	int samples = 0, target_samples = 256;
 	while (samples < target_samples)
 	{
 		t = System::Time();
@@ -188,7 +194,7 @@ float Mpu6050::GetAccelScaleFactor()
 
 bool Mpu6050::Update(const bool clamp_)
 {
-	const vector<Byte> &data = m_i2c.GetBytes(MPU6050_DEFAULT_ADDRESS,
+	const vector<Byte> &data = m_i2c->GetBytes(MPU6050_DEFAULT_ADDRESS,
 			MPU6050_RA_ACCEL_XOUT_H, 14);
 	if (data.empty())
 	{
@@ -216,10 +222,26 @@ bool Mpu6050::Update(const bool clamp_)
 			raw_gyro[j] = (data[i] << 8) | data[i + 1];
 			m_omega[j] = (float)raw_gyro[j] / GetGyroScaleFactor();
 			m_omega[j] -= m_omega_offset[j];
-			if(clamp_) m_omega[j] = abs(m_omega[j]) < 5.0f ? 0.0f : m_omega[j];
+			if(clamp_) m_omega[j] = abs(m_omega[j]) < 1.0f ? 0.0f : m_omega[j];
 		}
 	}
 	return true;
+//	const vector<Byte> &data = m_i2c->GetBytes(MPU6050_DEFAULT_ADDRESS,
+//			MPU6050_RA_GYRO_YOUT_H, 2);
+//	if (data.empty())
+//	{
+//		return false;
+//	}
+//
+//	int16_t raw_gyro[3]={0};
+//
+//
+//	raw_gyro[1] = (data[0] << 8) | data[1];
+//	m_omega[1] = (float)raw_gyro[1] / GetGyroScaleFactor();
+//	m_omega[1] -= m_omega_offset[1];
+//	if(clamp_) m_omega[1] = abs(m_omega[1]) < 1.0f ? 0.0f : m_omega[1];
+//
+//	return true;
 }
 
 #else
