@@ -216,7 +216,7 @@ bool Mpu6050::Update(const bool clamp_)
 			raw_gyro[j] = (data[i] << 8) | data[i + 1];
 			m_omega[j] = (float)raw_gyro[j] / GetGyroScaleFactor();
 			m_omega[j] -= m_omega_offset[j];
-			if(clamp_) m_omega[j] = abs(m_omega[j]) < 1.0f ? 0.0f : m_omega[j];
+			if(clamp_) m_omega[j] = abs(m_omega[j]) < 5.0f ? 0.0f : m_omega[j];
 		}
 	}
 	return true;

@@ -6,12 +6,13 @@
 #define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 2
-#define LIBSC_USE_SERVO 1
+//#define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
-//#define LIBSC_USE_LINEAR_CCD 1
+#define LIBSC_USE_LINEAR_CCD 1
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_ENCODER 2
 #define LIBSC_USE_MPU6050 1
+//#define LIBSC_USE_SOFT_MPU6050 1
 
 #define LIBSC_ENCODER0_QDA libbase::k60::Pin::Name::kPtb18
 #define LIBSC_ENCODER0_QDB libbase::k60::Pin::Name::kPtb19
@@ -27,9 +28,9 @@
 #define LIBSC_ST7735R_BGR_PANEL 1
 
 
-//#define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtb18
-//#define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPtb19
-//#define LIBSC_LINEAR_CCD0_AD libbase::k60::Pin::Name::kPtc11
+#define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtc9
+#define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPtc10
+#define LIBSC_LINEAR_CCD0_AD libbase::k60::Pin::Name::kPtc11
 
 #define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc1Ad17
 
@@ -59,7 +60,7 @@
 #define LIBSC_MOTOR1_DEADTIME 1000
 
 
-#define LIBSC_SERVO0 libbase::k60::Pin::Name::kPta10
+//#define LIBSC_SERVO0 libbase::k60::Pin::Name::kPta10
 
 #define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtd7
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtd6
