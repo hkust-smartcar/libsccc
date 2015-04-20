@@ -62,29 +62,30 @@ void LcdTypewriter::WriteBuffer(const char *buf, const size_t length)
 	const size_t max_count = std::max<size_t>(region.w / kFontW, 1);
 	size_t y = region.y;
 	size_t h = region.h;
-	for (size_t i = 0; i < length; ++i)
+	size_t print = 0;
+	while (print < length)
 	{
-		if (buf[i] == '\n' || (m_is_text_wrap && count == max_count))
+		if (buf[print] == '\n' || (m_is_text_wrap && count == max_count))
 		{
 			m_lcd->SetRegion({region.x, y, region.w, h});
 			WriteOneLineBuffer(buf + start, count);
 			count = 0;
 			y += kFontH;
 			h -= kFontH;
-			if (buf[i] == '\n')
+			if (buf[print] == '\n')
 			{
-				start = i + 1;
+				start = print + 1;
+				++print;
 			}
 			else
 			{
-				start = i;
-				// Hack to compensate the ++i after the loop
-				--i;
+				start = print;
 			}
 		}
 		else
 		{
 			++count;
+			++print;
 		}
 	}
 	// Last line

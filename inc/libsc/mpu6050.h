@@ -50,6 +50,7 @@ public:
 		/// Calibrate the gyroscope while initializing
 		bool cal_drift = false;
 
+		I2cMaster* i2c_master_ptr = NULL;
 	};
 
 	explicit Mpu6050(const Config &config);
@@ -81,14 +82,20 @@ public:
 		return m_omega_offset;
 	}
 
-private:
 	bool Verify();
+
+	I2cMaster* GetI2cMaster(){
+		return m_i2c;
+	}
+
+private:
+
 	void Calibrate();
 
 	float GetGyroScaleFactor();
 	float GetAccelScaleFactor();
 
-	I2cMaster m_i2c;
+	I2cMaster* m_i2c;
 	std::array<float, 3> m_accel;
 	std::array<float, 3> m_omega;
 	std::array<float, 3> m_omega_offset;

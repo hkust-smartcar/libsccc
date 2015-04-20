@@ -88,14 +88,15 @@ void PinIsrManager::InitPort(const Uint port)
 		break;
 
 	case 2:
+	case 3:
 		SetIsr(PORTC_PORTD_IRQn, PortIrqHandler<2>);
 		EnableIrq(PORTC_PORTD_IRQn);
 		break;
 
-	case 3:
+/*	case 3:
 		SetIsr(PORTC_PORTD_IRQn, PortIrqHandler<3>);
 		EnableIrq(PORTC_PORTD_IRQn);
-		break;
+		break;*/
 	}
 	m_is_enable[port] = true;
 }
@@ -147,6 +148,25 @@ __ISR void PinIsrManager::PortIrqHandler()
 				pin_data[i].isr(pin);
 			}
 			Pin::ConsumeInterrupt(pin);
+		}
+	}
+	/*
+	 * Consume Port D Isrs on PORTC_PORTD_IRQn
+	 */
+	if(port == 2)
+	{
+		pin_data = PinIsrManager::GetInstance()->m_pin_data[port+1];
+		for (Uint i = 0; i < PINOUT::GetPortPinCount(); ++i)
+		{
+			const Pin::Name pin = PinUtils::GetPin(port+1, i);
+			if (Pin::IsInterruptRequested(pin))
+			{
+				if (pin_data[i].pin && pin_data[i].isr)
+				{
+					pin_data[i].isr(pin);
+				}
+				Pin::ConsumeInterrupt(pin);
+			}
 		}
 	}
 }

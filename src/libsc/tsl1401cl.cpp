@@ -113,7 +113,8 @@ inline Pin::Name GetSiPin(const uint8_t id)
 Adc::Config GetAdConfig(const uint8_t id)
 {
 	Adc::Config config;
-	config.resolution = Adc::Config::Resolution::k16Bit;
+	config.resolution = Adc::Config::Resolution::k8Bit;
+	config.speed = Adc::Config::SpeedMode::kExFast;
 	config.pin = GetAdPin(id);
 	return config;
 }
@@ -146,7 +147,7 @@ Tsl1401cl::Tsl1401cl(const uint8_t id)
 void Tsl1401cl::Delay()
 {
 	// 50ns under 180MHz
-	for (int i = 0; i < 9; ++i)
+	for (int i = 0; i < 5; ++i)
 	{
 		asm("nop");
 	}
@@ -188,7 +189,7 @@ bool Tsl1401cl::SampleProcess()
 		Delay();
 		m_clk_pin.Set(false);
 		Delay();
-		System::DelayUs(20);
+//		System::DelayUs(20);
 		return true;
 	}
 	else

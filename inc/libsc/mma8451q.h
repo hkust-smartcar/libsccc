@@ -72,10 +72,12 @@ public:
 		 * Mid - 4g
 		 * High - 8g
 		 */
-		Sensitivity sensitivity = Sensitivity::kMid;
+		Sensitivity sensitivity = Sensitivity::kLow;
 
-		PowerMode power_mode = PowerMode::kLowNoiseLowPower;
-		OutputDataRate output_data_rate = OutputDataRate::k200Hz;
+		PowerMode power_mode = PowerMode::kNormal;
+		OutputDataRate output_data_rate = OutputDataRate::k400Hz;
+
+		I2cMaster* i2c_master_ptr = NULL;
 	};
 
 	explicit Mma8451q(const Config &config);
@@ -92,6 +94,10 @@ public:
 		return m_last_angle;
 	}
 
+	I2cMaster* GetI2cMaster(){
+		return m_i2c_master;
+	}
+
 private:
 	bool Verify();
 
@@ -103,7 +109,7 @@ private:
 	Byte ReadRegByte(const Byte reg);
 	void WriteRegByte(const Byte reg, const Byte data);
 
-	I2cMaster m_i2c_master;
+	I2cMaster* m_i2c_master;
 	Config::Sensitivity m_sensitivity;
 	float m_scale_factor;
 
