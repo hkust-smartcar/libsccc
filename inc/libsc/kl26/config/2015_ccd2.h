@@ -54,8 +54,6 @@
 #define LIBSC_ST7735R_SDAT  libbase::kl26::Pin::Name::kPtc6
 #define LIBSC_ST7735R_SCLK  libbase::kl26::Pin::Name::kPtc5
 
-
-
 #define LIBSC_LED0 libbase::kl26::Pin::Name::kPtb20
 #define LIBSC_LED1 libbase::kl26::Pin::Name::kPtb21
 #define LIBSC_LED2 libbase::kl26::Pin::Name::kPtb22
@@ -70,7 +68,6 @@
 #define LIBSC_MMA8451Q0_SCL libbase::kl26::Pin::Name::kPte24
 #define LIBSC_MMA8451Q0_SDA libbase::kl26::Pin::Name::kPte25
 
-
 #define LIBSC_LINEAR_CCD0_CLK libbase::kl26::Pin::Name::kPte18
 #define LIBSC_LINEAR_CCD0_SI libbase::kl26::Pin::Name::kPte17
 #define LIBSC_LINEAR_CCD0_AD libbase::kl26::Pin::Name::kPte16
@@ -78,15 +75,6 @@
 #define LIBSC_LINEAR_CCD1_CLK libbase::kl26::Pin::Name::kPte21
 #define LIBSC_LINEAR_CCD1_SI libbase::kl26::Pin::Name::kPte20
 #define LIBSC_LINEAR_CCD1_AD libbase::kl26::Pin::Name::kPte19
-
-//#define LIBSC_LINEAR_CCD0_CLK libbase::kl26::Pin::Name::kPte21
-//#define LIBSC_LINEAR_CCD0_SI libbase::kl26::Pin::Name::kPte20
-//#define LIBSC_LINEAR_CCD0_AD libbase::kl26::Pin::Name::kPte19
-//
-//#define LIBSC_LINEAR_CCD1_CLK libbase::kl26::Pin::Name::kPte18
-//#define LIBSC_LINEAR_CCD1_SI libbase::kl26::Pin::Name::kPte17
-//#define LIBSC_LINEAR_CCD1_AD libbase::kl26::Pin::Name::kPte16
-
 
 #define LIBSC_BATTERY_METER libbase::kl26::Adc::Name::kAdc0DAd3
 
