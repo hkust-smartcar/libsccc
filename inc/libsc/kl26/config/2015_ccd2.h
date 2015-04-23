@@ -18,14 +18,14 @@
 #define LIBSC_USE_MPU6050 1
 //#define LIBSC_USE_SOFT_MPU6050 0
 #define LIBSC_USE_MMA8451Q 1
-#define LIBSC_USE_LINEAR_CCD 1
+#define LIBSC_USE_LINEAR_CCD 2
 #define LIBSC_USE_BATTERY_METER 1
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_SOFT_ST7735R 1
 #define LIBSC_USE_BUZZER 1
 
 #define LIBSC_MOTOR0_PWM libbase::kl26::Pin::Name::kPta5
-#define LIBSC_MOTOR0_DIR libbase::kl26::Pin::Name::kPte21
+#define LIBSC_MOTOR0_DIR libbase::kl26::Pin::Name::kPtd5
 
 #define LIBSC_MOTOR1_PWM libbase::kl26::Pin::Name::kPta7
 #define LIBSC_MOTOR1_DIR libbase::kl26::Pin::Name::kPta6
@@ -54,8 +54,6 @@
 #define LIBSC_ST7735R_SDAT  libbase::kl26::Pin::Name::kPtc6
 #define LIBSC_ST7735R_SCLK  libbase::kl26::Pin::Name::kPtc5
 
-
-
 #define LIBSC_LED0 libbase::kl26::Pin::Name::kPtb20
 #define LIBSC_LED1 libbase::kl26::Pin::Name::kPtb21
 #define LIBSC_LED2 libbase::kl26::Pin::Name::kPtb22
@@ -73,6 +71,10 @@
 #define LIBSC_LINEAR_CCD0_CLK libbase::kl26::Pin::Name::kPte18
 #define LIBSC_LINEAR_CCD0_SI libbase::kl26::Pin::Name::kPte17
 #define LIBSC_LINEAR_CCD0_AD libbase::kl26::Pin::Name::kPte16
+
+#define LIBSC_LINEAR_CCD1_CLK libbase::kl26::Pin::Name::kPte21
+#define LIBSC_LINEAR_CCD1_SI libbase::kl26::Pin::Name::kPte20
+#define LIBSC_LINEAR_CCD1_AD libbase::kl26::Pin::Name::kPte19
 
 #define LIBSC_BATTERY_METER libbase::kl26::Adc::Name::kAdc0DAd3
 
