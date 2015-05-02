@@ -69,13 +69,13 @@ SpiMaster::SpiMaster(const Config &config):
 //	Enable SPI system
 //	Set as master mode
 //	Enable interrupt
-	MEM_MAPS[0]->C1 |= SPI_C1_SPE_MASK | SPI_C1_SPIE_MASK | SPI_C1_MSTR_MASK;
+	MEM_MAPS[0]->C1 |= SPI_C1_SPE_MASK | SPI_C1_SPIE_MASK | SPI_C1_MSTR_MASK | SPI_C1_CPOL_MASK;
 
 /*
  * C2 register
  */
 // 	Set SPI mode to 16-bit mode
-	SET_BIT(MEM_MAPS[0]->C2,SPI_C2_SPIMODE_SHIFT);
+	CLEAR_BIT(MEM_MAPS[0]->C2,SPI_C2_SPIMODE_SHIFT);
 	SET_BIT(MEM_MAPS[0]->C2,SPI_C2_MODFEN_SHIFT);
 
 	SET_BIT(MEM_MAPS[0]->C1,SPI_C1_SSOE_SHIFT);
@@ -95,25 +95,24 @@ SpiMaster::SpiMaster(const Config &config):
 	int diff = INT_MAX;
 	int best_sppr = 0;
 	int best_spr = 0;
-//	for(int spr = 0; spr < 9; spr++ ){
-//		if((abs(module_clock/pow(2.0,(double)(spr+1))) /config.baud_rate_khz*1000) <= 8){
-//			best_spr = spr;
-//			break;
-//		}
-//	}
-//	for(int sppr = 0; sppr <8; sppr++){
-//
-//			if(abs((module_clock/((sppr+1) * pow(2.0,(double)(best_spr+1)) )) - config.baud_rate_khz*1000) < diff){
-//				best_sppr = sppr;
-//				diff = abs((module_clock/((sppr+1) * pow(2.0,(double)(best_spr+1)) )) - config.baud_rate_khz*1000);
-//			}
-//			if((module_clock/((sppr+1) * pow(2.0,(double)(best_spr)) )) == config.baud_rate_khz*1000){
-//				best_sppr = sppr;
-//				break;
-//			}
-//
-//	}
-	MEM_MAPS[0]->BR |= (SPI_BR_SPPR(8) | SPI_BR_SPR(0));
+	for(int spr = 0; spr < 9; spr++ ){
+		if((module_clock/(2<<(spr))/(config.baud_rate_khz*1000)) <= 8){
+			best_spr = spr;
+			break;
+		}
+	}
+	for(int sppr = 0; sppr <8; sppr++){
+
+			if(abs((module_clock/((sppr+1) * (2<<best_spr) )) - config.baud_rate_khz*1000) < diff){
+				best_sppr = sppr;
+				diff = abs((module_clock/((sppr+1) * (2<<best_spr) )) - config.baud_rate_khz*1000);
+				if(diff==0){
+					break;
+				}
+			}
+
+	}
+	MEM_MAPS[0]->BR |= (SPI_BR_SPPR(5) | SPI_BR_SPR(0));
 
 
 }
