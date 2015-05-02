@@ -69,16 +69,17 @@ SpiMaster::SpiMaster(const Config &config):
 //	Enable SPI system
 //	Set as master mode
 //	Enable interrupt
-	MEM_MAPS[0]->C1 |= SPI_C1_SPE_MASK | SPI_C1_SPIE_MASK | SPI_C1_MSTR_MASK | SPI_C1_CPOL_MASK;
+	MEM_MAPS[m_module]->C1 |= SPI_C1_SPE_MASK | SPI_C1_SPIE_MASK | SPI_C1_MSTR_MASK | SPI_C1_CPOL_MASK;
 
 /*
  * C2 register
  */
-// 	Set SPI mode to 16-bit mode
-	CLEAR_BIT(MEM_MAPS[0]->C2,SPI_C2_SPIMODE_SHIFT);
-	SET_BIT(MEM_MAPS[0]->C2,SPI_C2_MODFEN_SHIFT);
+// 	Set SPI mode to 8-bit mode
+	CLEAR_BIT(MEM_MAPS[m_module]->C2,SPI_C2_SPIMODE_SHIFT);
 
-	SET_BIT(MEM_MAPS[0]->C1,SPI_C1_SSOE_SHIFT);
+//	Enable SPI SS
+	SET_BIT(MEM_MAPS[m_module]->C2,SPI_C2_MODFEN_SHIFT);
+	SET_BIT(MEM_MAPS[m_module]->C1,SPI_C1_SSOE_SHIFT);
 
 /*
  * BR register - Section 37.4.8
@@ -112,8 +113,7 @@ SpiMaster::SpiMaster(const Config &config):
 			}
 
 	}
-//	MEM_MAPS[0]->BR |= (SPI_BR_SPPR(5) | SPI_BR_SPR(0));
-	MEM_MAPS[0]->BR |= (SPI_BR_SPPR(best_sppr) | SPI_BR_SPR(best_spr));
+	MEM_MAPS[m_module]->BR |= (SPI_BR_SPPR(best_sppr) | SPI_BR_SPR(best_spr));
 
 
 }
@@ -126,14 +126,15 @@ uint16_t SpiMaster:: ExchangeData(const uint8_t slave_id, const uint16_t data){
 	uint16_t received;
 
 //	Wait untill SPTEF = 1
-	while(!GET_BIT(MEM_MAPS[0]->S,SPI_S_SPTEF_SHIFT));
-	MEM_MAPS[0]->DH = (data & 0xFF00) >> 8;
-	MEM_MAPS[0]->DL = data & 0xFF;
+	while(!GET_BIT(MEM_MAPS[m_module]->S,SPI_S_SPTEF_SHIFT));
+//	Remark: in 8 bit mode, DH ignored
+	MEM_MAPS[m_module]->DH = (data & 0xFF00) >> 8;
+	MEM_MAPS[m_module]->DL = data & 0xFF;
 
 //	Wait till transmitt buffer is empty
-	while(!GET_BIT(MEM_MAPS[0]->S,SPI_S_SPTEF_SHIFT));
-
-	received = (MEM_MAPS[0]->DH << 8) | (MEM_MAPS[0]->DL);
+	while(!GET_BIT(MEM_MAPS[m_module]->S,SPI_S_SPTEF_SHIFT));
+//	Remark: in 8 bit mode, DH ignored
+	received = (MEM_MAPS[m_module]->DH << 8) | (MEM_MAPS[m_module]->DL);
 	return received;
 }
 
