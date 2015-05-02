@@ -22,10 +22,13 @@ SpiMaster::SpiMaster(const Config &config):
 /*
  * Init pins
  */
-//	int sin_module = -1;
+	int sin_module = -1;
 //	int sout_module = -1;
 //	int sck_module = -1;
 //	int cs_module = -1;
+	if(config.sin_pin == Pin::Name::kPte0){
+		sin_module = 1;
+	}
 
 	if (config.sin_pin != Pin::Name::kDisable)
 	{
@@ -69,7 +72,12 @@ SpiMaster::SpiMaster(const Config &config):
 //	Enable SPI system
 //	Set as master mode
 //	Enable interrupt
-	MEM_MAPS[m_module]->C1 |= SPI_C1_SPE_MASK | SPI_C1_SPIE_MASK | SPI_C1_MSTR_MASK | SPI_C1_CPOL_MASK;
+	MEM_MAPS[m_module]->C1 |= SPI_C1_SPE_MASK | SPI_C1_SPIE_MASK | SPI_C1_MSTR_MASK;
+
+//	CPHA = 1, First edge on SPSCK occurs at the start of the first cycle of a data transfer.
+	CLEAR_BIT(MEM_MAPS[m_module]->C1,SPI_C1_CPHA_SHIFT);
+//	CPOL = 0, Active-high SPI clock (idles low)
+	CLEAR_BIT(MEM_MAPS[m_module]->C1,SPI_C1_CPOL_SHIFT);
 
 /*
  * C2 register
