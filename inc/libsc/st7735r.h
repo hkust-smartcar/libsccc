@@ -19,7 +19,9 @@
 #include LIBBASE_H(spi_master)
 
 #elif MKL26Z4
-#define LIBSC_USE_SOFT_ST7735R 1
+#ifndef LIBSC_USE_SOFT_ST7735R
+#include LIBBASE_H(spi_master)
+#endif
 
 #endif
 

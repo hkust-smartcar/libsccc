@@ -21,7 +21,7 @@
 #define LIBSC_USE_LINEAR_CCD 2
 #define LIBSC_USE_BATTERY_METER 1
 #define LIBSC_USE_LCD 1
-#define LIBSC_USE_SOFT_ST7735R 1
+//#define LIBSC_USE_SOFT_ST7735R 1
 #define LIBSC_USE_BUZZER 1
 
 #define LIBSC_MOTOR0_PWM libbase::kl26::Pin::Name::kPta5
