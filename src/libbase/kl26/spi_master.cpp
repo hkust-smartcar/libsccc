@@ -112,7 +112,8 @@ SpiMaster::SpiMaster(const Config &config):
 			}
 
 	}
-	MEM_MAPS[0]->BR |= (SPI_BR_SPPR(5) | SPI_BR_SPR(0));
+//	MEM_MAPS[0]->BR |= (SPI_BR_SPPR(5) | SPI_BR_SPR(0));
+	MEM_MAPS[0]->BR |= (SPI_BR_SPPR(best_sppr) | SPI_BR_SPR(best_spr));
 
 
 }
