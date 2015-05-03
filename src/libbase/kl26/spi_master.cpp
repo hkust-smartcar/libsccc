@@ -22,13 +22,13 @@ SpiMaster::SpiMaster(const Config &config):
 /*
  * Init pins
  */
-	int sin_module = -1;
+//	int sin_module = -1;
 //	int sout_module = -1;
 //	int sck_module = -1;
 //	int cs_module = -1;
-	if(config.sin_pin == Pin::Name::kPte0){
-		sin_module = 1;
-	}
+//	if(config.sin_pin == Pin::Name::kPte0){
+//		sin_module = 1;
+//	}
 
 	if (config.sin_pin != Pin::Name::kDisable)
 	{
@@ -94,7 +94,7 @@ SpiMaster::SpiMaster(const Config &config):
  * BaudRateDivisor = (SPPR + 1) * 2^(SPR  +1)
  * BaudRate = SPI Module Clock / BaudRateDivisor
  */
-	uint32_t module_clock;
+	uint32_t module_clock = 0;
 	if(m_module == 0){
 		module_clock = ClockUtils::GetBusClock();
 	}else if(m_module == 1){
@@ -130,7 +130,7 @@ SpiMaster::~SpiMaster() {
 	// TODO Auto-generated destructor stub
 }
 
-uint16_t SpiMaster:: ExchangeData(const uint8_t slave_id, const uint16_t data){
+uint16_t SpiMaster:: ExchangeData(const uint8_t, const uint16_t data){
 	uint16_t received;
 
 //	Wait untill SPTEF = 1
