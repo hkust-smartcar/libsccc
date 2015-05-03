@@ -77,7 +77,7 @@ SpiMaster::SpiMaster(const Config &config):
 //	CPHA = 1, First edge on SPSCK occurs at the start of the first cycle of a data transfer.
 	CLEAR_BIT(MEM_MAPS[m_module]->C1,SPI_C1_CPHA_SHIFT);
 //	CPOL = 0, Active-high SPI clock (idles low)
-	CLEAR_BIT(MEM_MAPS[m_module]->C1,SPI_C1_CPOL_SHIFT);
+	SET_BIT(MEM_MAPS[m_module]->C1,SPI_C1_CPOL_SHIFT);
 
 /*
  * C2 register

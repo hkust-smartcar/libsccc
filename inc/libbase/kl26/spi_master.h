@@ -73,13 +73,11 @@ public:
 	void KickStart() override{
 
 	}
-	size_t PushData(const uint8_t slave_id, const uint16_t *data,
-			const size_t size) override{
-
+	size_t PushData(const uint8_t , const uint16_t *, const size_t ) override{
+		return 0;
 	}
-	size_t PushData(const uint8_t slave_id, const uint8_t *data,
-			const size_t size) override{
-
+	size_t PushData(const uint8_t , const uint8_t *, const size_t ) override{
+		return 0;
 	}
 
 
