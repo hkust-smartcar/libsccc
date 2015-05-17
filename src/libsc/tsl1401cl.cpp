@@ -146,11 +146,19 @@ Tsl1401cl::Tsl1401cl(const uint8_t id)
 
 void Tsl1401cl::Delay()
 {
+#if defined(MKL26Z4)
+	// 57ns under 70MHz
+	for (int i = 0; i < 4; ++i)
+	{
+		asm("nop");
+	}
+#else
 	// 50ns under 180MHz
 	for (int i = 0; i < 5; ++i)
 	{
 		asm("nop");
 	}
+#endif
 }
 
 void Tsl1401cl::StartSample()
