@@ -1,6 +1,6 @@
 /*
- * vcan_z4dev.h
- * Config file for the VCAN KL26 development board
+ * 2015_ccd2.h
+ * Config file for the 2015 CCD2 Gen2 board
  *
  * Author: Harrison Ng
  * Copyright (c) 2014-2015 HKUST SmartCar Team
@@ -25,10 +25,10 @@
 #define LIBSC_USE_BUZZER 1
 
 #define LIBSC_MOTOR0_PWM libbase::kl26::Pin::Name::kPta5
-#define LIBSC_MOTOR0_DIR libbase::kl26::Pin::Name::kPtd5
+#define LIBSC_MOTOR0_DIR libbase::kl26::Pin::Name::kPta6
 
 #define LIBSC_MOTOR1_PWM libbase::kl26::Pin::Name::kPta7
-#define LIBSC_MOTOR1_DIR libbase::kl26::Pin::Name::kPta6
+#define LIBSC_MOTOR1_DIR libbase::kl26::Pin::Name::kPta12
 
 #define LIBSC_ENCODER0_QDA libbase::kl26::Pin::Name::kPtc13
 #define LIBSC_ENCODER0_QDB libbase::kl26::Pin::Name::kPtc17
@@ -65,8 +65,8 @@
 #define LIBSC_MPU6050_SCL libbase::kl26::Pin::Name::kPte24
 #define LIBSC_MPU6050_SDA libbase::kl26::Pin::Name::kPte25
 
-#define LIBSC_MMA8451Q0_SCL libbase::kl26::Pin::Name::kPte24
-#define LIBSC_MMA8451Q0_SDA libbase::kl26::Pin::Name::kPte25
+#define LIBSC_MMA8451Q0_SCL libbase::kl26::Pin::Name::kPte1
+#define LIBSC_MMA8451Q0_SDA libbase::kl26::Pin::Name::kPte0
 
 #define LIBSC_LINEAR_CCD0_CLK libbase::kl26::Pin::Name::kPte18
 #define LIBSC_LINEAR_CCD0_SI libbase::kl26::Pin::Name::kPte17
@@ -78,4 +78,4 @@
 
 #define LIBSC_BATTERY_METER libbase::kl26::Adc::Name::kAdc0DAd3
 
-#define LIBSC_BUZZER0 libbase::kl26::Pin::Name::kPta12;
+#define LIBSC_BUZZER0 libbase::kl26::Pin::Name::kPta13;
