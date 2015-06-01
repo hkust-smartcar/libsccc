@@ -39,7 +39,7 @@
 	#define CORE_CLOCK 48000000
 	#define BUS_CLOCK 24000000
 	#define MAX_CORE_CLOCK 120000000
-	#define MAX_BUS_CLOCK 28800000
+	#define MAX_BUS_CLOCK 50000000
 #endif
 
 namespace libbase
@@ -319,7 +319,7 @@ void Mcg::InitClocks(const Config &config, const uint32_t core_clock)
 	const Uint max_bus_clk = core_clock / bus_div;
 	const Uint min_bus_clk = core_clock / (bus_div + 1);
 	if (max_bus_clk > MAX_BUS_CLOCK
-			|| max_bus_clk - bus_clk > bus_clk - min_bus_clk)
+			|| abs(max_bus_clk - bus_clk) > abs(bus_clk - min_bus_clk))
 	{
 		++bus_div;
 	}

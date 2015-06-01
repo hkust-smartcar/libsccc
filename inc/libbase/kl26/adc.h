@@ -80,13 +80,13 @@ public:
 			k16Bit,
 		};
 
-		enum struct SpeedMode
+		enum SpeedMode
 		{
-			kExFast,
-			kFast,
-			kTypical,
-			kSlow,
-			kExSlow,
+			kExFast = 20000,
+			kFast = 12000,
+			kTypical = 8000,
+			kSlow = 4000,
+			kExSlow = 1000,
 		};
 
 		enum struct AveragePass
@@ -111,7 +111,8 @@ public:
 		/// Enable diferential mode, only work with DADn channels
 		bool is_diff_mode = false;
 		Resolution resolution = Resolution::k8Bit;
-		SpeedMode speed = SpeedMode::kTypical;
+		/// Clock speed in KHz
+		uint32_t speed = SpeedMode::kTypical;
 		bool is_continuous_mode = false;
 		AveragePass avg_pass = AveragePass::kDisable;
 		/**

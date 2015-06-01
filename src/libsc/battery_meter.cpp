@@ -27,9 +27,9 @@ Adc::Config GetAdcConfig()
 {
 	Adc::Config config;
 	config.adc = LIBSC_BATTERY_METER;
-	config.speed = Adc::Config::SpeedMode::kExFast;
+	config.speed = Adc::Config::SpeedMode::kExSlow;
 	config.is_continuous_mode = true;
-	config.avg_pass = Adc::Config::AveragePass::k4;
+	config.avg_pass = Adc::Config::AveragePass::k32;
 	return config;
 }
 
