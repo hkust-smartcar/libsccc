@@ -8,18 +8,18 @@
 #pragma once
 
 #define LIBSC_USE_BATTERY_METER 1
-#define LIBSC_USE_BUTTON 2
+//#define LIBSC_USE_BUTTON 2
 //#define LIBSC_USE_BUZZER 1
 #define LIBSC_USE_JOYSTICK 1
-#define LIBSC_USE_LED 4
+#define LIBSC_USE_LED 2
 #define LIBSC_USE_MOTOR 2
 //#define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
-#define LIBSC_USE_LINEAR_CCD 1
+#define LIBSC_USE_LINEAR_CCD 3
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_ENCODER 2
 #define LIBSC_USE_MPU6050 1
-#define LIBSC_USE_MMA8451Q == 1
+#define LIBSC_USE_MMA8451Q 1
 //#define LIBSC_USE_SOFT_MPU6050 1
 
 #define LIBSC_ENCODER0_QDA libbase::k60::Pin::Name::kPta8
