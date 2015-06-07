@@ -329,20 +329,19 @@ UartDevice::UartDevice(const Initializer &initializer)
 		  m_rx_isr(initializer.config.rx_isr),
 		  m_tx_buf(new TxBuffer(initializer.config.tx_buf_size)),
 		  m_is_tx_idle(true),
-		  m_tx_dma_channel(initializer.config.tx_dma_channel),
 		  m_dma(nullptr),
 		  m_uart(nullptr)
 {
 	Uart::Config &&uart_config = initializer.GetUartConfig();
 	uart_config.rx_isr = std::bind(&UartDevice::OnRxFull, this, placeholders::_1);
-	if (!IsUseDma())
+	if (initializer.config.tx_dma_channel == static_cast<uint8_t>(-1))
 	{
 		uart_config.tx_isr = std::bind(&UartDevice::OnTxEmpty, this,
 				placeholders::_1);
 	}
 	m_uart = Uart(uart_config);
 
-	if (IsUseDma())
+	if (initializer.config.tx_dma_channel != static_cast<uint8_t>(-1))
 	{
 		m_dma_config.reset(new Dma::Config);
 		m_dma_config->src.addr = nullptr; // temp
@@ -353,6 +352,8 @@ UartDevice::UartDevice(const Initializer &initializer)
 		m_uart.ConfigTxAsDmaDst(m_dma_config.get());
 		m_dma_config->complete_isr = std::bind(&UartDevice::OnTxDmaComplete,
 				this, placeholders::_1);
+
+		m_dma = DmaManager::New(*m_dma_config, initializer.config.tx_dma_channel);
 	}
 
 	m_uart.SetEnableRxIrq(true);
@@ -388,7 +389,7 @@ inline void UartDevice::DisableTx()
 
 inline bool UartDevice::IsUseDma()
 {
-	return (m_tx_dma_channel != static_cast<uint8_t>(-1));
+	return m_dma;
 }
 
 bool UartDevice::SendStr(const char *str)
@@ -593,11 +594,7 @@ void UartDevice::NextTxDma()
 	}
 	m_dma_config->major_count = block->size;
 
-	if (m_dma)
-	{
-		DmaManager::Delete(m_dma);
-	}
-	m_dma = DmaManager::New(*m_dma_config, m_tx_dma_channel);
+	m_dma->Reinit(*m_dma_config);
 	m_dma->Start();
 }
 

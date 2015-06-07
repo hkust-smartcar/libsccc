@@ -179,7 +179,6 @@ private:
 	std::unique_ptr<TxBuffer> m_tx_buf;
 	volatile bool m_is_tx_idle;
 
-	uint8_t m_tx_dma_channel;
 	std::unique_ptr<libbase::k60::Dma::Config> m_dma_config;
 	libbase::k60::Dma *m_dma;
 
