@@ -30,7 +30,7 @@
 #define LIBSC_BUTTON1 libbase::k60::Pin::Name::kPte27
 
 #define LIBSC_SWITCH0 libbase::k60::Pin::Name::kPte28
-#define LIBSC_SWITCH1 libbase::k60::Pin::Name::kPta6
+#define LIBSC_SWITCH1 libbase::k60::Pin::Name::kPta5
 #define LIBSC_SWITCH2 libbase::k60::Pin::Name::kPta6
 #define LIBSC_SWITCH3 libbase::k60::Pin::Name::kPta7
 #define LIBSC_SWITCH4 libbase::k60::Pin::Name::kPta8
