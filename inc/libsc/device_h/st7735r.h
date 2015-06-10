@@ -8,6 +8,7 @@
 
 #pragma once
 
+#define ST7735R_NOP 0x00 // NOP
 #define ST7735R_SWRESET 0x01 // Software Reset
 #define ST7735R_RDDID 0x04 // Read Display ID
 #define ST7735R_SLPIN 0x10 // Sleep In
