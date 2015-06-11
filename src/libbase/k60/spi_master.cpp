@@ -417,6 +417,14 @@ void SpiMaster::InitCtarReg(const Config &config)
 	MEM_MAPS[m_module]->CTAR[0] = reg;
 }
 
+void SpiMaster::InitInterrupt(const Config &config)
+{
+	m_rx_isr = config.rx_isr;
+	m_tx_isr = config.tx_isr;
+
+	SetInterrupt((bool)m_rx_isr, (bool)m_tx_isr);
+}
+
 void SpiMaster::SetBaudRate(const uint32_t baud_rate_khz, uint32_t *reg)
 {
 	const Uint pbrs[] = {1, 2, 3, 5, 7};
@@ -483,6 +491,25 @@ void SpiMaster::SetAfterTransferDelay(const uint32_t after_transfer_delay_ns,
 	*reg |= SPI_CTAR_DT(calc.GetBestScaler());
 }
 
+void SpiMaster::SetInterrupt(const bool tx_flag, const bool rx_flag)
+{
+	// If we init the interrupt here, Tx isr will be called immediately which
+	// may not be intended
+	SetEnableRxIrq(false);
+	SetEnableTxIrq(false);
+
+	if (tx_flag || rx_flag)
+	{
+		SetIsr(EnumAdvance(SPI0_IRQn, m_module << 1), IrqHandler);
+		EnableIrq(EnumAdvance(SPI0_IRQn, m_module << 1));
+	}
+	else
+	{
+		DisableIrq(EnumAdvance(SPI0_IRQn, m_module << 1));
+		SetIsr(EnumAdvance(SPI0_IRQn, m_module << 1), nullptr);
+	}
+}
+
 void SpiMaster::Uninit()
 {
 	if (m_is_init)
@@ -490,6 +517,8 @@ void SpiMaster::Uninit()
 		m_is_init = false;
 
 		SetHalt(true);
+		SetInterrupt(false, false);
+
 #if MK60DZ10 || MK60D10
 		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0, m_module),
 				false);
@@ -587,6 +616,34 @@ size_t SpiMaster::PushData(const uint8_t slave_id, const uint8_t *data,
 	}
 	SET_BIT(MEM_MAPS[m_module]->SR, SPI_SR_TFFF_SHIFT);
 	return send;
+}
+
+void SpiMaster::SetEnableRxIrq(const bool flag)
+{
+	STATE_GUARD(SpiMaster, VOID);
+
+	if (flag)
+	{
+		SET_BIT(MEM_MAPS[m_module]->RSER, SPI_RSER_RFDF_RE_SHIFT);
+	}
+	else
+	{
+		CLEAR_BIT(MEM_MAPS[m_module]->RSER, SPI_RSER_RFDF_RE_SHIFT);
+	}
+}
+
+void SpiMaster::SetEnableTxIrq(const bool flag)
+{
+	STATE_GUARD(SpiMaster, VOID);
+
+	if (flag)
+	{
+		SET_BIT(MEM_MAPS[m_module]->RSER, SPI_RSER_TFFF_RE_SHIFT);
+	}
+	else
+	{
+		CLEAR_BIT(MEM_MAPS[m_module]->RSER, SPI_RSER_TFFF_RE_SHIFT);
+	}
 }
 
 __ISR void SpiMaster::IrqHandler()
