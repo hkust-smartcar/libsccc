@@ -130,6 +130,7 @@ SpiMaster::SpiMaster(const Config &config)
 	InitPin(config);
 	InitMcrReg(config);
 	InitCtarReg(config);
+	InitInterrupt(config);
 
 	CLEAR_BIT(MEM_MAPS[m_module]->MCR, SPI_MCR_HALT_SHIFT);
 }
