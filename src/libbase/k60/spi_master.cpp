@@ -500,13 +500,13 @@ void SpiMaster::SetInterrupt(const bool tx_flag, const bool rx_flag)
 
 	if (tx_flag || rx_flag)
 	{
-		SetIsr(EnumAdvance(SPI0_IRQn, m_module << 1), IrqHandler);
-		EnableIrq(EnumAdvance(SPI0_IRQn, m_module << 1));
+		SetIsr(EnumAdvance(SPI0_IRQn, m_module), IrqHandler);
+		EnableIrq(EnumAdvance(SPI0_IRQn, m_module));
 	}
 	else
 	{
-		DisableIrq(EnumAdvance(SPI0_IRQn, m_module << 1));
-		SetIsr(EnumAdvance(SPI0_IRQn, m_module << 1), nullptr);
+		DisableIrq(EnumAdvance(SPI0_IRQn, m_module));
+		SetIsr(EnumAdvance(SPI0_IRQn, m_module), nullptr);
 	}
 }
 
