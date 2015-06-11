@@ -26,7 +26,6 @@
 #include "libsc/device_h/st7735r.h"
 #include "libsc/st7735r.h"
 #include "libsc/system.h"
-#include "libsc/lcd_font.h"
 #include "libutil/misc.h"
 
 #define SEND_COMMAND(dat) Send(true, dat)

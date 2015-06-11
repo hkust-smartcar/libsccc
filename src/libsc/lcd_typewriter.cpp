@@ -21,13 +21,11 @@
 #include "libsc/config.h"
 #include "libsc/lcd.h"
 #include "libsc/lcd_typewriter.h"
-#include "libsc/lcd_font.h"
 
 using namespace std;
 
 namespace libsc
 {
-
 
 LcdTypewriter::LcdTypewriter(const Config &config)
 		: m_lcd(config.lcd),
@@ -282,4 +280,3 @@ const Byte LcdTypewriter::kFontData[1520] =
 };
 
 }
-
