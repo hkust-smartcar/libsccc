@@ -11,22 +11,21 @@
  */
 
 #include <cstdint>
+#include <cstring>
 
 #include <algorithm>
 
 #include "libbase/helper.h"
-
 #include "libbase/log.h"
-#include LIBBASE_H(soft_spi_master)
-#if MK60DZ10 || MK60D10 || MK60F15
+#include LIBBASE_H(gpio)
 #include LIBBASE_H(spi_master)
-#endif
 
 #include "libsc/config.h"
 #include "libsc/device_h/st7735r.h"
-#include "libsc/st7735r.h"
+#include "libsc/next/st7735r.h"
 #include "libsc/system.h"
 #include "libutil/misc.h"
+#include "libutil/ownership_ptr.h"
 
 #define SEND_COMMAND(dat) Send(true, dat)
 #define SEND_DATA(dat) Send(false, dat)
@@ -37,22 +36,25 @@ using namespace std;
 
 namespace libsc
 {
+namespace next
+{
 
 #ifdef LIBSC_USE_LCD
 
 namespace
 {
 
-St7735r::SpiMaster::Config GetSpiConfig()
+St7735r::SpiMaster::Config GetSpiConfig(
+		const SpiMaster::OnTxFillListener &tx_isr)
 {
 	St7735r::SpiMaster::Config config;
 	config.sout_pin = LIBSC_ST7735R_SDAT;
 	config.sck_pin = LIBSC_ST7735R_SCLK;
 
-	#if !LIBSC_USE_SOFT_ST7735R
+#if !LIBSC_USE_SOFT_ST7735R
 	// Max freq of ST7735R == 15MHz
 	config.baud_rate_khz = 15000;
-	#endif
+#endif
 
 	config.frame_size = 8;
 	config.is_sck_idle_low = true;
@@ -60,6 +62,8 @@ St7735r::SpiMaster::Config GetSpiConfig()
 	config.is_msb_firt = true;
 
 	config.slaves[0].cs_pin = LIBSC_ST7735R_CS;
+
+	config.tx_isr = tx_isr;
 	return config;
 }
 
@@ -82,11 +86,16 @@ Gpo::Config GetDcConfig()
 }
 
 St7735r::St7735r(const Config &config)
-		: m_spi(GetSpiConfig()),
+		: m_tx_buf(14),
+		  m_is_tx_idle(true),
+		  m_buf_start(0),
+		  m_data_it(0),
+		  m_data_size(0),
+		  m_region{0, 0, GetW(), GetH()},
+		  m_spi(GetSpiConfig(std::bind(&St7735r::OnTxComplete, this,
+				  placeholders::_1))),
 		  m_rst(GetRstConfig()),
-		  m_dc(GetDcConfig()),
-
-		  m_region{0, 0, GetW(), GetH()}
+		  m_dc(GetDcConfig())
 {
 	Clear();
 	SEND_COMMAND(ST7735R_SWRESET);
@@ -232,6 +241,21 @@ void St7735r::InitGamma()
 	SEND_DATA(0x10);
 }
 
+inline void St7735r::EnableTx()
+{
+	if (m_is_tx_idle)
+	{
+		m_is_tx_idle = false;
+		m_spi.SetEnableTxIrq(true);
+	}
+}
+
+inline void St7735r::DisableTx()
+{
+	m_spi.SetEnableTxIrq(false);
+	m_is_tx_idle = true;
+}
+
 void St7735r::FillColor(const uint16_t color)
 {
 	if (m_region.x >= kW || m_region.y >= kH)
@@ -239,15 +263,15 @@ void St7735r::FillColor(const uint16_t color)
 		return;
 	}
 
-	SetActiveRect();
-	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
-	const Uint length = w * h;
-	for (Uint i = 0; i < length; ++i)
+	if (m_tx_buf.PushData(unique_ptr<St7735rCmd>(new St7735rFillColor(m_region,
+			color))))
 	{
-		SEND_DATA(color >> 8);
-		SEND_DATA(color);
+		EnableTx();
+		return;
+	}
+	else
+	{
+		return;
 	}
 }
 
@@ -258,22 +282,17 @@ void St7735r::FillGrayscalePixel(const uint8_t *pixel, const size_t length)
 		return;
 	}
 
-	SetActiveRect();
-	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
-	// We add the original region w to row_beg, so length_ here also should be
-	// the original
-	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
-	for (Uint row_beg = 0; row_beg < length_; row_beg += m_region.w)
+	uint8_t *pixel_copy = new uint8_t[length];
+	memcpy(pixel_copy, pixel, length);
+	if (m_tx_buf.PushData(unique_ptr<St7735rCmd>(new St7735rFillGrayscalePixel(
+			m_region, {pixel_copy, true}, length))))
 	{
-		for (Uint x = 0; x < w; ++x)
-		{
-			const uint8_t gs_color = pixel[row_beg + x];
-			const uint16_t color = GetRgb565(gs_color, gs_color, gs_color);
-			SEND_DATA(color >> 8);
-			SEND_DATA(color);
-		}
+		EnableTx();
+		return;
+	}
+	else
+	{
+		return;
 	}
 }
 
@@ -284,20 +303,17 @@ void St7735r::FillPixel(const uint16_t *pixel, const size_t length)
 		return;
 	}
 
-	SetActiveRect();
-	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
-	// We add the original region w to row_beg, so length_ here also should be
-	// the original
-	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
-	for (Uint row_beg = 0; row_beg < length_; row_beg += m_region.w)
+	uint16_t *pixel_copy = new uint16_t[length];
+	memcpy(pixel_copy, pixel, sizeof(uint16_t) * length);
+	if (m_tx_buf.PushData(unique_ptr<St7735rCmd>(new St7735rFillPixel(m_region,
+			{pixel_copy, true}, length))))
 	{
-		for (Uint x = 0; x < w; ++x)
-		{
-			SEND_DATA(pixel[row_beg + x] >> 8);
-			SEND_DATA(pixel[row_beg + x]);
-		}
+		EnableTx();
+		return;
+	}
+	else
+	{
+		return;
 	}
 }
 
@@ -309,28 +325,17 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 		return;
 	}
 
-	SetActiveRect();
-	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
-	// We add the original region w to row_beg, so length_ here also should be
-	// the original
-	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
-	for (Uint row_beg = 0; row_beg < length_; row_beg += m_region.w)
+	bool *data_copy = new bool[length];
+	memcpy(data_copy, data, length);
+	if (m_tx_buf.PushData(unique_ptr<St7735rCmd>(new St7735rFillBools(m_region,
+			color_t, color_f, {data_copy, true}, length))))
 	{
-		for (Uint x = 0; x < w; ++x)
-		{
-			if (data[row_beg + x])
-			{
-				SEND_DATA(color_t >> 8);
-				SEND_DATA(color_t);
-			}
-			else
-			{
-				SEND_DATA(color_f >> 8);
-				SEND_DATA(color_f);
-			}
-		}
+		EnableTx();
+		return;
+	}
+	else
+	{
+		return;
 	}
 }
 
@@ -342,38 +347,18 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 		return;
 	}
 
-	SetActiveRect();
-	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
-	// We add the original region w to row_beg, so length_ here also should be
-	// the original
-	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, bit_length);
-	Uint pos = 0;
-	int bit_pos = 8;
-	for (Uint row_beg = 0; row_beg < length_; row_beg += m_region.w)
+	const size_t size = (bit_length + 7) / 8;
+	Byte *data_copy = new Byte[size];
+	memcpy(data_copy, data, size);
+	if (m_tx_buf.PushData(unique_ptr<St7735rCmd>(new St7735rFillBits(m_region,
+			color_t, color_f, {data_copy, true}, bit_length))))
 	{
-		for (Uint x = 0; x < w; ++x)
-		{
-			if (--bit_pos < 0)
-			{
-				bit_pos = 7;
-				++pos;
-			}
-			if (GET_BIT(data[pos], bit_pos))
-			{
-				SEND_DATA(color_t >> 8);
-				SEND_DATA(color_t);
-			}
-			else
-			{
-				SEND_DATA(color_f >> 8);
-				SEND_DATA(color_f);
-			}
-		}
-
-		bit_pos -= (m_region.w - w) % 8;
-		pos += (m_region.w - w) >> 3; // /8
+		EnableTx();
+		return;
+	}
+	else
+	{
+		return;
 	}
 }
 
@@ -391,13 +376,14 @@ void St7735r::Clear(const uint16_t color)
 
 void St7735r::SetInvertColor(const bool flag)
 {
-	if (flag)
+	if (m_tx_buf.PushData(unique_ptr<St7735rCmd>(new St7735rInvertColor(flag))))
 	{
-		SEND_COMMAND(ST7735R_INVON);
+		EnableTx();
+		return;
 	}
 	else
 	{
-		SEND_COMMAND(ST7735R_INVOFF);
+		return;
 	}
 }
 
@@ -418,10 +404,51 @@ void St7735r::SetActiveRect()
 	SEND_DATA(m_region.y + m_region.h - 1);
 }
 
+void St7735r::SetSendCmd(const bool flag)
+{
+	m_dc.Set(!flag);
+}
+
 inline void St7735r::Send(const bool is_cmd, const uint8_t data)
 {
-	m_dc.Set(!is_cmd);
+	SetSendCmd(is_cmd);
 	m_spi.ExchangeData(0, data);
+}
+
+void St7735r::OnTxComplete(SpiMaster *spi)
+{
+	if (m_data_it >= m_data_size)
+	{
+		// Cache new data
+		unique_ptr<St7735rCmd> *cmd = m_tx_buf.GetActiveData();
+		size_t data_size = 0;
+		while (cmd && (data_size = (*cmd)->GetBytes(m_buf_start, sizeof(m_data),
+				m_data)) == 0)
+		{
+			m_buf_start = 0;
+			Byte cmd_code = (*cmd)->NextCmd();
+			if (cmd_code == ST7735R_NOP)
+			{
+				cmd = m_tx_buf.NextData();
+			}
+			else
+			{
+				Send(true, cmd_code);
+				SetSendCmd(false);
+			}
+		}
+		if (!cmd)
+		{
+			DisableTx();
+			return;
+		}
+
+		m_data_it = 0;
+		m_buf_start += data_size;
+		m_data_size = data_size;
+	}
+
+	m_data_it += spi->PushData(0, m_data + m_data_it, m_data_size - m_data_it);
 }
 
 #else
@@ -440,5 +467,5 @@ void St7735r::Clear(const uint16_t) {}
 
 #endif /* LIBSC_USE_LCD */
 
-
+}
 }

@@ -20,11 +20,13 @@
 
 #include "libsc/config.h"
 #include "libsc/lcd.h"
-#include "libsc/lcd_typewriter.h"
+#include "libsc/next/lcd_typewriter.h"
 
 using namespace std;
 
 namespace libsc
+{
+namespace next
 {
 
 LcdTypewriter::LcdTypewriter(const Config &config)
@@ -279,4 +281,5 @@ const Byte LcdTypewriter::kFontData[1520] =
 	0x00,0x00,0x76,0xDC,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 };
 
+}
 }
