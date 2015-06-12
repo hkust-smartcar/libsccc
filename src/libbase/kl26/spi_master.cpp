@@ -146,5 +146,18 @@ uint16_t SpiMaster:: ExchangeData(const uint8_t, const uint16_t data){
 	return received;
 }
 
+void SpiMaster::KickStart()
+{}
+
+size_t SpiMaster::PushData(const uint8_t, const uint16_t*, const size_t)
+{
+	return 0;
+}
+
+size_t SpiMaster::PushData(const uint8_t, const uint8_t*, const size_t)
+{
+	return 0;
+}
+
 } /* namespace kl26 */
 } /* namespace libbase */
