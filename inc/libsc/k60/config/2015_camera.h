@@ -55,7 +55,7 @@
 #define LIBSC_MOTOR1_PWM libbase::k60::Pin::Name::kPtd0
 #define LIBSC_MOTOR1_DIR libbase::k60::Pin::Name::kPtd1
 
-#define LIBSC_OV77250_VSYNC libbase::k60::Pin::Name::kPte24
+#define LIBSC_OV77250_VSYNC libbase::k60::Pin::Name::kPtb5
 #define LIBSC_OV77250_PCLK libbase::k60::Pin::Name::kPtb3
 #define LIBSC_OV77250_DATA0 libbase::k60::Pin::Name::kPtb16
 #define LIBSC_OV77250_SDA libbase::k60::Pin::Name::kPtc1
