@@ -149,5 +149,18 @@ private:
 	libutil::OwnershipPtr<const Byte[]> m_data;
 };
 
+class St7735rInvertColor : public St7735rCmd
+{
+public:
+	explicit St7735rInvertColor(const bool flag);
+
+	Byte NextCmd() override;
+	size_t GetBytes(const size_t start, const size_t max_size, Byte *out_data) override;
+
+private:
+	bool m_flag;
+	bool m_is_done;
+};
+
 }
 }

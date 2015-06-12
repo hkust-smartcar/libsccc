@@ -376,8 +376,15 @@ void St7735r::Clear(const uint16_t color)
 
 void St7735r::SetInvertColor(const bool flag)
 {
-	// TODO
-	return;
+	if (m_tx_buf.PushData(unique_ptr<St7735rCmd>(new St7735rInvertColor(flag))))
+	{
+		EnableTx();
+		return;
+	}
+	else
+	{
+		return;
+	}
 }
 
 void St7735r::SetActiveRect()

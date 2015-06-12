@@ -213,5 +213,28 @@ uint16_t St7735rFillBits::GetColor(const size_t, const size_t,
 	return GET_BIT(m_data[byte_pos], bit_pos) ? m_color_t : m_color_f;
 }
 
+St7735rInvertColor::St7735rInvertColor(const bool flag)
+		: m_flag(flag),
+		  m_is_done(false)
+{}
+
+Byte St7735rInvertColor::NextCmd()
+{
+	if (!m_is_done)
+	{
+		m_is_done = true;
+		return m_flag ? ST7735R_INVON : ST7735R_INVOFF;
+	}
+	else
+	{
+		return ST7735R_NOP;
+	}
+}
+
+size_t St7735rInvertColor::GetBytes(const size_t, const size_t, Byte*)
+{
+	return 0;
+}
+
 }
 }
