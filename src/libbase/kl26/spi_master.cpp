@@ -123,7 +123,8 @@ SpiMaster::SpiMaster(const Config &config):
 	}
 	MEM_MAPS[m_module]->BR |= (SPI_BR_SPPR(best_sppr) | SPI_BR_SPR(best_spr));
 
-
+	m_tx_isr = config.tx_isr;
+	m_rx_isr = config.rx_isr;
 }
 
 SpiMaster::~SpiMaster() {

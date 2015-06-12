@@ -11,6 +11,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <functional>
+
 #include "libbase/kl26/pin.h"
 #include "libbase/kl26/spi_master_interface.h"
 
@@ -21,8 +23,10 @@ namespace kl26
 
 class SpiMaster: public SpiMasterInterface
 {
-
 public:
+	typedef std::function<void(SpiMaster *spi)> OnTxFillListener;
+	typedef std::function<void(SpiMaster *spi)> OnRxDrainListener;
+
 	struct Config : public SpiMasterInterface::Config
 	{
 		/**
@@ -54,8 +58,8 @@ public:
 		 */
 		bool is_modified_timing = false;
 
-//		OnTxFillListener tx_isr;
-//		OnRxDrainListener rx_isr;
+		OnTxFillListener tx_isr;
+		OnRxDrainListener rx_isr;
 	};
 
 	explicit SpiMaster(const Config &config);
@@ -74,6 +78,15 @@ public:
 	size_t PushData(const uint8_t slave_id, const uint8_t *data,
 			const size_t size) override;
 
+	/**
+	 * Enable Tx/Rx interrupt, by default they are both disabled after
+	 * initialization and require programmer to explicitly enable them
+	 *
+	 * @param flag
+	 */
+	void SetEnableRxIrq(const bool flag);
+	void SetEnableTxIrq(const bool flag);
+
 private:
 	uint8_t m_module;
 
@@ -81,6 +94,9 @@ private:
 	Pin m_sout;
 	Pin m_sck;
 	Pin m_cs[kSlaveCount];
+
+	OnTxFillListener m_tx_isr;
+	OnRxDrainListener m_rx_isr;
 
 	bool m_is_init;
 };
