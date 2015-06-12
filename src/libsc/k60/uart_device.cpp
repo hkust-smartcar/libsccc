@@ -300,15 +300,6 @@ inline Pin::Name GetRxPin(const uint8_t id)
 
 #endif
 
-inline Uart::Config GetUartConfig_(Uart::Config &&config,
-		const Uart::OnTxEmptyListener &tx_isr,
-		const Uart::OnRxFullListener &rx_isr)
-{
-	config.tx_isr = tx_isr;
-	config.rx_isr = rx_isr;
-	return config;
-}
-
 }
 
 Uart::Config UartDevice::Initializer::GetUartConfig() const
@@ -460,7 +451,7 @@ bool UartDevice::SendBuffer(const Byte *buf, const size_t len)
 	Byte *data = new Byte[len];
 	memcpy(data, buf, len);
 
-	if(m_tx_buf->PushBlock(TxBuffer::Block(data, len)))
+	if (m_tx_buf->PushBlock(TxBuffer::Block(data, len)))
 	{
 		EnableTx();
 		return true;
@@ -478,7 +469,7 @@ bool UartDevice::SendBuffer(unique_ptr<Byte[]> &&buf, const size_t len)
 		return true;
 	}
 
-	if(m_tx_buf->PushBlock(TxBuffer::Block(buf.release(), len)))
+	if (m_tx_buf->PushBlock(TxBuffer::Block(buf.release(), len)))
 	{
 		EnableTx();
 		return true;
@@ -496,7 +487,7 @@ bool UartDevice::SendBuffer(vector<Byte> &&buf)
 		return true;
 	}
 
-	if(m_tx_buf->PushBlock(TxBuffer::Block(new vector<Byte>(std::move(buf)))))
+	if (m_tx_buf->PushBlock(TxBuffer::Block(new vector<Byte>(std::move(buf)))))
 	{
 		EnableTx();
 		return true;
