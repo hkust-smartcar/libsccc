@@ -22,7 +22,7 @@
 #define LIBSC_USE_BATTERY_METER 1
 #define LIBSC_USE_LCD 1
 //#define LIBSC_USE_SOFT_ST7735R 1
-#define LIBSC_USE_BUZZER 1
+//#define LIBSC_USE_BUZZER 1
 
 #define LIBSC_MOTOR0_PWM libbase::kl26::Pin::Name::kPta5
 #define LIBSC_MOTOR0_DIR libbase::kl26::Pin::Name::kPta6
@@ -30,12 +30,12 @@
 #define LIBSC_MOTOR1_PWM libbase::kl26::Pin::Name::kPta7
 #define LIBSC_MOTOR1_DIR libbase::kl26::Pin::Name::kPta12
 
-#define LIBSC_ENCODER0_QDA libbase::kl26::Pin::Name::kPtc13
-#define LIBSC_ENCODER0_QDB libbase::kl26::Pin::Name::kPtc17
+#define LIBSC_ENCODER0_QDA libbase::kl26::Pin::Name::kPtc12
+#define LIBSC_ENCODER0_QDB libbase::kl26::Pin::Name::kPtc16
 #define LIBSC_ENCODER0_TPM_MODULE 1
 
-#define LIBSC_ENCODER1_QDA libbase::kl26::Pin::Name::kPtc12
-#define LIBSC_ENCODER1_QDB libbase::kl26::Pin::Name::kPtc16
+#define LIBSC_ENCODER1_QDA libbase::kl26::Pin::Name::kPtc13
+#define LIBSC_ENCODER1_QDB libbase::kl26::Pin::Name::kPtc17
 #define LIBSC_ENCODER1_TPM_MODULE 2
 
 #define LIBSC_JOYSTICK0_UP libbase::kl26::Pin::Name::kPtd0
