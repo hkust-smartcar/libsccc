@@ -19,7 +19,6 @@
 namespace libsc
 {
 
-
 /**
  * Draw text on Lcd. Working only with the Lcd interface, this class is rather
  * hardware independent. Since we have no plan (and largely unnecessary based on
@@ -100,4 +99,3 @@ private:
 };
 
 }
-
