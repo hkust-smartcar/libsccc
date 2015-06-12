@@ -16,6 +16,10 @@
 namespace libutil
 {
 
+/**
+ * A fixed size buffer that would reject adding new data if old data are not
+ * being consumed fast enough
+ */
 template<typename T>
 class FixedCircularBuffer
 {
