@@ -13,6 +13,7 @@
 
 #include <functional>
 
+#include "libbase/kl26/misc_utils.h"
 #include "libbase/kl26/pin.h"
 #include "libbase/kl26/spi_master_interface.h"
 
@@ -69,9 +70,19 @@ private:
 	void InitBrReg(const Config &config);
 	void InitC2Reg(const Config &config);
 	void InitC1Reg(const Config &config);
+	void InitC3Reg(const Config &config);
+	void InitInterrupt(const Config &config);
+	void SetInterrupt(const bool tx_flag, const bool rx_flag);
 	void Uninit();
 
 	void SetEnable(const bool flag);
+
+	size_t PushDirect(const uint8_t slave_id, const uint8_t *data,
+			const size_t size);
+	size_t PushFifo(const uint8_t slave_id, const uint8_t *data,
+			const size_t size);
+
+	static __ISR void IrqHandler();
 
 	uint8_t m_module;
 

@@ -22,10 +22,13 @@
 #include "libbase/kl26/sim.h"
 #include "libbase/kl26/spi_master.h"
 #include "libbase/kl26/spi_utils.h"
+#include "libbase/kl26/vectors.h"
 
 #include "libutil/misc.h"
 
 using namespace libutil;
+
+#define TX_FIFO_SIZE 8
 
 namespace libbase
 {
@@ -58,11 +61,13 @@ SpiMaster::SpiMaster(const Config &config)
 	InitBrReg(config);
 	InitC2Reg(config);
 	InitC1Reg(config);
+	if (m_module == 1)
+	{
+		InitC3Reg(config);
+	}
+	InitInterrupt(config);
 
 	SetEnable(true);
-
-	m_tx_isr = config.tx_isr;
-	m_rx_isr = config.rx_isr;
 }
 
 SpiMaster::SpiMaster(nullptr_t)
@@ -221,6 +226,42 @@ void SpiMaster::InitC1Reg(const Config &config)
 	MEM_MAPS[m_module]->C1 = reg;
 }
 
+void SpiMaster::InitC3Reg(const Config&)
+{
+	uint8_t reg = 0;
+
+	SET_BIT(reg, SPI_C3_FIFOMODE_SHIFT);
+
+	MEM_MAPS[m_module]->C3 = reg;
+}
+
+void SpiMaster::InitInterrupt(const Config &config)
+{
+	m_rx_isr = config.rx_isr;
+	m_tx_isr = config.tx_isr;
+
+	SetInterrupt((bool)m_rx_isr, (bool)m_tx_isr);
+}
+
+void SpiMaster::SetInterrupt(const bool tx_flag, const bool rx_flag)
+{
+	// If we init the interrupt here, Tx isr will be called immediately which
+	// may not be intended
+	SetEnableRxIrq(false);
+	SetEnableTxIrq(false);
+
+	if (tx_flag || rx_flag)
+	{
+		SetIsr(EnumAdvance(SPI0_IRQn, m_module), IrqHandler);
+		EnableIrq(EnumAdvance(SPI0_IRQn, m_module));
+	}
+	else
+	{
+		DisableIrq(EnumAdvance(SPI0_IRQn, m_module));
+		SetIsr(EnumAdvance(SPI0_IRQn, m_module), nullptr);
+	}
+}
+
 void SpiMaster::Uninit()
 {
 	if (m_is_init)
@@ -228,6 +269,7 @@ void SpiMaster::Uninit()
 		m_is_init = false;
 
 		SetEnable(false);
+		SetInterrupt(false, false);
 
 		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0, m_module),
 				false);
@@ -268,24 +310,121 @@ uint16_t SpiMaster::ExchangeData(const uint8_t slave_id, const uint16_t data)
 	return receive;
 }
 
-size_t SpiMaster::PushData(const uint8_t, const uint16_t*, const size_t)
+size_t SpiMaster::PushData(const uint8_t slave_id, const uint16_t *data,
+		const size_t size)
 {
-	return 0;
+	return PushData(slave_id, reinterpret_cast<const uint8_t*>(data), size * 2);
 }
 
-size_t SpiMaster::PushData(const uint8_t, const uint8_t*, const size_t)
+size_t SpiMaster::PushData(const uint8_t slave_id, const uint8_t *data,
+		const size_t size)
 {
-	return 0;
+	STATE_GUARD(SpiMaster, 0);
+	assert((slave_id == 0));
+
+	if (m_module == 0)
+	{
+		return PushDirect(slave_id, data, size);
+	}
+	else
+	{
+		return PushFifo(slave_id, data, size);
+	}
 }
 
-void SpiMaster::SetEnableRxIrq(const bool)
+size_t SpiMaster::PushDirect(const uint8_t, const uint8_t *data,
+		const size_t size)
+{
+	if (GET_BIT(MEM_MAPS[m_module]->S, SPI_S_SPTEF_SHIFT) && size > 0)
+	{
+		MEM_MAPS[m_module]->DH = SPI_DH_Bits(data[0] >> 8);
+		MEM_MAPS[m_module]->DL = SPI_DL_Bits(data[0]);
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+size_t SpiMaster::PushFifo(const uint8_t, const uint8_t *data,
+		const size_t size)
+{
+	size_t push = 0;
+	while (!GET_BIT(MEM_MAPS[m_module]->S, SPI_S_TXFULLF_SHIFT) && push < size)
+	{
+		MEM_MAPS[m_module]->DH = SPI_DH_Bits(data[push] >> 8);
+		MEM_MAPS[m_module]->DL = SPI_DL_Bits(data[push]);
+		++push;
+	}
+	return push;
+}
+
+void SpiMaster::SetEnableRxIrq(const bool flag)
 {
 	STATE_GUARD(SpiMaster, VOID);
+
+	if (flag)
+	{
+		SET_BIT(MEM_MAPS[m_module]->C1, SPI_C1_SPIE_SHIFT);
+	}
+	else
+	{
+		CLEAR_BIT(MEM_MAPS[m_module]->C1, SPI_C1_SPIE_SHIFT);
+	}
 }
 
-void SpiMaster::SetEnableTxIrq(const bool)
+void SpiMaster::SetEnableTxIrq(const bool flag)
 {
 	STATE_GUARD(SpiMaster, VOID);
+
+	if (flag)
+	{
+		SET_BIT(MEM_MAPS[m_module]->C1, SPI_C1_SPTIE_SHIFT);
+	}
+	else
+	{
+		CLEAR_BIT(MEM_MAPS[m_module]->C1, SPI_C1_SPTIE_SHIFT);
+	}
+}
+
+__ISR void SpiMaster::IrqHandler()
+{
+	const int module = GetActiveIrq() - SPI0_IRQn;
+	SpiMaster *const that = g_instances[module];
+	if (!that || !(*that))
+	{
+		// Something wrong?
+		assert(false);
+		that->SetInterrupt(false, false);
+		return;
+	}
+
+	if (GET_BIT(MEM_MAPS[module]->S, SPI_S_SPRF_SHIFT)
+			&& GET_BIT(MEM_MAPS[module]->C1, SPI_C1_SPIE_SHIFT))
+	{
+		if (that->m_rx_isr)
+		{
+			that->m_rx_isr(that);
+		}
+		else
+		{
+			that->SetEnableRxIrq(false);
+		}
+	}
+
+	if (GET_BIT(MEM_MAPS[module]->S, SPI_S_SPTEF_SHIFT)
+			&& GET_BIT(MEM_MAPS[module]->C1, SPI_C1_SPTIE_SHIFT))
+	{
+		if (that->m_tx_isr)
+		{
+			that->m_tx_isr(that);
+		}
+		else
+		{
+			that->SetEnableTxIrq(false);
+		}
+	}
 }
 
 }
