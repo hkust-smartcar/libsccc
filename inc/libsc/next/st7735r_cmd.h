@@ -119,21 +119,6 @@ private:
 	libutil::OwnershipPtr<const uint16_t[]> m_pixel;
 };
 
-class St7735rFillBools : public St7735rDrawCmd
-{
-public:
-	St7735rFillBools(const Lcd::Rect &region, const uint16_t color_t,
-			const uint16_t color_f, libutil::OwnershipPtr<const bool[]> &&data,
-			const size_t length);
-
-	uint16_t GetColor(const size_t y, const size_t x, const size_t pixel_pos) override;
-
-private:
-	uint16_t m_color_t;
-	uint16_t m_color_f;
-	libutil::OwnershipPtr<const bool[]> m_data;
-};
-
 class St7735rFillBits : public St7735rDrawCmd
 {
 public:

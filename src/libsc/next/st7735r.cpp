@@ -329,9 +329,24 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 		return;
 	}
 
-	bool *data_copy = new bool[length];
-	memcpy(data_copy, data, length);
-	if (m_tx_buf.PushData(unique_ptr<St7735rCmd>(new St7735rFillBools(m_region,
+	const size_t size = (length + 7) / 8;
+	Byte *data_copy = new Byte[size];
+	memset(data_copy, 0, size);
+	Uint byte_pos = 0;
+	Uint bit_pos = 0;
+	for (size_t i = 0; i < length; ++i)
+	{
+		if (data[i])
+		{
+			SET_BIT(data_copy[byte_pos], bit_pos);
+		}
+		if (++bit_pos >= 8)
+		{
+			bit_pos = 0;
+			++byte_pos;
+		}
+	}
+	if (m_tx_buf.PushData(unique_ptr<St7735rCmd>(new St7735rFillBits(m_region,
 			color_t, color_f, {data_copy, true}, length))))
 	{
 		EnableTx();
