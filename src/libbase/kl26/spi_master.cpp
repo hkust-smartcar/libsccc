@@ -9,7 +9,6 @@
 #include "libbase/kl26/hardware.h"
 
 #include <cassert>
-#include <climits>
 #include <cstddef>
 #include <cstdint>
 
@@ -56,6 +55,7 @@ SpiMaster::SpiMaster(const Config &config)
 
 	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0, m_module), true);
 	InitPin(config);
+	InitBrReg(config);
 
 /*
  * C1 register
@@ -80,46 +80,6 @@ SpiMaster::SpiMaster(const Config &config)
 //	Enable SPI SS
 	SET_BIT(MEM_MAPS[m_module]->C2,SPI_C2_MODFEN_SHIFT);
 	SET_BIT(MEM_MAPS[m_module]->C1,SPI_C1_SSOE_SHIFT);
-
-/*
- * BR register - Section 37.4.8
- * BaudRateDivisor = (SPPR + 1) * 2^(SPR  +1)
- * BaudRate = SPI Module Clock / BaudRateDivisor
- */
-	uint32_t module_clock = 0;
-	if (m_module == 0)
-	{
-		module_clock = ClockUtils::GetBusClock();
-	}
-	else if (m_module == 1)
-	{
-		module_clock = ClockUtils::GetCoreClock();
-	}
-
-	int diff = INT_MAX;
-	int best_sppr = 0;
-	int best_spr = 0;
-	for (int spr = 0; spr < 9; spr++)
-	{
-		if ((module_clock/(2<<(spr))/(config.baud_rate_khz*1000)) <= 8)
-		{
-			best_spr = spr;
-			break;
-		}
-	}
-	for (int sppr = 0; sppr <8; sppr++)
-	{
-		if (abs((module_clock/((sppr+1) * (2<<best_spr) )) - config.baud_rate_khz*1000) < diff)
-		{
-			best_sppr = sppr;
-			diff = abs((module_clock/((sppr+1) * (2<<best_spr) )) - config.baud_rate_khz*1000);
-			if (diff==0)
-			{
-				break;
-			}
-		}
-	}
-	MEM_MAPS[m_module]->BR |= (SPI_BR_SPPR(best_sppr) | SPI_BR_SPR(best_spr));
 
 	m_tx_isr = config.tx_isr;
 	m_rx_isr = config.rx_isr;
@@ -194,6 +154,53 @@ void SpiMaster::InitPin(const Config &config)
 	cs_config.pin = config.pcs_pin;
 	cs_config.mux = PINOUT::GetSpiPcsMux(config.pcs_pin);
 	m_cs = Pin(cs_config);
+}
+
+void SpiMaster::InitBrReg(const Config &config)
+{
+	// BaudRateDivisor = (SPPR + 1) * 2 ^ (SPR + 1)
+	// BaudRate = SPI Module Clock / BaudRateDivisor
+
+	uint8_t reg = 0;
+
+	uint32_t module_clock = 0;
+	if (m_module == 0)
+	{
+		module_clock = ClockUtils::GetBusClockKhz();
+	}
+	else if (m_module == 1)
+	{
+		module_clock = ClockUtils::GetCoreClockKhz();
+	}
+
+	Uint best_sppr = 0;
+	Uint best_spr = 0;
+	Uint min_diff = static_cast<Uint>(-1);
+	for (Uint spr = 0; spr < 9; ++spr)
+	{
+		for (Uint sppr = 0; sppr < 8; ++sppr)
+		{
+			const Uint divisor = (sppr + 1) * ((2 << spr) + 1);
+			const uint32_t this_baud_rate = module_clock / divisor;
+			const Uint this_diff = abs((int32_t)(this_baud_rate
+					- config.baud_rate_khz));
+			if (this_diff < min_diff)
+			{
+				min_diff = this_diff;
+				best_sppr = sppr;
+				best_spr = spr;
+			}
+
+			if (min_diff == 0)
+			{
+				break;
+			}
+		}
+	}
+	reg |= SPI_BR_SPPR(best_sppr);
+	reg |= SPI_BR_SPR(best_spr);
+
+	MEM_MAPS[m_module]->BR = reg;
 }
 
 uint16_t SpiMaster:: ExchangeData(const uint8_t, const uint16_t data)
