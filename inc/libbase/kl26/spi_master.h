@@ -67,6 +67,10 @@ private:
 	bool InitModule(const Config &config);
 	void InitPin(const Config &config);
 	void InitBrReg(const Config &config);
+	void InitC2Reg(const Config &config);
+	void InitC1Reg(const Config &config);
+
+	void SetEnable(const bool flag);
 
 	uint8_t m_module;
 

@@ -31,7 +31,8 @@ public:
 		Pin::Name pcs_pin;
 
 		/**
-		 * # bits transfered per frame, [4, 16]
+		 * # bits transfered per frame, 8 or 16
+		 * @note Only 8 is currently supported
 		 */
 		uint8_t frame_size = 8;
 		/**

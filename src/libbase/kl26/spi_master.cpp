@@ -56,30 +56,10 @@ SpiMaster::SpiMaster(const Config &config)
 	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0, m_module), true);
 	InitPin(config);
 	InitBrReg(config);
+	InitC2Reg(config);
+	InitC1Reg(config);
 
-/*
- * C1 register
- */
-
-//	Enable SPI system
-//	Set as master mode
-//	Enable interrupt
-	MEM_MAPS[m_module]->C1 |= SPI_C1_SPE_MASK | SPI_C1_SPIE_MASK | SPI_C1_MSTR_MASK;
-
-//	CPHA = 1, First edge on SPSCK occurs at the start of the first cycle of a data transfer.
-	CLEAR_BIT(MEM_MAPS[m_module]->C1,SPI_C1_CPHA_SHIFT);
-//	CPOL = 0, Active-high SPI clock (idles low)
-	SET_BIT(MEM_MAPS[m_module]->C1,SPI_C1_CPOL_SHIFT);
-
-/*
- * C2 register
- */
-// 	Set SPI mode to 8-bit mode
-	CLEAR_BIT(MEM_MAPS[m_module]->C2,SPI_C2_SPIMODE_SHIFT);
-
-//	Enable SPI SS
-	SET_BIT(MEM_MAPS[m_module]->C2,SPI_C2_MODFEN_SHIFT);
-	SET_BIT(MEM_MAPS[m_module]->C1,SPI_C1_SSOE_SHIFT);
+	SetEnable(true);
 
 	m_tx_isr = config.tx_isr;
 	m_rx_isr = config.rx_isr;
@@ -201,6 +181,51 @@ void SpiMaster::InitBrReg(const Config &config)
 	reg |= SPI_BR_SPR(best_spr);
 
 	MEM_MAPS[m_module]->BR = reg;
+}
+
+void SpiMaster::InitC2Reg(const Config &config)
+{
+	uint8_t reg = 0;
+
+	SET_BIT(reg, SPI_C2_MODFEN_SHIFT);
+
+	MEM_MAPS[m_module]->C2 = reg;
+}
+
+void SpiMaster::InitC1Reg(const Config &config)
+{
+	uint8_t reg = 0;
+
+	SET_BIT(reg, SPI_C1_MSTR_SHIFT);
+	if (!config.is_sck_idle_low)
+	{
+		SET_BIT(reg, SPI_C1_CPOL_SHIFT);
+	}
+	if (!config.is_sck_capture_first)
+	{
+		SET_BIT(reg, SPI_C1_CPHA_SHIFT);
+	}
+	SET_BIT(reg, SPI_C1_SSOE_SHIFT);
+	if (!config.is_msb_firt)
+	{
+		SET_BIT(reg, SPI_C1_LSBFE_SHIFT);
+	}
+
+	MEM_MAPS[m_module]->C1 = reg;
+}
+
+void SpiMaster::SetEnable(const bool flag)
+{
+	STATE_GUARD(SpiMaster, VOID);
+
+	if (flag)
+	{
+		SET_BIT(MEM_MAPS[m_module]->C1, SPI_C1_SPE_SHIFT);
+	}
+	else
+	{
+		CLEAR_BIT(MEM_MAPS[m_module]->C1, SPI_C1_SPE_SHIFT);
+	}
 }
 
 uint16_t SpiMaster:: ExchangeData(const uint8_t, const uint16_t data)
