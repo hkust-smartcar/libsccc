@@ -13,6 +13,7 @@
 #include <cstdint>
 
 #include <algorithm>
+#include <functional>
 
 #include "libbase/log.h"
 #include "libbase/k60/clock_utils.h"
@@ -132,7 +133,7 @@ SpiMaster::SpiMaster(const Config &config)
 	InitCtarReg(config);
 	InitInterrupt(config);
 
-	CLEAR_BIT(MEM_MAPS[m_module]->MCR, SPI_MCR_HALT_SHIFT);
+	SetHalt(false);
 }
 
 SpiMaster::SpiMaster(SpiMaster &&rhs)
@@ -413,6 +414,10 @@ void SpiMaster::InitCtarReg(const Config &config)
 	if (!config.is_sck_capture_first)
 	{
 		SET_BIT(reg, SPI_CTAR_CPHA_SHIFT);
+	}
+	if (!config.is_msb_firt)
+	{
+		SET_BIT(reg, SPI_CTAR_LSBFE_SHIFT);
 	}
 
 	MEM_MAPS[m_module]->CTAR[0] = reg;
