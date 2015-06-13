@@ -183,7 +183,7 @@ void SpiMaster::InitBrReg(const Config &config)
 	MEM_MAPS[m_module]->BR = reg;
 }
 
-void SpiMaster::InitC2Reg(const Config &config)
+void SpiMaster::InitC2Reg(const Config&)
 {
 	uint8_t reg = 0;
 
