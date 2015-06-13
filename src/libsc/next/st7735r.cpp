@@ -338,7 +338,7 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 	{
 		if (data[i])
 		{
-			SET_BIT(data_copy[byte_pos], bit_pos);
+			SET_BIT(data_copy[byte_pos], 7 - bit_pos);
 		}
 		if (++bit_pos >= 8)
 		{
