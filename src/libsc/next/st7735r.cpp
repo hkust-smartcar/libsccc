@@ -61,7 +61,11 @@ St7735r::SpiMaster::Config GetSpiConfig(
 	config.is_sck_capture_first = true;
 	config.is_msb_firt = true;
 
+#if MK60D10 || MK60DZ10 || MK60F15
 	config.slaves[0].cs_pin = LIBSC_ST7735R_CS;
+#elif MKL26Z4
+	config.pcs_pin = LIBSC_ST7735R_CS;
+#endif
 
 	config.tx_isr = tx_isr;
 	return config;
@@ -86,7 +90,7 @@ Gpo::Config GetDcConfig()
 }
 
 St7735r::St7735r(const Config &config)
-		: m_tx_buf(14),
+		: m_tx_buf(config.tx_buf_size),
 		  m_is_tx_idle(true),
 		  m_buf_start(0),
 		  m_data_it(0),
@@ -325,9 +329,24 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 		return;
 	}
 
-	bool *data_copy = new bool[length];
-	memcpy(data_copy, data, length);
-	if (m_tx_buf.PushData(unique_ptr<St7735rCmd>(new St7735rFillBools(m_region,
+	const size_t size = (length + 7) / 8;
+	Byte *data_copy = new Byte[size];
+	memset(data_copy, 0, size);
+	Uint byte_pos = 0;
+	Uint bit_pos = 0;
+	for (size_t i = 0; i < length; ++i)
+	{
+		if (data[i])
+		{
+			SET_BIT(data_copy[byte_pos], bit_pos);
+		}
+		if (++bit_pos >= 8)
+		{
+			bit_pos = 0;
+			++byte_pos;
+		}
+	}
+	if (m_tx_buf.PushData(unique_ptr<St7735rCmd>(new St7735rFillBits(m_region,
 			color_t, color_f, {data_copy, true}, length))))
 	{
 		EnableTx();

@@ -180,21 +180,6 @@ uint16_t St7735rFillPixel::GetColor(const size_t, const size_t,
 	return m_pixel[pixel_pos];
 }
 
-St7735rFillBools::St7735rFillBools(const Lcd::Rect &region,
-		const uint16_t color_t, const uint16_t color_f,
-		OwnershipPtr<const bool[]> &&data, const size_t length)
-		: St7735rDrawCmd(region, length),
-		  m_color_t(color_t),
-		  m_color_f(color_f),
-		  m_data(std::move(data))
-{}
-
-uint16_t St7735rFillBools::GetColor(const size_t, const size_t,
-		const size_t pixel_pos)
-{
-	return m_data[pixel_pos] ? m_color_t : m_color_f;
-}
-
 St7735rFillBits::St7735rFillBits(const Lcd::Rect &region,
 		const uint16_t color_t, const uint16_t color_f,
 		OwnershipPtr<const Byte[]> &&data, const size_t bit_length)

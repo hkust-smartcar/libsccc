@@ -16,6 +16,7 @@
 #include "libbase/kl26/adc.h"
 #include "libbase/kl26/pin.h"
 #include "libbase/kl26/pin_utils.h"
+#include "libbase/kl26/spi.h"
 #include "libbase/kl26/tpm.h"
 #include "libbase/kl26/uart.h"
 
@@ -368,6 +369,170 @@ Pin::Config::MuxControl Mkl26z4Lqfp100::GetI2cMux(const Pin::Name pin)
 	{
 		return Pin::Config::MuxControl::kAlt2;
 	}
+}
+
+Spi::MisoName Mkl26z4Lqfp100::GetSpiMiso(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta16:
+	case Pin::Name::kPta17:
+	case Pin::Name::kPtc6:
+	case Pin::Name::kPtc7:
+	case Pin::Name::kPtd2:
+	case Pin::Name::kPtd3:
+	case Pin::Name::kPte18:
+	case Pin::Name::kPte19:
+		return Spi::MisoName::kSpi0Miso;
+
+	case Pin::Name::kPtb16:
+	case Pin::Name::kPtb17:
+	case Pin::Name::kPtd6:
+	case Pin::Name::kPtd7:
+	case Pin::Name::kPte0:
+	case Pin::Name::kPte1:
+	case Pin::Name::kPte3:
+		return Spi::MisoName::kSpi1Miso;
+
+	default:
+		return Spi::MisoName::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mkl26z4Lqfp100::GetSpiMisoMux(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	default:
+		assert(false);
+		// no break
+
+	case Pin::Name::kPta17:
+	case Pin::Name::kPtb17:
+	case Pin::Name::kPtc7:
+	case Pin::Name::kPtd3:
+	case Pin::Name::kPtd7:
+	case Pin::Name::kPte0:
+	case Pin::Name::kPte3:
+	case Pin::Name::kPte19:
+		return Pin::Config::MuxControl::kAlt2;
+
+	case Pin::Name::kPta16:
+	case Pin::Name::kPtb16:
+	case Pin::Name::kPtc6:
+	case Pin::Name::kPtd2:
+	case Pin::Name::kPtd6:
+	case Pin::Name::kPte1:
+	case Pin::Name::kPte18:
+		return Pin::Config::MuxControl::kAlt5;
+	}
+}
+
+Spi::MosiName Mkl26z4Lqfp100::GetSpiMosi(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta16:
+	case Pin::Name::kPta17:
+	case Pin::Name::kPtc6:
+	case Pin::Name::kPtc7:
+	case Pin::Name::kPtd2:
+	case Pin::Name::kPtd3:
+	case Pin::Name::kPte18:
+	case Pin::Name::kPte19:
+		return Spi::MosiName::kSpi0Mosi;
+
+	case Pin::Name::kPtb16:
+	case Pin::Name::kPtb17:
+	case Pin::Name::kPtd6:
+	case Pin::Name::kPtd7:
+	case Pin::Name::kPte1:
+	case Pin::Name::kPte3:
+		return Spi::MosiName::kSpi1Mosi;
+
+	default:
+		return Spi::MosiName::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mkl26z4Lqfp100::GetSpiMosiMux(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	default:
+		assert(false);
+		// no break
+
+	case Pin::Name::kPta16:
+	case Pin::Name::kPtb16:
+	case Pin::Name::kPtc6:
+	case Pin::Name::kPtd2:
+	case Pin::Name::kPtd6:
+	case Pin::Name::kPte1:
+	case Pin::Name::kPte18:
+		return Pin::Config::MuxControl::kAlt2;
+
+	case Pin::Name::kPta17:
+	case Pin::Name::kPtb17:
+	case Pin::Name::kPtc7:
+	case Pin::Name::kPtd3:
+	case Pin::Name::kPtd7:
+	case Pin::Name::kPte3:
+	case Pin::Name::kPte19:
+		return Pin::Config::MuxControl::kAlt5;
+	}
+}
+
+Spi::SckName Mkl26z4Lqfp100::GetSpiSck(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta15:
+	case Pin::Name::kPtc5:
+	case Pin::Name::kPtd1:
+	case Pin::Name::kPte17:
+		return Spi::SckName::kSpi0Sck;
+
+	case Pin::Name::kPtb9:
+	case Pin::Name::kPtb11:
+	case Pin::Name::kPtd5:
+	case Pin::Name::kPte2:
+		return Spi::SckName::kSpi1Sck;
+
+	default:
+		return Spi::SckName::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mkl26z4Lqfp100::GetSpiSckMux(const Pin::Name pin)
+{
+	return Pin::Config::MuxControl::kAlt2;
+}
+
+Spi::PcsName Mkl26z4Lqfp100::GetSpiPcs(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta14:
+	case Pin::Name::kPtc4:
+	case Pin::Name::kPtd0:
+	case Pin::Name::kPte16:
+		return Spi::PcsName::kSpi0Pcs0;
+
+	case Pin::Name::kPtb8:
+	case Pin::Name::kPtb10:
+	case Pin::Name::kPtd4:
+	case Pin::Name::kPte4:
+		return Spi::PcsName::kSpi1Pcs0;
+
+	default:
+		return Spi::PcsName::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mkl26z4Lqfp100::GetSpiPcsMux(const Pin::Name pin)
+{
+	return Pin::Config::MuxControl::kAlt2;
 }
 
 Tpm::Name Mkl26z4Lqfp100::GetTpm(const Pin::Name pin)

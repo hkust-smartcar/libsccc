@@ -55,11 +55,11 @@ Gpo::Config GetSckConfig(const Pin::Name pin, const bool is_sck_idle_low)
 	return config;
 }
 
-Gpo::Config GetCsConfig(const Pin::Name pin, const bool is_active_high)
+Gpo::Config GetCsConfig(const Pin::Name pin)
 {
 	Gpo::Config config;
 	config.pin = pin;
-	config.is_high = (!is_active_high);
+	config.is_high = true;
 	return config;
 }
 
@@ -94,29 +94,16 @@ SoftSpiMaster::SoftSpiMaster(const Config &config)
 		m_sout = Gpo(GetSoutConfig(config.sout_pin));
 	}
 	m_sck = Gpo(GetSckConfig(config.sck_pin, config.is_sck_idle_low));
-
-	for (Uint i = 0; i < kSlaveCount; ++i)
-	{
-		if (config.slaves[i].cs_pin == Pin::Name::kDisable)
-		{
-			break;
-		}
-		m_cs[i] = Gpo(GetCsConfig(config.slaves[i].cs_pin,
-				config.slaves[i].is_active_high));
-	}
+	m_cs = Gpo(GetCsConfig(config.pcs_pin));
 }
 
 uint16_t SoftSpiMaster::ExchangeData(const uint8_t slave_id, const uint16_t data)
 {
 	STATE_GUARD(SoftSpiMaster, 0);
-	if (slave_id >= kSlaveCount || !m_cs[slave_id])
-	{
-		assert(false);
-		return 0;
-	}
+	assert((slave_id == 0));
 
 	uint16_t receive = 0;
-	m_cs[slave_id].Turn();
+	m_cs.Turn();
 	if (!m_is_sck_capture_first)
 	{
 		m_sck.Turn();
@@ -139,12 +126,9 @@ uint16_t SoftSpiMaster::ExchangeData(const uint8_t slave_id, const uint16_t data
 			m_sck.Turn();
 		}
 	}
-	m_cs[slave_id].Turn();
+	m_cs.Turn();
 	return receive;
 }
-
-void SoftSpiMaster::KickStart()
-{}
 
 size_t SoftSpiMaster::PushData(const uint8_t, const uint16_t*, const size_t)
 {
