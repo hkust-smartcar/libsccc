@@ -66,7 +66,9 @@ SpiMaster::SpiMaster(const Config &config)
 }
 
 SpiMaster::~SpiMaster()
-{}
+{
+	Uninit();
+}
 
 bool SpiMaster::InitModule(const Config &config)
 {
@@ -212,6 +214,20 @@ void SpiMaster::InitC1Reg(const Config &config)
 	}
 
 	MEM_MAPS[m_module]->C1 = reg;
+}
+
+void SpiMaster::Uninit()
+{
+	if (m_is_init)
+	{
+		m_is_init = false;
+
+		SetEnable(false);
+
+		Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0, m_module),
+				false);
+		g_instances[m_module] = nullptr;
+	}
 }
 
 void SpiMaster::SetEnable(const bool flag)

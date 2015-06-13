@@ -69,6 +69,7 @@ private:
 	void InitBrReg(const Config &config);
 	void InitC2Reg(const Config &config);
 	void InitC1Reg(const Config &config);
+	void Uninit();
 
 	void SetEnable(const bool flag);
 
