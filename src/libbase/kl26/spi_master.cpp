@@ -8,6 +8,7 @@
 
 #include "libbase/kl26/hardware.h"
 
+#include <cassert>
 #include <climits>
 #include <cstddef>
 #include <cstdint>
@@ -21,6 +22,7 @@
 #include "libbase/kl26/pinout.h"
 #include "libbase/kl26/sim.h"
 #include "libbase/kl26/spi_master.h"
+#include "libbase/kl26/spi_utils.h"
 
 #include "libutil/misc.h"
 
@@ -36,59 +38,24 @@ namespace
 
 constexpr SPI_Type * MEM_MAPS[PINOUT::GetSpiCount()] = {SPI0, SPI1};
 
+SpiMaster* g_instances[PINOUT::GetSpiCount()] = {};
+
 }
 
 SpiMaster::SpiMaster(const Config &config)
-		: m_module(0)
+		: m_is_init(false)
 {
-//	Enable module clock
-	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0,m_module), true);
-
-/*
- * Init pins
- */
-//	int sin_module = -1;
-//	int sout_module = -1;
-//	int sck_module = -1;
-//	int cs_module = -1;
-//	if(config.sin_pin == Pin::Name::kPte0){
-//		sin_module = 1;
-//	}
-
-	if (config.sin_pin != Pin::Name::kDisable)
+	if (!InitModule(config) || g_instances[m_module])
 	{
-		Pin::Config sin_config;
-		sin_config.pin = config.sin_pin;
-		sin_config.mux = Pin::Config::MuxControl::kAlt2;
-		m_sin = Pin(sin_config);
+		assert(false);
+		return;
 	}
 
-	if (config.sout_pin != Pin::Name::kDisable)
-	{
-		Pin::Config sout_config;
-		sout_config.pin = config.sout_pin;
-		sout_config.config.set(Pin::Config::ConfigBit::kPullUp);
-		sout_config.mux = Pin::Config::MuxControl::kAlt2;
-		m_sout = Pin(sout_config);
-	}
+	m_is_init = true;R
+	g_instances[m_module] = this;
 
-	Pin::Config sck_config;
-	sck_config.pin = config.sck_pin;
-	sck_config.config.set(Pin::Config::ConfigBit::kPullUp);
-	sck_config.mux = Pin::Config::MuxControl::kAlt2;
-	m_sck = Pin(sck_config);
-
-	for (Uint i = 0; i < kSlaveCount; ++i)
-	{
-		if (config.slaves[i].cs_pin == Pin::Name::kDisable)
-		{
-			break;
-		}
-		Pin::Config cs_config;
-		cs_config.pin = config.slaves[i].cs_pin;
-		cs_config.mux = Pin::Config::MuxControl::kAlt2;
-		m_cs[i] = Pin(cs_config);
-	}
+	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0, m_module), true);
+	InitPin(config);
 
 /*
  * C1 register
@@ -160,6 +127,74 @@ SpiMaster::SpiMaster(const Config &config)
 
 SpiMaster::~SpiMaster()
 {}
+
+bool SpiMaster::InitModule(const Config &config)
+{
+	const Spi::MisoName miso = PINOUT::GetSpiMiso(config.sin_pin);
+	const int miso_module = (miso != Spi::MisoName::kDisable)
+			? static_cast<int>(miso) : -1;
+
+	const Spi::MosiName mosi = PINOUT::GetSpiMosi(config.sout_pin);
+	const int mosi_module = (mosi != Spi::MosiName::kDisable)
+			? static_cast<int>(mosi) : -1;
+
+	const Spi::SckName sck = PINOUT::GetSpiSck(config.sck_pin);
+	const int sck_module = static_cast<int>(sck);
+
+	const Spi::PcsName pcs = PINOUT::GetSpiPcs(config.pcs_pin);
+	const int pcs_module = SpiUtils::GetSpiModule(pcs);
+
+	if ((miso == Spi::MisoName::kDisable && mosi == Spi::MosiName::kDisable)
+			|| sck == Spi::SckName::kDisable || pcs == Spi::PcsName::kDisable)
+	{
+		return false;
+	}
+	if (miso_module != mosi_module && miso_module != -1 && mosi_module != -1)
+	{
+		return false;
+	}
+	const int module = (miso_module != -1) ? miso_module : mosi_module;
+	if (module == -1)
+	{
+		return false;
+	}
+	if (module != sck_module || module != pcs_module)
+	{
+		return false;
+	}
+
+	m_module = module;
+	return true;
+}
+
+void SpiMaster::InitPin(const Config &config)
+{
+	if (config.sin_pin != Pin::Name::kDisable)
+	{
+		Pin::Config sin_config;
+		sin_config.pin = config.sin_pin;
+		sin_config.mux = PINOUT::GetSpiMisoMux(config.sin_pin);
+		m_sin = Pin(sin_config);
+	}
+
+	if (config.sout_pin != Pin::Name::kDisable)
+	{
+		Pin::Config sout_config;
+		sout_config.pin = config.sout_pin;
+		sout_config.mux = PINOUT::GetSpiMosiMux(config.sout_pin);
+		m_sout = Pin(sout_config);
+	}
+
+	Pin::Config sck_config;
+	sck_config.pin = config.sck_pin;
+	sck_config.mux = PINOUT::GetSpiSckMux(config.sck_pin);
+	m_sck = Pin(sck_config);
+
+	Pin::Config cs_config;
+	cs_config.pin = config.pcs_pin;
+	cs_config.mux = PINOUT::GetSpiPcsMux(config.pcs_pin);
+	m_cs = Pin(cs_config);
+}
 
 uint16_t SpiMaster:: ExchangeData(const uint8_t, const uint16_t data)
 {

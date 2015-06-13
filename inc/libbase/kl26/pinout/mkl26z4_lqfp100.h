@@ -14,6 +14,7 @@
 #include "libbase/kl26/i2c.h"
 #include "libbase/kl26/pin.h"
 #include "libbase/kl26/pinout/mkl26z4_lqfp100_macros.h"
+#include "libbase/kl26/spi.h"
 #include "libbase/kl26/tpm.h"
 #include "libbase/kl26/uart.h"
 #include "libbase/misc_types.h"
@@ -110,6 +111,14 @@ public:
 	static Pin::Config::MuxControl GetUartMux(const Pin::Name pin);
 	static I2c::Name GetI2c(const Pin::Name pin);
 	static Pin::Config::MuxControl GetI2cMux(const Pin::Name pin);
+	static Spi::MisoName GetSpiMiso(const Pin::Name pin);
+	static Pin::Config::MuxControl GetSpiMisoMux(const Pin::Name pin);
+	static Spi::MosiName GetSpiMosi(const Pin::Name pin);
+	static Pin::Config::MuxControl GetSpiMosiMux(const Pin::Name pin);
+	static Spi::SckName GetSpiSck(const Pin::Name pin);
+	static Pin::Config::MuxControl GetSpiSckMux(const Pin::Name pin);
+	static Spi::PcsName GetSpiPcs(const Pin::Name pin);
+	static Pin::Config::MuxControl GetSpiPcsMux(const Pin::Name pin);
 
 private:
 	static constexpr Uint kPinCount = PINOUT_PIN_COUNT;

@@ -88,12 +88,15 @@ public:
 	void SetEnableTxIrq(const bool flag);
 
 private:
+	bool InitModule(const Config &config);
+	void InitPin(const Config &config);
+
 	uint8_t m_module;
 
 	Pin m_sin;
 	Pin m_sout;
 	Pin m_sck;
-	Pin m_cs[kSlaveCount];
+	Pin m_cs;
 
 	OnTxFillListener m_tx_isr;
 	OnRxDrainListener m_rx_isr;
