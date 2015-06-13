@@ -61,7 +61,11 @@ St7735r::SpiMaster::Config GetSpiConfig(
 	config.is_sck_capture_first = true;
 	config.is_msb_firt = true;
 
+#if MK60D10 || MK60DZ10 || MK60F15
 	config.slaves[0].cs_pin = LIBSC_ST7735R_CS;
+#elif MKL26Z4
+	config.pcs_pin = LIBSC_ST7735R_CS;
+#endif
 
 	config.tx_isr = tx_isr;
 	return config;
