@@ -66,10 +66,6 @@ public:
 	 */
 	virtual uint16_t ExchangeData(const uint8_t slave_id, const uint16_t data) = 0;
 
-	/**
-	 * Use with listeners, ensure SPI is enabled and running
-	 */
-	virtual void KickStart() = 0;
 	virtual size_t PushData(const uint8_t slave_id, const uint16_t *data,
 			const size_t size) = 0;
 	virtual size_t PushData(const uint8_t slave_id, const uint8_t *data,

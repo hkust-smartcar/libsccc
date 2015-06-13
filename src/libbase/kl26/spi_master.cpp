@@ -268,9 +268,6 @@ uint16_t SpiMaster::ExchangeData(const uint8_t slave_id, const uint16_t data)
 	return receive;
 }
 
-void SpiMaster::KickStart()
-{}
-
 size_t SpiMaster::PushData(const uint8_t, const uint16_t*, const size_t)
 {
 	return 0;
