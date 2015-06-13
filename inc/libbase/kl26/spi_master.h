@@ -39,6 +39,7 @@ public:
 	};
 
 	explicit SpiMaster(const Config &config);
+	explicit SpiMaster(nullptr_t);
 	~SpiMaster();
 
 	operator bool() const override

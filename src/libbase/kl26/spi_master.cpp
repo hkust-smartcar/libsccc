@@ -65,6 +65,11 @@ SpiMaster::SpiMaster(const Config &config)
 	m_rx_isr = config.rx_isr;
 }
 
+SpiMaster::SpiMaster(nullptr_t)
+		: m_module(0),
+		  m_is_init(false)
+{}
+
 SpiMaster::~SpiMaster()
 {
 	Uninit();
