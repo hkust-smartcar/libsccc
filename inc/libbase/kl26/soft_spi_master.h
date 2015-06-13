@@ -25,8 +25,6 @@ class SoftSpiMaster : public SpiMasterInterface
 public:
 	typedef SpiMasterInterface::Config Config;
 
-	static constexpr Uint kSlaveCount = SpiMasterInterface::kSlaveCount;
-
 	/**
 	 * Construct a new instance. Only the following parameters are supported,
 	 * others will be ignored:
@@ -65,7 +63,7 @@ private:
 	Gpi m_sin;
 	Gpo m_sout;
 	Gpo m_sck;
-	Gpo m_cs[kSlaveCount];
+	Gpo m_cs;
 
 	uint8_t m_frame_size;
 	bool m_is_sck_capture_first;
