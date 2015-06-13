@@ -249,21 +249,23 @@ void SpiMaster::SetEnable(const bool flag)
 	}
 }
 
-uint16_t SpiMaster:: ExchangeData(const uint8_t, const uint16_t data)
+uint16_t SpiMaster::ExchangeData(const uint8_t slave_id, const uint16_t data)
 {
-	uint16_t received;
+	STATE_GUARD(SpiMaster, 0);
+	assert((slave_id == 0));
 
-//	Wait untill SPTEF = 1
-	while(!GET_BIT(MEM_MAPS[m_module]->S,SPI_S_SPTEF_SHIFT));
-//	Remark: in 8 bit mode, DH ignored
-	MEM_MAPS[m_module]->DH = (data & 0xFF00) >> 8;
-	MEM_MAPS[m_module]->DL = data & 0xFF;
+	// Wait until Tx buffer is empty
+	while (!GET_BIT(MEM_MAPS[m_module]->S,SPI_S_SPTEF_SHIFT))
+	{}
+	MEM_MAPS[m_module]->DH = SPI_DH_Bits(data >> 8);
+	MEM_MAPS[m_module]->DL = SPI_DL_Bits(data);
+	// Wait until Tx buffer is empty
+	while (!GET_BIT(MEM_MAPS[m_module]->S,SPI_S_SPTEF_SHIFT))
+	{}
 
-//	Wait till transmitt buffer is empty
-	while(!GET_BIT(MEM_MAPS[m_module]->S,SPI_S_SPTEF_SHIFT));
-//	Remark: in 8 bit mode, DH ignored
-	received = (MEM_MAPS[m_module]->DH << 8) | (MEM_MAPS[m_module]->DL);
-	return received;
+	uint16_t receive = 0;
+	receive = (MEM_MAPS[m_module]->DH << 8) | (MEM_MAPS[m_module]->DL);
+	return receive;
 }
 
 void SpiMaster::KickStart()
