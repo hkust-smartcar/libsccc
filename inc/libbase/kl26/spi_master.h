@@ -33,30 +33,6 @@ public:
 		 * Baud rate hint, the closest possible value will be used
 		 */
 		uint32_t baud_rate_khz;
-		/**
-		 * The PCS to SCK delay is the length of time from assertion of the PCS
-		 * signal to the first SCK edge. Time hint, the closest possible value
-		 * will be used
-		 */
-		uint32_t pcs_to_sck_delay_ns = 0;
-		/**
-		 * The After SCK Delay is the length of time between the last edge of
-		 * SCK and the negation of PCS. Time hint, the closest possible value
-		 * will be used
-		 */
-		uint32_t after_sck_delay_ns = 0;
-		/**
-		 * The Delay after Transfer is the minimum time between negation of the
-		 * PCS signal for a frame and the assertion of the PCS signal for the
-		 * next frame. Time hint, the closest possible value will be used
-		 */
-		uint32_t after_transfer_delay_ns = 0;
-		/**
-		 * To allow for high-speed communication with peripherals that require
-		 * longer setup times. The DSPI can sample the incoming data later than
-		 * halfway through the cycle to give the peripheral more setup time
-		 */
-		bool is_modified_timing = false;
 
 		OnTxFillListener tx_isr;
 		OnRxDrainListener rx_isr;
@@ -90,6 +66,7 @@ public:
 private:
 	bool InitModule(const Config &config);
 	void InitPin(const Config &config);
+	void InitBrReg(const Config &config);
 
 	uint8_t m_module;
 
