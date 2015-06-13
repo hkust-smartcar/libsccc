@@ -41,6 +41,14 @@ public:
 		bool is_bgr = false;
 		/// Frame rate of the screen
 		uint8_t fps = 60;
+
+		/**
+		 * The size of the Tx buffer. Old data will be poped when the buffer
+		 * overflows. Notice that this size is not in bytes, but rather the
+		 * number of Send* calls. Depending on the use case, the actualy buffer
+		 * size in bytes will vary
+		 */
+		uint8_t tx_buf_size = 14;
 	};
 
 	explicit St7735r(const Config &config);

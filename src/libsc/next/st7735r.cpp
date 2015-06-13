@@ -90,7 +90,7 @@ Gpo::Config GetDcConfig()
 }
 
 St7735r::St7735r(const Config &config)
-		: m_tx_buf(14),
+		: m_tx_buf(config.tx_buf_size),
 		  m_is_tx_idle(true),
 		  m_buf_start(0),
 		  m_data_it(0),
