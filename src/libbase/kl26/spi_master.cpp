@@ -50,7 +50,7 @@ SpiMaster::SpiMaster(const Config &config)
 		return;
 	}
 
-	m_is_init = true;R
+	m_is_init = true;
 	g_instances[m_module] = this;
 
 	Sim::SetEnableClockGate(EnumAdvance(Sim::ClockGate::kSpi0, m_module), true);
