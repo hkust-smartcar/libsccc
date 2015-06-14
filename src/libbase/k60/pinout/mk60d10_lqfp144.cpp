@@ -574,6 +574,142 @@ Pin::Config::MuxControl Mk60d10Lqfp144::GetI2cMux(const Pin::Name pin)
 	}
 }
 
+Spi::SinName Mk60f15Lqfp144::GetSpiSin(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta17:
+	case Pin::Name::kPtc7:
+	case Pin::Name::kPtd3:
+		return Spi::SinName::kSpi0Sin;
+
+	case Pin::Name::kPtb17:
+	case Pin::Name::kPte3:
+		return Spi::SinName::kSpi1Sin;
+
+	case Pin::Name::kPtb23:
+	case Pin::Name::kPtd14:
+		return Spi::SinName::kSpi2Sin;
+
+	default:
+		return Spi::SinName::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSinMux(const Pin::Name pin)
+{
+	return Pin::Config::MuxControl::kAlt2;
+}
+
+Spi::SoutName Mk60f15Lqfp144::GetSpiSout(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta16:
+	case Pin::Name::kPtc6:
+	case Pin::Name::kPtd2:
+		return Spi::SoutName::kSpi0Sout;
+
+	case Pin::Name::kPtb16:
+	case Pin::Name::kPte1:
+		return Spi::SoutName::kSpi1Sout;
+
+	case Pin::Name::kPtb22:
+	case Pin::Name::kPtd13:
+		return Spi::SoutName::kSpi2Sout;
+
+	default:
+		return Spi::SoutName::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSoutMux(const Pin::Name pin)
+{
+	return Pin::Config::MuxControl::kAlt2;
+}
+
+Spi::SckName Mk60f15Lqfp144::GetSpiSck(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta15:
+	case Pin::Name::kPtc5:
+	case Pin::Name::kPtd1:
+		return Spi::SckName::kSpi0Sck;
+
+	case Pin::Name::kPtb11:
+	case Pin::Name::kPte2:
+		return Spi::SckName::kSpi1Sck;
+
+	case Pin::Name::kPtb21:
+	case Pin::Name::kPtd12:
+		return Spi::SckName::kSpi2Sck;
+
+	default:
+		return Spi::SckName::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSckMux(const Pin::Name pin)
+{
+	return Pin::Config::MuxControl::kAlt2;
+}
+
+Spi::PcsName Mk60f15Lqfp144::GetSpiPcs(const Pin::Name pin)
+{
+	switch (pin)
+	{
+	case Pin::Name::kPta14:
+	case Pin::Name::kPtc4:
+	case Pin::Name::kPtd0:
+		return Spi::PcsName::kSpi0Pcs0;
+
+	case Pin::Name::kPtc3:
+	case Pin::Name::kPtd4:
+		return Spi::PcsName::kSpi0Pcs1;
+
+	case Pin::Name::kPtc2:
+	case Pin::Name::kPtd5:
+		return Spi::PcsName::kSpi0Pcs2;
+
+	case Pin::Name::kPtc1:
+	case Pin::Name::kPtd6:
+		return Spi::PcsName::kSpi0Pcs3;
+
+	case Pin::Name::kPtc0:
+		return Spi::PcsName::kSpi0Pcs4;
+
+	case Pin::Name::kPtb10:
+	case Pin::Name::kPte4:
+		return Spi::PcsName::kSpi1Pcs0;
+
+	case Pin::Name::kPtb9:
+	case Pin::Name::kPte0:
+		return Spi::PcsName::kSpi1Pcs1;
+
+	case Pin::Name::kPte5:
+		return Spi::PcsName::kSpi1Pcs2;
+
+	case Pin::Name::kPte6:
+		return Spi::PcsName::kSpi1Pcs3;
+
+	case Pin::Name::kPtb20:
+	case Pin::Name::kPtd11:
+		return Spi::PcsName::kSpi2Pcs0;
+
+	case Pin::Name::kPtd15:
+		return Spi::PcsName::kSpi2Pcs1;
+
+	default:
+		return Spi::PcsName::kDisable;
+	}
+}
+
+Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiPcsMux(const Pin::Name pin)
+{
+	return Pin::Config::MuxControl::kAlt2;
+}
+
 uint8_t Mk60d10Lqfp144::GetDmaMuxSource(const DmaMux::Source src, const Uint mux)
 {
 	assert(mux < PINOUT_DMA_MUX_COUNT);
