@@ -854,7 +854,7 @@ Spi::SckName Mk60f15Lqfp144::GetSpiSck(const Pin::Name pin)
 	}
 }
 
-Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSckMux(const Pin::Name pin)
+Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSckMux(const Pin::Name)
 {
 	return Pin::Config::MuxControl::kAlt2;
 }

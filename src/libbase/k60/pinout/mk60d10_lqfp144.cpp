@@ -596,7 +596,7 @@ Spi::SinName Mk60f15Lqfp144::GetSpiSin(const Pin::Name pin)
 	}
 }
 
-Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSinMux(const Pin::Name pin)
+Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSinMux(const Pin::Name)
 {
 	return Pin::Config::MuxControl::kAlt2;
 }
@@ -623,7 +623,7 @@ Spi::SoutName Mk60f15Lqfp144::GetSpiSout(const Pin::Name pin)
 	}
 }
 
-Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSoutMux(const Pin::Name pin)
+Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSoutMux(const Pin::Name)
 {
 	return Pin::Config::MuxControl::kAlt2;
 }
@@ -650,7 +650,7 @@ Spi::SckName Mk60f15Lqfp144::GetSpiSck(const Pin::Name pin)
 	}
 }
 
-Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSckMux(const Pin::Name pin)
+Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSckMux(const Pin::Name)
 {
 	return Pin::Config::MuxControl::kAlt2;
 }
@@ -705,7 +705,7 @@ Spi::PcsName Mk60f15Lqfp144::GetSpiPcs(const Pin::Name pin)
 	}
 }
 
-Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiPcsMux(const Pin::Name pin)
+Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiPcsMux(const Pin::Name)
 {
 	return Pin::Config::MuxControl::kAlt2;
 }
