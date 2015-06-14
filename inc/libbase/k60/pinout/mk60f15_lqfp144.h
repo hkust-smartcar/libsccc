@@ -20,6 +20,7 @@
 #include "libbase/k60/i2c.h"
 #include "libbase/k60/pin.h"
 #include "libbase/k60/pinout/mk60f15_lqfp144_macros.h"
+#include "libbase/k60/spi.h"
 #include "libbase/k60/uart.h"
 #include "libbase/misc_types.h"
 
@@ -133,6 +134,14 @@ public:
 	static Pin::Config::MuxControl GetFtmQdMux(const Pin::Name pin);
 	static I2c::Name GetI2c(const Pin::Name pin);
 	static Pin::Config::MuxControl GetI2cMux(const Pin::Name pin);
+	static Spi::SinName GetSpiSin(const Pin::Name pin);
+	static Pin::Config::MuxControl GetSpiSinMux(const Pin::Name pin);
+	static Spi::SoutName GetSpiSout(const Pin::Name pin);
+	static Pin::Config::MuxControl GetSpiSoutMux(const Pin::Name pin);
+	static Spi::SckName GetSpiSck(const Pin::Name pin);
+	static Pin::Config::MuxControl GetSpiSckMux(const Pin::Name pin);
+	static Spi::PcsName GetSpiPcs(const Pin::Name pin);
+	static Pin::Config::MuxControl GetSpiPcsMux(const Pin::Name pin);
 	/**
 	 * Return the source number for the specific module @a mux, or -1 if @a src
 	 * doesn't exist in the module
