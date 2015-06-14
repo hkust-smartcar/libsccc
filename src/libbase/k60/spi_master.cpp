@@ -188,145 +188,53 @@ SpiMaster& SpiMaster::operator=(SpiMaster &&rhs)
 
 bool SpiMaster::InitModule(const Config &config)
 {
-	int sin_module = -1;
-	switch (config.sin_pin)
-	{
-	case Pin::Name::kPta17:
-	case Pin::Name::kPtc7:
-	case Pin::Name::kPtd3:
-		sin_module = 0;
-		break;
+	const Spi::SinName sin = PINOUT::GetSpiSin(config.sin_pin);
+	const int sin_module = (sin != Spi::SinName::kDisable)
+			? static_cast<int>(sin) : -1;
 
-	case Pin::Name::kPtb17:
-	case Pin::Name::kPte3:
-		sin_module = 1;
-		break;
+	const Spi::SoutName sout = PINOUT::GetSpiSout(config.sout_pin);
+	const int sout_module = (sout != Spi::SoutName::kDisable)
+			? static_cast<int>(sout) : -1;
 
-	case Pin::Name::kPtb23:
-	case Pin::Name::kPtd14:
-		sin_module = 2;
-		break;
+	const Spi::SckName sck = PINOUT::GetSpiSck(config.sck_pin);
+	const int sck_module = static_cast<int>(sck);
 
-	default:
-		break;
-	}
-
-	int sout_module = -1;
-	switch (config.sout_pin)
-	{
-	case Pin::Name::kPta16:
-	case Pin::Name::kPtc6:
-	case Pin::Name::kPtd2:
-		sout_module = 0;
-		break;
-
-	case Pin::Name::kPtb16:
-	case Pin::Name::kPte1:
-		sout_module = 1;
-		break;
-
-	case Pin::Name::kPtb22:
-	case Pin::Name::kPtd13:
-		sout_module = 2;
-		break;
-
-	default:
-		break;
-	}
-
-	int sck_module = -1;
-	switch (config.sck_pin)
-	{
-	case Pin::Name::kPta15:
-	case Pin::Name::kPtc5:
-	case Pin::Name::kPtd1:
-		sck_module = 0;
-		break;
-
-	case Pin::Name::kPtb11:
-	case Pin::Name::kPte2:
-		sck_module = 1;
-		break;
-
-	case Pin::Name::kPtb21:
-	case Pin::Name::kPtd12:
-		sck_module = 2;
-		break;
-
-	default:
-		break;
-	}
-
-	int cs_module = -1;
+	Spi::PcsName pcs = Spi::PcsName::kDisable;
 	for (Uint i = 0; i < kSlaveCount; ++i)
 	{
-		int this_cs_module = -1;
-		switch (config.slaves[i].cs_pin)
-		{
-		case Pin::Name::kPta14:
-		case Pin::Name::kPtc0:
-		case Pin::Name::kPtc1:
-		case Pin::Name::kPtc2:
-		case Pin::Name::kPtc3:
-		case Pin::Name::kPtc4:
-		case Pin::Name::kPtd0:
-		case Pin::Name::kPtd4:
-		case Pin::Name::kPtd5:
-		case Pin::Name::kPtd6:
-			this_cs_module = 0;
-			break;
-
-		case Pin::Name::kPtb9:
-		case Pin::Name::kPtb10:
-		case Pin::Name::kPte0:
-		case Pin::Name::kPte4:
-		case Pin::Name::kPte5:
-		case Pin::Name::kPte6:
-			this_cs_module = 1;
-			break;
-
-		case Pin::Name::kPtb20:
-		case Pin::Name::kPtd11:
-		case Pin::Name::kPtd15:
-			this_cs_module = 2;
-			break;
-
-		case Pin::Name::kDisable:
-			continue;
-
-		default:
-			return false;
-		}
-		if (cs_module != -1 && cs_module != this_cs_module)
+		const Spi::PcsName this_pcs = PINOUT::GetSpiPcs(config.slaves[i].cs_pin);
+		if (pcs != Spi::PcsName::kDisable && this_pcs != pcs)
 		{
 			return false;
 		}
 		else
 		{
-			cs_module = this_cs_module;
+			pcs = this_pcs;
 		}
 	}
+	const int pcs_module = SpiUtils::GetSpiModule(pcs);
 
-	// 3-wire setup
-	if (config.sin_pin == Pin::Name::kDisable)
-	{
-		sin_module = sout_module;
-	}
-	else if (config.sout_pin == Pin::Name::kDisable)
-	{
-		sout_module = sin_module;
-	}
-
-	if (sin_module == sout_module && sout_module == sck_module
-			&& sck_module == cs_module && sin_module != -1)
-	{
-		m_module = sin_module;
-		return true;
-	}
-	else
+	if ((sin == Spi::SinName::kDisable && sout == Spi::SoutName::kDisable)
+			|| sck == Spi::SckName::kDisable || pcs == Spi::PcsName::kDisable)
 	{
 		return false;
 	}
+	if (sin_module != sout_module && sin_module != -1 && sout_module != -1)
+	{
+		return false;
+	}
+	const int module = (sin_module != -1) ? sin_module : sout_module;
+	if (module == -1)
+	{
+		return false;
+	}
+	if (module != sck_module || module != pcs_module)
+	{
+		return false;
+	}
+
+	m_module = sin_module;
+	return true;
 }
 
 void SpiMaster::InitPin(const Config &config)
@@ -335,7 +243,7 @@ void SpiMaster::InitPin(const Config &config)
 	{
 		Pin::Config sin_config;
 		sin_config.pin = config.sin_pin;
-		sin_config.mux = Pin::Config::MuxControl::kAlt2;
+		sin_config.mux = PINOUT::GetSpiSinMux(config.sin_pin);
 		m_sin = Pin(sin_config);
 	}
 
@@ -343,13 +251,13 @@ void SpiMaster::InitPin(const Config &config)
 	{
 		Pin::Config sout_config;
 		sout_config.pin = config.sout_pin;
-		sout_config.mux = Pin::Config::MuxControl::kAlt2;
+		sout_config.mux = PINOUT::GetSpiSoutMux(config.sout_pin);
 		m_sout = Pin(sout_config);
 	}
 
 	Pin::Config sck_config;
 	sck_config.pin = config.sck_pin;
-	sck_config.mux = Pin::Config::MuxControl::kAlt2;
+	sck_config.mux = PINOUT::GetSpiSckMux(config.sck_pin);
 	m_sck = Pin(sck_config);
 
 	for (Uint i = 0; i < kSlaveCount; ++i)
@@ -360,7 +268,7 @@ void SpiMaster::InitPin(const Config &config)
 		}
 		Pin::Config cs_config;
 		cs_config.pin = config.slaves[i].cs_pin;
-		cs_config.mux = Pin::Config::MuxControl::kAlt2;
+		cs_config.mux = PINOUT::GetSpiPcsMux(config.slaves[i].cs_pin);
 		m_cs[i] = Pin(cs_config);
 	}
 }
