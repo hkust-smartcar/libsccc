@@ -96,7 +96,7 @@ Al422b::Al422b(const Config &config)
 		: m_wrst(GetWrstConfig(config.wrst)),
 		  m_do(GetGpiArrayConfig(config.do0)),
 		  m_rck(GetRclkConfig(config.rck)),
-		  m_rrst(GetRclkConfig(config.rrst)),
+		  m_rrst(GetRrstConfig(config.rrst)),
 		  m_data(config.initial_size),
 		  m_it(m_data.end())
 {
