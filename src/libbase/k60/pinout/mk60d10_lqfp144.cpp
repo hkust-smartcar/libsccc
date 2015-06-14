@@ -574,7 +574,7 @@ Pin::Config::MuxControl Mk60d10Lqfp144::GetI2cMux(const Pin::Name pin)
 	}
 }
 
-Spi::SinName Mk60f15Lqfp144::GetSpiSin(const Pin::Name pin)
+Spi::SinName Mk60d10Lqfp144::GetSpiSin(const Pin::Name pin)
 {
 	switch (pin)
 	{
@@ -596,12 +596,12 @@ Spi::SinName Mk60f15Lqfp144::GetSpiSin(const Pin::Name pin)
 	}
 }
 
-Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSinMux(const Pin::Name)
+Pin::Config::MuxControl Mk60d10Lqfp144::GetSpiSinMux(const Pin::Name)
 {
 	return Pin::Config::MuxControl::kAlt2;
 }
 
-Spi::SoutName Mk60f15Lqfp144::GetSpiSout(const Pin::Name pin)
+Spi::SoutName Mk60d10Lqfp144::GetSpiSout(const Pin::Name pin)
 {
 	switch (pin)
 	{
@@ -623,12 +623,12 @@ Spi::SoutName Mk60f15Lqfp144::GetSpiSout(const Pin::Name pin)
 	}
 }
 
-Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSoutMux(const Pin::Name)
+Pin::Config::MuxControl Mk60d10Lqfp144::GetSpiSoutMux(const Pin::Name)
 {
 	return Pin::Config::MuxControl::kAlt2;
 }
 
-Spi::SckName Mk60f15Lqfp144::GetSpiSck(const Pin::Name pin)
+Spi::SckName Mk60d10Lqfp144::GetSpiSck(const Pin::Name pin)
 {
 	switch (pin)
 	{
@@ -650,12 +650,12 @@ Spi::SckName Mk60f15Lqfp144::GetSpiSck(const Pin::Name pin)
 	}
 }
 
-Pin::Config::MuxControl Mk60f15Lqfp144::GetSpiSckMux(const Pin::Name)
+Pin::Config::MuxControl Mk60d10Lqfp144::GetSpiSckMux(const Pin::Name)
 {
 	return Pin::Config::MuxControl::kAlt2;
 }
 
-Spi::PcsName Mk60f15Lqfp144::GetSpiPcs(const Pin::Name pin)
+Spi::PcsName Mk60d10Lqfp144::GetSpiPcs(const Pin::Name pin)
 {
 	switch (pin)
 	{
