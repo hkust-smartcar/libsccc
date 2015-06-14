@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include "libbase/kl26/pinout_macros.h"
-
 namespace libbase
 {
 namespace kl26
