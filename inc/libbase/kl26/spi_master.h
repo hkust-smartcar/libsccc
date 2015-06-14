@@ -41,8 +41,10 @@ public:
 
 	explicit SpiMaster(const Config &config);
 	explicit SpiMaster(nullptr_t);
+	SpiMaster(const SpiMaster&) = delete;
 	~SpiMaster();
 
+	SpiMaster& operator=(const SpiMaster&) = delete;
 	operator bool() const override
 	{
 		return m_is_init;
