@@ -203,6 +203,12 @@ bool SpiMaster::InitModule(const Config &config)
 	for (Uint i = 0; i < kSlaveCount; ++i)
 	{
 		const Spi::PcsName this_pcs = PINOUT::GetSpiPcs(config.slaves[i].cs_pin);
+		if (this_pcs == Spi::PcsName::kDisable)
+		{
+			// Ignore, do nothing
+			continue;
+		}
+
 		if (pcs != Spi::PcsName::kDisable && this_pcs != pcs)
 		{
 			return false;
