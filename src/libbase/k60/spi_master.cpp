@@ -239,7 +239,7 @@ bool SpiMaster::InitModule(const Config &config)
 		return false;
 	}
 
-	m_module = sin_module;
+	m_module = module;
 	return true;
 }
 
