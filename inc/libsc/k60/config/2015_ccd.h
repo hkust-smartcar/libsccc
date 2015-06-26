@@ -12,10 +12,11 @@
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_ENCODER 2
 #define LIBSC_USE_MPU6050 1
+#define LIBSC_USE_MMA8451Q 1
 //#define LIBSC_USE_SOFT_MPU6050 1
 
-#define LIBSC_ENCODER0_QDA libbase::k60::Pin::Name::kPtb18
-#define LIBSC_ENCODER0_QDB libbase::k60::Pin::Name::kPtb19
+#define LIBSC_ENCODER0_QDA libbase::k60::Pin::Name::kPta10
+#define LIBSC_ENCODER0_QDB libbase::k60::Pin::Name::kPta11
 #define LIBSC_ENCODER1_QDA libbase::k60::Pin::Name::kPta8
 #define LIBSC_ENCODER1_QDB libbase::k60::Pin::Name::kPta9
 
