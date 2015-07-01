@@ -11,6 +11,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <cmath>
 
 #include <algorithm>
@@ -152,6 +153,8 @@ Uart::Uart(const Config &config)
 	InitFifo(config);
 	InitInterrupt(config);
 
+	m_rx_buf.reset(new Byte[m_rx_fifo_size]);
+
 	// Enable UART
 	MEM_MAPS[m_module]->C2 |= UART_C2_TE_MASK | UART_C2_RE_MASK;
 }
@@ -199,6 +202,10 @@ Uart& Uart::operator=(Uart &&rhs)
 			m_rx_fifo_size = rhs.m_rx_fifo_size;
 			// Copy instead of move to prevent race condition
 			m_rx_isr = rhs.m_rx_isr;
+
+			// Copy instead of move to prevent race condition
+			m_rx_buf.reset(new Byte[m_rx_fifo_size]);
+			memcpy(m_rx_buf.get(), rhs.m_rx_buf.get(), m_rx_fifo_size);
 
 			m_is_init = true;
 			g_instances[m_module] = this;
@@ -322,6 +329,8 @@ void Uart::Uninit()
 	if (m_is_init)
 	{
 		m_is_init = false;
+
+		m_rx_buf.reset();
 
 		// Disable Tx, Rx and IRQ
 		MEM_MAPS[m_module]->C2 = 0;
@@ -448,38 +457,38 @@ bool Uart::PeekByte(Byte *out_byte) const
 	}
 }
 
-vector<Byte> Uart::GetBytes() const
+const Byte* Uart::GetBytes(size_t *out_size) const
 {
-	STATE_GUARD(Uart, {});
+	STATE_GUARD(Uart, nullptr);
 
-	vector<Byte> data;
-	while (!PeekBytes(&data))
+	while (!PeekBytes(out_size))
 	{}
-	return data;
+	return m_rx_buf.get();
 }
 
-bool Uart::PeekBytes(vector<Byte> *out_bytes) const
+const Byte* Uart::PeekBytes(size_t *out_size) const
 {
-	STATE_GUARD(Uart, false);
+	STATE_GUARD(Uart, nullptr);
 
-	const int size = MEM_MAPS[m_module]->RCFIFO;
+	const uint8_t available = MEM_MAPS[m_module]->RCFIFO;
+	const size_t size = std::min(available, m_rx_fifo_size);
+	*out_size = size;
 	if (size == 0)
 	{
-		return false;
+		return nullptr;
 	}
 
-	out_bytes->resize(size);
-	for (int i = 0; i < size - 1; ++i)
+	for (Uint i = 0; i < size - 1; ++i)
 	{
-		(*out_bytes)[i] = MEM_MAPS[m_module]->D;
+		m_rx_buf[i] = MEM_MAPS[m_module]->D;
 	}
 	// Read S1 to clear RDRF
 	if (GET_BIT(MEM_MAPS[m_module]->S1, UART_S1_RDRF_SHIFT)
 			|| MEM_MAPS[m_module]->RCFIFO > 0)
 	{
-		(*out_bytes)[size - 1] = MEM_MAPS[m_module]->D;
+		m_rx_buf[size - 1] = MEM_MAPS[m_module]->D;
 	}
-	return true;
+	return m_rx_buf.get();
 }
 
 void Uart::SendByte(const Byte byte)
