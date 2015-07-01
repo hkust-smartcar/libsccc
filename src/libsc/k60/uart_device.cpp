@@ -139,7 +139,7 @@ public:
 			kVector,
 		} type;
 		size_t size;
-		volatile uint8_t it;
+		volatile size_t it;
 		bool is_mem_owned;
 	};
 
