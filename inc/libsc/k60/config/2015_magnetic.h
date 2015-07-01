@@ -16,6 +16,7 @@
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_LINEAR_CCD 1
+#define LIBSC_USE_US100 1
 #define LIBSC_USE_I2C 1
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_MAGSEN 6
@@ -23,6 +24,7 @@
 #define LIBSC_USE_UART 1
 #define LIBSC_USE_ENCODER 1
 #define LIBSC_USE_SPI 1
+#define LIBSC_USE_YUANYANG 1
 
 #define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc0Ad5B
 
@@ -52,6 +54,9 @@
 #define LIBSC_ST7735R_CS libbase::k60::Pin::Name::kPte4
 #define LIBSC_ST7735R_SDAT libbase::k60::Pin::Name::kPte1
 #define LIBSC_ST7735R_SCLK libbase::k60::Pin::Name::kPte2
+
+#define LIBSC_US1000_TX libbase::k60::Pin::Name::kPtd9;
+#define LIBSC_US1000_RX libbase::k60::Pin::Name::kPtd8;
 
 #define LIBSC_LED0 libbase::k60::Pin::Name::kPtc4
 #define LIBSC_LED1 libbase::k60::Pin::Name::kPtc5
@@ -90,7 +95,8 @@
 #define LIBSC_SPI0_SOUT libbase::k60::Pin::Name::kPtd13
 #define LIBSC_SPI0_SIN libbase::k60::Pin::Name::kPtd14
 
-#define LIBSC_UART0_TX libbase::k60::Pin::Name::kPta14
-#define LIBSC_UART0_RX libbase::k60::Pin::Name::kPta15
-//#define LIBSC_UART1_TX libbase::k60::Pin::Name::kPte24
-//#define LIBSC_UART1_RX libbase::k60::Pin::Name::kPte25
+#define LIBSC_UART0_TX libbase::k60::Pin::Name::kPta15
+#define LIBSC_UART0_RX libbase::k60::Pin::Name::kPta14
+
+#define LIBSC_YUANYANG_DO libbase::k60::Pin::Name::kPtc13;
+#define LIBSC_YUANYANG_STATE libbase::k60::Pin::Name::kPtc12;

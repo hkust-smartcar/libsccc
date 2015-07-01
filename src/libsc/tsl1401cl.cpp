@@ -73,6 +73,9 @@ inline Pin::Name GetAdPin(const uint8_t id)
 
 	case 1:
 		return LIBSC_LINEAR_CCD1_AD;
+
+//	case 2:
+//		return LIBSC_LINEAR_CCD2_AD;
 	}
 }
 
@@ -89,6 +92,9 @@ inline Pin::Name GetClkPin(const uint8_t id)
 
 	case 1:
 		return LIBSC_LINEAR_CCD1_CLK;
+
+//	case 2:
+//		return LIBSC_LINEAR_CCD2_CLK;
 	}
 }
 
@@ -105,6 +111,9 @@ inline Pin::Name GetSiPin(const uint8_t id)
 
 	case 1:
 		return LIBSC_LINEAR_CCD1_SI;
+
+//	case 2:
+//		return LIBSC_LINEAR_CCD2_SI;
 	}
 }
 
