@@ -139,7 +139,7 @@ public:
 			kVector,
 		} type;
 		size_t size;
-		volatile uint8_t it;
+		volatile size_t it;
 		bool is_mem_owned;
 	};
 
@@ -602,22 +602,22 @@ bool UartDevice::PeekChar(char *out_char)
 
 void UartDevice::OnRxFull(Uart *uart)
 {
-	vector<Byte> bytes;
-	if (!uart->PeekBytes(&bytes))
+	size_t size;
+	const Byte *recv = uart->PeekBytes(&size);
+	if (!recv)
 	{
 		return;
 	}
 
-	if (!m_rx_isr || !m_rx_isr(bytes))
+	if (!m_rx_isr || !m_rx_isr(recv, size))
 	{
-		for (size_t i = 0; i < bytes.size(); ++i)
+		for (size_t i = 0; i < size; ++i)
 		{
 			if (m_rx_buf->GetSize() + 1 >= RX_BUFFER_SIZE)
 			{
 				break;
 			}
-
-			m_rx_buf->data[m_rx_buf->end++ % RX_BUFFER_SIZE] = bytes[i];
+			m_rx_buf->data[m_rx_buf->end++ % RX_BUFFER_SIZE] = recv[i];
 		}
 	}
 }

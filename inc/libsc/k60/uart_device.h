@@ -29,7 +29,8 @@ namespace k60
 class UartDevice
 {
 public:
-	typedef std::function<bool(const std::vector<Byte>&)> OnReceiveListener;
+	typedef std::function<bool(const Byte *data, const size_t size)>
+			OnReceiveListener;
 
 	struct Config
 	{

@@ -1,9 +1,19 @@
+/*
+ * 2015_ccd(2).h
+ *
+ *  Created on: 1 Jun, 2015
+ *      Author: lincoln
+ */
+
 #pragma once
 
 #define LIBSC_USE_BATTERY_METER 1
+
 #define LIBSC_USE_BUTTON 2
 #define LIBSC_USE_BUZZER 1
+
 #define LIBSC_USE_JOYSTICK 1
+
 #define LIBSC_USE_LED 3
 #define LIBSC_USE_MOTOR 2
 //#define LIBSC_USE_SERVO 2
@@ -72,4 +82,3 @@
 
 #define LIBSC_MMA8451Q0_SCL libbase::k60::Pin::Name::kPtb0
 #define LIBSC_MMA8451Q0_SDA libbase::k60::Pin::Name::kPtb1
-
