@@ -42,6 +42,9 @@
 #elif defined(K60_2015_CAMERA)
 #include "libsc/k60/config/2015_camera.h"
 
+#elif defined(K60_2015_CAMERA2)
+#include "libsc/k60/config/2015_camera2.h"
+
 #elif defined(K60_2015_MAGNETIC)
 #include "libsc/k60/config/2015_magnetic.h"
 
