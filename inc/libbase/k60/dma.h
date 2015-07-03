@@ -138,6 +138,15 @@ public:
 		return m_is_init;
 	}
 
+	/**
+	 * Reinit the DMA channel with the new config, among all, the ISRs won't be
+	 * modified. Effective only when IsActive() returns false
+	 *
+	 * @param config
+	 * @return true if successful, false otherwise
+	 */
+	bool Reinit(const Config &config);
+
 	void Start();
 	/**
 	 * Request the DMA engine to stop the transfer ASAP, listener won't be
@@ -154,6 +163,7 @@ public:
 	}
 
 private:
+	void Init(const Config &config);
 	void InitTcdAttrReg(const Config &config);
 	void InitTcdNbytesReg(const Config &config);
 	void InitTcdIterReg(const Config &config);

@@ -134,9 +134,9 @@ void RemoteVarManager::Broadcast(UartDevice *uart)
 	}
 }
 
-bool RemoteVarManager::OnUartReceiveChar(const vector<Byte> &data)
+bool RemoteVarManager::OnUartReceiveChar(const Byte *data, const size_t size)
 {
-	for (size_t i = 0; i < data.size(); ++i)
+	for (size_t i = 0; i < size; ++i)
 	{
 		OnUartReceiveSingleChar(data[i]);
 	}

@@ -13,6 +13,7 @@
 
 #include <bitset>
 #include <functional>
+#include <memory>
 #include <vector>
 
 #include "libbase/k60/dma.h"
@@ -115,8 +116,26 @@ public:
 	uint8_t GetAvailableBytes() const;
 	Byte GetByte() const;
 	bool PeekByte(Byte *out_byte) const;
-	std::vector<Byte> GetBytes() const;
-	bool PeekBytes(std::vector<Byte> *out_bytes) const;
+	/**
+	 * Get 1 or more bytes. Will block until at least 1 byte is received
+	 *
+	 * @param out_size Return the size of the returned array
+	 * @return Data array. The content of the array will only be hold until the
+	 * next read call. The array will no longer be alive after the object is
+	 * destructed
+	 */
+	const Byte* GetBytes(size_t *out_size) const;
+	/**
+	 * Peek 1 or more bytes. If no data is immediately available, nullptr would
+	 * be returned instead
+	 *
+	 * @param out_size Return the size of the returned array, or 0 if nullptr is
+	 * returned
+	 * @return Data array. The content of the array will only be hold until the
+	 * next read call. The array will no longer be alive after the object is
+	 * destructed
+	 */
+	const Byte* PeekBytes(size_t *out_size) const;
 	void SendByte(const Byte byte);
 	bool PutByte(const Byte byte);
 	size_t PutBytes(const Byte *bytes, const size_t size);
@@ -174,6 +193,7 @@ private:
 	static __ISR void IrqHandler();
 
 	uint8_t m_module;
+	std::unique_ptr<Byte[]> m_rx_buf;
 	OnRxFullListener m_rx_isr;
 	OnTxEmptyListener m_tx_isr;
 

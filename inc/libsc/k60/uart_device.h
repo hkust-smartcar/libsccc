@@ -29,7 +29,8 @@ namespace k60
 class UartDevice
 {
 public:
-	typedef std::function<bool(const std::vector<Byte>&)> OnReceiveListener;
+	typedef std::function<bool(const Byte *data, const size_t size)>
+			OnReceiveListener;
 
 	struct Config
 	{
@@ -183,7 +184,6 @@ private:
 	std::unique_ptr<TxBuffer> m_tx_buf;
 	volatile bool m_is_tx_idle;
 
-	uint8_t m_tx_dma_channel;
 	std::unique_ptr<libbase::k60::Dma::Config> m_dma_config;
 	libbase::k60::Dma *m_dma;
 

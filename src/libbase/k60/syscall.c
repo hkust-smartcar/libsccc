@@ -3,6 +3,8 @@
 #include <stdint.h>
 
 #include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/times.h>
 
 #include "libbase/syscall.h"
 
@@ -54,6 +56,16 @@ int _close(int file)
 	return -1;
 }
 
+int _link(const char *oldpath, const char *newpath)
+{
+	return -1;
+}
+
+int _unlink(const char *pathname)
+{
+	return -1;
+}
+
 caddr_t _sbrk(int incr)
 {
 	// Defined by the linker
@@ -82,6 +94,16 @@ int _getpid(void)
 	return 1;
 }
 
+int _times(struct tms *buf)
+{
+	return -1;
+}
+
+int _gettimeofday(struct timeval *p, void *z)
+{
+	return -1;
+}
+
 #undef errno
 int _kill(int pid, int sig)
 {
@@ -101,6 +123,8 @@ void KeepSyscallSymbols(void)
 	v = (void*)_read;
 	v = (void*)_write;
 	v = (void*)_close;
+	v = (void*)_link;
+	v = (void*)_unlink;
 	v = (void*)_sbrk;
 	v = (void*)_getpid;
 	v = (void*)_kill;

@@ -58,41 +58,60 @@ inline Pin::Name GetPin(const uint8_t id)
 
 #endif
 
-Gpi::Config GetGpiConfig(const uint8_t id,
+Gpi::Config GetGpiConfig(const InfraRedSensor::Config &config,
 		const Gpi::OnGpiEventListener &listener)
 {
-	Gpi::Config config;
-	config.pin = GetPin(id);
-	config.config.set(Pin::Config::ConfigBit::kPassiveFilter);
+	Gpi::Config product;
+	product.pin = GetPin(config.id);
+	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
 	if (listener)
 	{
-		config.interrupt = Pin::Config::Interrupt::kRising;
-		config.isr = listener;
+		switch (config.listener_trigger)
+		{
+		default:
+		case InfraRedSensor::Config::Trigger::kEnter:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kFalling
+					: Pin::Config::Interrupt::kRising);
+			break;
+
+		case InfraRedSensor::Config::Trigger::kLeave:
+			product.interrupt = (config.is_active_low
+					? Pin::Config::Interrupt::kRising
+					: Pin::Config::Interrupt::kFalling);
+			break;
+
+		case InfraRedSensor::Config::Trigger::kBoth:
+			product.interrupt = Pin::Config::Interrupt::kBoth;
+			break;
+		}
+		product.isr = listener;
 	}
-	return config;
+	return product;
 }
 
 }
 
 InfraRedSensor::InfraRedSensor(const Config &config)
-		: m_pin(nullptr)
+		: m_pin(nullptr),
+		  m_is_active_low(config.is_active_low)
 {
 	Gpi::OnGpiEventListener listener;
 	if (config.listener)
 	{
 		const uint8_t id = config.id;
-		InfraRedSensor::OnDetectListener ir_listener = config.listener;
+		InfraRedSensor::Listener ir_listener = config.listener;
 		listener = [ir_listener, id](Gpi*)
 				{
 					ir_listener(id);
 				};
 	}
-	m_pin = Gpi(GetGpiConfig(config.id, listener));
+	m_pin = Gpi(GetGpiConfig(config, listener));
 }
 
 bool InfraRedSensor::IsDetected() const
 {
-	return m_pin.Get();
+	return (m_pin.Get() ^ m_is_active_low);
 }
 
 #else

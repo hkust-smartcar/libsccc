@@ -20,7 +20,6 @@
 namespace libsc
 {
 
-
 /**
  * Print text on screen with a managed buffer. Only changed contents are updated
  */

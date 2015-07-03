@@ -73,6 +73,9 @@ inline Pin::Name GetAdPin(const uint8_t id)
 
 	case 1:
 		return LIBSC_LINEAR_CCD1_AD;
+
+//	case 2:
+//		return LIBSC_LINEAR_CCD2_AD;
 	}
 }
 
@@ -89,6 +92,9 @@ inline Pin::Name GetClkPin(const uint8_t id)
 
 	case 1:
 		return LIBSC_LINEAR_CCD1_CLK;
+
+//	case 2:
+//		return LIBSC_LINEAR_CCD2_CLK;
 	}
 }
 
@@ -105,6 +111,9 @@ inline Pin::Name GetSiPin(const uint8_t id)
 
 	case 1:
 		return LIBSC_LINEAR_CCD1_SI;
+
+//	case 2:
+//		return LIBSC_LINEAR_CCD2_SI;
 	}
 }
 
@@ -146,11 +155,19 @@ Tsl1401cl::Tsl1401cl(const uint8_t id)
 
 void Tsl1401cl::Delay()
 {
-	// 50ns under 180MHz
-	for (int i = 0; i < 9; ++i)
+#if defined(MKL26Z4)
+	// 57ns under 70MHz
+	for (int i = 0; i < 4; ++i)
 	{
 		asm("nop");
 	}
+#else
+	// 50ns under 180MHz
+	for (int i = 0; i < 5; ++i)
+	{
+		asm("nop");
+	}
+#endif
 }
 
 void Tsl1401cl::StartSample()
@@ -189,7 +206,7 @@ bool Tsl1401cl::SampleProcess()
 		Delay();
 		m_clk_pin.Set(false);
 		Delay();
-		System::DelayUs(20);
+//		System::DelayUs(20);
 		return true;
 	}
 	else

@@ -15,7 +15,6 @@
 
 #include "libbase/k60/misc_utils.h"
 #include "libbase/k60/pin.h"
-#include "libbase/k60/pinout.h"
 #include "libbase/k60/spi_master_interface.h"
 
 namespace libbase
@@ -85,6 +84,15 @@ public:
 	size_t PushData(const uint8_t slave_id, const uint8_t *data,
 			const size_t size) override;
 
+	/**
+	 * Enable Tx/Rx interrupt, by default they are both disabled after
+	 * initialization and require programmer to explicitly enable them
+	 *
+	 * @param flag
+	 */
+	void SetEnableRxIrq(const bool flag);
+	void SetEnableTxIrq(const bool flag);
+
 	uint8_t GetFrameSize() const
 	{
 		return m_frame_size;
@@ -95,11 +103,13 @@ private:
 	void InitPin(const Config &config);
 	void InitMcrReg(const Config &config);
 	void InitCtarReg(const Config &config);
+	void InitInterrupt(const Config &config);
 	void SetBaudRate(const uint32_t baud_rate_khz, uint32_t *reg);
 	void SetPcsSckDelay(const uint32_t pcs_sck_delay_ns, uint32_t *reg);
 	void SetAfterSckDelay(const uint32_t after_sck_delay_ns, uint32_t *reg);
 	void SetAfterTransferDelay(const uint32_t after_transfer_delay_ns,
 			uint32_t *reg);
+	void SetInterrupt(const bool tx_flag, const bool rx_flag);
 	void Uninit();
 
 	void SetHalt(const bool flag);

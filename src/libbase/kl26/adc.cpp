@@ -260,32 +260,19 @@ void Adc::InitSpeed()
 	int long_sample_time = -1;
 	bool is_high_speed = false;
 
-	switch (m_config.speed)
+	if (m_config.speed > 10000)
 	{
-	case Config::SpeedMode::kExFast:
-		clock_divider = GetClockDivider(20000);
 		is_high_speed = true;
-		break;
-
-	case Config::SpeedMode::kFast:
-		clock_divider = GetClockDivider(12000);
-		is_high_speed = true;
-		break;
-
-	case Config::SpeedMode::kTypical:
-		clock_divider = GetClockDivider(8000);
-		break;
-
-	case Config::SpeedMode::kSlow:
-		clock_divider = GetClockDivider(4000);
-		long_sample_time = 2;
-		break;
-
-	case Config::SpeedMode::kExSlow:
-		clock_divider = GetClockDivider(1000);
-		long_sample_time = 4;
-		break;
 	}
+	else if (m_config.speed < 2000)
+	{
+		long_sample_time = 4;
+	}
+	else if (m_config.speed < 6000)
+	{
+		long_sample_time = 2;
+	}
+	clock_divider = GetClockDivider(m_config.speed);
 
 	MEM_MAPS[module]->CFG1 |= ADC_CFG1_ADIV(std::min<Uint>(clock_divider, 3));
 

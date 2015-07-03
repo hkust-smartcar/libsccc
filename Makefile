@@ -73,7 +73,8 @@ $(info Build = DEBUG)
 
 else ifeq ($(SCCC_BUILD),RELEASE)
 BIN_SUFFIX:=$(BIN_SUFFIX)-r
-#CPPFLAGS+=-DRELEASE=1 -DNDEBUG
+CPPFLAGS+=
+# CPPFLAGS+=-DNDEBUG
 CCFLAGS+=-O3 -g0
 $(info Build = RELEASE)
 
@@ -112,7 +113,7 @@ $(info MCU sub-family = MK60F15)
 
 else ifeq ($(SCCC_MCU),MKL26Z4)
 CPPFLAGS+=-DMKL26Z4=1
-CCFLAGS+=-mthumb -mcpu=cortex-m0plus -march=armv6-m
+CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m0plus -march=armv6-m
 CCFLAGS+=-msoft-float -mfloat-abi=soft
 SCCC_MCU_DIR=kl26
 $(info MCU sub-family = MKL26Z4)

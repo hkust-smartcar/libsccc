@@ -46,24 +46,8 @@ Dma::Dma(const Config &config, const Uint channel)
 	m_channel = channel;
 
 	Stop_();
-
 	m_is_init = true;
-
-	DMA0->TCD[channel].SADDR = DMA_SADDR_SADDR(config.src.addr);
-	DMA0->TCD[channel].SOFF = DMA_SOFF_SOFF(config.src.offset);
-	InitTcdAttrReg(config);
-	InitTcdNbytesReg(config);
-	DMA0->TCD[channel].SLAST = DMA_SLAST_SLAST(config.src.major_offset);
-	DMA0->TCD[channel].DADDR = DMA_DADDR_DADDR(config.dst.addr);
-	DMA0->TCD[channel].DOFF = DMA_DOFF_DOFF(config.dst.offset);
-	DMA0->TCD[channel].DLAST_SGA = DMA_DLAST_SGA_DLASTSGA(
-			config.dst.major_offset);
-	InitTcdCsrReg(config);
-	InitTcdIterReg(config);
-
-	InitEeiReg(config);
-
-	ResetDone();
+	Init(config);
 }
 
 Dma::Dma(Dma &&rhs)
@@ -104,6 +88,25 @@ Dma& Dma::operator=(Dma &&rhs)
 		}
 	}
 	return *this;
+}
+
+void Dma::Init(const Config &config)
+{
+	DMA0->TCD[m_channel].SADDR = DMA_SADDR_SADDR(config.src.addr);
+	DMA0->TCD[m_channel].SOFF = DMA_SOFF_SOFF(config.src.offset);
+	InitTcdAttrReg(config);
+	InitTcdNbytesReg(config);
+	DMA0->TCD[m_channel].SLAST = DMA_SLAST_SLAST(config.src.major_offset);
+	DMA0->TCD[m_channel].DADDR = DMA_DADDR_DADDR(config.dst.addr);
+	DMA0->TCD[m_channel].DOFF = DMA_DOFF_DOFF(config.dst.offset);
+	DMA0->TCD[m_channel].DLAST_SGA = DMA_DLAST_SGA_DLASTSGA(
+			config.dst.major_offset);
+	InitTcdCsrReg(config);
+	InitTcdIterReg(config);
+
+	InitEeiReg(config);
+
+	ResetDone();
 }
 
 void Dma::InitTcdAttrReg(const Config &config)
@@ -189,6 +192,19 @@ void Dma::InitEeiReg(const Config &config)
 	else
 	{
 		DMA0->CEEI = DMA_CEEI_CEEI(m_channel);
+	}
+}
+
+bool Dma::Reinit(const Config &config)
+{
+	if (!IsActive())
+	{
+		Init(config);
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 

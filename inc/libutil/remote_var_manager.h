@@ -121,7 +121,7 @@ public:
 	 * @param data
 	 * @return true
 	 */
-	bool OnUartReceiveChar(const std::vector<Byte> &data);
+	bool OnUartReceiveChar(const Byte *data, const size_t size);
 	bool OnUartReceiveSingleChar(const Byte data);
 
 private:
