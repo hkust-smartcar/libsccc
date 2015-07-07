@@ -88,7 +88,7 @@ void ScStudio::SendGraph(const uint8_t id, const int32_t value)
 	SendRaw(MessageToken::kGraph, sizeof(data), data);
 }
 
-void ScStudio::SendGraph(const uint8_t id, const float value)
+void ScStudio::SendGraphF(const uint8_t id, const float value)
 {
 	Byte data[6];
 	data[0] = id;
