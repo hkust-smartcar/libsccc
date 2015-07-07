@@ -44,6 +44,30 @@ enum struct GraphType
 namespace libutil
 {
 
+ScStudio::GraphPack::GraphPack(const size_t count)
+		: m_count(count),
+		  m_data(new Byte[count * 6]),
+		  m_it(m_data.get())
+{}
+
+void ScStudio::GraphPack::Pack(const uint8_t id, const int32_t value)
+{
+	*m_it++ = id;
+	*m_it++ = static_cast<int>(GraphType::kInt);
+	const uint32_t value_ = EndianUtils::HostToBe((uint32_t)value);
+	memcpy(m_it, &value_, 4);
+	m_it += 4;
+}
+
+void ScStudio::GraphPack::PackF(const uint8_t id, const float value)
+{
+	*m_it++ = id;
+	*m_it++ = static_cast<int>(GraphType::kFloat);
+	const uint32_t value_ = EndianUtils::HostToBe(*(const uint32_t*)&value);
+	memcpy(m_it, &value_, 4);
+	m_it += 4;
+}
+
 ScStudio::ScStudio()
 		: m_uart(nullptr)
 {
@@ -96,6 +120,11 @@ void ScStudio::SendGraphF(const uint8_t id, const float value)
 	const uint32_t value_ = EndianUtils::HostToBe(*(const uint32_t*)&value);
 	memcpy(data + 2, &value_, 4);
 	SendRaw(MessageToken::kGraph, sizeof(data), data);
+}
+
+void ScStudio::SendGraph(const GraphPack &pack)
+{
+	SendRaw(MessageToken::kGraph, 6 * pack.GetCount(), pack.GetData());
 }
 
 void ScStudio::SendRaw(const MessageToken token, const uint32_t size,

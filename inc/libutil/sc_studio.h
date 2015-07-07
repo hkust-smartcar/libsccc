@@ -13,6 +13,7 @@
 
 #include <array>
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -29,6 +30,30 @@ namespace libutil
 class ScStudio
 {
 public:
+	class GraphPack
+	{
+	public:
+		explicit GraphPack(const size_t count);
+
+		void Pack(const uint8_t id, const int32_t value);
+		void PackF(const uint8_t id, const float value);
+
+		size_t GetCount() const
+		{
+			return m_count;
+		}
+
+		const Byte* GetData() const
+		{
+			return m_data.get();
+		}
+
+	private:
+		size_t m_count;
+		std::unique_ptr<Byte[]> m_data;
+		Byte *m_it;
+	};
+
 	enum struct MessageToken
 	{
 		kNull = -1,
@@ -65,6 +90,7 @@ public:
 	void SendCamera(const Byte *data, const size_t size);
 	void SendGraph(const uint8_t id, const int32_t value);
 	void SendGraphF(const uint8_t id, const float value);
+	void SendGraph(const GraphPack &pack);
 
 private:
 	bool OnRx(const Byte *data, const size_t size);
