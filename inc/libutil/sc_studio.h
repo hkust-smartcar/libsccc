@@ -75,8 +75,12 @@ public:
 
 	LIBSC_MODULE(UartDevice)::OnReceiveListener GetUartListener()
 	{
+#if MK60DZ10 || MK60D10 || MK60F15
 		return std::bind(&ScStudio::OnRx, this, std::placeholders::_1,
 				std::placeholders::_2);
+#elif MKL26Z4
+		return std::bind(&ScStudio::OnRx1, this, std::placeholders::_1);
+#endif
 	}
 
 	void SendString(const char *str, const size_t size);
@@ -94,6 +98,10 @@ public:
 
 private:
 	bool OnRx(const Byte *data, const size_t size);
+	bool OnRx1(const Byte data)
+	{
+		return OnRx(&data, 1);
+	}
 
 	void OnNewMessage();
 
