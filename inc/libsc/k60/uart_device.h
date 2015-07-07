@@ -141,6 +141,8 @@ public:
 		m_uart.SetLoopMode(flag);
 	}
 
+	void SetRxIsr(const OnReceiveListener &l);
+
 protected:
 	/**
 	 * Use to initialize the UartDevice in possibly a polymorphic way, notice
@@ -164,6 +166,8 @@ private:
 	struct RxBuffer;
 	class TxBuffer;
 
+	inline void EnableRx();
+	inline void DisableRx();
 	inline void EnableTx();
 	inline void DisableTx();
 	inline bool IsUseDma();

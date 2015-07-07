@@ -347,7 +347,7 @@ UartDevice::UartDevice(const Initializer &initializer)
 		m_dma = DmaManager::New(*m_dma_config, initializer.config.tx_dma_channel);
 	}
 
-	m_uart.SetEnableRxIrq(true);
+	EnableRx();
 }
 
 UartDevice::~UartDevice()
@@ -356,6 +356,17 @@ UartDevice::~UartDevice()
 	{
 		DmaManager::Delete(m_dma);
 	}
+	DisableRx();
+}
+
+inline void UartDevice::EnableRx()
+{
+	m_uart.SetEnableRxIrq(true);
+}
+
+inline void UartDevice::DisableRx()
+{
+	m_uart.SetEnableRxIrq(false);
 }
 
 inline void UartDevice::EnableTx()
@@ -600,6 +611,13 @@ bool UartDevice::PeekChar(char *out_char)
 	return true;
 }
 
+void UartDevice::SetRxIsr(const OnReceiveListener &l)
+{
+	DisableRx();
+	m_rx_isr = l;
+	EnableRx();
+}
+
 void UartDevice::OnRxFull(Uart *uart)
 {
 	size_t size;
@@ -646,6 +664,7 @@ bool UartDevice::SendBuffer(const Byte*, const size_t) { return false; }
 bool UartDevice::SendBuffer(unique_ptr<Byte[]>&&, const size_t) { return false; }
 bool UartDevice::SendBuffer(vector<Byte>&&) { return false; }
 bool UartDevice::PeekChar(char*) { return false; }
+void UartDevice::SetRxIsr(const OnReceiveListener&) {}
 
 #endif /* LIBSC_USE_UART */
 
