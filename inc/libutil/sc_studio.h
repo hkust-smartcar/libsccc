@@ -36,6 +36,7 @@ public:
 		kString,
 		kCcdData,
 		kCamera,
+		kGraph,
 
 		kSize
 	};
@@ -62,6 +63,8 @@ public:
 	void SendCcdData(const uint8_t id,
 			const std::array<uint16_t, libsc::Tsl1401cl::kSensorW> &data);
 	void SendCamera(const Byte *data, const size_t size);
+	void SendGraph(const uint8_t id, const int32_t value);
+	void SendGraph(const uint8_t id, const float value);
 
 private:
 	bool OnRx(const Byte *data, const size_t size);

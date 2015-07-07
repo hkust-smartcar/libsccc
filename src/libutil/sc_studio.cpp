@@ -22,12 +22,24 @@
 
 #include "libsc/tsl1401cl.h"
 #include LIBSC_H(uart_device)
+#include "libutil/endian_utils.h"
 #include "libutil/sc_studio.h"
 
 using namespace LIBBASE_NS;
 using namespace libsc;
 using namespace LIBSC_NS;
 using namespace std;
+
+namespace
+{
+
+enum struct GraphType
+{
+	kInt = 0,
+	kFloat,
+};
+
+}
 
 namespace libutil
 {
@@ -64,6 +76,26 @@ void ScStudio::SendCamera(const Byte *data, const size_t size)
 {
 	assert(size == 80 * 60 / 8);
 	SendRaw(MessageToken::kCamera, size, data);
+}
+
+void ScStudio::SendGraph(const uint8_t id, const int32_t value)
+{
+	Byte data[6];
+	data[0] = id;
+	data[1] = static_cast<int>(GraphType::kInt);
+	const uint32_t value_ = EndianUtils::HostToBe((uint32_t)value);
+	memcpy(data + 2, &value_, 4);
+	SendRaw(MessageToken::kGraph, sizeof(data), data);
+}
+
+void ScStudio::SendGraph(const uint8_t id, const float value)
+{
+	Byte data[6];
+	data[0] = id;
+	data[1] = static_cast<int>(GraphType::kFloat);
+	const uint32_t value_ = EndianUtils::HostToBe(*(const uint32_t*)&value);
+	memcpy(data + 2, &value_, 4);
+	SendRaw(MessageToken::kGraph, sizeof(data), data);
 }
 
 void ScStudio::SendRaw(const MessageToken token, const uint32_t size,
