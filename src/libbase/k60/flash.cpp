@@ -8,6 +8,11 @@
 
 #include "libbase/k60/flash.h"
 
+namespace libbase
+{
+namespace k60
+{
+
 #ifdef MK60F15_H_
 
 Flash::Flash(Config config)
@@ -144,3 +149,6 @@ Flash::FlashStatus Flash::Program(const uint32_t FlashTargetAddr, void *source, 
 }
 
 #endif
+
+}
+}
