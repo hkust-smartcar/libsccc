@@ -95,8 +95,8 @@
 #define LIBSC_SPI0_SOUT libbase::k60::Pin::Name::kPtd13
 #define LIBSC_SPI0_SIN libbase::k60::Pin::Name::kPtd14
 
-#define LIBSC_UART0_TX libbase::k60::Pin::Name::kPta15
-#define LIBSC_UART0_RX libbase::k60::Pin::Name::kPta14
+#define LIBSC_UART0_TX libbase::k60::Pin::Name::kPta14
+#define LIBSC_UART0_RX libbase::k60::Pin::Name::kPta15
 
 #define LIBSC_YUANYANG_DO libbase::k60::Pin::Name::kPtc13;
 #define LIBSC_YUANYANG_STATE libbase::k60::Pin::Name::kPtc12;
