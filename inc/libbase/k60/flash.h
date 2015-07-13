@@ -77,8 +77,11 @@ private:
 	inline void WaitForFlashCmdComplete(void);
 	FlashStatus ExecuteCmd(void);
 
-	FlashStatus EraseSector(const uint32_t FlashTargetAddr);
 	FlashStatus Program(const uint32_t FlashTargetAddr, void *source, size_t sizeOfBytes);
+
+protected:
+
+	FlashStatus EraseSector(const uint32_t FlashTargetAddr);
 
 };
 

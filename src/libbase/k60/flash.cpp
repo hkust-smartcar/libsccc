@@ -21,7 +21,7 @@ Flash::Flash(Config config)
 	m_maxSize(0)
 {
 	if (config.sectorStartIndex < MinSectorIndex &&
-		config.sectorStartIndex + config.size / 0x800 > MaxSectorsCount)
+		(uint16_t)config.sectorStartIndex + (uint16_t)config.size / 0x800 > (uint16_t)MaxSectorsCount)
 		assert(false);
 
 	m_startAddr = config.sectorStartIndex * 0x800;
