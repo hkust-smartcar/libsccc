@@ -12,12 +12,13 @@
 #include <cassert>
 #include <stddef.h>
 #include <libbase/k60/cmsis/mk60f15.h>
-//MK60F15_H_
 
 namespace libbase
 {
 namespace k60
 {
+
+#if MK60F15
 
 class Flash
 {
@@ -84,6 +85,8 @@ protected:
 	FlashStatus EraseSector(const uint32_t FlashTargetAddr);
 
 };
+
+#endif
 
 }
 }

@@ -13,7 +13,7 @@ namespace libbase
 namespace k60
 {
 
-#ifdef MK60F15_H_
+#if MK60F15
 
 Flash::Flash(Config config)
 :
