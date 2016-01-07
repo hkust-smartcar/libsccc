@@ -89,6 +89,12 @@ CPPFLAGS+=-DK60_2015_CCD_GEN2=1
 SCCC_MCU=MK60F15
 $(info Config = 2015_CCD_GEN2)
 
+else ifeq ($(SCCC_CONFIG),2015_INNO)
+BIN_SUFFIX:=$(BIN_SUFFIX)-2015-inno
+CPPFLAGS+=-DK60_2015_INNO=1
+SCCC_MCU=MK60F15
+$(info Config = 2015_INNO)
+
 else
 $(error Missing/Unknown config '$(SCCC_CONFIG)' (set SCCC_CONFIG))
 
