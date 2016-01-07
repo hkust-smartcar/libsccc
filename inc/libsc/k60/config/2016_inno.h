@@ -8,7 +8,7 @@
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 2
-#define LIBSC_USE_LINEAR_CCD 1
+#define LIBSC_USE_LINEAR_CCD 2
 #define LIBSC_USE_OV7725 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
@@ -57,6 +57,13 @@
 #define LIBSC_MOTOR1_PWMB libbase::k60::Pin::Name::kPtd3
 #define LIBSC_MOTOR1_DEADTIME 1000
 #define LIBSC_ALTERNATE_MOTOR_CW_PWM 1
+
+#define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtb7
+#define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPtb10
+#define LIBSC_LINEAR_CCD0_AD libbase::k60::Pin::Name::kPtb4
+#define LIBSC_LINEAR_CCD1_SI libbase::k60::Pin::Name::kPta28
+#define LIBSC_LINEAR_CCD1_CLK libbase::k60::Pin::Name::kPtb2
+#define LIBSC_LINEAR_CCD1_AD libbase::k60::Pin::Name::kPtb3
 
 #define LIBSC_OV77250_VSYNC libbase::k60::Pin::Name::kPtc2
 #define LIBSC_OV77250_PCLK libbase::k60::Pin::Name::kPtb6
