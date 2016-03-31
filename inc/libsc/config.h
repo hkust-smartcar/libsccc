@@ -66,6 +66,9 @@
 #elif defined(K60_2016_INNO)
 #include "libsc/k60/config/2016_inno.h"
 
+#elif defined(K60_2016_CCD)
+#include "libsc/k60/config/2016_ccd.h"
+
 #else
 #error Unknown board
 
