@@ -57,6 +57,8 @@ public:
 
 	bool Update(bool clamp_ = true);
 
+	bool rUpdate(bool clamp_ = true);
+	
 	const std::array<float, 3>& GetAccel() const
 	{
 		return m_accel;
@@ -65,6 +67,16 @@ public:
 	const std::array<float, 3>& GetOmega() const
 	{
 		return m_omega;
+	}
+	
+	const std::array<int16_t, 3>& GetrAccel() const
+	{
+		return r_accel;
+	}
+
+	const std::array<int16_t, 3>& GetrOmega() const
+	{
+		return r_omega;
 	}
 
 	float GetCelsius() const
@@ -104,6 +116,9 @@ private:
 
 	Config::Range m_gyro_range;
 	Config::Range m_accel_range;
+	
+	std::array<int16_t, 3> r_accel;
+	std::array<int16_t, 3> r_omega;
 };
 
 }

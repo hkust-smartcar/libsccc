@@ -12,6 +12,8 @@
 #define LIBSC_USE_OV7725 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
+#define LIBSC_USE_MPU6050 1
+#define LIBSC_USE_MMA8451Q 1
 
 #define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc3Ad6A
 
@@ -76,3 +78,9 @@
 
 #define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtd7
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtd6
+
+#define LIBSC_MPU6050_SCL libbase::k60::Pin::Name::kPtb0;
+#define LIBSC_MPU6050_SDA libbase::k60::Pin::Name::kPtb1;
+
+#define LIBSC_MMA8451Q0_SCL libbase::k60::Pin::Name::kPtc10;
+#define LIBSC_MMA8451Q0_SDA libbase::k60::Pin::Name::kPtc11; 
