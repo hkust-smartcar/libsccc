@@ -226,22 +226,36 @@ bool Mpu6050::Update(const bool clamp_)
 		}
 	}
 	return true;
-//	const vector<Byte> &data = m_i2c->GetBytes(MPU6050_DEFAULT_ADDRESS,
-//			MPU6050_RA_GYRO_YOUT_H, 2);
-//	if (data.empty())
-//	{
-//		return false;
-//	}
-//
-//	int16_t raw_gyro[3]={0};
-//
-//
-//	raw_gyro[1] = (data[0] << 8) | data[1];
-//	m_omega[1] = (float)raw_gyro[1] / GetGyroScaleFactor();
-//	m_omega[1] -= m_omega_offset[1];
-//	if(clamp_) m_omega[1] = abs(m_omega[1]) < 1.0f ? 0.0f : m_omega[1];
-//
-//	return true;
+}
+
+bool Mpu6050::rUpdate(const bool clamp_)
+{
+	const vector<Byte> &data = m_i2c->GetBytes(MPU6050_DEFAULT_ADDRESS,
+			MPU6050_RA_ACCEL_XOUT_H, 14);
+	if (data.empty())
+	{
+		return false;
+	}
+
+	for (size_t i = 0; i < data.size(); i += 2)
+	{
+		if (i <= 5)
+		{
+			const int j = i / 2;
+			r_accel[j] = (data[i] << 8) | data[i + 1];
+		}
+		else if (i == 6)
+		{
+			const int16_t raw_temp = (data[i] << 8) | data[i + 1];
+			m_temp = (float)raw_temp / 340 + 36.53;
+		}
+		else
+		{
+			const int j = (i - 8) / 2;
+			r_omega[j] = (data[i] << 8) | data[i + 1];
+		}
+	}
+	return true;
 }
 
 #else
@@ -253,6 +267,7 @@ Mpu6050::Mpu6050(const Config&)
 	LOG_DL("Configured not to use Mpu6050");
 }
 bool Mpu6050::Update(const bool) { return false; }
+bool Mpu6050::rUpdate(const bool) { return false; }
 
 #endif /* LIBSC_USE_MPU6050 */
 
