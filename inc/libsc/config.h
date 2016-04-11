@@ -69,6 +69,9 @@
 #elif defined(K60_2016_CCD)
 #include "libsc/k60/config/2016_ccd.h"
 
+#elif defined(K60_2016_CAMERA)
+#include "libsc/k60/config/2016_camera.h"
+
 #else
 #error Unknown board
 
