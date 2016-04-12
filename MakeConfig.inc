@@ -107,6 +107,12 @@ CPPFLAGS+=-DK60_2016_CAMERA=1
 SCCC_MCU=MK60F15
 $(info Config = 2016_CAMERA)
 
+else ifeq ($(SCCC_CONFIG),2016_RAIL)
+BIN_SUFFIX:=$(BIN_SUFFIX)-2016-rail
+CPPFLAGS+=-DK60_2016_RAIL=1
+SCCC_MCU=MK60F15
+$(info Config = 2016_RAIL)
+
 else
 $(error Missing/Unknown config '$(SCCC_CONFIG)' (set SCCC_CONFIG))
 
