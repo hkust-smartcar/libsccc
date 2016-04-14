@@ -43,7 +43,7 @@
 #define LIBSC_LED2 libbase::k60::Pin::Name::kPte10
 #define LIBSC_LED3 libbase::k60::Pin::Name::kPte9
 
-#define LIBSC_MOTOR0_PWM libbase::k60::Pin::Name::kPtd4
+#define LIBSC_MOTOR0_PWM libbase::k60::Pin::Name::kPtb0
 #define LIBSC_MOTOR0_DIR libbase::k60::Pin::Name::kPtd5
 //#define LIBSC_MOTOR1_PWM libbase::k60::Pin::Name::kPtd2
 //#define LIBSC_MOTOR1_DIR libbase::k60::Pin::Name::kPtd3
