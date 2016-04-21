@@ -27,8 +27,8 @@
 #define LIBSC_ENCODER1_QDB libbase::k60::Pin::Name::kPta13
 
 #define LIBSC_JOYSTICK0_UP libbase::k60::Pin::Name::kPtc8
-#define LIBSC_JOYSTICK0_DOWN libbase::k60::Pin::Name::kPtc5
-#define LIBSC_JOYSTICK0_LEFT libbase::k60::Pin::Name::kPtc4
+#define LIBSC_JOYSTICK0_DOWN libbase::k60::Pin::Name::kPtc4
+#define LIBSC_JOYSTICK0_LEFT libbase::k60::Pin::Name::kPtc5
 #define LIBSC_JOYSTICK0_RIGHT libbase::k60::Pin::Name::kPtc6
 #define LIBSC_JOYSTICK0_SELECT libbase::k60::Pin::Name::kPtc7
 
