@@ -17,6 +17,10 @@
 
 namespace libsc {
 
+/**
+ * add "#define LIBSC_PASSSIVE_BUZZER0_PIT_CHANNEL 1" && "#define LIBSC_USE_PASSIVE_BUZZER 1" to config file
+ * to use passive buzzer
+ */
 class PassiveBuzzer {
 public:
 

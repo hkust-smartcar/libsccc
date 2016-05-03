@@ -58,7 +58,7 @@ PassiveBuzzer::PassiveBuzzer(const Config &config) :
 
 void PassiveBuzzer::SetNote(const uint32_t note) {
 
-	if (note == m_note) {return;}
+	if (note == m_note) return;
 
 	m_note = note;
 	m_pwm.SetPeriod(PwmUtils::GetPeriodUs(m_note),PwmUtils::GetPosWidth(PwmUtils::GetPeriodUs(m_note), m_duty_cycle));
@@ -67,7 +67,7 @@ void PassiveBuzzer::SetNote(const uint32_t note) {
 
 void PassiveBuzzer::SetTexture(const uint32_t duty_cycle) {
 
-	if (duty_cycle == m_duty_cycle) {return;}
+	if (duty_cycle == m_duty_cycle) return;
 
 	m_duty_cycle = libutil::Clamp<uint32_t>(0, duty_cycle, 1000);
 	m_pwm.SetPosWidth(PwmUtils::GetPosWidth(PwmUtils::GetPeriodUs(m_note), m_duty_cycle));
@@ -75,7 +75,7 @@ void PassiveBuzzer::SetTexture(const uint32_t duty_cycle) {
 
 void PassiveBuzzer::Set(const uint32_t note,const uint32_t duty_cycle){
 
-	if (duty_cycle == m_duty_cycle || note == m_note) {return;}
+	if (duty_cycle == m_duty_cycle || note == m_note) return;
 
 	m_note = note;
 	m_duty_cycle = libutil::Clamp<uint32_t>(0, duty_cycle, 1000);
@@ -93,10 +93,10 @@ PassiveBuzzer::PassiveBuzzer(const Config&) :
 	LOG_DL("Configured not to use PassiveBuzzer");
 }
 
-void PassiveBuzzer::SetNote(const uint32_t note) {}
-void PassiveBuzzer::SetTexture(const uint32_t duty_cycle) {}
-void PassiveBuzzer::Set(const uint32_t note,const uint32_t duty_cycle){}
-void SetBeep(const bool is_beep){}
+void PassiveBuzzer::SetNote(const uint32_t) {}
+void PassiveBuzzer::SetTexture(const uint32_t) {}
+void PassiveBuzzer::Set(const uint32_t,const uint32_t){}
+void SetBeep(const bool){}
 
 #endif /* LIBSC_USE_PASSIVE_BUZZER */
 }
