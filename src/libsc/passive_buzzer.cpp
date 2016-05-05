@@ -96,7 +96,7 @@ PassiveBuzzer::PassiveBuzzer(const Config&) :
 void PassiveBuzzer::SetNote(const uint32_t) {}
 void PassiveBuzzer::SetTexture(const uint32_t) {}
 void PassiveBuzzer::Set(const uint32_t,const uint32_t){}
-void SetBeep(const bool){}
+void PassiveBuzzer::SetBeep(const bool){}
 
 #endif /* LIBSC_USE_PASSIVE_BUZZER */
 }
