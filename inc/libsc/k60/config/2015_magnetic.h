@@ -55,8 +55,8 @@
 #define LIBSC_ST7735R_SDAT libbase::k60::Pin::Name::kPte1
 #define LIBSC_ST7735R_SCLK libbase::k60::Pin::Name::kPte2
 
-#define LIBSC_US1000_TX libbase::k60::Pin::Name::kPtd9;
-#define LIBSC_US1000_RX libbase::k60::Pin::Name::kPtd8;
+#define LIBSC_US1000_TX libbase::k60::Pin::Name::kPtd9
+#define LIBSC_US1000_RX libbase::k60::Pin::Name::kPtd8
 
 #define LIBSC_LED0 libbase::k60::Pin::Name::kPtc4
 #define LIBSC_LED1 libbase::k60::Pin::Name::kPtc5
@@ -98,5 +98,5 @@
 #define LIBSC_UART0_TX libbase::k60::Pin::Name::kPta14
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPta15
 
-#define LIBSC_YUANYANG_DO libbase::k60::Pin::Name::kPtc13;
-#define LIBSC_YUANYANG_STATE libbase::k60::Pin::Name::kPtc12;
+#define LIBSC_YUANYANG_DO libbase::k60::Pin::Name::kPtc13
+#define LIBSC_YUANYANG_STATE libbase::k60::Pin::Name::kPtc12
