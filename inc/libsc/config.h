@@ -75,6 +75,9 @@
 #elif defined(K60_2016_RAIL)
 #include "libsc/k60/config/2016_rail.h"
 
+#elif defined(K60_2016_MAGNETIC)
+#include "libsc/k60/config/2016_magnetic.h"
+
 #else
 #error Unknown board
 
