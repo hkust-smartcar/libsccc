@@ -66,6 +66,18 @@
 #elif defined(K60_2016_INNO)
 #include "libsc/k60/config/2016_inno.h"
 
+#elif defined(K60_2016_CAMERA)
+#include "libsc/k60/config/2016_camera.h"
+
+#elif defined(K60_2016_CCD)
+#include "libsc/k60/config/2016_ccd.h"
+
+#elif defined(K60_2016_RAIL)
+#include "libsc/k60/config/2016_rail.h"
+
+#elif defined(K60_2016_MAGNETIC)
+#include "libsc/k60/config/2016_magnetic.h"
+
 #else
 #error Unknown board
 
