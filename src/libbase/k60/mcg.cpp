@@ -331,7 +331,7 @@ void PllDividerCalc::Calc(const uint32_t external_osc_khz,
 	m_prdiv = best_prdiv - PRDIV_MIN;
 	m_vdiv = best_vdiv - VDIV_MIN;
 
-	m_core_clock = (uint64_t)(external_osc_khz * 1000) * best_vdiv / best_prdiv;
+	m_core_clock = (uint32_t)(external_osc_khz * 1000) * best_vdiv / best_prdiv;
 #if MK60F15
 	m_core_clock >>= 1;
 #endif
