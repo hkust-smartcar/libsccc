@@ -30,10 +30,10 @@
 #define LIBSC_BUZZER0 libbase::k60::Pin::Name::kPta5
 #define LIBSC_BUZZER_ACIVE_LEVEL 0
 
-#define LIBSC_JOYSTICK0_UP libbase::k60::Pin::Name::kPtc19
-#define LIBSC_JOYSTICK0_DOWN libbase::k60::Pin::Name::kPtd0
-#define LIBSC_JOYSTICK0_LEFT libbase::k60::Pin::Name::kPtd1
-#define LIBSC_JOYSTICK0_RIGHT libbase::k60::Pin::Name::kPtd2
+#define LIBSC_JOYSTICK0_UP libbase::k60::Pin::Name::kPtd1
+#define LIBSC_JOYSTICK0_DOWN libbase::k60::Pin::Name::kPtc19
+#define LIBSC_JOYSTICK0_LEFT libbase::k60::Pin::Name::kPtd2
+#define LIBSC_JOYSTICK0_RIGHT libbase::k60::Pin::Name::kPtd0
 #define LIBSC_JOYSTICK0_SELECT libbase::k60::Pin::Name::kPtd3
 
 #define LIBSC_ST7735R_RST libbase::k60::Pin::Name::kPta17

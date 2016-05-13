@@ -20,7 +20,6 @@ namespace libsc
 class Joystick
 {
 public:
-	typedef std::function<void(const uint8_t id)> Listener;
 
 	enum struct State
 	{
@@ -33,6 +32,8 @@ public:
 		kIdle
 	};
 
+	typedef std::function<void(const uint8_t id, const State which)> Listener;
+
 	struct Config
 	{
 		enum struct Trigger
@@ -44,7 +45,14 @@ public:
 
 		uint8_t id;
 		bool is_active_low;
-		Listener listeners[5];
+
+		/**
+		 * Choose either five handlers or one dispatcher to handle all events.
+		 * Once you set dispatcher, all listeners will be ignored.
+		 */
+		Listener dispatcher;
+		Listener handlers[5];
+
 		/**
 		 * When to trigger the listener, ignored if corresponding listener is
 		 * not set in Config::listeners. The sequence of the array follows the
