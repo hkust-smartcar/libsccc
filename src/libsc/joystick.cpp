@@ -140,14 +140,21 @@ Joystick::Joystick(const Config &config)
 	for (int i = 0; i < 5; ++i)
 	{
 		Gpi::OnGpiEventListener listener;
-		if (config.listeners[i])
+		if (config.dispatcher || config.handlers[i])
 		{
 			const uint8_t id = config.id;
-			Joystick::Listener js_listener = config.listeners[i];
-			listener = [js_listener, id, i](Gpi*)
-					{
-						js_listener(id);
-					};
+			const State which = (State)i;
+			Joystick::Listener js_listener;
+
+			if (config.dispatcher)
+				js_listener = config.dispatcher;
+			else
+				js_listener = config.handlers[i];
+
+			listener = [js_listener, id, which](Gpi*)
+						{
+							js_listener(id, which);
+						};
 		}
 		m_pins[i] = Gpi(GetPinGpiConfig(static_cast<Joystick::State>(i), config,
 				listener));
