@@ -56,9 +56,24 @@ namespace
 
 Ov7725Configurator::Config GetConfiguratorConfig(const Ov7725::Config &config)
 {
+	assert(config.id < LIBSC_USE_OV7725);
 	Ov7725Configurator::Config product;
-	product.scl = LIBSC_OV77250_SCL;
-	product.sda = LIBSC_OV77250_SDA;
+
+	switch (config.id)
+	{
+	case 0:
+		product.scl = LIBSC_OV77250_SCL;
+		product.sda = LIBSC_OV77250_SDA;
+		break;
+
+#if LIBSC_USE_OV7725 > 1
+	case 1:
+		product.scl = LIBSC_OV77251_SCL;
+		product.sda = LIBSC_OV77251_SDA;
+		break;
+#endif
+	}
+
 	product.w = config.w;
 	product.h = config.h;
 	product.fps = config.fps;
@@ -67,28 +82,67 @@ Ov7725Configurator::Config GetConfiguratorConfig(const Ov7725::Config &config)
 	return product;
 }
 
-GpiArray::Config GetGpiArrayConfig()
+GpiArray::Config GetGpiArrayConfig(const uint8_t id)
 {
 	GpiArray::Config product;
-	product.start_pin = LIBSC_OV77250_DATA0;
+
+	switch (id)
+	{
+	case 0:
+		product.start_pin = LIBSC_OV77250_DATA0;
+		break;
+
+#if LIBSC_USE_OV7725 > 1
+	case 1:
+		product.start_pin = LIBSC_OV77251_DATA0;
+		break;
+#endif
+	}
+
 	product.count = 8;
 	product.config.set(Pin::Config::ConfigBit::kPullEnable);
 	return product;
 }
 
-Gpi::Config GetClockConfig()
+Gpi::Config GetClockConfig(const uint8_t id)
 {
 	Gpi::Config product;
-	product.pin = LIBSC_OV77250_PCLK;
+
+	switch (id)
+	{
+	case 0:
+		product.pin = LIBSC_OV77250_PCLK;
+		break;
+
+#if LIBSC_USE_OV7725 > 1
+	case 1:
+		product.pin = LIBSC_OV77251_PCLK;
+		break;
+#endif
+	}
+
 	product.config.set(Pin::Config::ConfigBit::kPullEnable);
 	product.interrupt = Pin::Config::Interrupt::kDmaFalling;
 	return product;
 }
 
-Gpi::Config GetVsyncConfig(Gpi::OnGpiEventListener isr)
+Gpi::Config GetVsyncConfig(const uint8_t id, Gpi::OnGpiEventListener isr)
 {
 	Gpi::Config product;
-	product.pin = LIBSC_OV77250_VSYNC;
+
+	switch (id)
+	{
+	case 0:
+		product.pin = LIBSC_OV77250_VSYNC;
+		break;
+
+#if LIBSC_USE_OV7725 > 1
+	case 1:
+		product.pin = LIBSC_OV77251_VSYNC;
+		break;
+#endif
+	}
+
 	product.config.set(Pin::Config::ConfigBit::kPassiveFilter);
 	product.config.set(Pin::Config::ConfigBit::kPullEnable);
 	product.config.set(Pin::Config::ConfigBit::kPullUp);
@@ -101,8 +155,8 @@ Gpi::Config GetVsyncConfig(Gpi::OnGpiEventListener isr)
 
 Ov7725::Ov7725(const Config &config)
 		: m_config(GetConfiguratorConfig(config)),
-		  m_data_array(GetGpiArrayConfig()),
-		  m_clock(GetClockConfig()),
+		  m_data_array(GetGpiArrayConfig(config.id)),
+		  m_clock(GetClockConfig(config.id)),
 		  m_vsync(nullptr),
 		  m_dma(nullptr),
 		  m_w(libutil::Clamp<Uint>(1, config.w, 640)),
@@ -117,9 +171,9 @@ Ov7725::Ov7725(const Config &config)
 	memset(m_front_buf.get(), 0, m_buf_size);
 	m_back_buf.reset(new Byte[m_buf_size]);
 
-	InitDma();
+	InitDma(config.id);
 
-	m_vsync = Gpi(GetVsyncConfig(std::bind(&Ov7725::OnVsync, this,
+	m_vsync = Gpi(GetVsyncConfig(config.id, std::bind(&Ov7725::OnVsync, this,
 			placeholders::_1)));
 	// Set DMA to a higher priority to prevent VSYNC being processed earlier
 	NVIC_SetPriority(DMA1_DMA17_IRQn, __BASE_IRQ_PRIORITY - 1);
@@ -130,12 +184,10 @@ Ov7725::~Ov7725()
 	NVIC_SetPriority(DMA1_DMA17_IRQn, __BASE_IRQ_PRIORITY);
 }
 
-void Ov7725::InitDma()
+void Ov7725::InitDma(const uint8_t id)
 {
 	Dma::Config config;
 	m_data_array.ConfigValueAsDmaSrc(&config);
-	config.mux_src = EnumAdvance(DmaMux::Source::kPortA,
-			PinUtils::GetPort(LIBSC_OV77250_PCLK));
 	config.dst.addr = m_back_buf.get();
 	config.dst.offset = 1;
 	config.dst.size = Dma::Config::TransferSize::k1Byte;
@@ -144,7 +196,22 @@ void Ov7725::InitDma()
 	config.complete_isr = std::bind(&Ov7725::OnDmaComplete, this,
 			placeholders::_1);
 
-	m_dma = DmaManager::New(config, LIBSC_OV77250_DMA_CH);
+	switch (id)
+	{
+	case 0:
+		config.mux_src = EnumAdvance(DmaMux::Source::kPortA,
+				PinUtils::GetPort(LIBSC_OV77250_PCLK));
+		m_dma = DmaManager::New(config, LIBSC_OV77250_DMA_CH);
+		break;
+
+#if LIBSC_USE_OV7725 > 1
+	case 1:
+		config.mux_src = EnumAdvance(DmaMux::Source::kPortA,
+				PinUtils::GetPort(LIBSC_OV77251_PCLK));
+		m_dma = DmaManager::New(config, LIBSC_OV77251_DMA_CH);
+		break;
+#endif
+	}
 }
 
 void Ov7725::Start()

@@ -90,7 +90,7 @@ public:
 	}
 
 private:
-	void InitDma();
+	void InitDma(const uint8_t id);
 
 	void OnVsync(libbase::k60::Gpi *gpi);
 	void OnDmaComplete(libbase::k60::Dma *dma);
