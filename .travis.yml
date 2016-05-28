@@ -2,12 +2,11 @@ language: cpp
 cache: apt
 
 env:
-  - SCCC_CONFIG=2015_CAMERA
-  - SCCC_CONFIG=2015_MAGNETIC
-  - SCCC_CONFIG=2015_CCD
-  - SCCC_CONFIG=2015_CCD2
   - SCCC_CONFIG=VCAN_FX15DEV
-  - SCCC_CONFIG=VCAN_Z4DEV
+  - SCCC_CONFIG=2016_CAMERA
+  - SCCC_CONFIG=2016_CCD
+  - SCCC_CONFIG=2016_RAIL
+  - SCCC_CONFIG=2016_MAGNETIC
 
 before_install:
   - sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded -y
