@@ -29,7 +29,7 @@ float Math::ArcTan(float x)
 //			http://cpp.sh/5fqt
 float Math::ArcSin(float x)
 {
-	return 1.570796f - sqrt(1 - x) * (1.570723f - x * (0.212114f + x
+	return 1.570796f - Sqrt2(1 - x) * (1.570723f - x * (0.212114f + x
 			* (.074261f + x * (-.018729f))));
 }
 

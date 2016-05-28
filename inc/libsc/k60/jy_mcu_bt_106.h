@@ -26,6 +26,7 @@ public:
 	typedef UartDevice::Config Config;
 
 	explicit JyMcuBt106(const Config &config);
+	explicit JyMcuBt106(nullptr_t);
 
 protected:
 	struct Initializer : public UartDevice::Initializer
