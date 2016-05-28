@@ -56,15 +56,24 @@ public:
 	explicit Mpu6050(const Config &config);
 
 	bool Update(bool clamp_ = true);
+	bool UpdateF(bool clamp_ = true);
 
-	const std::array<float, 3>& GetAccel() const
+	const std::array<int32_t, 3>& GetAccel() const
 	{
 		return m_accel;
 	}
+	const std::array<float, 3>& GetAccelF() const
+	{
+		return m_accel_f;
+	}
 
-	const std::array<float, 3>& GetOmega() const
+	const std::array<int32_t, 3>& GetOmega() const
 	{
 		return m_omega;
+	}
+	const std::array<float, 3>& GetOmegaF() const
+	{
+		return m_omega_f;
 	}
 
 	float GetCelsius() const
@@ -77,9 +86,13 @@ public:
 		return m_is_calibrated;
 	}
 
-	const std::array<float, 3>& GetOffset() const
+	const std::array<int32_t, 3>& GetOffset() const
 	{
 		return m_omega_offset;
+	}
+	const std::array<float, 3>& GetOffsetF() const
+	{
+		return m_omega_offset_f;
 	}
 
 	bool Verify();
@@ -88,19 +101,35 @@ public:
 		return m_i2c;
 	}
 
+	const uint16_t GetGyroScaleFactor(void) const
+	{
+		return m_gyro_scale_factor;
+	}
+
+	const uint16_t GetAccelScaleFactor(void) const
+	{
+		return m_accel_scale_factor;
+	}
+
 private:
 
 	void Calibrate();
+	void CalibrateF();
 
-	float GetGyroScaleFactor();
-	float GetAccelScaleFactor();
+	uint16_t GetGyroScaleFactor();
+	uint16_t GetAccelScaleFactor();
 
 	I2cMaster* m_i2c;
-	std::array<float, 3> m_accel;
-	std::array<float, 3> m_omega;
-	std::array<float, 3> m_omega_offset;
+	std::array<int32_t, 3> m_accel;
+	std::array<int32_t, 3> m_omega;
+	std::array<float, 3> m_accel_f;
+	std::array<float, 3> m_omega_f;
+	std::array<int32_t, 3> m_omega_offset;
+	std::array<float, 3> m_omega_offset_f;
 	float m_temp;
 	bool m_is_calibrated;
+	uint16_t m_gyro_scale_factor;
+	uint16_t m_accel_scale_factor;
 
 	Config::Range m_gyro_range;
 	Config::Range m_accel_range;

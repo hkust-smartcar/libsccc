@@ -10,9 +10,6 @@
 
 #pragma once
 
-// TODO: enable following preprocessor command
-//#ifdef LIBSC_USE_UART
-
 #include <functional>
 #include <vector>
 #include <typeinfo>
