@@ -10,8 +10,8 @@ env:
   - SCCC_CONFIG=VCAN_Z4DEV
 
 before_install:
-  - sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded -y --allow-unauthenticated
+  - sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded -y
   - sudo apt-get update
-  - sudo apt-get install gcc-arm-none-eabi
+  - sudo apt-get install gcc-arm-none-eabi --allow-unauthenticated
 
 script: make all
