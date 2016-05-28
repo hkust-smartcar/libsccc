@@ -43,6 +43,11 @@ JyMcuBt106::JyMcuBt106(const Config&)
 		: UartDevice(nullptr)
 {}
 
+JyMcuBt106::JyMcuBt106(nullptr_t)
+:
+	UartDevice(nullptr)
+{}
+
 #endif /* LIBSC_USE_UART */
 
 }
