@@ -188,7 +188,7 @@ void Mma8451q::GetAllAccelF()
 	}
 
 	for (int i = 0, j = 0; i < 3; i++, j += 2)
-		m_last_accel_f[i] = (float)(data[j] << 8 | data[j + 1]) / m_scale_factor;
+		m_last_accel_f[i] = (int16_t)(data[j] << 8 | data[j + 1]) / (float)m_scale_factor;
 }
 
 void Mma8451q::GetAllAngle()

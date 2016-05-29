@@ -172,7 +172,7 @@ void Mpu6050::CalibrateF()
 		if (t - pt >= 5)
 		{
 			pt = t;
-			Update(false);
+			UpdateF(false);
 			if (samples >= target_samples / 2)
 			{
 				std::array<float, 3> omega_ = GetOmegaF();
