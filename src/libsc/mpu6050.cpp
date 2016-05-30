@@ -24,6 +24,8 @@
 #include "libsc/system.h"
 #include "libutil/misc.h"
 
+#define ABS(v) ((v < 0)? -v : v)
+
 using namespace LIBBASE_NS;
 using namespace std;
 
@@ -56,10 +58,15 @@ Mpu6050::Mpu6050(const Config &config)
 		  m_accel{},
 		  m_omega{},
 		  m_omega_offset{},
+		  m_accel_f{},
+		  m_omega_f{},
+		  m_omega_offset_f{},
 		  m_temp(0.0f),
 		  m_is_calibrated(false),
 		  m_gyro_range(config.gyro_range),
-		  m_accel_range(config.accel_range)
+		  m_accel_range(config.accel_range),
+		  m_gyro_scale_factor(GetGyroScaleFactor()),
+		  m_accel_scale_factor(GetAccelScaleFactor())
 {
 	if(!config.i2c_master_ptr){
 		m_i2c = new I2cMaster(GetI2cConfig());
@@ -101,10 +108,14 @@ Mpu6050::Mpu6050(const Config &config)
 	m_omega_offset[0] = 0;
 	m_omega_offset[1] = 0;
 	m_omega_offset[2] = 0;
+	m_omega_offset_f[0] = 0;
+	m_omega_offset_f[1] = 0;
+	m_omega_offset_f[2] = 0;
 
 	if (config.cal_drift)
 	{
 		Calibrate();
+		CalibrateF();
 	}
 }
 
@@ -124,7 +135,7 @@ bool Mpu6050::Verify()
 void Mpu6050::Calibrate()
 {
 	Timer::TimerInt t = 0, pt = 0;
-	std::array<float, 3> omega_sum{};
+	std::array<int32_t, 3> omega_sum{};
 
 	int samples = 0, target_samples = 256;
 	while (samples < target_samples)
@@ -136,11 +147,9 @@ void Mpu6050::Calibrate()
 			Update(false);
 			if (samples >= target_samples / 2)
 			{
-				std::array<float, 3> omega_ = GetOmega();
+				std::array<int32_t, 3> omega_ = GetOmega();
 				for (int i = 0; i < 3; i++)
-				{
 					omega_sum[i] += omega_[i];
-				}
 			}
 			samples++;
 		}
@@ -151,48 +160,112 @@ void Mpu6050::Calibrate()
 	}
 	m_is_calibrated = true;
 }
+void Mpu6050::CalibrateF()
+{
+	Timer::TimerInt t = 0, pt = 0;
+	std::array<float, 3> omega_sum{};
 
-float Mpu6050::GetGyroScaleFactor()
+	int samples = 0, target_samples = 256;
+	while (samples < target_samples)
+	{
+		t = System::Time();
+		if (t - pt >= 5)
+		{
+			pt = t;
+			UpdateF(false);
+			if (samples >= target_samples / 2)
+			{
+				std::array<float, 3> omega_ = GetOmegaF();
+				for (int i = 0; i < 3; i++)
+				{
+					omega_sum[i] += omega_[i];
+				}
+			}
+			samples++;
+		}
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		m_omega_offset_f[i] = omega_sum[i] / (target_samples/2);
+	}
+	m_is_calibrated = true;
+}
+
+uint16_t Mpu6050::GetGyroScaleFactor()
 {
 	switch (m_gyro_range)
 	{
 	default:
 		LOG_EL("Mpu6050 Gyro in illegal state");
 	case Config::Range::kSmall:
-		return 131.0f;
+		return 20960;
 
 	case Config::Range::kMid:
-		return 65.5f;
+		return 10480;
 
 	case Config::Range::kLarge:
-		return 32.8f;
+		return 5248;
 
 	case Config::Range::kExtreme:
-		return 16.4f;
+		return 2624;
 	}
 }
 
-float Mpu6050::GetAccelScaleFactor()
+uint16_t Mpu6050::GetAccelScaleFactor()
 {
 	switch (m_accel_range)
 	{
 	default:
 		LOG_EL("Mpu6050 Accel in illegal state");
 	case Config::Range::kSmall:
-		return 16384.0f;
+		return 16384;
 
 	case Config::Range::kMid:
-		return 8192.0f;
+		return 8192;
 
 	case Config::Range::kLarge:
-		return 4096.0f;
+		return 4096;
 
 	case Config::Range::kExtreme:
-		return 2048.0f;
+		return 2048;
 	}
 }
 
 bool Mpu6050::Update(const bool clamp_)
+{
+	const vector<Byte> &data = m_i2c->GetBytes(MPU6050_DEFAULT_ADDRESS,
+			MPU6050_RA_ACCEL_XOUT_H, 14);
+	if (data.empty())
+		return false;
+
+	int16_t raw_accel[3]={0};
+	int16_t raw_gyro[3]={0};
+	for (size_t i = 0; i < data.size(); i += 2)
+	{
+		if (i <= 5)
+		{
+			const int j = i / 2;
+			raw_accel[j] = (data[i] << 8) | data[i + 1];
+			m_accel[j] = raw_accel[j];
+		}
+		else if (i == 6)
+		{
+			const int16_t raw_temp = (data[i] << 8) | data[i + 1];
+			m_temp = (float)raw_temp / 340 + 36.53;
+		}
+		else
+		{
+			const int j = (i - 8) / 2;
+			raw_gyro[j] = (data[i] << 8) | data[i + 1];
+			m_omega[j] = raw_gyro[j] * 160;
+			m_omega[j] -= m_omega_offset[j];
+			if(clamp_)
+				m_omega[j] = (ABS(m_omega[j]) < 3 * m_gyro_scale_factor)? 0 : m_omega[j];
+		}
+	}
+	return true;
+}
+bool Mpu6050::UpdateF(const bool clamp_)
 {
 	const vector<Byte> data = m_i2c->GetBytes(MPU6050_DEFAULT_ADDRESS,
 			MPU6050_RA_ACCEL_XOUT_H, 14);
@@ -209,7 +282,7 @@ bool Mpu6050::Update(const bool clamp_)
 		{
 			const int j = i / 2;
 			raw_accel[j] = (data[i] << 8) | data[i + 1];
-			m_accel[j] = (float)raw_accel[j] / GetAccelScaleFactor();
+			m_accel_f[j] = (float)raw_accel[j] / m_accel_scale_factor;
 		}
 		else if (i == 6)
 		{
@@ -223,6 +296,9 @@ bool Mpu6050::Update(const bool clamp_)
 			m_omega[j] = (float)raw_gyro[j] / GetGyroScaleFactor();
 			m_omega[j] -= m_omega_offset[j];
 			if(clamp_) m_omega[j] = abs(m_omega[j]) < 2.0f ? 0.0f : m_omega[j];
+			m_omega_f[j] = (float)raw_gyro[j] * 160 / m_gyro_scale_factor;
+			m_omega_f[j] -= m_omega_offset_f[j];
+			if(clamp_) m_omega_f[j] = abs(m_omega_f[j]) < 3.0f ? 0.0f : m_omega_f[j];
 		}
 	}
 	return true;
@@ -237,9 +313,9 @@ bool Mpu6050::Update(const bool clamp_)
 //
 //
 //	raw_gyro[1] = (data[0] << 8) | data[1];
-//	m_omega[1] = (float)raw_gyro[1] / GetGyroScaleFactor();
-//	m_omega[1] -= m_omega_offset[1];
-//	if(clamp_) m_omega[1] = abs(m_omega[1]) < 1.0f ? 0.0f : m_omega[1];
+//	m_omega_f[1] = (float)raw_gyro[1] / GetGyroScaleFactor();
+//	m_omega_f[1] -= m_omega_offset_f[1];
+//	if(clamp_) m_omega_f[1] = abs(m_omega_f[1]) < 1.0f ? 0.0f : m_omega_f[1];
 //
 //	return true;
 }
@@ -253,6 +329,7 @@ Mpu6050::Mpu6050(const Config&)
 	LOG_DL("Configured not to use Mpu6050");
 }
 bool Mpu6050::Update(const bool) { return false; }
+bool Mpu6050::UpdateF(const bool) { return false; }
 
 #endif /* LIBSC_USE_MPU6050 */
 

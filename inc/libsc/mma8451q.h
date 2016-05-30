@@ -83,15 +83,29 @@ public:
 	explicit Mma8451q(const Config &config);
 
 	bool Update();
+	bool UpdateF();
 
-	const std::array<float, 3>& GetAccel() const
+	const std::array<int16_t, 3>& GetAccel() const
 	{
 		return m_last_accel;
 	}
+	const std::array<float, 3>& GetAccelF() const
+	{
+		return m_last_accel_f;
+	}
 
-	const std::array<float, 3>& GetAngle() const
+	const std::array<int16_t, 3>& GetAngle() const
 	{
 		return m_last_angle;
+	}
+	const std::array<float, 3>& GetAngleF() const
+	{
+		return m_last_angle_f;
+	}
+
+	const uint32_t getScaleFactor(void) const
+	{
+		return m_scale_factor;
 	}
 
 	I2cMaster* GetI2cMaster(){
@@ -102,6 +116,8 @@ private:
 	bool Verify();
 
 	void GetAllAccel();
+	void GetAllAccelF();
+
 	void GetAllAngle();
 
 	void SetActive(const bool flag);
@@ -111,10 +127,12 @@ private:
 
 	I2cMaster* m_i2c_master;
 	Config::Sensitivity m_sensitivity;
-	float m_scale_factor;
+	uint16_t m_scale_factor;
 
-	std::array<float, 3> m_last_accel;
-	std::array<float, 3> m_last_angle;
+	std::array<int16_t, 3> m_last_accel;
+	std::array<int16_t, 3> m_last_angle;
+	std::array<float, 3> m_last_accel_f;
+	std::array<float, 3> m_last_angle_f;
 
 };
 
