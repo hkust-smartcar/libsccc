@@ -18,8 +18,6 @@ namespace libbase
 namespace k60
 {
 
-#if MK60F15
-
 class Flash
 {
 
@@ -85,8 +83,6 @@ protected:
 	FlashStatus EraseSector(const uint32_t FlashTargetAddr);
 
 };
-
-#endif
 
 }
 }

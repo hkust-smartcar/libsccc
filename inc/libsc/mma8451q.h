@@ -113,10 +113,8 @@ public:
 	}
 
 private:
-	bool Verify();
 
-	void GetAllAccel();
-	void GetAllAccelF();
+	bool Verify();
 
 	void GetAllAngle();
 

@@ -148,6 +148,24 @@ Flash::FlashStatus Flash::Program(const uint32_t FlashTargetAddr, void *source, 
 	return ret;
 }
 
+#else
+
+Flash::Flash(Config config)
+:
+	m_startAddr(0),
+	m_maxSize(0)
+{}
+
+Flash::FlashStatus Flash::Read(void *outBytes, size_t sizeOfBytes)
+{
+	return Flash::FlashStatus::kCommandError;
+}
+
+Flash::FlashStatus Flash::Write(void *inBytes, size_t sizeOfBytes)
+{
+	return Flash::FlashStatus::kCommandError;
+}
+
 #endif
 
 }
