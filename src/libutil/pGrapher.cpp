@@ -13,12 +13,13 @@
 #include <functional>
 #include <utility>
 
-#include <libsc/system.h>
-#include <libsc/k60/ftdi_ft232r.h>
-#include <libbase/k60/sys_tick.h>
-#include <libsc/k60/jy_mcu_bt_106.h>
+#include "libsc/system.h"
+#include "libsc/k60/ftdi_ft232r.h"
+#include "libbase/k60/sys_tick.h"
+#include "libsc/k60/jy_mcu_bt_106.h"
+#include "libsc/config.h"
 
-#include <libutil/pGrapher.h>
+#include "libutil/pGrapher.h"
 
 using namespace libbase::k60;
 using namespace libsc;
@@ -212,15 +213,5 @@ pGrapher::pGrapher(void)
 
 pGrapher::~pGrapher()
 {}
-
-void pGrapher::setOnReceiveListener(const OnReceiveListener &)
-{
-	assert(false);
-}
-
-void pGrapher::setOnChangedListener(const OnChangedListener &)
-{
-	assert(false);
-}
 
 #endif /* LIBSC_USE_UART */
