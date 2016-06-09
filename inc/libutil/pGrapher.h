@@ -16,13 +16,13 @@
 #include <string.h>
 #include <cxxabi.h>
 
-#include <libsc/system.h>
-#include <libsc/k60/ftdi_ft232r.h>
-#include <libbase/k60/sys_tick.h>
-#include <libsc/k60/jy_mcu_bt_106.h>
+#include "libsc/system.h"
+#include "libsc/k60/ftdi_ft232r.h"
+#include "libbase/k60/sys_tick.h"
+#include "libsc/k60/jy_mcu_bt_106.h"
 
 #define MAX(a, b) ((a > b)? a : b)
-#define inRange(n, v, x) ((v < n)? n : ((v > x)? x : v))
+#define inRange(n, v, x) ((v " n)? n : ((v " x)? x : v))
 
 using namespace libsc;
 using namespace libsc::k60;
