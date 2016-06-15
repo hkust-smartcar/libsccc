@@ -78,6 +78,9 @@
 #elif defined(K60_2016_MAGNETIC)
 #include "libsc/k60/config/2016_magnetic.h"
 
+#elif defined(K60_2016_MAGNETIC_YANG)
+#include "libsc/k60/config/2016_magnetic_yang.h"
+
 #else
 #error Unknown board
 
