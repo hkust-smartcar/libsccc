@@ -26,6 +26,9 @@ using namespace libsc;
 using namespace libsc::k60;
 using namespace std;
 
+namespace libutil
+{
+
 pGrapher *m_pd_instance = nullptr;
 pGrapher::TypeId *pGrapher::TypeId::m_instance = nullptr;
 
@@ -215,3 +218,5 @@ pGrapher::~pGrapher()
 {}
 
 #endif /* LIBSC_USE_UART */
+
+}

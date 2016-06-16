@@ -28,6 +28,9 @@ using namespace libsc;
 using namespace libsc::k60;
 using namespace libbase::k60;
 
+namespace libutil
+{
+
 class pGrapher
 {
 public:
@@ -147,3 +150,5 @@ private:
 	void changeSharedVars(const std::vector<Byte> &msg);
 
 };
+
+}
