@@ -2,7 +2,7 @@
 
 #define LIBSC_USE_BATTERY_METER 1
 #define LIBSC_USE_BUTTON 2
-#define LIBSC_USE_BUZZER 1
+#define LIBSC_USE_PASSIVE_BUZZER 1
 #define LIBSC_USE_ENCODER 2
 #define LIBSC_USE_JOYSTICK 1
 #define LIBSC_USE_LCD 1
@@ -19,8 +19,7 @@
 #define LIBSC_BUTTON1 libbase::k60::Pin::Name::kPte28
 
 #define LIBSC_BUZZER0 libbase::k60::Pin::Name::kPta5
-//#define LIBSC_BUZZER_ACIVE_LEVEL 0
-
+#define LIBSC_PASSSIVE_BUZZER0_PIT_CHANNEL 0
 
 #define LIBSC_MPU6050_SCL libbase::k60::Pin::Name::kPtb2
 #define LIBSC_MPU6050_SDA libbase::k60::Pin::Name::kPtb3
@@ -51,7 +50,7 @@
 
 #define LIBSC_MOTOR0_PWMA libbase::k60::Pin::Name::kPtc8
 #define LIBSC_MOTOR0_PWMB libbase::k60::Pin::Name::kPtc9
-#define LIBSC_MOTOR0_DEADTIME 2500
+#define LIBSC_MOTOR0_DEADTIME 1000
 
 #define LIBSC_MOTOR1_PWMA libbase::k60::Pin::Name::kPtc10
 #define LIBSC_MOTOR1_PWMB libbase::k60::Pin::Name::kPtc11
