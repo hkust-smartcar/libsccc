@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cstdint>
-#define MOTORPERIOD 100000
+#define MOTORPERIOD 10000
 #define RESOLUTION 1000
 
 namespace libsc
