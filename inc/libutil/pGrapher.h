@@ -101,6 +101,8 @@ public:
 	void removeOnChangedListener(void);
 	void removeAllListeners(void);
 
+	void removeAllWatchedVar(void);
+
 	template<typename ObjType>
 	void addSharedVar(ObjType *sharedObj, std::string s)
 	{

@@ -205,6 +205,11 @@ void pGrapher::removeAllListeners(void)
 	m_origin_listener = nullptr;
 }
 
+void pGrapher::removeAllWatchedVar(void)
+{
+	watchedObjMng.erase(watchedObjMng.begin(), watchedObjMng.end());
+}
+
 #else
 
 pGrapher::pGrapher(void)
