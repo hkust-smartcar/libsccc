@@ -1,8 +1,8 @@
 /*
  * flash.cpp
  *
- * Author: Peter Lau
- * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Author: Petel__
+ * Copyright (c) 2014-2016 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -21,10 +21,10 @@ Flash::Flash(Config config)
 	m_maxSize(0)
 {
 	if (config.sectorStartIndex < MinSectorIndex &&
-		(uint16_t)config.sectorStartIndex + (uint16_t)config.size / 0x800 > (uint16_t)MaxSectorsCount)
+		(uint16_t)config.sectorStartIndex + (uint16_t)config.size / DefaultSectorSize > (uint16_t)MaxSectorsCount)
 		assert(false);
 
-	m_startAddr = config.sectorStartIndex * 0x800;
+	m_startAddr = config.sectorStartIndex * DefaultSectorSize;
 	m_maxSize = config.size;
 }
 

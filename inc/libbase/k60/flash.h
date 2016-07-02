@@ -1,8 +1,8 @@
 /*
  * flash.h
  *
- * Author: Peter Lau
- * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Author: Petel__
+ * Copyright (c) 2014-2016 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -30,11 +30,11 @@ public:
 		 * you can change it if you really know it
 		 ** ONLY allow last five sectors to use
 		*/
-		uint8_t sectorStartIndex = -1;
+		uint8_t sectorStartIndex = 127;
 
 		/* size that you want to use */
 		/** DO NOt WASTE MEMORY PLZ **/
-		size_t size = 0x800;
+		size_t size = 0x1000;
 	};
 
 	enum FlashStatus
@@ -50,10 +50,10 @@ public:
 		kReadCollisionError = FTFE_FSTAT_RDCOLERR_MASK
 	};
 
-	/* 512KB Data Flash - 2KB sector */
-	static const uint16_t 		MaxSectorsCount = 256;
-	static const uint16_t 		DefaultSectorSize = 0x800;
-	static const uint16_t		MinSectorIndex = 251;
+	/* 512KB Data Flash - 4KB sector */
+	static const uint16_t 		MaxSectorsCount = 128;
+	static const uint16_t 		DefaultSectorSize = 0x1000;
+	static const uint16_t		MinSectorIndex = 124;
 
 	Flash(Config config);
 	FlashStatus Read(void *outBytes, size_t sizeOfBytes);
