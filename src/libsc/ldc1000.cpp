@@ -14,16 +14,13 @@
 
 using namespace std;
 using namespace libsc;
-using namespace libbase::k60;
+using namespace LIBBASE_NS;
 
 #define RP_MAX					0x08
 #define RP_MIN					0x2f
 #define SENSOR_FREQ				0xA9
 
 namespace libsc
-{
-
-namespace k60
 {
 
 #ifdef LIBSC_USE_LDC1000
@@ -165,7 +162,5 @@ uint32_t Ldc1000::GetFreq(void)
 }
 
 #endif
-
-}
 
 }

@@ -9,14 +9,13 @@
 #pragma once
 
 #include <cassert>
-#include "libbase/k60/gpio.h"
 
-using namespace libbase::k60;
+#include "libbase/helper.h"
+#include LIBBASE_H(gpio)
+
+using namespace LIBBASE_NS;
 
 namespace libsc
-{
-
-namespace k60
 {
 
 class Ldc1000
@@ -51,7 +50,5 @@ private:
 	uint32_t			m_freq;
 
 };
-
-}
 
 }
