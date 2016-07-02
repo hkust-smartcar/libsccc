@@ -8,6 +8,7 @@
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 1
+#define LIBSC_USE_LDC1000 1
 //#define LIBSC_USE_LINEAR_CCD 4
 //#define LIBSC_USE_OV7725 1
 #define LIBSC_USE_SERVO 1
@@ -37,6 +38,12 @@
 #define LIBSC_ST7735R_CS libbase::k60::Pin::Name::kPte4
 #define LIBSC_ST7735R_SDAT libbase::k60::Pin::Name::kPte1
 #define LIBSC_ST7735R_SCLK libbase::k60::Pin::Name::kPte2
+
+#define LIBSC_LDC1000_RST libbase::k60::Pin::Name::kPte3
+#define LIBSC_LDC1000_DC libbase::k60::Pin::Name::kPte0
+#define LIBSC_LDC1000_CS libbase::k60::Pin::Name::kPte4
+#define LIBSC_LDC1000_SDAT libbase::k60::Pin::Name::kPte1
+#define LIBSC_LDC1000_SCLK libbase::k60::Pin::Name::kPte2
 
 #define LIBSC_LED0 libbase::k60::Pin::Name::kPte12
 #define LIBSC_LED1 libbase::k60::Pin::Name::kPte11
