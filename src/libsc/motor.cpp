@@ -28,7 +28,7 @@ Motor::Motor(const Config &config)
 void Motor::SetPower(const uint16_t power)
 {
 	const uint16_t real_power = libutil::Clamp<Uint>(0,
-			power * m_multiplier / 100, 1000);
+			power * m_multiplier / 100, RESOLUTION);
 	if (m_power == real_power)
 	{
 		return;
@@ -40,7 +40,7 @@ void Motor::SetPower(const uint16_t power)
 
 void Motor::AddPower(const int16_t power)
 {
-	SetPower(libutil::Clamp<int>(0, m_power + power, 1000));
+	SetPower(libutil::Clamp<int>(0, m_power + power, RESOLUTION));
 }
 
 void Motor::SetClockwise(const bool flag)
