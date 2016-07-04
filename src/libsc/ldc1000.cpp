@@ -75,7 +75,7 @@ uint32_t Ldc1000::GetFreq(void)
 	return m_freq;
 }
 
-uint8_t	Ldc1000::DataRW(uint8_t rwData, bool isCmd)
+uint8_t	Ldc1000::DataRW(uint8_t rwData)
 {
 	uint8_t ret = 0;
 
@@ -106,7 +106,7 @@ uint8_t Ldc1000::ReadData(const uint8_t reg)
 
 	asm("nop");
 
-	ret = DataRW(0, true);
+	ret = DataRW(0);
 	m_cs.Set(true);
 	return ret;
 }
@@ -120,7 +120,7 @@ uint8_t Ldc1000::WriteData(const uint8_t reg, const uint8_t data)
 
 	asm("nop");
 
-	ret = DataRW(data, true);
+	ret = DataRW(data);
 	m_cs.Set(true);
 	return ret;
 }

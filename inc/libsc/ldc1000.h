@@ -34,7 +34,7 @@ public:
 
 private:
 
-	uint8_t	DataRW(uint8_t rwData, bool skipClk = false);
+	uint8_t	DataRW(uint8_t rwData);
 	uint8_t ReadData(const uint8_t reg);
 	uint8_t WriteData(const uint8_t reg, const uint8_t data);
 	void ReadBuffer(void);
