@@ -29,7 +29,7 @@
 #include "libsc/dir_motor.h"
 
 // 10 kHz
-//#define PERIOD 100000
+#define PERIOD 100000
 
 #ifndef LIBSC_DIR_MOTOR_CW_LEVEL
 	#define LIBSC_DIR_MOTOR_CW_LEVEL 1
@@ -102,7 +102,7 @@ DirMotor::Pwm::Config GetPwmConfig(const uint8_t id)
 {
 	DirMotor::Pwm::Config config;
 	config.pin = GetPwmPin(id);
-	config.period = MOTORPERIOD;
+	config.period = PERIOD;
 	config.pos_width = 0;
 	config.precision = Pwm::Config::Precision::kNs;
 	config.alignment = DirMotor::Pwm::Config::Alignment::kCenter;
@@ -128,7 +128,7 @@ DirMotor::DirMotor(const Config &config)
 
 void DirMotor::OnSetPower(const uint16_t power)
 {
-	m_pwm.SetPosWidth(PwmUtils::GetPosWidth(MOTORPERIOD, power)/(RESOLUTION/1000));
+	m_pwm.SetPosWidth(PwmUtils::GetPosWidth(PERIOD, power));
 }
 
 void DirMotor::OnSetClockwise(const bool flag)

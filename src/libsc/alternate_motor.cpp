@@ -27,8 +27,8 @@
 #include "libsc/alternate_motor.h"
 
 // 10 kHz
-//#define PERIOD 200000
-//#define RESOLUTION 10000
+#define PERIOD 100000
+
 // Default PWM A -> CW
 #ifndef LIBSC_ALTERNATE_MOTOR_CW_PWM
 	#define LIBSC_ALTERNATE_MOTOR_CW_PWM 0
@@ -136,7 +136,7 @@ AlternateMotor::Pwm::Config GetPwmAConfig(const uint8_t id)
 {
 	AlternateMotor::Pwm::Config config;
 	config.pin = GetPwmAPin(id);
-	config.period = MOTORPERIOD;
+	config.period = PERIOD;
 	config.pos_width = 0;
 	config.precision = Pwm::Config::Precision::kNs;
 	config.alignment = AlternateMotor::Pwm::Config::Alignment::kCenter;
@@ -151,7 +151,7 @@ AlternateMotor::Pwm::Config GetPwmBConfig(const uint8_t id)
 {
 	AlternateMotor::Pwm::Config config;
 	config.pin = GetPwmBPin(id);
-	config.period = MOTORPERIOD;
+	config.period = PERIOD;
 	config.pos_width = 0;
 	config.precision = Pwm::Config::Precision::kNs;
 	config.alignment = AlternateMotor::Pwm::Config::Alignment::kCenter;
@@ -174,7 +174,7 @@ AlternateMotor::AlternateMotor(const Config &config)
 
 void AlternateMotor::OnSetPower(const uint16_t power)
 {
-	const uint32_t pos_width = PwmUtils::GetPosWidth(MOTORPERIOD, power)/(RESOLUTION/1000);
+	const uint32_t pos_width = PwmUtils::GetPosWidth(PERIOD, power);
 	m_active_pwm->SetPosWidth(pos_width);
 	m_pos_width = pos_width;
 }
