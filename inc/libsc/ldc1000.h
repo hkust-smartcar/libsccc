@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cassert>
-
+#include <cstdint>
 #include "libbase/helper.h"
 #include LIBBASE_H(gpio)
 
@@ -23,16 +23,23 @@ class Ldc1000
 
 public:
 
-	// TODO: Need configuration
+	//Need configuration
+	struct Config
+	{
+		uint8_t id;
+	};
 
-	Ldc1000(void);
+	//	explicit Lcd1000(const Config &config);
 
+	Ldc1000(const Config &config);
 	void Update(void);
 
 	uint16_t GetData(void);
 	uint32_t GetFreq(void);
 
 private:
+
+	void InitPin(uint8_t id);
 
 	uint8_t	DataRW(uint8_t rwData);
 	uint8_t ReadData(const uint8_t reg);

@@ -7,6 +7,7 @@
  */
 
 #include <cstring>
+#include <cstdint>
 #include "libsc/system.h"
 #include "libsc/device_h/ldc1000.h"
 #include "libsc/ldc1000.h"
@@ -15,9 +16,10 @@
 using namespace std;
 using namespace libsc;
 using namespace LIBBASE_NS;
+using namespace libbase::k60;
 
-#define RP_MAX					0x08
-#define RP_MIN					0x2f
+#define RP_MAX					0x13
+#define RP_MIN					0x34
 #define SENSOR_FREQ				0xA9
 
 namespace libsc
@@ -27,22 +29,61 @@ namespace libsc
 
 Gpo::Config getGpoConfig(const Pin::Name pin, const bool is_high)
 {
-	Gpo::Config config;
-	config.pin = pin;
-	config.is_high = is_high;
-	return config;
+	Gpo::Config product;
+	product.pin = pin;
+	product.is_high = is_high;
+	return product;
 }
 
-Ldc1000::Ldc1000(void)
+void Ldc1000::InitPin(uint8_t id)
+{
+	switch (id)
+	{
+	default:
+		assert(false);
+		// no break
+
+	case 0:
+		m_mosi = Gpo(getGpoConfig(LIBSC_LDC1000_0_DC, true));
+		m_cs = Gpo(getGpoConfig(LIBSC_LDC1000_0_CS, true));
+		m_sck = Gpo(getGpoConfig(LIBSC_LDC1000_0_SCLK, false));
+		m_miso = Gpio(getGpoConfig(LIBSC_LDC1000_0_SDAT,false));
+		break;
+
+#if LIBSC_USE_LDC1000 > 1
+	case 1:
+		m_mosi = Gpo(getGpoConfig(LIBSC_LDC1000_1_DC, true));
+		m_cs = Gpo(getGpoConfig(LIBSC_LDC1000_1_CS, true));
+		m_sck = Gpo(getGpoConfig(LIBSC_LDC1000_1_SCLK, false));
+		m_miso = Gpio(getGpoConfig(LIBSC_LDC1000_1_SDAT,false));
+		break;
+#endif
+
+#if LIBSC_USE_LDC1000 > 2
+	case 2:
+		m_mosi = Gpo(getGpoConfig(LIBSC_LDC1000_2_DC, true));
+		m_cs = Gpo(getGpoConfig(LIBSC_LDC1000_2_CS, true));
+		m_sck = Gpo(getGpoConfig(LIBSC_LDC1000_2_SCLK, false));
+		m_miso = Gpio(getGpoConfig(LIBSC_LDC1000_2_SDAT,false));
+		break;
+#endif
+	}
+}
+
+Ldc1000::Ldc1000(const Config &config)
 :
 	m_buf{ 0 },
-	m_mosi(getGpoConfig(LIBSC_LDC1000_DC, true)),
-	m_cs(getGpoConfig(LIBSC_LDC1000_CS, true)),
-	m_sck(getGpoConfig(LIBSC_LDC1000_SCLK, false)),
-	m_miso(getGpoConfig(LIBSC_LDC1000_SDAT, false)),
 	m_proxData(0),
-	m_freq(0)
+	m_freq(0),
+	m_mosi(nullptr),
+	m_cs(nullptr),
+	m_sck(nullptr),
+	m_miso(nullptr)
+
 {
+	InitPin(config.id);
+	System::DelayUs(5);
+//		m_mosi =  libbase::k60::Adc::Name::kAdc1Ad10;
 	WriteData(REG_RP_MAX, RP_MAX);
 	WriteData(REG_RP_MIN, RP_MIN);
 	WriteData(REG_SENSOR_FREQ, SENSOR_FREQ);
@@ -57,6 +98,7 @@ Ldc1000::Ldc1000(void)
 	ReadBuffer();
 
 	assert(m_buf[0] == 0x80);
+
 }
 
 void Ldc1000::Update(void)
@@ -105,9 +147,14 @@ uint8_t Ldc1000::ReadData(const uint8_t reg)
 	DataRW(reg | 0x80);
 
 	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
 
 	ret = DataRW(0);
 	m_cs.Set(true);
+	System::DelayUs(875);
 	return ret;
 }
 
@@ -119,9 +166,14 @@ uint8_t Ldc1000::WriteData(const uint8_t reg, const uint8_t data)
 	DataRW(reg & ~0x80);
 
 	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
 
 	ret = DataRW(data);
 	m_cs.Set(true);
+	System::DelayUs(875);
 	return ret;
 }
 
@@ -137,7 +189,7 @@ void Ldc1000::ReadBuffer(void)
 
 #else
 
-Ldc1000::Ldc1000(void)
+Ldc1000::Ldc1000(const Config &config)
 :
 	m_buf{ 0 },
 	m_mosi(nullptr),
