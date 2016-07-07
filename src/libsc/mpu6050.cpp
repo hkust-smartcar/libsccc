@@ -267,7 +267,7 @@ bool Mpu6050::Update(const bool clamp_)
 }
 bool Mpu6050::UpdateF(const bool clamp_)
 {
-	const vector<Byte> data = m_i2c->GetBytes(MPU6050_DEFAULT_ADDRESS,
+	const vector<Byte> &data = m_i2c->GetBytes(MPU6050_DEFAULT_ADDRESS,
 			MPU6050_RA_ACCEL_XOUT_H, 14);
 	if (data.empty())
 	{
@@ -293,9 +293,6 @@ bool Mpu6050::UpdateF(const bool clamp_)
 		{
 			const int j = (i - 8) / 2;
 			raw_gyro[j] = (data[i] << 8) | data[i + 1];
-			m_omega[j] = (float)raw_gyro[j] / GetGyroScaleFactor();
-			m_omega[j] -= m_omega_offset[j];
-			if(clamp_) m_omega[j] = abs(m_omega[j]) < 2.0f ? 0.0f : m_omega[j];
 			m_omega_f[j] = (float)raw_gyro[j] * 160 / m_gyro_scale_factor;
 			m_omega_f[j] -= m_omega_offset_f[j];
 			if(clamp_) m_omega_f[j] = abs(m_omega_f[j]) < 3.0f ? 0.0f : m_omega_f[j];
