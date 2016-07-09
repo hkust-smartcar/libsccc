@@ -1,8 +1,8 @@
 /*
  * mma8451q.cpp
  *
- * Author: Peter
- * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Author: Petel__
+ * Copyright (c) 2014-2016 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -132,19 +132,8 @@ bool Mma8451q::Update()
 {
 	if (ReadRegByte(MMA8451Q_RA_REG_STATUS) & MMA8451Q_S_ZYXDR)
 	{
-		const vector<Byte> &data = m_i2c_master->GetBytes(MMA8451Q_DEFAULT_ADDRESS,
-					MMA8451Q_RA_REG_OUT_ALL, 0x06);
-		if (data.empty())
-		{
-			LOG_W("MMA8451Q Failed reading 0x%X", MMA8451Q_RA_REG_OUT_ALL);
-			return false;
-		}
-
-		for (int i = 0, j = 0; i < 3; i++, j += 2)
-			m_last_accel[i] = (int16_t)(data[j] << 8 | data[j + 1]);
-
+		GetAllAccel();
 //		GetAllAngle();
-
 		return true;
 	}
 	return false;
@@ -154,22 +143,52 @@ bool Mma8451q::UpdateF()
 {
 	if (ReadRegByte(MMA8451Q_RA_REG_STATUS) & MMA8451Q_S_ZYXDR)
 	{
-		const vector<Byte> &data = m_i2c_master->GetBytes(MMA8451Q_DEFAULT_ADDRESS,
-					MMA8451Q_RA_REG_OUT_ALL, 0x06);
-			if (data.empty())
-			{
-				LOG_W("MMA8451Q Failed reading 0x%X", MMA8451Q_RA_REG_OUT_ALL);
-				return false;
-			}
-
-			for (int i = 0, j = 0; i < 3; i++, j += 2)
-				m_last_accel_f[i] = (int16_t)(data[j] << 8 | data[j + 1]) / (float)m_scale_factor;
-
+		GetAllAccelF();
 //		GetAllAngle();
-
 		return true;
 	}
 	return false;
+}
+
+void Mma8451q::GetAllAccel()
+{
+	const vector<Byte> &data = m_i2c_master->GetBytes(MMA8451Q_DEFAULT_ADDRESS,
+			MMA8451Q_RA_REG_OUT_ALL, 0x06);
+	if (data.empty())
+	{
+		LOG_W("MMA8451Q Failed reading 0x%X", MMA8451Q_RA_REG_OUT_ALL);
+		return;
+	}
+
+	for (int i = 0, j = 0; i < 3; i++, j += 2)
+		m_last_accel[i] = (int16_t)(data[j] << 8 | data[j + 1]);
+
+//	const vector<Byte> &data = m_i2c_master->GetBytes(MMA8451Q_DEFAULT_ADDRESS,
+//			MMA8451Q_RA_REG_OUT_Y_MSB, 2);
+//	if (data.empty())
+//	{
+//		LOG_W("MMA8451Q Failed reading 0x%X", MMA8451Q_RA_REG_OUT_ALL);
+//		return;
+//	}
+//
+////	for (int i = 0, j = 0; i < 3; i++, j += 2)
+////	{
+//		m_last_accel_f[1] = (int16_t)(data[0] << 8 | data[1]) / m_scale_factor;
+////	}
+}
+
+void Mma8451q::GetAllAccelF()
+{
+	const vector<Byte> &data = m_i2c_master->GetBytes(MMA8451Q_DEFAULT_ADDRESS,
+			MMA8451Q_RA_REG_OUT_ALL, 0x06);
+	if (data.empty())
+	{
+		LOG_W("MMA8451Q Failed reading 0x%X", MMA8451Q_RA_REG_OUT_ALL);
+		return;
+	}
+
+	for (int i = 0, j = 0; i < 3; i++, j += 2)
+		m_last_accel_f[i] = (int16_t)(data[j] << 8 | data[j + 1]) / (float)m_scale_factor;
 }
 
 void Mma8451q::GetAllAngle()

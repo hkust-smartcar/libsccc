@@ -1,8 +1,8 @@
 /*
  * mma8451q.h
  *
- * Author: Peter
- * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Author: Petel__
+ * Copyright (c) 2014-2016 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -113,8 +113,10 @@ public:
 	}
 
 private:
-
 	bool Verify();
+
+	void GetAllAccel();
+	void GetAllAccelF();
 
 	void GetAllAngle();
 
