@@ -19,7 +19,7 @@
 #define MIN_ASCII_INDEX 32
 
 #define inRange(n, v, x) ((v < n)? n : ((v > x)? x : v))
-#define length(v) (sizeof(v) / sizeof(v[0]))
+
 
 namespace libsc
 {

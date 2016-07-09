@@ -18,7 +18,7 @@ using namespace libsc;
 using namespace LIBBASE_NS;
 using namespace libbase::k60;
 
-#define RP_MAX					0x13
+#define RP_MAX					0x12
 #define RP_MIN					0x34
 #define SENSOR_FREQ				0xA9
 
