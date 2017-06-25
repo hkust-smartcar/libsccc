@@ -12,6 +12,8 @@
 
 #include "libsc/timer.h"
 
+//#define USE_TIME_IN_125US
+
 namespace libsc
 {
 
@@ -30,6 +32,9 @@ public:
 	 * @return
 	 */
 	static Timer::TimerInt Time();
+#ifdef USE_TIME_IN_125US
+	static Timer::TimerInt TimeIn125us();
+#endif
 
 private:
 	struct Impl;

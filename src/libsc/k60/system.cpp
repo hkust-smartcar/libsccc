@@ -74,4 +74,12 @@ Timer::TimerInt System::Time()
 	return m_instance->timer.Time();
 }
 
+#ifdef USE_TIME_IN_125US
+Timer::TimerInt System::TimeIn125us()
+{
+	assert(m_instance);
+	return m_instance->timer.TimeIn125us();
+}
+#endif
+
 }

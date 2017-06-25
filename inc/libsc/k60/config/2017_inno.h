@@ -12,6 +12,10 @@
 #define LIBSC_USE_OV7725 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
+#define LIBSC_USE_MPU6050 1
+
+#define LIBSC_MPU6050_SCL libbase::k60::Pin::Name::kPtb0
+#define LIBSC_MPU6050_SDA libbase::k60::Pin::Name::kPtb1
 
 #define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc3Ad6A
 
@@ -43,20 +47,19 @@
 #define LIBSC_LED2 libbase::k60::Pin::Name::kPte10
 #define LIBSC_LED3 libbase::k60::Pin::Name::kPte9
 
-//#define LIBSC_MOTOR0_PWM libbase::k60::Pin::Name::kPtd0
-//#define LIBSC_MOTOR0_DIR libbase::k60::Pin::Name::kPtd1
-//#define LIBSC_MOTOR1_PWM libbase::k60::Pin::Name::kPtd2
-//#define LIBSC_MOTOR1_DIR libbase::k60::Pin::Name::kPtd3
+#define LIBSC_MOTOR0_PWM libbase::k60::Pin::Name::kPtd0
+#define LIBSC_MOTOR0_DIR libbase::k60::Pin::Name::kPtd1
+#define LIBSC_MOTOR1_PWM libbase::k60::Pin::Name::kPtd2
+#define LIBSC_MOTOR1_DIR libbase::k60::Pin::Name::kPtd3
 
-#define LIBSC_MOTOR0_PWMA libbase::k60::Pin::Name::kPtd0
-#define LIBSC_MOTOR0_PWMB libbase::k60::Pin::Name::kPtd1
-#define LIBSC_MOTOR0_DEADTIME 1000
-
-
-#define LIBSC_MOTOR1_PWMA libbase::k60::Pin::Name::kPtd2
-#define LIBSC_MOTOR1_PWMB libbase::k60::Pin::Name::kPtd3
-#define LIBSC_MOTOR1_DEADTIME 1000
-#define LIBSC_ALTERNATE_MOTOR_CW_PWM 1
+//#define LIBSC_MOTOR0_PWMA libbase::k60::Pin::Name::kPtd0
+//#define LIBSC_MOTOR0_PWMB libbase::k60::Pin::Name::kPtd1
+//#define LIBSC_MOTOR0_DEADTIME 1000
+//
+//#define LIBSC_MOTOR1_PWMA libbase::k60::Pin::Name::kPtd2
+//#define LIBSC_MOTOR1_PWMB libbase::k60::Pin::Name::kPtd3
+//#define LIBSC_MOTOR1_DEADTIME 1000
+//#define LIBSC_ALTERNATE_MOTOR_CW_PWM 1
 
 // #define LIBSC_LINEAR_CCD0_SI libbase::k60::Pin::Name::kPtb7
 // #define LIBSC_LINEAR_CCD0_CLK libbase::k60::Pin::Name::kPtb10
