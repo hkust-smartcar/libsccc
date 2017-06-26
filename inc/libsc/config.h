@@ -84,6 +84,9 @@
 #elif defined(K60_2017_INNO)
 #include "libsc/k60/config/2017_inno.h"
 
+#elif defined(K60_2017_CREATIVE)
+#include "libsc/k60/config/2017_creative.h"
+
 #else
 #error Unknown board
 
