@@ -8,14 +8,22 @@
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 2
-// #define LIBSC_USE_LINEAR_CCD 2
+//#define LIBSC_USE_LINEAR_CCD 2
 #define LIBSC_USE_OV7725 1
 #define LIBSC_USE_SERVO 1
-#define LIBSC_USE_UART 1
+#define LIBSC_USE_UART 2
 #define LIBSC_USE_MPU6050 1
+#define LIBSC_USE_QMC5883 1
+#define LIBSC_USE_PASSIVE_BUZZER 1
+#define LIBSC_PASSSIVE_BUZZER0_PIT_CHANNEL 1
+
+#define LIBSC_BUZZER0 libbase::k60::Pin::Name::kPta8
 
 #define LIBSC_MPU6050_SCL libbase::k60::Pin::Name::kPtb0
 #define LIBSC_MPU6050_SDA libbase::k60::Pin::Name::kPtb1
+
+#define LIBSC_QMC5883_SCL libbase::k60::Pin::Name::kPtc10
+#define LIBSC_QMC5883_SDA libbase::k60::Pin::Name::kPtc11
 
 #define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc3Ad6A
 
@@ -79,3 +87,6 @@
 
 #define LIBSC_UART0_TX libbase::k60::Pin::Name::kPte25
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPte24
+
+#define LIBSC_UART1_TX libbase::k60::Pin::Name::kPtd6
+#define LIBSC_UART1_RX libbase::k60::Pin::Name::kPtd7

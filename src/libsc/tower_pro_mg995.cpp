@@ -11,8 +11,8 @@
 #include "libsc/tower_pro_mg995.h"
 
 #define PERIOD 20000
-#define POS_WIDTH_MIN 1000
-#define POS_WIDTH_MAX 2000
+#define POS_WIDTH_MIN 500
+#define POS_WIDTH_MAX 2500
 
 namespace libsc
 {
