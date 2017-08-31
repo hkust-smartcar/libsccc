@@ -1,0 +1,10 @@
+# Ignore all sub-dirs but inc/ and src/
+*/*
+!inc/*
+!src/*
+
+# Ignore additional files in root dir
+# Eclipse
+.project
+.cproject
+/Debug/
