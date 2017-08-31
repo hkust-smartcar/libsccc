@@ -53,6 +53,10 @@ public:
 		m_cursor_y = libutil::ClampVal<Uint>(0, row, m_max_text_y);
 	}
 
+	void SetCursorColumn(const uint8_t col) {
+		m_cursor_x = col;
+	}
+
 	void SetTextColor(const uint16_t color)
 	{
 		m_typewriter.SetTextColor(color);
