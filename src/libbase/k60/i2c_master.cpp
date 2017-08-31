@@ -541,15 +541,15 @@ vector<Byte> I2cMaster::GetBytes(const Byte slave_addr, const Byte reg_addr,
 	return bytes;
 }
 
-void I2cMaster::GetBytes(const Byte slave_addr, const uint16_t reg_addr, Byte *buf, const uint8_t size) {
-	STATE_GUARD(I2cMaster, { });
+bool I2cMaster::GetBytes(const Byte slave_addr, const uint16_t reg_addr, Byte *buf, const uint8_t size) {
+	STATE_GUARD(I2cMaster, false);
 
 	Start();
-	SEND_BYTE_GUARDED(slave_addr << 1, { });
-	SEND_BYTE_GUARDED(reg_addr >> 8, { });
-	SEND_BYTE_GUARDED(reg_addr & 0xFF, { });
+	SEND_BYTE_GUARDED(slave_addr << 1, false);
+	SEND_BYTE_GUARDED(reg_addr >> 8, false);
+	SEND_BYTE_GUARDED(reg_addr & 0xFF, false);
 	RepeatStart();
-	SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, { });
+	SEND_BYTE_GUARDED((slave_addr << 1) | 0x1, false);
 	for (uint8_t i = 0; i < size; ++i) {
 		Byte byte;
 		// NACK if last bit
