@@ -60,11 +60,11 @@ public:
 	}
 
 	bool GetByte(const Byte slave_addr, const Byte reg_addr, Byte *out_byte) override;
-	std::vector<Byte> GetBytes(const Byte slave_addr, const Byte reg_addr,
-			const uint8_t size) override;
+	std::vector<Byte> GetBytes(const Byte slave_addr, const Byte reg_addr, const uint8_t size) override;
+	void GetBytes(const Byte slave_addr, const uint16_t reg_addr, Byte *buf, const uint8_t size) override;
 	bool SendByte(const Byte slave_addr, const Byte reg_addr, const Byte byte) override;
-	bool SendBytes(const Byte slave_addr, const Byte reg_addr,
-			const Byte *bytes, const size_t size) override;
+	bool SendBytes(const Byte slave_addr, const Byte reg_addr, const Byte *bytes, const size_t size) override;
+	bool SendBytes(const Byte slave_addr, const uint16_t reg_addr, const Byte *bytes, const uint8_t size) override;
 
 private:
 	bool InitModule(const Pin::Name scl_pin, const Pin::Name sda_pin);
