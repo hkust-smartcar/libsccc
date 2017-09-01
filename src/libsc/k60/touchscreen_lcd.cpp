@@ -840,10 +840,10 @@ void TouchScreenLcd::Fill(int16_t sx, int16_t sy, int16_t ex, int16_t ey, uint16
 		sx = left_bound;
 	if (sy < upper_bound)
 		sy = upper_bound;
-	if (sx >= width)
-		sx = width - 1;
-	if (sy >= height)
-		sy = height - 1;
+	if (ex >= width)
+		ex = width - 1;
+	if (ey >= height)
+		ey = height - 1;
 	if (ey - sy > 16) {
 		uint16_t width = ex - sx;
 		uint16_t height = ey - sy;
@@ -866,23 +866,73 @@ void TouchScreenLcd::Fill(int16_t sx, int16_t sy, int16_t ex, int16_t ey, uint16
 	}
 }
 
-void TouchScreenLcd::Fill_Color_Buffer(int16_t sx, int16_t sy, int16_t ex, int16_t ey, const uint16_t *color) {
+void TouchScreenLcd::FillBuffer(int16_t sx, int16_t sy, uint16_t width, uint16_t height, const uint16_t zero_color, const uint16_t one_color, uint8_t* buf) {
+	int16_t original_sx = sx;
+	int16_t original_sy = sy;
+	int16_t original_ex = sx + width;
+	int16_t ex = original_ex;
+	int16_t original_ey = sy + height;
+	int16_t ey = original_ey;
 	if (sx < left_bound)
 		sx = left_bound;
 	if (sy < upper_bound)
 		sy = upper_bound;
-	if (sx >= width)
-		sx = width - 1;
-	if (sy >= height)
-		sy = height - 1;
+	if (ex >= width)
+		ex = width - 1;
+	if (ey >= height)
+		ey = height - 1;
+	uint16_t real_width = ex - sx;
+	uint16_t real_height = ey - sy;
+	Set_Window(sx, sy, real_width, real_height);
+	uint16_t len = (original_ex - original_sx) * (original_ey - original_sy);
+	LCD_CMD_ADDR = ramcmd;
+	uint16_t x = original_sx;
+	int8_t bit_pos = 7;
+	for (uint16_t i = 0; i < len; i++) {
+		if (x >= sx && original_sy >= sy) {
+			LCD_DATA_ADDR = buf[i] >> bit_pos & 0x1 ? one_color : zero_color;
+		}
+		if (--bit_pos < 0) {
+			bit_pos = 7;
+		}
+		x++;
+		if (x > original_ex) {
+			x = original_sx;
+			original_sy++;
+		}
+	}
+	Set_Window(0, 0, this->width, this->height);
+}
+
+void TouchScreenLcd::Fill_Color_Buffer(int16_t sx, int16_t sy, int16_t ex, int16_t ey, const uint16_t *color) {
+	int16_t original_sx = sx;
+	int16_t original_sy = sy;
+	int16_t original_ex = ex;
+	int16_t original_ey = ey;
+	if (sx < left_bound)
+		sx = left_bound;
+	if (sy < upper_bound)
+		sy = upper_bound;
+	if (ex >= width)
+		ex = width - 1;
+	if (ey >= height)
+		ey = height - 1;
 	if (ey - sy > 16) {
 		uint16_t width = ex - sx;
 		uint16_t height = ey - sy;
 		Set_Window(sx, sy, width, height);
-		uint16_t len = width * height;
+		uint16_t len = (original_ex - original_sx) * (original_ey - original_sy);
 		LCD_CMD_ADDR = ramcmd;
+		uint16_t x = original_sx;
 		for (uint16_t i = 0; i < len; i++) {
-			LCD_DATA_ADDR = color[i];
+			if (x >= sx && original_sy >= sy) {
+				LCD_DATA_ADDR = color[i];
+			}
+			x++;
+			if (x > original_ex) {
+				x = original_sx;
+				original_sy++;
+			}
 		}
 		Set_Window(0, 0, this->width, this->height);
 	} else {

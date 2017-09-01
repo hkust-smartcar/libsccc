@@ -105,6 +105,7 @@ public:
 	void Set_Window(uint16_t sx, uint16_t sy, uint16_t width, uint16_t height);
 	void Clear(uint16_t color);
 	void Fill(int16_t sx, int16_t sy, int16_t ex, int16_t ey, uint16_t color);
+	void FillBuffer(int16_t x, int16_t y, uint16_t width, uint16_t height, const uint16_t zero_color, const uint16_t one_color, uint8_t* buf);
 	void Fill_Color_Buffer(int16_t sx, int16_t sy, int16_t ex, int16_t ey, const uint16_t *color);
 	void DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 	void DrawRectangle(int16_t x1, int16_t y1, uint16_t x2, uint16_t y2);
