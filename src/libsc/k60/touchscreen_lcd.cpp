@@ -1164,7 +1164,7 @@ uint8_t TouchScreenLcd::GT9147_Send_Cfg(uint8_t mode) {
 }
 
 bool TouchScreenLcd::GT9147_WR_Reg(uint16_t reg, uint8_t *buf, uint8_t len) {
-	return touchscreen_i2c->GetBytes(0x14, reg, buf, len);
+	return touchscreen_i2c->SendBytes(0x14, reg, buf, len);
 //	uint8_t i;
 //	bool ret = 0;
 //	touchscreen_i2c->Start();
@@ -1182,7 +1182,7 @@ bool TouchScreenLcd::GT9147_WR_Reg(uint16_t reg, uint8_t *buf, uint8_t len) {
 }
 
 void TouchScreenLcd::GT9147_RD_Reg(uint16_t reg, uint8_t *buf, uint8_t len) {
-	touchscreen_i2c->SendBytes(0x14, reg, buf, len);
+	touchscreen_i2c->GetBytes(0x14, reg, buf, len);
 //	uint8_t i;
 //	touchscreen_i2c->Start();
 //	touchscreen_i2c->SendByte_(GT_CMD_WR);

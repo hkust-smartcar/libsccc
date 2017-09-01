@@ -37,6 +37,8 @@ void Cache::Init(const Config &config)
 	{
 		InitPc();
 		InitPs();
+		LMEM->PSCRMR&=~(LMEM_PSCRMR_R6_MASK);
+		LMEM->PCCRMR&=~(LMEM_PCCRMR_R6_MASK);
 	}
 	m_is_init = true;
 }
