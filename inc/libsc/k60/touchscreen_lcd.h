@@ -114,6 +114,7 @@ public:
 	void ShowNum(int16_t x, int16_t y, uint32_t num, uint8_t len, uint8_t size);
 	void ShowxNum(int16_t x, int16_t y, uint32_t num, uint8_t len, uint8_t size, uint8_t mode);
 	void ShowString(int16_t x, int16_t y, uint16_t width, uint16_t height, uint8_t size, char *p, uint8_t mode);
+	void ShowImage(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const unsigned char img[]);
 
 	uint16_t touch_x[5];
 	uint16_t touch_y[5];

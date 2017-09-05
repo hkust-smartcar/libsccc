@@ -598,7 +598,7 @@ TouchScreenLcd::TouchScreenLcd() {
 	Display_Dir(0);
 	libsc::System::DelayMs(100);
 	backlight->Set(true);
-	Clear(WHITE);
+	Clear(BLACK);
 
 	libbase::k60::I2cMaster::Config i2c_config;
 	i2c_config.scl_pin = libbase::k60::Pin::Name::kPtd8;
@@ -1197,6 +1197,20 @@ void TouchScreenLcd::ShowString(int16_t x, int16_t y, uint16_t width, uint16_t h
 			x = x0;
 		}
 		Set_Window(0, 0, this->width, this->height);
+	}
+}
+
+void TouchScreenLcd::ShowImage(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const unsigned char img[]) {
+	uint16_t temp_color;
+	Set_Window(x, y, width, height);
+	width *= 2;
+	LCD_CMD_ADDR = ramcmd;
+	for (uint16_t pos = 0; pos < height; pos++) {
+		for (uint16_t t = 0; t < width; t++) {
+			temp_color = img[pos * width + t] * 256 + img[pos * width + t + 1];
+			t++;
+			LCD_DATA_ADDR = temp_color;
+		}
 	}
 }
 

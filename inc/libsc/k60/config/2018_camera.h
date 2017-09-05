@@ -19,6 +19,8 @@
 //#define LIBSC_BUTTON1 libbase::k60::Pin::Name::kPtc12
 
 #define LIBSC_BUZZER0 libbase::k60::Pin::Name::kPta8
+#define LIBSC_PASSSIVE_BUZZER0_PIT_CHANNEL 1
+#define LIBSC_USE_PASSIVE_BUZZER 1
 //#define LIBSC_BUZZER_ACIVE_LEVEL 0
 
 #define LIBSC_ENCODER0_QDA libbase::k60::Pin::Name::kPta10
@@ -67,8 +69,8 @@
 #define LIBSC_OV77250_VSYNC libbase::k60::Pin::Name::kPta29
 #define LIBSC_OV77250_PCLK libbase::k60::Pin::Name::kPtb10
 #define LIBSC_OV77250_DATA0 libbase::k60::Pin::Name::kPtb0
-#define LIBSC_OV77250_SDA libbase::k60::Pin::Name::kPta25
-#define LIBSC_OV77250_SCL libbase::k60::Pin::Name::kPta26
+#define LIBSC_OV77250_SDA libbase::k60::Pin::Name::kPtb9
+#define LIBSC_OV77250_SCL libbase::k60::Pin::Name::kPtb8
 #define LIBSC_OV77250_DMA_CH 1
 
 #define LIBSC_SERVO0 libbase::k60::Pin::Name::kPta7
