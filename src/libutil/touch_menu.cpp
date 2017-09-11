@@ -15,86 +15,79 @@ Touch_Menu::Touch_Menu(libsc::k60::TouchScreenLcd* lcd, libbase::k60::Flash* fla
 	main_menu.menu_name = "main menu";
 }
 
-void Touch_Menu::AddItem(char *name, uint8_t *value, uint8_t interval, Menu *menu) {
+void Touch_Menu::AddItem(char *name, uint8_t *value, Menu *menu) {
 	Item item;
 	item.name = name;
 	item.type = uint8;
 	item.value_index = uint8_data.size();
 	uint8_data.push_back(value);
 	uint8_backup.push_back(*value);
-	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
 }
 
-void Touch_Menu::AddItem(char *name, int8_t *value, uint8_t interval, Menu *menu) {
+void Touch_Menu::AddItem(char *name, int8_t *value, Menu *menu) {
 	Item item;
 	item.name = name;
 	item.type = int8;
 	item.value_index = int8_data.size();
 	int8_data.push_back(value);
 	int8_backup.push_back(*value);
-	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
 }
 
-void Touch_Menu::AddItem(char *name, uint16_t *value, uint16_t interval, Menu *menu) {
+void Touch_Menu::AddItem(char *name, uint16_t *value, Menu *menu) {
 	Item item;
 	item.name = name;
 	item.type = uint16;
 	item.value_index = uint16_data.size();
 	uint16_data.push_back(value);
 	uint16_backup.push_back(*value);
-	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
 }
 
-void Touch_Menu::AddItem(char *name, int16_t *value, uint16_t interval, Menu *menu) {
+void Touch_Menu::AddItem(char *name, int16_t *value, Menu *menu) {
 	Item item;
 	item.name = name;
 	item.type = int16;
 	item.value_index = int16_data.size();
 	int16_data.push_back(value);
 	int16_backup.push_back(*value);
-	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
 }
 
-void Touch_Menu::AddItem(char *name, uint32_t *value, uint32_t interval, Menu *menu) {
+void Touch_Menu::AddItem(char *name, uint32_t *value, Menu *menu) {
 	Item item;
 	item.name = name;
 	item.type = uint32;
 	item.value_index = uint32_data.size();
 	uint32_data.push_back(value);
 	uint32_backup.push_back(*value);
-	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
 }
 
-void Touch_Menu::AddItem(char *name, int32_t *value, uint32_t interval, Menu *menu) {
+void Touch_Menu::AddItem(char *name, int32_t *value, Menu *menu) {
 	Item item;
 	item.name = name;
 	item.type = int32;
 	item.value_index = int32_data.size();
 	int32_data.push_back(value);
 	int32_backup.push_back(*value);
-	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
 }
 
-void Touch_Menu::AddItem(char *name, float *value, float interval, Menu *menu) {
+void Touch_Menu::AddItem(char *name, float *value, Menu *menu) {
 	Item item;
 	item.name = name;
 	item.type = flp;
 	item.value_index = float_data.size();
 	float_data.push_back(value);
 	float_backup.push_back(*value);
-	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
 }
@@ -106,7 +99,6 @@ void Touch_Menu::AddItem(char *name, bool *value, char *true_text, char *false_t
 	item.value_index = bool_data.size();
 	bool_data.push_back(value);
 	bool_backup.push_back(*value);
-	item.interval = 1;
 	item.true_text = true_text;
 	item.false_text = false_text;
 	menu->menu_items.push_back(item);
@@ -282,7 +274,15 @@ void Touch_Menu::MenuAction(Menu *menu) {
 					}
 				} else {
 					lcd->upper_bound = y;
-					ChangeItemValue(menu->menu_items[first_item_num + (tapped_y - first_row_y) / char_size]);
+					if (menu->menu_items[first_item_num + (tapped_y - first_row_y) / char_size].type == var_type::func) {
+						lcd->Clear(libsc::k60::TouchScreenLcd::BLACK);
+						lcd->POINT_COLOR = libsc::k60::TouchScreenLcd::WHITE;
+						lcd->BACK_COLOR = libsc::k60::TouchScreenLcd::BLACK;
+						std::function < void() > f = func_vector[menu->menu_items[first_item_num + (tapped_y - first_row_y) / char_size].value_index];
+						f();
+					} else {
+						ChangeItemValue(menu->menu_items[first_item_num + (tapped_y - first_row_y) / char_size]);
+					}
 					tapped = false;
 					lcd->Clear(libsc::k60::TouchScreenLcd::BLACK);
 					lcd->POINT_COLOR = libsc::k60::TouchScreenLcd::WHITE;

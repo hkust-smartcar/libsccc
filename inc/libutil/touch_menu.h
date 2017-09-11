@@ -36,7 +36,6 @@ private:
 		char* name = nullptr;
 		var_type type = menu;
 		uint8_t value_index = 0;
-		float interval = 0;
 		char* true_text = nullptr;
 		char* false_text = nullptr;
 		Menu* sub_menu = nullptr;
@@ -66,13 +65,13 @@ public:
 	 *
 	 * @param *menu the menu you want the item add in
 	 */
-	void AddItem(char* name, uint8_t* value, uint8_t interval, Menu* menu);
-	void AddItem(char* name, int8_t* value, uint8_t interval, Menu* menu);
-	void AddItem(char* name, uint16_t* value, uint16_t interval, Menu* menu);
-	void AddItem(char* name, int16_t* value, uint16_t interval, Menu* menu);
-	void AddItem(char* name, uint32_t* value, uint32_t interval, Menu* menu);
-	void AddItem(char* name, int32_t* value, uint32_t interval, Menu* menu);
-	void AddItem(char* name, float* value, float interval, Menu* menu);
+	void AddItem(char* name, uint8_t* value, Menu* menu);
+	void AddItem(char* name, int8_t* value, Menu* menu);
+	void AddItem(char* name, uint16_t* value, Menu* menu);
+	void AddItem(char* name, int16_t* value, Menu* menu);
+	void AddItem(char* name, uint32_t* value, Menu* menu);
+	void AddItem(char* name, int32_t* value, Menu* menu);
+	void AddItem(char* name, float* value, Menu* menu);
 	void AddItem(char* name, bool* value, char* true_text, char* false_text, Menu* menu);
 	void AddItem(char* menu_name, Menu* menu);
 	void AddItem(char* name, std::function<void()> f, Menu* menu);

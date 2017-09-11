@@ -866,7 +866,7 @@ void TouchScreenLcd::Fill(int16_t sx, int16_t sy, int16_t ex, int16_t ey, uint16
 	}
 }
 
-void TouchScreenLcd::FillBuffer(int16_t sx, int16_t sy, uint16_t width, uint16_t height, const uint16_t zero_color, const uint16_t one_color, uint8_t* buf) {
+void TouchScreenLcd::FillBuffer(int16_t sx, int16_t sy, uint16_t width, uint16_t height, const uint16_t zero_color, const uint16_t one_color, const uint8_t* buf) {
 	int16_t original_sx = sx;
 	int16_t original_sy = sy;
 	int16_t original_ex = sx + width;
