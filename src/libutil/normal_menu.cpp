@@ -6,7 +6,7 @@
  *
  * Author: Leslie (LeeChunHei)
  *
- * Implementation for Menu (v1.0) class.
+ * Implementation for Menu (v1.1) class.
  *
  */
 
@@ -14,10 +14,11 @@
 
 namespace libutil {
 
-Menu::Menu(libsc::St7735r *lcd, libsc::LcdConsole *console, libsc::Joystick *joystick, libbase::k60::Flash *flash) {
+Menu::Menu(libsc::St7735r *lcd, libsc::LcdConsole *console, libsc::Joystick *joystick, libsc::BatteryMeter *battery_meter, libbase::k60::Flash *flash) {
 	this->lcd = lcd;
 	this->console = console;
 	this->joystick = joystick;
+	this->battery_meter = battery_meter;
 	this->flash = flash;
 	main_menu.menu_name = "main menu";
 }
@@ -28,6 +29,7 @@ void Menu::AddItem(char *name, uint8_t *value, uint8_t interval, Items *menu) {
 	item.type = uint8;
 	item.value_index = uint8_data.size();
 	uint8_data.push_back(value);
+	uint8_backup.push_back(*value);
 	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
@@ -39,6 +41,7 @@ void Menu::AddItem(char *name, int8_t *value, uint8_t interval, Items *menu) {
 	item.type = int8;
 	item.value_index = int8_data.size();
 	int8_data.push_back(value);
+	int8_backup.push_back(*value);
 	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
@@ -50,6 +53,7 @@ void Menu::AddItem(char *name, uint16_t *value, uint16_t interval, Items *menu) 
 	item.type = uint16;
 	item.value_index = uint16_data.size();
 	uint16_data.push_back(value);
+	uint16_backup.push_back(*value);
 	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
@@ -61,6 +65,7 @@ void Menu::AddItem(char *name, int16_t *value, uint16_t interval, Items *menu) {
 	item.type = int16;
 	item.value_index = int16_data.size();
 	int16_data.push_back(value);
+	int16_backup.push_back(*value);
 	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
@@ -72,6 +77,7 @@ void Menu::AddItem(char *name, uint32_t *value, uint32_t interval, Items *menu) 
 	item.type = uint32;
 	item.value_index = uint32_data.size();
 	uint32_data.push_back(value);
+	uint32_backup.push_back(*value);
 	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
@@ -83,6 +89,7 @@ void Menu::AddItem(char *name, int32_t *value, uint32_t interval, Items *menu) {
 	item.type = int32;
 	item.value_index = int32_data.size();
 	int32_data.push_back(value);
+	int32_backup.push_back(*value);
 	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
@@ -94,6 +101,7 @@ void Menu::AddItem(char *name, float *value, float interval, Items *menu) {
 	item.type = flp;
 	item.value_index = float_data.size();
 	float_data.push_back(value);
+	float_backup.push_back(*value);
 	item.interval = (float) interval;
 	menu->menu_items.push_back(item);
 	flash_sum += sizeof(*value);
@@ -105,6 +113,7 @@ void Menu::AddItem(char *name, bool *value, char *true_text, char *false_text, I
 	item.type = boolean;
 	item.value_index = bool_data.size();
 	bool_data.push_back(value);
+	bool_backup.push_back(*value);
 	item.interval = 1;
 	item.true_text = true_text;
 	item.false_text = false_text;
@@ -135,9 +144,8 @@ void Menu::EnterMenu(Items *menu) {
 	if (menu == &this->main_menu && joystick->GetState() == libsc::Joystick::State::kSelect) {
 		Reset();
 	}
-	if (menu == &this->main_menu) {
+	if (menu == &this->main_menu)
 		Load();
-	}
 	console->Clear(true);
 	focus = 0;
 	item_selected = false;
@@ -153,6 +161,28 @@ void Menu::EnterMenu(Items *menu) {
 	for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
 		PrintItem(menu->menu_items[i], i);
 	}
+	console->SetBgColor(libsc::Lcd::kGray);
+	console->SetCursorRow(9);
+	console->WriteString("               ");
+	char min[2] = { };
+	char sec[2] = { };
+	libsc::Timer::TimerInt time_now = libsc::System::Time();
+	time_now /= 1000;
+	sprintf(min, "%d", time_now / 60);
+	if (strlen(min) == 1)
+		console->WriteChar('0');
+	console->WriteString(min);
+	console->WriteChar(':');
+	sprintf(sec, "%d", time_now % 60);
+	if (strlen(sec) == 1)
+		console->WriteChar('0');
+	console->WriteString(sec);
+	char voltage_string[5] = { };
+	float voltage = battery_meter->GetVoltage();
+	console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
+	sprintf(voltage_string, "%.2fV", voltage);
+	console->SetCursorColumn(11);
+	console->WriteString(voltage_string);
 	MenuAction(menu);
 	Save();
 }
@@ -242,151 +272,196 @@ void Menu::MenuAction(Items *menu) {
 	focus = 0;
 	libsc::Timer::TimerInt last_trigger_time = libsc::System::Time();
 	libsc::Joystick::State joystick_state;
+	libsc::Timer::TimerInt time = libsc::System::Time();
 	while (1) {
-		joystick_state = joystick->GetState();
-		switch (joystick_state) {
-		case libsc::Joystick::State::kDown:
-			item_selected = false;
-			focus++;
-			if (focus == menu->menu_items.size()) {
-				focus = 0;
-				console->SetBgColor(libsc::Lcd::kBlack);
-				console->SetTextColor(libsc::Lcd::kWhite);
-				console->SetCursorRow(1);
-				console->WriteString("                                                                                                                                       ");
-				for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
-					PrintItem(menu->menu_items[i], i);
-				}
-			} else if (focus != 0 && focus % max_row == 0) {
-				console->SetBgColor(libsc::Lcd::kBlack);
-				console->SetTextColor(libsc::Lcd::kWhite);
-				console->SetCursorRow(1);
-				console->WriteString("                                                                                                                                       ");
-				for (uint8_t i = 0; i < max_row && i + focus < menu->menu_items.size(); i++) {
-					PrintItem(menu->menu_items[i + focus], i);
-				}
-			} else {
-				PrintItem(menu->menu_items[focus - 1], focus % max_row - 1);
-				PrintItem(menu->menu_items[focus], focus % max_row);
+		while (time != libsc::System::Time()) {
+			time = libsc::System::Time();
+			if (!time % 1000) {
+				console->SetBgColor(libsc::Lcd::kGray);
+				console->SetCursorRow(9);
+				console->WriteString("               ");
+				char min[2] = { };
+				char sec[2] = { };
+				time /= 1000;
+				sprintf(min, "%d", time / 60);
+				if (strlen(min) == 1)
+					console->WriteChar('0');
+				console->WriteString(min);
+				console->WriteChar(':');
+				sprintf(sec, "%d", time % 60);
+				if (strlen(sec) == 1)
+					console->WriteChar('0');
+				console->WriteString(sec);
+				char voltage_string[5] = { };
+				float voltage = battery_meter->GetVoltage();
+				console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
+				sprintf(voltage_string, "%.2fV", voltage);
+				console->SetCursorColumn(11);
+				console->WriteString(voltage_string);
 			}
-			break;
-		case libsc::Joystick::State::kUp:
-			item_selected = false;
-			focus--;
-			if (focus < 0) {
-				focus = menu->menu_items.size() - 1;
-				console->SetBgColor(libsc::Lcd::kBlack);
-				console->SetTextColor(libsc::Lcd::kWhite);
-				console->SetCursorRow(1);
-				console->WriteString("                                                                                                                                       ");
-				for (uint8_t i = 0; i < max_row && focus - focus % max_row + i < menu->menu_items.size(); i++) {
-					PrintItem(menu->menu_items[focus - focus % max_row + i], i);
+			joystick_state = joystick->GetState();
+			switch (joystick_state) {
+			case libsc::Joystick::State::kDown:
+				item_selected = false;
+				focus++;
+				if (focus == menu->menu_items.size()) {
+					focus = 0;
+					console->SetBgColor(libsc::Lcd::kBlack);
+					console->SetTextColor(libsc::Lcd::kWhite);
+					console->SetCursorRow(1);
+					console->WriteString("                                                                                                                                       ");
+					for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
+						PrintItem(menu->menu_items[i], i);
+					}
+				} else if (focus != 0 && focus % max_row == 0) {
+					console->SetBgColor(libsc::Lcd::kBlack);
+					console->SetTextColor(libsc::Lcd::kWhite);
+					console->SetCursorRow(1);
+					console->WriteString("                                                                                                                                       ");
+					for (uint8_t i = 0; i < max_row && i + focus < menu->menu_items.size(); i++) {
+						PrintItem(menu->menu_items[i + focus], i);
+					}
+				} else {
+					PrintItem(menu->menu_items[focus - 1], focus % max_row - 1);
+					PrintItem(menu->menu_items[focus], focus % max_row);
 				}
-			} else if (focus % max_row == 8) {
-				console->SetBgColor(libsc::Lcd::kBlack);
-				console->SetTextColor(libsc::Lcd::kWhite);
-				console->SetCursorRow(1);
-				console->WriteString("                                                                                                                                       ");
-				for (uint8_t i = 0; i < max_row && focus - focus % max_row + i < menu->menu_items.size(); i++) {
-					PrintItem(menu->menu_items[focus - focus % max_row + i], i);
+				break;
+			case libsc::Joystick::State::kUp:
+				item_selected = false;
+				focus--;
+				if (focus < 0) {
+					focus = menu->menu_items.size() - 1;
+					console->SetBgColor(libsc::Lcd::kBlack);
+					console->SetTextColor(libsc::Lcd::kWhite);
+					console->SetCursorRow(1);
+					console->WriteString("                                                                                                                                       ");
+					for (uint8_t i = 0; i < max_row && focus - focus % max_row + i < menu->menu_items.size(); i++) {
+						PrintItem(menu->menu_items[focus - focus % max_row + i], i);
+					}
+				} else if (focus % max_row == 8) {
+					console->SetBgColor(libsc::Lcd::kBlack);
+					console->SetTextColor(libsc::Lcd::kWhite);
+					console->SetCursorRow(1);
+					console->WriteString("                                                                                                                                       ");
+					for (uint8_t i = 0; i < max_row && focus - focus % max_row + i < menu->menu_items.size(); i++) {
+						PrintItem(menu->menu_items[focus - focus % max_row + i], i);
+					}
+				} else {
+					PrintItem(menu->menu_items[focus + 1], focus % max_row + 1);
+					PrintItem(menu->menu_items[focus], focus % max_row);
 				}
-			} else {
-				PrintItem(menu->menu_items[focus + 1], focus % max_row + 1);
-				PrintItem(menu->menu_items[focus], focus % max_row);
-			}
-			break;
-		case libsc::Joystick::State::kLeft:
-			if (item_selected) {
-				switch (menu->menu_items[focus].type) {
-				case var_type::boolean:
-					*bool_data[menu->menu_items[focus].value_index] = !*bool_data[menu->menu_items[focus].value_index];
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::flp:
-					*float_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::int16:
-					*int16_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::int32:
-					*int32_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::int8:
-					*int8_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::menu:
-					break;
-				case var_type::uint16:
-					*uint16_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::uint32:
-					*uint32_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::uint8:
-					*uint8_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::func:
-					break;
+				break;
+			case libsc::Joystick::State::kLeft:
+				if (item_selected) {
+					switch (menu->menu_items[focus].type) {
+					case var_type::boolean:
+						*bool_data[menu->menu_items[focus].value_index] = !*bool_data[menu->menu_items[focus].value_index];
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::flp:
+						*float_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::int16:
+						*int16_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::int32:
+						*int32_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::int8:
+						*int8_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::menu:
+						break;
+					case var_type::uint16:
+						*uint16_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::uint32:
+						*uint32_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::uint8:
+						*uint8_data[menu->menu_items[focus].value_index] -= menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::func:
+						break;
+					}
+				} else {
+					return;
 				}
-			} else {
-				return;
-			}
-			break;
-		case libsc::Joystick::State::kRight:
-			if (item_selected) {
-				switch (menu->menu_items[focus].type) {
-				case var_type::boolean:
-					*bool_data[menu->menu_items[focus].value_index] = !*bool_data[menu->menu_items[focus].value_index];
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::flp:
-					*float_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::int16:
-					*int16_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::int32:
-					*int32_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::int8:
-					*int8_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::menu:
-					break;
-				case var_type::uint16:
-					*uint16_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::uint32:
-					*uint32_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::uint8:
-					*uint8_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
-					PrintItem(menu->menu_items[focus], focus % max_row);
-					break;
-				case var_type::func:
-					break;
+				break;
+			case libsc::Joystick::State::kRight:
+				if (item_selected) {
+					switch (menu->menu_items[focus].type) {
+					case var_type::boolean:
+						*bool_data[menu->menu_items[focus].value_index] = !*bool_data[menu->menu_items[focus].value_index];
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::flp:
+						*float_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::int16:
+						*int16_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::int32:
+						*int32_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::int8:
+						*int8_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::menu:
+						break;
+					case var_type::uint16:
+						*uint16_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::uint32:
+						*uint32_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::uint8:
+						*uint8_data[menu->menu_items[focus].value_index] += menu->menu_items[focus].interval;
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						break;
+					case var_type::func:
+						break;
+					}
 				}
-			}
-			break;
-		case libsc::Joystick::State::kSelect:
-			item_selected = !item_selected;
-			if (item_selected && menu->menu_items[focus].type == var_type::menu) {
-				if (menu->menu_items[focus].sub_menu != nullptr) {
+				break;
+			case libsc::Joystick::State::kSelect:
+				item_selected = !item_selected;
+				if (item_selected && menu->menu_items[focus].type == var_type::menu) {
+					if (menu->menu_items[focus].sub_menu != nullptr) {
+						Save();
+						EnterMenu(menu->menu_items[focus].sub_menu);
+						item_selected = false;
+						focus = 0;
+						console->SetBgColor(libsc::Lcd::kBlue);
+						console->SetTextColor(libsc::Lcd::kWhite);
+						console->SetCursorRow(0);
+						console->WriteString("               ");
+						console->SetCursorRow(0);
+						console->SetCursorColumn((15 - strlen(menu->menu_name)) / 2);
+						console->WriteString(menu->menu_name);
+						console->SetBgColor(libsc::Lcd::kBlack);
+						console->SetTextColor(libsc::Lcd::kWhite);
+						for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
+							PrintItem(menu->menu_items[i], i);
+						}
+					}
+				} else if (item_selected && menu->menu_items[focus].type == var_type::func) {
 					Save();
-					EnterMenu(menu->menu_items[focus].sub_menu);
+					std::function < void() > f = func_vector[menu->menu_items[focus].value_index];
+					f();
 					item_selected = false;
 					focus = 0;
 					console->SetBgColor(libsc::Lcd::kBlue);
@@ -402,50 +477,100 @@ void Menu::MenuAction(Items *menu) {
 						PrintItem(menu->menu_items[i], i);
 					}
 				}
-			} else if (item_selected && menu->menu_items[focus].type == var_type::func) {
-				Save();
-				std::function<void()> f = func_vector[menu->menu_items[focus].value_index];
-				f();
-				item_selected = false;
-				focus = 0;
-				console->SetBgColor(libsc::Lcd::kBlue);
-				console->SetTextColor(libsc::Lcd::kWhite);
-				console->SetCursorRow(0);
+				{
+				PrintItem(menu->menu_items[focus], focus % max_row);
+				console->SetBgColor(libsc::Lcd::kGray);
+				console->SetCursorRow(9);
 				console->WriteString("               ");
-				console->SetCursorRow(0);
-				console->SetCursorColumn((15 - strlen(menu->menu_name)) / 2);
-				console->WriteString(menu->menu_name);
-				console->SetBgColor(libsc::Lcd::kBlack);
-				console->SetTextColor(libsc::Lcd::kWhite);
-				for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
-					PrintItem(menu->menu_items[i], i);
+					char min[2] = { };
+					char sec[2] = { };
+				time /= 1000;
+					sprintf(min, "%d", time / 60);
+					if (strlen(min) == 1)
+					console->WriteChar('0');
+					console->WriteString(min);
+				console->WriteChar(':');
+					sprintf(sec, "%d", time % 60);
+					if (strlen(sec) == 1)
+					console->WriteChar('0');
+					console->WriteString(sec);
+					char voltage_string[5] = { };
+					float voltage = battery_meter->GetVoltage();
+					console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
+					sprintf(voltage_string, "%.2fV", voltage);
+				console->SetCursorColumn(11);
+					console->WriteString(voltage_string);
 				}
+				break;
+			case libsc::Joystick::State::kIdle:
+				break;
 			}
-			PrintItem(menu->menu_items[focus], focus % max_row);
-			break;
-		case libsc::Joystick::State::kIdle:
-			break;
-		}
-		if (joystick_state == libsc::Joystick::State::kIdle) {
-			libsc::System::DelayMs(100);
-		} else if (joystick_state == libsc::Joystick::State::kSelect) {
-			libsc::System::DelayMs(250);
-		} else {
-			last_trigger_time = libsc::System::Time() - last_trigger_time;
-			if (last_trigger_time < 60) {
-				libsc::System::DelayMs(45);
-			} else if (last_trigger_time < 110) {
-				libsc::System::DelayMs(50);
-			} else if (last_trigger_time < 160) {
+			if (joystick_state == libsc::Joystick::State::kIdle) {
 				libsc::System::DelayMs(100);
-			} else if (last_trigger_time < 210) {
-				libsc::System::DelayMs(150);
-			} else if (last_trigger_time < 260) {
-				libsc::System::DelayMs(200);
-			} else {
+			} else if (joystick_state == libsc::Joystick::State::kSelect) {
 				libsc::System::DelayMs(250);
-			}
-			last_trigger_time = libsc::System::Time();
+				if (joystick->GetState() == libsc::Joystick::State::kSelect) {
+					libsc::System::DelayMs(250);
+					if (joystick->GetState() == libsc::Joystick::State::kSelect) {
+						Reset();
+						Load();
+						item_selected = false;
+						focus = 0;
+						console->SetBgColor(libsc::Lcd::kBlue);
+						console->SetTextColor(libsc::Lcd::kWhite);
+						console->SetCursorRow(0);
+						console->WriteString("               ");
+						console->SetCursorRow(0);
+						console->SetCursorColumn((15 - strlen(menu->menu_name)) / 2);
+						console->WriteString(menu->menu_name);
+						console->SetBgColor(libsc::Lcd::kBlack);
+						console->SetTextColor(libsc::Lcd::kWhite);
+						for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
+							PrintItem(menu->menu_items[i], i);
+						}
+						{
+							PrintItem(menu->menu_items[focus], focus % max_row);
+							console->SetBgColor(libsc::Lcd::kGray);
+							console->SetCursorRow(9);
+							console->WriteString("               ");
+							char min[2] = { };
+							char sec[2] = { };
+							time /= 1000;
+							sprintf(min, "%d", time / 60);
+							if (strlen(min) == 1)
+								console->WriteChar('0');
+							console->WriteString(min);
+							console->WriteChar(':');
+							sprintf(sec, "%d", time % 60);
+							if (strlen(sec) == 1)
+								console->WriteChar('0');
+							console->WriteString(sec);
+							char voltage_string[5] = { };
+							float voltage = battery_meter->GetVoltage();
+							console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
+							sprintf(voltage_string, "%.2fV", voltage);
+							console->SetCursorColumn(11);
+							console->WriteString(voltage_string);
+						}
+					}
+				}
+			} else {
+				last_trigger_time = libsc::System::Time() - last_trigger_time;
+				if (last_trigger_time < 60) {
+					libsc::System::DelayMs(45);
+				} else if (last_trigger_time < 110) {
+					libsc::System::DelayMs(50);
+				} else if (last_trigger_time < 160) {
+					libsc::System::DelayMs(100);
+				} else if (last_trigger_time < 210) {
+					libsc::System::DelayMs(150);
+				} else if (last_trigger_time < 260) {
+					libsc::System::DelayMs(200);
+				} else {
+					libsc::System::DelayMs(250);
+				}
+				last_trigger_time = libsc::System::Time();
+			}	
 		}
 	}
 }
@@ -578,6 +703,8 @@ void Menu::Save() {
 }
 
 void Menu::Reset() {
+	if (flash == nullptr)
+		return;
 	bool reset = false;
 	console->Clear(true);
 	console->SetBgColor(libsc::Lcd::kRed);
@@ -645,7 +772,59 @@ void Menu::Reset() {
 			break;
 		case libsc::Joystick::State::kSelect:
 			if (reset) {
-				Save();
+				int start = 0;
+				Byte *buff = new Byte[flash_sum];
+				for (int i = 0; i < uint8_backup.size(); i++) {
+					uint8_t value = uint8_backup[i];
+					uint8_t* v = &value;
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < uint16_backup.size(); i++) {
+					uint16_t value = uint16_backup[i];
+					uint16_t* v = &value;
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < uint32_backup.size(); i++) {
+					uint32_t value = uint32_backup[i];
+					uint32_t* v = &value;
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < int8_backup.size(); i++) {
+					int8_t value = int8_backup[i];
+					int8_t* v = &value;
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < int16_backup.size(); i++) {
+					int16_t value = int16_backup[i];
+					int16_t* v = &value;
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < int32_backup.size(); i++) {
+					int32_t value = int32_backup[i];
+					int32_t* v = &value;
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < float_backup.size(); i++) {
+					float value = float_backup[i];
+					float* v = &value;
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < bool_backup.size(); i++) {
+					bool value = bool_backup[i];
+					bool* v = &value;
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				flash->Write(buff, flash_sum);
+				libsc::System::DelayMs(100);
+				delete buff;
 				libsc::System::DelayMs(300);
 				return;
 			} else {

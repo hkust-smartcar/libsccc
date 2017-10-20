@@ -6,7 +6,7 @@
  *
  * Author: Leslie (LeeChunHei)
  *
- * Menu (v1.0) class
+ * Menu (v1.1) class
  * Console-based GUI for value tuning.
  *
  */
@@ -21,11 +21,14 @@
 #include <memory>
 #include <libsc/system.h>
 #include <libsc/joystick.h>
+#include <libsc/battery_meter.h>
 #include <libsc/st7735r.h>
 #include <libsc/lcd_console.h>
 #include <libbase/k60/flash.h>
 
 namespace libutil {
+
+using namespace std;
 
 class Menu {
 private:
@@ -62,8 +65,9 @@ public:
 	/*
 	 * Default contructor
 	 * Pass lcd, lcd console, joystick and flash(keep the data memory even the device shut down) into menu class
+	 * Pass flash as nullptr if don't want the data saved at flash
 	 */
-	Menu(libsc::St7735r *lcd, libsc::LcdConsole *console, libsc::Joystick *joystick, libbase::k60::Flash *flash);
+	Menu(libsc::St7735r *lcd, libsc::LcdConsole *console, libsc::Joystick *joystick, libsc::BatteryMeter *battery_meter, libbase::k60::Flash *flash);
 
 	Items main_menu;
 
@@ -93,8 +97,9 @@ private:
 	libsc::St7735r *lcd;
 	libsc::LcdConsole *console;
 	uint8_t max_string_width = 15; //first char count as one
-	uint8_t max_row = 9; //first row count as one
+	uint8_t max_row = 8; //first row count as one
 	libsc::Joystick *joystick;
+	libsc::BatteryMeter *battery_meter;
 	libbase::k60::Flash *flash;
 	uint16_t flash_sum = 0;
 	std::vector<uint8_t*> uint8_data;
@@ -105,6 +110,14 @@ private:
 	std::vector<int32_t*> int32_data;
 	std::vector<float*> float_data;
 	std::vector<bool*> bool_data;
+	std::vector<uint8_t> uint8_backup;
+	std::vector<int8_t> int8_backup;
+	std::vector<uint16_t> uint16_backup;
+	std::vector<int16_t> int16_backup;
+	std::vector<uint32_t> uint32_backup;
+	std::vector<int32_t> int32_backup;
+	std::vector<float> float_backup;
+	std::vector<bool> bool_backup;
 	std::vector<std::function<void()>> func_vector;
 	int8_t focus = 0;
 	bool item_selected = false;

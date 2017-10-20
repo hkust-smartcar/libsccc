@@ -12,7 +12,7 @@
 
 #include "libsc/timer.h"
 
-//#define USE_TIME_IN_125US
+#define USE_TIME_IN_125US
 
 namespace libsc
 {
