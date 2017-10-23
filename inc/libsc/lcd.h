@@ -28,7 +28,8 @@ public:
 
 		Rect() = default;
 		Rect(const Uint x, const Uint y, const Uint w, const Uint h)
-				: x(x), y(y), w(w), h(h)
+				:
+				x(x), y(y), w(w), h(h)
 		{}
 	};
 

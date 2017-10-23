@@ -86,6 +86,12 @@ bool Ov7725Configurator::Verify()
 	return (pid == 0x77 && ver == 0x21);
 }
 
+void Ov7725Configurator::ChangeSecialDigitalEffect(uint8_t brightness, uint8_t contrast) {
+	m_sccb.SendByte(OV7725_SLAVE_ADDR, OV7725_SDE, 0x04);
+	m_sccb.SendByte(OV7725_SLAVE_ADDR, OV7725_BRIGHT, brightness);
+	m_sccb.SendByte(OV7725_SLAVE_ADDR, OV7725_CNST, contrast);
+}
+
 void Ov7725Configurator::InitCom2Reg()
 {
 	uint8_t reg = 0;

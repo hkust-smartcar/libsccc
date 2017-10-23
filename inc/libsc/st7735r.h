@@ -88,17 +88,17 @@ public:
 
 	static constexpr Uint GetW()
 	{
-		return kW;
+		return kW - 2;
 	}
 
 	static constexpr Uint GetH()
 	{
-		return kH;
+		return kH - 1;
 	}
 
 private:
-	static constexpr Uint kW = 128;
-	static constexpr Uint kH = 160;
+	static constexpr Uint kW = 130;
+	static constexpr Uint kH = 161;
 
 	void InitMadctl(const Config &config);
 	void InitFrmctr(const Config &config);

@@ -39,7 +39,7 @@ LcdConsole::LcdConsole(const Config &config)
 		  m_region(config.region),
 		  m_cursor_x(0),
 		  m_cursor_y(0),
-		  m_max_text_x(std::max<Uint>(m_region.w / LcdTypewriter::GetFontW(), 1)),
+		  m_max_text_x(std::max < Uint > (m_region.w / LcdTypewriter::GetFontW(), 1)),
 		  m_max_text_y(std::max<Uint>(m_region.h / LcdTypewriter::GetFontH(), 1)),
 		  m_buffer(new CellData[m_max_text_x * m_max_text_y])
 {

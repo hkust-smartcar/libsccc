@@ -70,6 +70,8 @@ public:
 
 	bool Verify();
 
+	void ChangeSecialDigitalEffect(uint8_t brightness, uint8_t contrast);
+
 private:
 	void InitCom2Reg();
 	void InitCom3Reg();

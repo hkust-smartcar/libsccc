@@ -74,6 +74,10 @@ public:
 	const Byte* LockBuffer();
 	void UnlockBuffer();
 
+	void ChangeSecialDigitalEffect(uint8_t brightness, uint8_t contrast) {
+		m_config.ChangeSecialDigitalEffect(brightness, contrast);
+	}
+	
 	Uint GetW() const
 	{
 		return m_w;

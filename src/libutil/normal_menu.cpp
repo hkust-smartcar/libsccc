@@ -152,9 +152,9 @@ void Menu::EnterMenu(Items *menu) {
 	console->SetBgColor(libsc::Lcd::kBlue);
 	console->SetTextColor(libsc::Lcd::kWhite);
 	console->SetCursorRow(0);
-	console->WriteString("               ");
+	console->WriteString("                ");
 	console->SetCursorRow(0);
-	console->SetCursorColumn((15 - strlen(menu->menu_name)) / 2);
+	console->SetCursorColumn((16 - strlen(menu->menu_name)) / 2);
 	console->WriteString(menu->menu_name);
 	console->SetBgColor(libsc::Lcd::kBlack);
 	console->SetTextColor(libsc::Lcd::kWhite);
@@ -163,7 +163,8 @@ void Menu::EnterMenu(Items *menu) {
 	}
 	console->SetBgColor(libsc::Lcd::kGray);
 	console->SetCursorRow(9);
-	console->WriteString("               ");
+	console->WriteString("                ");
+	console->SetCursorRow(9);
 	char min[2] = { };
 	char sec[2] = { };
 	libsc::Timer::TimerInt time_now = libsc::System::Time();
@@ -183,6 +184,8 @@ void Menu::EnterMenu(Items *menu) {
 	sprintf(voltage_string, "%.2fV", voltage);
 	console->SetCursorColumn(11);
 	console->WriteString(voltage_string);
+	console->SetBgColor(libsc::Lcd::kBlack);
+	console->SetTextColor(libsc::Lcd::kWhite);
 	MenuAction(menu);
 	Save();
 }
@@ -204,10 +207,10 @@ void Menu::PrintItem(Item item, uint8_t row) {
 			}
 			console->SetTextColor(libsc::Lcd::kBlack);
 		}
-		console->WriteString("               ");
+		console->WriteString("                ");
 		console->SetCursorRow(row + 1);
 		console->WriteString(item.name);
-		space_needed = 15 - strlen(item.name);
+		space_needed = 16 - strlen(item.name);
 		switch (item.type) {
 		case var_type::boolean:
 			break;
@@ -276,14 +279,17 @@ void Menu::MenuAction(Items *menu) {
 	while (1) {
 		while (time != libsc::System::Time()) {
 			time = libsc::System::Time();
-			if (!time % 1000) {
+			joystick_state = joystick->GetState();
+			if (time % 1000 == 0) {
 				console->SetBgColor(libsc::Lcd::kGray);
 				console->SetCursorRow(9);
-				console->WriteString("               ");
+				console->WriteString("                ");
+				console->SetCursorRow(9);
 				char min[2] = { };
 				char sec[2] = { };
 				time /= 1000;
 				sprintf(min, "%d", time / 60);
+				console->SetTextColor(libsc::Lcd::kWhite);
 				if (strlen(min) == 1)
 					console->WriteChar('0');
 				console->WriteString(min);
@@ -298,8 +304,9 @@ void Menu::MenuAction(Items *menu) {
 				sprintf(voltage_string, "%.2fV", voltage);
 				console->SetCursorColumn(11);
 				console->WriteString(voltage_string);
+				console->SetBgColor(libsc::Lcd::kBlack);
+				console->SetTextColor(libsc::Lcd::kWhite);
 			}
-			joystick_state = joystick->GetState();
 			switch (joystick_state) {
 			case libsc::Joystick::State::kDown:
 				item_selected = false;
@@ -309,17 +316,73 @@ void Menu::MenuAction(Items *menu) {
 					console->SetBgColor(libsc::Lcd::kBlack);
 					console->SetTextColor(libsc::Lcd::kWhite);
 					console->SetCursorRow(1);
-					console->WriteString("                                                                                                                                       ");
+					console->WriteString("                                                                                                                                                ");
 					for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
 						PrintItem(menu->menu_items[i], i);
+					}
+					{
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						console->SetBgColor(libsc::Lcd::kGray);
+						console->SetCursorRow(9);
+						console->WriteString("                ");
+						console->SetCursorRow(9);
+						char min[2] = { };
+						char sec[2] = { };
+						time /= 1000;
+						sprintf(min, "%d", time / 60);
+						console->SetTextColor(libsc::Lcd::kWhite);
+						if (strlen(min) == 1)
+							console->WriteChar('0');
+						console->WriteString(min);
+						console->WriteChar(':');
+						sprintf(sec, "%d", time % 60);
+						if (strlen(sec) == 1)
+							console->WriteChar('0');
+						console->WriteString(sec);
+						char voltage_string[5] = { };
+						float voltage = battery_meter->GetVoltage();
+						console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
+						sprintf(voltage_string, "%.2fV", voltage);
+						console->SetCursorColumn(11);
+						console->WriteString(voltage_string);
+						console->SetBgColor(libsc::Lcd::kBlack);
+						console->SetTextColor(libsc::Lcd::kWhite);
 					}
 				} else if (focus != 0 && focus % max_row == 0) {
 					console->SetBgColor(libsc::Lcd::kBlack);
 					console->SetTextColor(libsc::Lcd::kWhite);
 					console->SetCursorRow(1);
-					console->WriteString("                                                                                                                                       ");
+					console->WriteString("                                                                                                                                                ");
 					for (uint8_t i = 0; i < max_row && i + focus < menu->menu_items.size(); i++) {
 						PrintItem(menu->menu_items[i + focus], i);
+					}
+					{
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						console->SetBgColor(libsc::Lcd::kGray);
+						console->SetCursorRow(9);
+						console->WriteString("                ");
+						console->SetCursorRow(9);
+						char min[2] = { };
+						char sec[2] = { };
+						time /= 1000;
+						sprintf(min, "%d", time / 60);
+						console->SetTextColor(libsc::Lcd::kWhite);
+						if (strlen(min) == 1)
+							console->WriteChar('0');
+						console->WriteString(min);
+						console->WriteChar(':');
+						sprintf(sec, "%d", time % 60);
+						if (strlen(sec) == 1)
+							console->WriteChar('0');
+						console->WriteString(sec);
+						char voltage_string[5] = { };
+						float voltage = battery_meter->GetVoltage();
+						console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
+						sprintf(voltage_string, "%.2fV", voltage);
+						console->SetCursorColumn(11);
+						console->WriteString(voltage_string);
+						console->SetBgColor(libsc::Lcd::kBlack);
+						console->SetTextColor(libsc::Lcd::kWhite);
 					}
 				} else {
 					PrintItem(menu->menu_items[focus - 1], focus % max_row - 1);
@@ -334,17 +397,73 @@ void Menu::MenuAction(Items *menu) {
 					console->SetBgColor(libsc::Lcd::kBlack);
 					console->SetTextColor(libsc::Lcd::kWhite);
 					console->SetCursorRow(1);
-					console->WriteString("                                                                                                                                       ");
+					console->WriteString("                                                                                                                                                ");
 					for (uint8_t i = 0; i < max_row && focus - focus % max_row + i < menu->menu_items.size(); i++) {
 						PrintItem(menu->menu_items[focus - focus % max_row + i], i);
+					}
+					{
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						console->SetBgColor(libsc::Lcd::kGray);
+						console->SetCursorRow(9);
+						console->WriteString("                ");
+						console->SetCursorRow(9);
+						char min[2] = { };
+						char sec[2] = { };
+						time /= 1000;
+						sprintf(min, "%d", time / 60);
+						console->SetTextColor(libsc::Lcd::kWhite);
+						if (strlen(min) == 1)
+							console->WriteChar('0');
+						console->WriteString(min);
+						console->WriteChar(':');
+						sprintf(sec, "%d", time % 60);
+						if (strlen(sec) == 1)
+							console->WriteChar('0');
+						console->WriteString(sec);
+						char voltage_string[5] = { };
+						float voltage = battery_meter->GetVoltage();
+						console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
+						sprintf(voltage_string, "%.2fV", voltage);
+						console->SetCursorColumn(11);
+						console->WriteString(voltage_string);
+						console->SetBgColor(libsc::Lcd::kBlack);
+						console->SetTextColor(libsc::Lcd::kWhite);
 					}
 				} else if (focus % max_row == 8) {
 					console->SetBgColor(libsc::Lcd::kBlack);
 					console->SetTextColor(libsc::Lcd::kWhite);
 					console->SetCursorRow(1);
-					console->WriteString("                                                                                                                                       ");
+					console->WriteString("                                                                                                                                                ");
 					for (uint8_t i = 0; i < max_row && focus - focus % max_row + i < menu->menu_items.size(); i++) {
 						PrintItem(menu->menu_items[focus - focus % max_row + i], i);
+					}
+					{
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						console->SetBgColor(libsc::Lcd::kGray);
+						console->SetCursorRow(9);
+						console->WriteString("                ");
+						console->SetCursorRow(9);
+						char min[2] = { };
+						char sec[2] = { };
+						time /= 1000;
+						sprintf(min, "%d", time / 60);
+						console->SetTextColor(libsc::Lcd::kWhite);
+						if (strlen(min) == 1)
+							console->WriteChar('0');
+						console->WriteString(min);
+						console->WriteChar(':');
+						sprintf(sec, "%d", time % 60);
+						if (strlen(sec) == 1)
+							console->WriteChar('0');
+						console->WriteString(sec);
+						char voltage_string[5] = { };
+						float voltage = battery_meter->GetVoltage();
+						console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
+						sprintf(voltage_string, "%.2fV", voltage);
+						console->SetCursorColumn(11);
+						console->WriteString(voltage_string);
+						console->SetBgColor(libsc::Lcd::kBlack);
+						console->SetTextColor(libsc::Lcd::kWhite);
 					}
 				} else {
 					PrintItem(menu->menu_items[focus + 1], focus % max_row + 1);
@@ -439,76 +558,12 @@ void Menu::MenuAction(Items *menu) {
 				break;
 			case libsc::Joystick::State::kSelect:
 				item_selected = !item_selected;
-				if (item_selected && menu->menu_items[focus].type == var_type::menu) {
-					if (menu->menu_items[focus].sub_menu != nullptr) {
-						Save();
-						EnterMenu(menu->menu_items[focus].sub_menu);
-						item_selected = false;
-						focus = 0;
-						console->SetBgColor(libsc::Lcd::kBlue);
-						console->SetTextColor(libsc::Lcd::kWhite);
-						console->SetCursorRow(0);
-						console->WriteString("               ");
-						console->SetCursorRow(0);
-						console->SetCursorColumn((15 - strlen(menu->menu_name)) / 2);
-						console->WriteString(menu->menu_name);
-						console->SetBgColor(libsc::Lcd::kBlack);
-						console->SetTextColor(libsc::Lcd::kWhite);
-						for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
-							PrintItem(menu->menu_items[i], i);
-						}
-					}
-				} else if (item_selected && menu->menu_items[focus].type == var_type::func) {
-					Save();
-					std::function < void() > f = func_vector[menu->menu_items[focus].value_index];
-					f();
-					item_selected = false;
-					focus = 0;
-					console->SetBgColor(libsc::Lcd::kBlue);
-					console->SetTextColor(libsc::Lcd::kWhite);
-					console->SetCursorRow(0);
-					console->WriteString("               ");
-					console->SetCursorRow(0);
-					console->SetCursorColumn((15 - strlen(menu->menu_name)) / 2);
-					console->WriteString(menu->menu_name);
-					console->SetBgColor(libsc::Lcd::kBlack);
-					console->SetTextColor(libsc::Lcd::kWhite);
-					for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
-						PrintItem(menu->menu_items[i], i);
-					}
-				}
-				{
-				PrintItem(menu->menu_items[focus], focus % max_row);
-				console->SetBgColor(libsc::Lcd::kGray);
-				console->SetCursorRow(9);
-				console->WriteString("               ");
-					char min[2] = { };
-					char sec[2] = { };
-				time /= 1000;
-					sprintf(min, "%d", time / 60);
-					if (strlen(min) == 1)
-					console->WriteChar('0');
-					console->WriteString(min);
-				console->WriteChar(':');
-					sprintf(sec, "%d", time % 60);
-					if (strlen(sec) == 1)
-					console->WriteChar('0');
-					console->WriteString(sec);
-					char voltage_string[5] = { };
-					float voltage = battery_meter->GetVoltage();
-					console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
-					sprintf(voltage_string, "%.2fV", voltage);
-				console->SetCursorColumn(11);
-					console->WriteString(voltage_string);
-				}
 				break;
 			case libsc::Joystick::State::kIdle:
 				break;
 			}
-			if (joystick_state == libsc::Joystick::State::kIdle) {
+			if (joystick_state == libsc::Joystick::State::kSelect) {
 				libsc::System::DelayMs(100);
-			} else if (joystick_state == libsc::Joystick::State::kSelect) {
-				libsc::System::DelayMs(250);
 				if (joystick->GetState() == libsc::Joystick::State::kSelect) {
 					libsc::System::DelayMs(250);
 					if (joystick->GetState() == libsc::Joystick::State::kSelect) {
@@ -519,9 +574,9 @@ void Menu::MenuAction(Items *menu) {
 						console->SetBgColor(libsc::Lcd::kBlue);
 						console->SetTextColor(libsc::Lcd::kWhite);
 						console->SetCursorRow(0);
-						console->WriteString("               ");
+						console->WriteString("                ");
 						console->SetCursorRow(0);
-						console->SetCursorColumn((15 - strlen(menu->menu_name)) / 2);
+						console->SetCursorColumn((16 - strlen(menu->menu_name)) / 2);
 						console->WriteString(menu->menu_name);
 						console->SetBgColor(libsc::Lcd::kBlack);
 						console->SetTextColor(libsc::Lcd::kWhite);
@@ -532,11 +587,13 @@ void Menu::MenuAction(Items *menu) {
 							PrintItem(menu->menu_items[focus], focus % max_row);
 							console->SetBgColor(libsc::Lcd::kGray);
 							console->SetCursorRow(9);
-							console->WriteString("               ");
+							console->WriteString("                ");
+							console->SetCursorRow(9);
 							char min[2] = { };
 							char sec[2] = { };
 							time /= 1000;
 							sprintf(min, "%d", time / 60);
+							console->SetTextColor(libsc::Lcd::kWhite);
 							if (strlen(min) == 1)
 								console->WriteChar('0');
 							console->WriteString(min);
@@ -551,10 +608,107 @@ void Menu::MenuAction(Items *menu) {
 							sprintf(voltage_string, "%.2fV", voltage);
 							console->SetCursorColumn(11);
 							console->WriteString(voltage_string);
+							console->SetBgColor(libsc::Lcd::kBlack);
+							console->SetTextColor(libsc::Lcd::kWhite);
 						}
 					}
 				}
-			} else {
+				if (item_selected && menu->menu_items[focus].type == var_type::menu) {
+					if (menu->menu_items[focus].sub_menu != nullptr) {
+						Save();
+						EnterMenu(menu->menu_items[focus].sub_menu);
+						item_selected = false;
+						focus = 0;
+						console->SetBgColor(libsc::Lcd::kBlue);
+						console->SetTextColor(libsc::Lcd::kWhite);
+						console->SetCursorRow(0);
+						console->WriteString("                ");
+						console->SetCursorRow(0);
+						console->SetCursorColumn((16 - strlen(menu->menu_name)) / 2);
+						console->WriteString(menu->menu_name);
+						console->SetBgColor(libsc::Lcd::kBlack);
+						console->SetTextColor(libsc::Lcd::kWhite);
+						for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
+							PrintItem(menu->menu_items[i], i);
+						}
+						{
+							PrintItem(menu->menu_items[focus], focus % max_row);
+							console->SetBgColor(libsc::Lcd::kGray);
+							console->SetCursorRow(9);
+							console->WriteString("                ");
+							console->SetCursorRow(9);
+							char min[2] = { };
+							char sec[2] = { };
+							time /= 1000;
+							sprintf(min, "%d", time / 60);
+							console->SetTextColor(libsc::Lcd::kWhite);
+							if (strlen(min) == 1)
+								console->WriteChar('0');
+							console->WriteString(min);
+							console->WriteChar(':');
+							sprintf(sec, "%d", time % 60);
+							if (strlen(sec) == 1)
+								console->WriteChar('0');
+							console->WriteString(sec);
+							char voltage_string[5] = { };
+							float voltage = battery_meter->GetVoltage();
+							console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
+							sprintf(voltage_string, "%.2fV", voltage);
+							console->SetCursorColumn(11);
+							console->WriteString(voltage_string);
+							console->SetBgColor(libsc::Lcd::kBlack);
+							console->SetTextColor(libsc::Lcd::kWhite);
+						}
+					}
+				} else if (item_selected && menu->menu_items[focus].type == var_type::func) {
+					Save();
+					std::function < void() > f = func_vector[menu->menu_items[focus].value_index];
+					f();
+					item_selected = false;
+					focus = 0;
+					console->SetBgColor(libsc::Lcd::kBlue);
+					console->SetTextColor(libsc::Lcd::kWhite);
+					console->SetCursorRow(0);
+					console->WriteString("                ");
+					console->SetCursorRow(0);
+					console->SetCursorColumn((16 - strlen(menu->menu_name)) / 2);
+					console->WriteString(menu->menu_name);
+					console->SetBgColor(libsc::Lcd::kBlack);
+					console->SetTextColor(libsc::Lcd::kWhite);
+					for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
+						PrintItem(menu->menu_items[i], i);
+					}
+					{
+						PrintItem(menu->menu_items[focus], focus % max_row);
+						console->SetBgColor(libsc::Lcd::kGray);
+						console->SetCursorRow(9);
+						console->WriteString("                ");
+						console->SetCursorRow(9);
+						char min[2] = { };
+						char sec[2] = { };
+						time /= 1000;
+						sprintf(min, "%d", time / 60);
+						console->SetTextColor(libsc::Lcd::kWhite);
+						if (strlen(min) == 1)
+							console->WriteChar('0');
+						console->WriteString(min);
+						console->WriteChar(':');
+						sprintf(sec, "%d", time % 60);
+						if (strlen(sec) == 1)
+							console->WriteChar('0');
+						console->WriteString(sec);
+						char voltage_string[5] = { };
+						float voltage = battery_meter->GetVoltage();
+						console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
+						sprintf(voltage_string, "%.2fV", voltage);
+						console->SetCursorColumn(11);
+						console->WriteString(voltage_string);
+						console->SetBgColor(libsc::Lcd::kBlack);
+						console->SetTextColor(libsc::Lcd::kWhite);
+					}
+				}
+				PrintItem(menu->menu_items[focus], focus % max_row);
+			} else if (joystick_state != libsc::Joystick::State::kIdle) {
 				last_trigger_time = libsc::System::Time() - last_trigger_time;
 				if (last_trigger_time < 60) {
 					libsc::System::DelayMs(45);
@@ -562,12 +716,10 @@ void Menu::MenuAction(Items *menu) {
 					libsc::System::DelayMs(50);
 				} else if (last_trigger_time < 160) {
 					libsc::System::DelayMs(100);
-				} else if (last_trigger_time < 210) {
+				} else if (last_trigger_time < 200) {
 					libsc::System::DelayMs(150);
-				} else if (last_trigger_time < 260) {
-					libsc::System::DelayMs(200);
 				} else {
-					libsc::System::DelayMs(250);
+					libsc::System::DelayMs(200);
 				}
 				last_trigger_time = libsc::System::Time();
 			}	
@@ -710,18 +862,18 @@ void Menu::Reset() {
 	console->SetBgColor(libsc::Lcd::kRed);
 	console->SetTextColor(libsc::Lcd::kBlack);
 	console->SetCursorRow(0);
-	console->WriteString("               ");
+	console->WriteString("                ");
 	console->SetCursorRow(0);
-	console->WriteString("     Reset?    ");
+	console->WriteString("     Reset?     ");
 	console->SetBgColor(libsc::Lcd::kBlack);
 	console->SetTextColor(libsc::Lcd::kWhite);
 	console->SetCursorRow(1);
-	console->WriteString("      Yes      ");
+	console->WriteString("       Yes      ");
 	console->SetBgColor(libsc::Lcd::kWhite);
 	console->SetTextColor(libsc::Lcd::kBlack);
 	console->SetCursorRow(2);
-	console->WriteString("       No      ");
-	libsc::System::DelayMs(400);
+	console->WriteString("       No       ");
+	libsc::System::DelayMs(800);
 	while (1) {
 		switch (joystick->GetState()) {
 		case libsc::Joystick::State::kUp:
@@ -730,22 +882,22 @@ void Menu::Reset() {
 				console->SetBgColor(libsc::Lcd::kWhite);
 				console->SetTextColor(libsc::Lcd::kBlack);
 				console->SetCursorRow(1);
-				console->WriteString("      Yes      ");
+				console->WriteString("       Yes      ");
 				console->SetBgColor(libsc::Lcd::kBlack);
 				console->SetTextColor(libsc::Lcd::kWhite);
 				console->SetCursorRow(2);
-				console->WriteString("       No      ");
+				console->WriteString("       No       ");
 			} else {
 				console->SetBgColor(libsc::Lcd::kBlack);
 				console->SetTextColor(libsc::Lcd::kWhite);
 				console->SetCursorRow(1);
-				console->WriteString("      Yes      ");
+				console->WriteString("       Yes      ");
 				console->SetBgColor(libsc::Lcd::kWhite);
 				console->SetTextColor(libsc::Lcd::kBlack);
 				console->SetCursorRow(2);
-				console->WriteString("       No      ");
+				console->WriteString("       No       ");
 			}
-			libsc::System::DelayMs(200);
+			libsc::System::DelayMs(300);
 			break;
 		case libsc::Joystick::State::kDown:
 			reset = !reset;
@@ -753,22 +905,22 @@ void Menu::Reset() {
 				console->SetBgColor(libsc::Lcd::kWhite);
 				console->SetTextColor(libsc::Lcd::kBlack);
 				console->SetCursorRow(1);
-				console->WriteString("      Yes      ");
+				console->WriteString("       Yes      ");
 				console->SetBgColor(libsc::Lcd::kBlack);
 				console->SetTextColor(libsc::Lcd::kWhite);
 				console->SetCursorRow(2);
-				console->WriteString("       No      ");
+				console->WriteString("       No       ");
 			} else {
 				console->SetBgColor(libsc::Lcd::kBlack);
 				console->SetTextColor(libsc::Lcd::kWhite);
 				console->SetCursorRow(1);
-				console->WriteString("      Yes      ");
+				console->WriteString("       Yes      ");
 				console->SetBgColor(libsc::Lcd::kWhite);
 				console->SetTextColor(libsc::Lcd::kBlack);
 				console->SetCursorRow(2);
-				console->WriteString("       No      ");
+				console->WriteString("       No       ");
 			}
-			libsc::System::DelayMs(200);
+			libsc::System::DelayMs(300);
 			break;
 		case libsc::Joystick::State::kSelect:
 			if (reset) {

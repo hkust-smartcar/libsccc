@@ -90,7 +90,7 @@ St7735r::St7735r(const Config &config)
 		  m_rst(GetRstConfig()),
 		  m_dc(GetDcConfig()),
 
-		  m_region{0, 0, GetW(), GetH()}
+m_region {0, 0, GetW(), GetH()}
 {
 	Clear();
 	SEND_COMMAND(ST7735R_SWRESET);
@@ -238,15 +238,15 @@ void St7735r::InitGamma()
 
 void St7735r::FillColor(const uint16_t color)
 {
-	if (m_region.x >= kW || m_region.y >= kH)
+	if (m_region.x+2 >= kW || m_region.y+1 >= kH)
 	{
 		return;
 	}
 
 	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
+	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x+2);
+	const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y+1);
 	const Uint length = w * h;
 	for (Uint i = 0; i < length; ++i)
 	{
@@ -257,15 +257,15 @@ void St7735r::FillColor(const uint16_t color)
 
 void St7735r::FillGrayscalePixel(const uint8_t *pixel, const size_t length)
 {
-	if (m_region.x >= kW || m_region.y >= kH)
+	if (m_region.x+2 >= kW || m_region.y+1 >= kH)
 	{
 		return;
 	}
 
 	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
+	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x+2);
+	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y+1);
 	// We add the original region w to row_beg, so length_ here also should be
 	// the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
@@ -283,15 +283,15 @@ void St7735r::FillGrayscalePixel(const uint8_t *pixel, const size_t length)
 
 void St7735r::FillPixel(const uint16_t *pixel, const size_t length)
 {
-	if (m_region.x >= kW || m_region.y >= kH)
+	if (m_region.x+2 >= kW || m_region.y+1 >= kH)
 	{
 		return;
 	}
 
 	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
+	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x+2);
+	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y+1);
 	// We add the original region w to row_beg, so length_ here also should be
 	// the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
@@ -308,15 +308,15 @@ void St7735r::FillPixel(const uint16_t *pixel, const size_t length)
 void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 		const bool *data, const size_t length)
 {
-	if (m_region.x >= kW || m_region.y >= kH)
+	if (m_region.x+2 >= kW || m_region.y+1 >= kH)
 	{
 		return;
 	}
 
 	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
+	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x+2);
+	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y+1);
 	// We add the original region w to row_beg, so length_ here also should be
 	// the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, length);
@@ -341,15 +341,15 @@ void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 void St7735r::FillBits(const uint16_t color_t, const uint16_t color_f,
 		const Byte *data, const size_t bit_length)
 {
-	if (m_region.x >= kW || m_region.y >= kH)
+	if (m_region.x+2 >= kW || m_region.y+1 >= kH)
 	{
 		return;
 	}
 
 	SetActiveRect();
 	SEND_COMMAND(ST7735R_RAMWR);
-	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x);
-	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y);
+	const Uint w = Clamp<Uint>(0, m_region.w, kW - m_region.x+2);
+	//const Uint h = Clamp<Uint>(0, m_region.h, kH - m_region.y+1);
 	// We add the original region w to row_beg, so length_ here also should be
 	// the original
 	const Uint length_ = std::min<Uint>(m_region.w * m_region.h, bit_length);
@@ -410,16 +410,16 @@ void St7735r::SetActiveRect()
 	SEND_COMMAND(ST7735R_CASET);
 	// start
 	SEND_DATA(0x00);
-	SEND_DATA(m_region.x);
+	SEND_DATA(m_region.x+2);
 	// end
 	SEND_DATA(0x00);
-	SEND_DATA(m_region.x + m_region.w - 1);
+	SEND_DATA(m_region.x+2 + m_region.w - 1);
 
 	SEND_COMMAND(ST7735R_RASET);
 	SEND_DATA(0x00);
-	SEND_DATA(m_region.y);
+	SEND_DATA(m_region.y+1);
 	SEND_DATA(0x00);
-	SEND_DATA(m_region.y + m_region.h - 1);
+	SEND_DATA(m_region.y+1 + m_region.h - 1);
 }
 
 inline void St7735r::Send(const bool is_cmd, const uint8_t data)
