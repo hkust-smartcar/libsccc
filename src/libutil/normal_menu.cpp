@@ -275,26 +275,26 @@ void Menu::MenuAction(Items *menu) {
 	focus = 0;
 	libsc::Timer::TimerInt last_trigger_time = libsc::System::Time();
 	libsc::Joystick::State joystick_state;
-	libsc::Timer::TimerInt time = libsc::System::Time();
+	libsc::Timer::TimerInt time_now = libsc::System::Time();
 	while (1) {
-		while (time != libsc::System::Time()) {
-			time = libsc::System::Time();
+		while (time_now != libsc::System::Time()) {
+			time_now = libsc::System::Time();
 			joystick_state = joystick->GetState();
-			if (time % 1000 == 0) {
+			if (time_now % 1000 == 0) {
 				console->SetBgColor(libsc::Lcd::kGray);
 				console->SetCursorRow(9);
 				console->WriteString("                ");
 				console->SetCursorRow(9);
 				char min[2] = { };
 				char sec[2] = { };
-				time /= 1000;
-				sprintf(min, "%d", time / 60);
+				time_now /= 1000;
+				sprintf(min, "%d", time_now / 60);
 				console->SetTextColor(libsc::Lcd::kWhite);
 				if (strlen(min) == 1)
 					console->WriteChar('0');
 				console->WriteString(min);
 				console->WriteChar(':');
-				sprintf(sec, "%d", time % 60);
+				sprintf(sec, "%d", time_now % 60);
 				if (strlen(sec) == 1)
 					console->WriteChar('0');
 				console->WriteString(sec);
@@ -328,14 +328,14 @@ void Menu::MenuAction(Items *menu) {
 						console->SetCursorRow(9);
 						char min[2] = { };
 						char sec[2] = { };
-						time /= 1000;
-						sprintf(min, "%d", time / 60);
+						time_now /= 1000;
+						sprintf(min, "%d", time_now / 60);
 						console->SetTextColor(libsc::Lcd::kWhite);
 						if (strlen(min) == 1)
 							console->WriteChar('0');
 						console->WriteString(min);
 						console->WriteChar(':');
-						sprintf(sec, "%d", time % 60);
+						sprintf(sec, "%d", time_now % 60);
 						if (strlen(sec) == 1)
 							console->WriteChar('0');
 						console->WriteString(sec);
@@ -364,14 +364,14 @@ void Menu::MenuAction(Items *menu) {
 						console->SetCursorRow(9);
 						char min[2] = { };
 						char sec[2] = { };
-						time /= 1000;
-						sprintf(min, "%d", time / 60);
+						time_now /= 1000;
+						sprintf(min, "%d", time_now / 60);
 						console->SetTextColor(libsc::Lcd::kWhite);
 						if (strlen(min) == 1)
 							console->WriteChar('0');
 						console->WriteString(min);
 						console->WriteChar(':');
-						sprintf(sec, "%d", time % 60);
+						sprintf(sec, "%d", time_now % 60);
 						if (strlen(sec) == 1)
 							console->WriteChar('0');
 						console->WriteString(sec);
@@ -409,14 +409,14 @@ void Menu::MenuAction(Items *menu) {
 						console->SetCursorRow(9);
 						char min[2] = { };
 						char sec[2] = { };
-						time /= 1000;
-						sprintf(min, "%d", time / 60);
+						time_now /= 1000;
+						sprintf(min, "%d", time_now / 60);
 						console->SetTextColor(libsc::Lcd::kWhite);
 						if (strlen(min) == 1)
 							console->WriteChar('0');
 						console->WriteString(min);
 						console->WriteChar(':');
-						sprintf(sec, "%d", time % 60);
+						sprintf(sec, "%d", time_now % 60);
 						if (strlen(sec) == 1)
 							console->WriteChar('0');
 						console->WriteString(sec);
@@ -445,14 +445,14 @@ void Menu::MenuAction(Items *menu) {
 						console->SetCursorRow(9);
 						char min[2] = { };
 						char sec[2] = { };
-						time /= 1000;
-						sprintf(min, "%d", time / 60);
+						time_now /= 1000;
+						sprintf(min, "%d", time_now / 60);
 						console->SetTextColor(libsc::Lcd::kWhite);
 						if (strlen(min) == 1)
 							console->WriteChar('0');
 						console->WriteString(min);
 						console->WriteChar(':');
-						sprintf(sec, "%d", time % 60);
+						sprintf(sec, "%d", time_now % 60);
 						if (strlen(sec) == 1)
 							console->WriteChar('0');
 						console->WriteString(sec);
@@ -591,14 +591,14 @@ void Menu::MenuAction(Items *menu) {
 							console->SetCursorRow(9);
 							char min[2] = { };
 							char sec[2] = { };
-							time /= 1000;
-							sprintf(min, "%d", time / 60);
+							time_now /= 1000;
+							sprintf(min, "%d", time_now / 60);
 							console->SetTextColor(libsc::Lcd::kWhite);
 							if (strlen(min) == 1)
 								console->WriteChar('0');
 							console->WriteString(min);
 							console->WriteChar(':');
-							sprintf(sec, "%d", time % 60);
+							sprintf(sec, "%d", time_now % 60);
 							if (strlen(sec) == 1)
 								console->WriteChar('0');
 							console->WriteString(sec);
@@ -639,14 +639,14 @@ void Menu::MenuAction(Items *menu) {
 							console->SetCursorRow(9);
 							char min[2] = { };
 							char sec[2] = { };
-							time /= 1000;
-							sprintf(min, "%d", time / 60);
+							time_now /= 1000;
+							sprintf(min, "%d", time_now / 60);
 							console->SetTextColor(libsc::Lcd::kWhite);
 							if (strlen(min) == 1)
 								console->WriteChar('0');
 							console->WriteString(min);
 							console->WriteChar(':');
-							sprintf(sec, "%d", time % 60);
+							sprintf(sec, "%d", time_now % 60);
 							if (strlen(sec) == 1)
 								console->WriteChar('0');
 							console->WriteString(sec);
@@ -664,6 +664,7 @@ void Menu::MenuAction(Items *menu) {
 					Save();
 					std::function < void() > f = func_vector[menu->menu_items[focus].value_index];
 					f();
+					libsc::System::DelayMs(500);
 					item_selected = false;
 					focus = 0;
 					console->SetBgColor(libsc::Lcd::kBlue);
@@ -686,14 +687,14 @@ void Menu::MenuAction(Items *menu) {
 						console->SetCursorRow(9);
 						char min[2] = { };
 						char sec[2] = { };
-						time /= 1000;
-						sprintf(min, "%d", time / 60);
+						time_now /= 1000;
+						sprintf(min, "%d", time_now / 60);
 						console->SetTextColor(libsc::Lcd::kWhite);
 						if (strlen(min) == 1)
 							console->WriteChar('0');
 						console->WriteString(min);
 						console->WriteChar(':');
-						sprintf(sec, "%d", time % 60);
+						sprintf(sec, "%d", time_now % 60);
 						if (strlen(sec) == 1)
 							console->WriteChar('0');
 						console->WriteString(sec);
@@ -708,6 +709,7 @@ void Menu::MenuAction(Items *menu) {
 					}
 				}
 				PrintItem(menu->menu_items[focus], focus % max_row);
+				time_now = libsc::System::Time();
 			} else if (joystick_state != libsc::Joystick::State::kIdle) {
 				last_trigger_time = libsc::System::Time() - last_trigger_time;
 				if (last_trigger_time < 60) {
