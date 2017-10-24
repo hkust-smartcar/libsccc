@@ -6,7 +6,7 @@
  *
  * Author: Leslie (LeeChunHei)
  *
- * Menu (v1.1) class
+ * Menu (v2.0) class
  * Console-based GUI for value tuning.
  *
  */

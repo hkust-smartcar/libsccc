@@ -6,7 +6,7 @@
  *
  * Author: Leslie (LeeChunHei)
  *
- * Implementation for Menu (v1.1) class.
+ * Implementation for Menu (v2.0) class.
  *
  */
 
