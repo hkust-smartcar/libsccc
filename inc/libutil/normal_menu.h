@@ -67,7 +67,7 @@ public:
 	 * Pass lcd, lcd console, joystick and flash(keep the data memory even the device shut down) into menu class
 	 * Pass flash as nullptr if don't want the data saved at flash
 	 */
-	Menu(libsc::St7735r *lcd, libsc::LcdConsole *console, libsc::Joystick *joystick, libsc::BatteryMeter *battery_meter, libbase::k60::Flash *flash);
+	Menu(bool is_landscape, libsc::St7735r *lcd, libsc::LcdConsole *console, libsc::Joystick *joystick, libsc::BatteryMeter *battery_meter, libbase::k60::Flash *flash);
 
 	Items main_menu;
 
@@ -94,10 +94,11 @@ public:
 	void EnterMenu(Items *menu);
 
 private:
+	bool is_landscape;
 	libsc::St7735r *lcd;
 	libsc::LcdConsole *console;
-	uint8_t max_string_width = 15; //first char count as one
-	uint8_t max_row = 8; //first row count as one
+	uint8_t max_string_width; //first char count as one
+	uint8_t max_row; //first row count as one
 	libsc::Joystick *joystick;
 	libsc::BatteryMeter *battery_meter;
 	libbase::k60::Flash *flash;
@@ -191,6 +192,9 @@ private:
  int8_t _8bit = -8;
  bool _bool = true;
 
+ //The function you want to add into menu
+ void test1();
+
  //Init the menu object
  util::Menu menu(&lcd, &console, &joystick, &flash);
 
@@ -209,6 +213,9 @@ private:
  //Add data to the seconde sub menu, as the second menu is the third one on the main menu, so the index is 2
  //You can change the text that represent true and false;
  menu.AddItem("_bool", &_bool, "true", "false", menu.main_menu.menu_items[2].sub_menu);
+
+ //Add a function into the main menu
+ menu.AddItem("test function", std::bind(&test), &menu.main_menu);
 
  //After adding items into the menu, you can enter this menu any time every where using this function
  menu.EnterMenu(&menu.main_menu);

@@ -45,8 +45,8 @@ public:
 
 	struct Config
 	{
-		/// Revert the screen upside down
-		bool is_revert = false;
+		// Orientation of the screen (four direction: 0 1 2 3, count in clockwise)
+		uint8_t orientation = 0;
 		/// Whether using a BGR panel instead of a RGB one
 		bool is_bgr = false;
 		/// Frame rate of the screen
@@ -69,7 +69,7 @@ public:
 
 	void ClearRegion() override
 	{
-		m_region = Rect{0, 0, static_cast<uint8_t>(GetW()),
+		m_region = Rect { 0, 0, static_cast<uint8_t>(GetW()),
 				static_cast<uint8_t>(GetH())};
 	}
 
@@ -86,19 +86,21 @@ public:
 
 	void SetInvertColor(const bool flag);
 
-	static constexpr Uint GetW()
+	Uint GetW()
 	{
-		return kW - 2;
+		return kW - kWshift;
 	}
 
-	static constexpr Uint GetH()
+	Uint GetH()
 	{
-		return kH - 1;
+		return kH - kHshift;
 	}
 
 private:
-	static constexpr Uint kW = 130;
-	static constexpr Uint kH = 161;
+	Uint kW;
+	Uint kH;
+	Uint kWshift;
+	Uint kHshift;
 
 	void InitMadctl(const Config &config);
 	void InitFrmctr(const Config &config);

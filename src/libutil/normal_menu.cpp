@@ -14,7 +14,10 @@
 
 namespace libutil {
 
-Menu::Menu(libsc::St7735r *lcd, libsc::LcdConsole *console, libsc::Joystick *joystick, libsc::BatteryMeter *battery_meter, libbase::k60::Flash *flash) {
+Menu::Menu(bool is_landscape, libsc::St7735r *lcd, libsc::LcdConsole *console, libsc::Joystick *joystick, libsc::BatteryMeter *battery_meter, libbase::k60::Flash *flash) {
+	this->is_landscape = is_landscape;
+	max_string_width = is_landscape ? 19 : 15;
+	max_row = is_landscape ? 6 : 8;
 	this->lcd = lcd;
 	this->console = console;
 	this->joystick = joystick;
@@ -152,9 +155,9 @@ void Menu::EnterMenu(Items *menu) {
 	console->SetBgColor(libsc::Lcd::kBlue);
 	console->SetTextColor(libsc::Lcd::kWhite);
 	console->SetCursorRow(0);
-	console->WriteString("                ");
+	console->WriteString(is_landscape ? "                    " : "                ");
 	console->SetCursorRow(0);
-	console->SetCursorColumn((16 - strlen(menu->menu_name)) / 2);
+	console->SetCursorColumn(((max_string_width + 1 - strlen(menu->menu_name))) / 2);
 	console->WriteString(menu->menu_name);
 	console->SetBgColor(libsc::Lcd::kBlack);
 	console->SetTextColor(libsc::Lcd::kWhite);
@@ -162,9 +165,9 @@ void Menu::EnterMenu(Items *menu) {
 		PrintItem(menu->menu_items[i], i);
 	}
 	console->SetBgColor(libsc::Lcd::kGray);
-	console->SetCursorRow(9);
-	console->WriteString("                ");
-	console->SetCursorRow(9);
+	console->SetCursorRow(max_row + 1);
+	console->WriteString(is_landscape ? "                    " : "                ");
+	console->SetCursorRow(max_row + 1);
 	char min[2] = { };
 	char sec[2] = { };
 	libsc::Timer::TimerInt time_now = libsc::System::Time();
@@ -182,12 +185,14 @@ void Menu::EnterMenu(Items *menu) {
 	float voltage = battery_meter->GetVoltage();
 	console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
 	sprintf(voltage_string, "%.2fV", voltage);
-	console->SetCursorColumn(11);
+	console->SetCursorColumn(max_string_width - 4);
 	console->WriteString(voltage_string);
 	console->SetBgColor(libsc::Lcd::kBlack);
 	console->SetTextColor(libsc::Lcd::kWhite);
 	MenuAction(menu);
 	Save();
+	lcd->Clear();
+	console->Clear(true);
 }
 
 /*
@@ -207,10 +212,10 @@ void Menu::PrintItem(Item item, uint8_t row) {
 			}
 			console->SetTextColor(libsc::Lcd::kBlack);
 		}
-		console->WriteString("                ");
+		console->WriteString(is_landscape ? "                    " : "                ");
 		console->SetCursorRow(row + 1);
 		console->WriteString(item.name);
-		space_needed = 16 - strlen(item.name);
+		space_needed = max_string_width + 1 - strlen(item.name);
 		switch (item.type) {
 		case var_type::boolean:
 			break;
@@ -282,9 +287,9 @@ void Menu::MenuAction(Items *menu) {
 			joystick_state = joystick->GetState();
 			if (time_now % 1000 == 0) {
 				console->SetBgColor(libsc::Lcd::kGray);
-				console->SetCursorRow(9);
-				console->WriteString("                ");
-				console->SetCursorRow(9);
+				console->SetCursorRow(max_row + 1);
+				console->WriteString(is_landscape ? "                    " : "                ");
+				console->SetCursorRow(max_row + 1);
 				char min[2] = { };
 				char sec[2] = { };
 				time_now /= 1000;
@@ -302,7 +307,7 @@ void Menu::MenuAction(Items *menu) {
 				float voltage = battery_meter->GetVoltage();
 				console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
 				sprintf(voltage_string, "%.2fV", voltage);
-				console->SetCursorColumn(11);
+				console->SetCursorColumn(max_string_width - 4);
 				console->WriteString(voltage_string);
 				console->SetBgColor(libsc::Lcd::kBlack);
 				console->SetTextColor(libsc::Lcd::kWhite);
@@ -316,16 +321,16 @@ void Menu::MenuAction(Items *menu) {
 					console->SetBgColor(libsc::Lcd::kBlack);
 					console->SetTextColor(libsc::Lcd::kWhite);
 					console->SetCursorRow(1);
-					console->WriteString("                                                                                                                                                ");
+					console->WriteString(is_landscape ? "                                                                                                                        " : "                                                                                                                                                ");
 					for (uint8_t i = 0; i < max_row && i < menu->menu_items.size(); i++) {
 						PrintItem(menu->menu_items[i], i);
 					}
 					{
 						PrintItem(menu->menu_items[focus], focus % max_row);
 						console->SetBgColor(libsc::Lcd::kGray);
-						console->SetCursorRow(9);
-						console->WriteString("                ");
-						console->SetCursorRow(9);
+						console->SetCursorRow(max_row + 1);
+						console->WriteString(is_landscape ? "                    " : "                ");
+						console->SetCursorRow(max_row + 1);
 						char min[2] = { };
 						char sec[2] = { };
 						time_now /= 1000;
@@ -343,7 +348,7 @@ void Menu::MenuAction(Items *menu) {
 						float voltage = battery_meter->GetVoltage();
 						console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
 						sprintf(voltage_string, "%.2fV", voltage);
-						console->SetCursorColumn(11);
+						console->SetCursorColumn(max_string_width - 4);
 						console->WriteString(voltage_string);
 						console->SetBgColor(libsc::Lcd::kBlack);
 						console->SetTextColor(libsc::Lcd::kWhite);
@@ -352,16 +357,16 @@ void Menu::MenuAction(Items *menu) {
 					console->SetBgColor(libsc::Lcd::kBlack);
 					console->SetTextColor(libsc::Lcd::kWhite);
 					console->SetCursorRow(1);
-					console->WriteString("                                                                                                                                                ");
+					console->WriteString(is_landscape ? "                                                                                                                        " : "                                                                                                                                                ");
 					for (uint8_t i = 0; i < max_row && i + focus < menu->menu_items.size(); i++) {
 						PrintItem(menu->menu_items[i + focus], i);
 					}
 					{
 						PrintItem(menu->menu_items[focus], focus % max_row);
 						console->SetBgColor(libsc::Lcd::kGray);
-						console->SetCursorRow(9);
-						console->WriteString("                ");
-						console->SetCursorRow(9);
+						console->SetCursorRow(max_row + 1);
+						console->WriteString(is_landscape ? "                    " : "                ");
+						console->SetCursorRow(max_row + 1);
 						char min[2] = { };
 						char sec[2] = { };
 						time_now /= 1000;
@@ -379,7 +384,7 @@ void Menu::MenuAction(Items *menu) {
 						float voltage = battery_meter->GetVoltage();
 						console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
 						sprintf(voltage_string, "%.2fV", voltage);
-						console->SetCursorColumn(11);
+						console->SetCursorColumn(max_string_width - 4);
 						console->WriteString(voltage_string);
 						console->SetBgColor(libsc::Lcd::kBlack);
 						console->SetTextColor(libsc::Lcd::kWhite);
@@ -397,16 +402,16 @@ void Menu::MenuAction(Items *menu) {
 					console->SetBgColor(libsc::Lcd::kBlack);
 					console->SetTextColor(libsc::Lcd::kWhite);
 					console->SetCursorRow(1);
-					console->WriteString("                                                                                                                                                ");
+					console->WriteString(is_landscape ? "                                                                                                                        " : "                                                                                                                                                ");
 					for (uint8_t i = 0; i < max_row && focus - focus % max_row + i < menu->menu_items.size(); i++) {
 						PrintItem(menu->menu_items[focus - focus % max_row + i], i);
 					}
 					{
 						PrintItem(menu->menu_items[focus], focus % max_row);
 						console->SetBgColor(libsc::Lcd::kGray);
-						console->SetCursorRow(9);
-						console->WriteString("                ");
-						console->SetCursorRow(9);
+						console->SetCursorRow(max_row + 1);
+						console->WriteString(is_landscape ? "                    " : "                ");
+						console->SetCursorRow(max_row + 1);
 						char min[2] = { };
 						char sec[2] = { };
 						time_now /= 1000;
@@ -424,7 +429,7 @@ void Menu::MenuAction(Items *menu) {
 						float voltage = battery_meter->GetVoltage();
 						console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
 						sprintf(voltage_string, "%.2fV", voltage);
-						console->SetCursorColumn(11);
+						console->SetCursorColumn(max_string_width - 4);
 						console->WriteString(voltage_string);
 						console->SetBgColor(libsc::Lcd::kBlack);
 						console->SetTextColor(libsc::Lcd::kWhite);
@@ -433,16 +438,16 @@ void Menu::MenuAction(Items *menu) {
 					console->SetBgColor(libsc::Lcd::kBlack);
 					console->SetTextColor(libsc::Lcd::kWhite);
 					console->SetCursorRow(1);
-					console->WriteString("                                                                                                                                                ");
+					console->WriteString(is_landscape ? "                                                                                                                        " : "                                                                                                                                                ");
 					for (uint8_t i = 0; i < max_row && focus - focus % max_row + i < menu->menu_items.size(); i++) {
 						PrintItem(menu->menu_items[focus - focus % max_row + i], i);
 					}
 					{
 						PrintItem(menu->menu_items[focus], focus % max_row);
 						console->SetBgColor(libsc::Lcd::kGray);
-						console->SetCursorRow(9);
-						console->WriteString("                ");
-						console->SetCursorRow(9);
+						console->SetCursorRow(max_row + 1);
+						console->WriteString(is_landscape ? "                    " : "                ");
+						console->SetCursorRow(max_row + 1);
 						char min[2] = { };
 						char sec[2] = { };
 						time_now /= 1000;
@@ -460,7 +465,7 @@ void Menu::MenuAction(Items *menu) {
 						float voltage = battery_meter->GetVoltage();
 						console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
 						sprintf(voltage_string, "%.2fV", voltage);
-						console->SetCursorColumn(11);
+						console->SetCursorColumn(max_string_width - 4);
 						console->WriteString(voltage_string);
 						console->SetBgColor(libsc::Lcd::kBlack);
 						console->SetTextColor(libsc::Lcd::kWhite);
@@ -574,9 +579,9 @@ void Menu::MenuAction(Items *menu) {
 						console->SetBgColor(libsc::Lcd::kBlue);
 						console->SetTextColor(libsc::Lcd::kWhite);
 						console->SetCursorRow(0);
-						console->WriteString("                ");
+						console->WriteString(is_landscape ? "                    " : "                ");
 						console->SetCursorRow(0);
-						console->SetCursorColumn((16 - strlen(menu->menu_name)) / 2);
+						console->SetCursorColumn(((max_string_width + 1 - strlen(menu->menu_name))) / 2);
 						console->WriteString(menu->menu_name);
 						console->SetBgColor(libsc::Lcd::kBlack);
 						console->SetTextColor(libsc::Lcd::kWhite);
@@ -586,9 +591,9 @@ void Menu::MenuAction(Items *menu) {
 						{
 							PrintItem(menu->menu_items[focus], focus % max_row);
 							console->SetBgColor(libsc::Lcd::kGray);
-							console->SetCursorRow(9);
-							console->WriteString("                ");
-							console->SetCursorRow(9);
+							console->SetCursorRow(max_row + 1);
+							console->WriteString(is_landscape ? "                    " : "                ");
+							console->SetCursorRow(max_row + 1);
 							char min[2] = { };
 							char sec[2] = { };
 							time_now /= 1000;
@@ -606,7 +611,7 @@ void Menu::MenuAction(Items *menu) {
 							float voltage = battery_meter->GetVoltage();
 							console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
 							sprintf(voltage_string, "%.2fV", voltage);
-							console->SetCursorColumn(11);
+							console->SetCursorColumn(max_string_width - 4);
 							console->WriteString(voltage_string);
 							console->SetBgColor(libsc::Lcd::kBlack);
 							console->SetTextColor(libsc::Lcd::kWhite);
@@ -616,15 +621,16 @@ void Menu::MenuAction(Items *menu) {
 				if (item_selected && menu->menu_items[focus].type == var_type::menu) {
 					if (menu->menu_items[focus].sub_menu != nullptr) {
 						Save();
+						Load();
 						EnterMenu(menu->menu_items[focus].sub_menu);
 						item_selected = false;
 						focus = 0;
 						console->SetBgColor(libsc::Lcd::kBlue);
 						console->SetTextColor(libsc::Lcd::kWhite);
 						console->SetCursorRow(0);
-						console->WriteString("                ");
+						console->WriteString(is_landscape ? "                    " : "                ");
 						console->SetCursorRow(0);
-						console->SetCursorColumn((16 - strlen(menu->menu_name)) / 2);
+						console->SetCursorColumn(((max_string_width + 1 - strlen(menu->menu_name))) / 2);
 						console->WriteString(menu->menu_name);
 						console->SetBgColor(libsc::Lcd::kBlack);
 						console->SetTextColor(libsc::Lcd::kWhite);
@@ -634,9 +640,9 @@ void Menu::MenuAction(Items *menu) {
 						{
 							PrintItem(menu->menu_items[focus], focus % max_row);
 							console->SetBgColor(libsc::Lcd::kGray);
-							console->SetCursorRow(9);
-							console->WriteString("                ");
-							console->SetCursorRow(9);
+							console->SetCursorRow(max_row + 1);
+							console->WriteString(is_landscape ? "                    " : "                ");
+							console->SetCursorRow(max_row + 1);
 							char min[2] = { };
 							char sec[2] = { };
 							time_now /= 1000;
@@ -654,7 +660,7 @@ void Menu::MenuAction(Items *menu) {
 							float voltage = battery_meter->GetVoltage();
 							console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
 							sprintf(voltage_string, "%.2fV", voltage);
-							console->SetCursorColumn(11);
+							console->SetCursorColumn(max_string_width - 4);
 							console->WriteString(voltage_string);
 							console->SetBgColor(libsc::Lcd::kBlack);
 							console->SetTextColor(libsc::Lcd::kWhite);
@@ -662,6 +668,7 @@ void Menu::MenuAction(Items *menu) {
 					}
 				} else if (item_selected && menu->menu_items[focus].type == var_type::func) {
 					Save();
+					Load();
 					std::function < void() > f = func_vector[menu->menu_items[focus].value_index];
 					f();
 					libsc::System::DelayMs(500);
@@ -670,9 +677,9 @@ void Menu::MenuAction(Items *menu) {
 					console->SetBgColor(libsc::Lcd::kBlue);
 					console->SetTextColor(libsc::Lcd::kWhite);
 					console->SetCursorRow(0);
-					console->WriteString("                ");
+					console->WriteString(is_landscape ? "                    " : "                ");
 					console->SetCursorRow(0);
-					console->SetCursorColumn((16 - strlen(menu->menu_name)) / 2);
+					console->SetCursorColumn(((max_string_width + 1 - strlen(menu->menu_name))) / 2);
 					console->WriteString(menu->menu_name);
 					console->SetBgColor(libsc::Lcd::kBlack);
 					console->SetTextColor(libsc::Lcd::kWhite);
@@ -682,9 +689,9 @@ void Menu::MenuAction(Items *menu) {
 					{
 						PrintItem(menu->menu_items[focus], focus % max_row);
 						console->SetBgColor(libsc::Lcd::kGray);
-						console->SetCursorRow(9);
-						console->WriteString("                ");
-						console->SetCursorRow(9);
+						console->SetCursorRow(max_row + 1);
+						console->WriteString(is_landscape ? "                    " : "                ");
+						console->SetCursorRow(max_row + 1);
 						char min[2] = { };
 						char sec[2] = { };
 						time_now /= 1000;
@@ -702,7 +709,7 @@ void Menu::MenuAction(Items *menu) {
 						float voltage = battery_meter->GetVoltage();
 						console->SetTextColor(voltage <= 7.4 ? libsc::Lcd::kRed : libsc::Lcd::kGreen);
 						sprintf(voltage_string, "%.2fV", voltage);
-						console->SetCursorColumn(11);
+						console->SetCursorColumn(max_string_width - 4);
 						console->WriteString(voltage_string);
 						console->SetBgColor(libsc::Lcd::kBlack);
 						console->SetTextColor(libsc::Lcd::kWhite);
@@ -864,17 +871,17 @@ void Menu::Reset() {
 	console->SetBgColor(libsc::Lcd::kRed);
 	console->SetTextColor(libsc::Lcd::kBlack);
 	console->SetCursorRow(0);
-	console->WriteString("                ");
+	console->WriteString(is_landscape ? "                    " : "                ");
 	console->SetCursorRow(0);
-	console->WriteString("     Reset?     ");
+	console->WriteString(is_landscape ? "       Reset?       " : "     Reset?     ");
 	console->SetBgColor(libsc::Lcd::kBlack);
 	console->SetTextColor(libsc::Lcd::kWhite);
 	console->SetCursorRow(1);
-	console->WriteString("       Yes      ");
+	console->WriteString(is_landscape ? "         Yes        " : "       Yes      ");
 	console->SetBgColor(libsc::Lcd::kWhite);
 	console->SetTextColor(libsc::Lcd::kBlack);
 	console->SetCursorRow(2);
-	console->WriteString("       No       ");
+	console->WriteString(is_landscape ? "         No         " : "       No       ");
 	libsc::System::DelayMs(800);
 	while (1) {
 		switch (joystick->GetState()) {
@@ -884,20 +891,20 @@ void Menu::Reset() {
 				console->SetBgColor(libsc::Lcd::kWhite);
 				console->SetTextColor(libsc::Lcd::kBlack);
 				console->SetCursorRow(1);
-				console->WriteString("       Yes      ");
+				console->WriteString(is_landscape ? "         Yes        " : "       Yes      ");
 				console->SetBgColor(libsc::Lcd::kBlack);
 				console->SetTextColor(libsc::Lcd::kWhite);
 				console->SetCursorRow(2);
-				console->WriteString("       No       ");
+				console->WriteString(is_landscape ? "         No         " : "       No       ");
 			} else {
 				console->SetBgColor(libsc::Lcd::kBlack);
 				console->SetTextColor(libsc::Lcd::kWhite);
 				console->SetCursorRow(1);
-				console->WriteString("       Yes      ");
+				console->WriteString(is_landscape ? "         Yes        " : "       Yes      ");
 				console->SetBgColor(libsc::Lcd::kWhite);
 				console->SetTextColor(libsc::Lcd::kBlack);
 				console->SetCursorRow(2);
-				console->WriteString("       No       ");
+				console->WriteString(is_landscape ? "         No         " : "       No       ");
 			}
 			libsc::System::DelayMs(300);
 			break;
@@ -907,20 +914,20 @@ void Menu::Reset() {
 				console->SetBgColor(libsc::Lcd::kWhite);
 				console->SetTextColor(libsc::Lcd::kBlack);
 				console->SetCursorRow(1);
-				console->WriteString("       Yes      ");
+				console->WriteString(is_landscape ? "         Yes        " : "       Yes      ");
 				console->SetBgColor(libsc::Lcd::kBlack);
 				console->SetTextColor(libsc::Lcd::kWhite);
 				console->SetCursorRow(2);
-				console->WriteString("       No       ");
+				console->WriteString(is_landscape ? "         No         " : "       No       ");
 			} else {
 				console->SetBgColor(libsc::Lcd::kBlack);
 				console->SetTextColor(libsc::Lcd::kWhite);
 				console->SetCursorRow(1);
-				console->WriteString("       Yes      ");
+				console->WriteString(is_landscape ? "         Yes        " : "       Yes      ");
 				console->SetBgColor(libsc::Lcd::kWhite);
 				console->SetTextColor(libsc::Lcd::kBlack);
 				console->SetCursorRow(2);
-				console->WriteString("       No       ");
+				console->WriteString(is_landscape ? "         No         " : "       No       ");
 			}
 			libsc::System::DelayMs(300);
 			break;

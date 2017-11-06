@@ -34,7 +34,7 @@ public:
 	{
 		Lcd *lcd = nullptr;
 		/// The screen region for this console
-		Lcd::Rect region = Lcd::Rect{0, 0, Lcd::GetW(), Lcd::GetH()};
+		Lcd::Rect region;
 		uint16_t text_color = 0xFFFF;
 		uint16_t bg_color = 0;
 	};

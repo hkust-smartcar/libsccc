@@ -31,7 +31,7 @@ const bool MiniLcd::BatteryCharge[4 * 10] = { 1 };
 LcdConsole::Config MiniLcd::getLcdConsoleConfig(MiniLcd::Config MiniLcdconfig)
 {
 	St7735r::Config config;
-	config.is_revert = false;
+	config.orientation = 0;
 	config.is_bgr = true;
 	config.fps = MiniLcdconfig.fps;
 	LcdConsole::Config consoleConfig;
@@ -51,7 +51,7 @@ MiniTypeWriter::Config MiniLcd::getTypeWriterConfig(MiniLcd::Config MiniLcdconfi
 	config.is_clear_line = MiniLcdconfig.isClearLine;
 
 	St7735r::Config lcdConfig;
-	lcdConfig.is_revert = true;
+	lcdConfig.orientation = 2;
 	lcdConfig.is_bgr = true;
 	lcdConfig.fps = MiniLcdconfig.fps;
 	m_lcd = new St7735r(lcdConfig);
