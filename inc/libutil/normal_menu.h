@@ -132,6 +132,7 @@ private:
 	void Load();
 	void Save();
 	void Reset();
+	void Reset(Item item);
 };
 
 /*

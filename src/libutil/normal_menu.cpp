@@ -572,7 +572,7 @@ void Menu::MenuAction(Items *menu) {
 				if (joystick->GetState() == libsc::Joystick::State::kSelect) {
 					libsc::System::DelayMs(250);
 					if (joystick->GetState() == libsc::Joystick::State::kSelect) {
-						Reset();
+						Reset(menu->menu_items[focus]);
 						Load();
 						item_selected = false;
 						focus = 0;
@@ -987,6 +987,168 @@ void Menu::Reset() {
 				libsc::System::DelayMs(100);
 				delete buff;
 				libsc::System::DelayMs(300);
+				return;
+			} else {
+				libsc::System::DelayMs(300);
+				return;
+			}
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void Menu::Reset(Item item) {
+	if (flash == nullptr || item.type == var_type::func || item.type == var_type::menu)
+		return;
+	bool reset = false;
+	console->Clear(true);
+	console->SetBgColor(libsc::Lcd::kRed);
+	console->SetTextColor(libsc::Lcd::kBlack);
+	console->SetCursorRow(0);
+	console->WriteString(is_landscape ? "                    " : "                ");
+	console->SetCursorRow(0);
+	console->WriteString(is_landscape ? "                    " : "                ");
+	console->SetCursorRow(0);
+	console->SetCursorColumn((max_string_width - 5 - strlen(item.name)) / 2);
+	console->WriteString("Reset ");
+	console->WriteString(item.name);
+	console->SetBgColor(libsc::Lcd::kBlack);
+	console->SetTextColor(libsc::Lcd::kWhite);
+	console->SetCursorRow(1);
+	console->WriteString(is_landscape ? "         Yes        " : "       Yes      ");
+	console->SetBgColor(libsc::Lcd::kWhite);
+	console->SetTextColor(libsc::Lcd::kBlack);
+	console->SetCursorRow(2);
+	console->WriteString(is_landscape ? "         No         " : "       No       ");
+	libsc::System::DelayMs(800);
+	while (1) {
+		switch (joystick->GetState()) {
+		case libsc::Joystick::State::kUp:
+			reset = !reset;
+			if (reset) {
+				console->SetBgColor(libsc::Lcd::kWhite);
+				console->SetTextColor(libsc::Lcd::kBlack);
+				console->SetCursorRow(1);
+				console->WriteString(is_landscape ? "         Yes        " : "       Yes      ");
+				console->SetBgColor(libsc::Lcd::kBlack);
+				console->SetTextColor(libsc::Lcd::kWhite);
+				console->SetCursorRow(2);
+				console->WriteString(is_landscape ? "         No         " : "       No       ");
+			} else {
+				console->SetBgColor(libsc::Lcd::kBlack);
+				console->SetTextColor(libsc::Lcd::kWhite);
+				console->SetCursorRow(1);
+				console->WriteString(is_landscape ? "         Yes        " : "       Yes      ");
+				console->SetBgColor(libsc::Lcd::kWhite);
+				console->SetTextColor(libsc::Lcd::kBlack);
+				console->SetCursorRow(2);
+				console->WriteString(is_landscape ? "         No         " : "       No       ");
+			}
+			libsc::System::DelayMs(300);
+			break;
+		case libsc::Joystick::State::kDown:
+			reset = !reset;
+			if (reset) {
+				console->SetBgColor(libsc::Lcd::kWhite);
+				console->SetTextColor(libsc::Lcd::kBlack);
+				console->SetCursorRow(1);
+				console->WriteString(is_landscape ? "         Yes        " : "       Yes      ");
+				console->SetBgColor(libsc::Lcd::kBlack);
+				console->SetTextColor(libsc::Lcd::kWhite);
+				console->SetCursorRow(2);
+				console->WriteString(is_landscape ? "         No         " : "       No       ");
+			} else {
+				console->SetBgColor(libsc::Lcd::kBlack);
+				console->SetTextColor(libsc::Lcd::kWhite);
+				console->SetCursorRow(1);
+				console->WriteString(is_landscape ? "         Yes        " : "       Yes      ");
+				console->SetBgColor(libsc::Lcd::kWhite);
+				console->SetTextColor(libsc::Lcd::kBlack);
+				console->SetCursorRow(2);
+				console->WriteString(is_landscape ? "         No         " : "       No       ");
+			}
+			libsc::System::DelayMs(300);
+			break;
+		case libsc::Joystick::State::kSelect:
+			if (reset) {
+				switch (item.type) {
+				case var_type::boolean:
+					*bool_data[item.value_index] = bool_backup[item.value_index];
+					break;
+				case var_type::flp:
+					*float_data[item.value_index] = float_backup[item.value_index];
+					break;
+				case var_type::int16:
+					*int16_data[item.value_index] = int16_backup[item.value_index];
+					break;
+				case var_type::int32:
+					*int32_data[item.value_index] = int32_backup[item.value_index];
+					break;
+				case var_type::int8:
+					*int8_data[item.value_index] = int8_backup[item.value_index];
+					break;
+				case var_type::uint16:
+					*uint16_data[item.value_index] = uint16_backup[item.value_index];
+					break;
+				case var_type::uint32:
+					*uint32_data[item.value_index] = uint32_backup[item.value_index];
+					break;
+				case var_type::uint8:
+					*uint8_data[item.value_index] = uint8_backup[item.value_index];
+					break;
+				default:
+					return;
+				}
+
+				int start = 0;
+				Byte *buff = new Byte[flash_sum];
+				for (int i = 0; i < uint8_data.size(); i++) {
+					uint8_t* v = uint8_data[i];
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < uint16_data.size(); i++) {
+					uint16_t* v = uint16_data[i];
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < uint32_data.size(); i++) {
+					uint32_t* v = uint32_data[i];
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < int8_data.size(); i++) {
+					int8_t* v = int8_data[i];
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < int16_data.size(); i++) {
+					int16_t* v = int16_data[i];
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < int32_data.size(); i++) {
+					int32_t* v = int32_data[i];
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < float_data.size(); i++) {
+					float* v = float_data[i];
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				for (int i = 0; i < bool_data.size(); i++) {
+					bool* v = bool_data[i];
+					memcpy(buff + start, (unsigned char*) v, sizeof(*v));
+					start += sizeof(*v);
+				}
+				flash->Write(buff, flash_sum);
+				libsc::System::DelayMs(100);
+				delete buff;
+				libsc::System::DelayMs(300);
+
 				return;
 			} else {
 				libsc::System::DelayMs(300);
