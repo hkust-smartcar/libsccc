@@ -1,0 +1,7 @@
+In file included from c:\mingw\lib\gcc\mingw32\5.3.0\include\c++\cstdint:35:0,
+                 from C:\Users\mcreng\git\libsccc\src\libsc\led.cpp:10:
+c:\mingw\lib\gcc\mingw32\5.3.0\include\c++\bits\c++0x_warning.h:32:2: error: #error This file requires compiler and library support for the ISO C++ 2011 standard. This support is currently experimental, and must be enabled with the -std=c++11 or -std=gnu++11 compiler options.
+ #error This file requires compiler and library support for the \
+  ^
+C:\Users\mcreng\git\libsccc\src\libsc\led.cpp:12:25: fatal error: libbase/log.h: No such file or directory
+compilation terminated.

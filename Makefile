@@ -118,6 +118,14 @@ CCFLAGS+=-msoft-float -mfloat-abi=soft
 SCCC_MCU_DIR=kl26
 $(info MCU sub-family = MKL26Z4)
 
+else ifeq ($(SCCC_MCU),S9KEAZ128)
+CPPFLAGS+=-DS9KEAZ128=1
+CCFLAGS+=-mthumb -mthumb-interwork -mcpu=cortex-m0plus -march=armv6-m
+CCFLAGS+=-msoft-float -mfloat-abi=soft
+SCCC_MCU_DIR=kea128
+$(info MCU sub-family = S9KEAZ128)
+
+
 else
 $(error Missing/Unknown MCU identifier '$(SCCC_MCU)' (set SCCC_MCU))
 
@@ -160,9 +168,15 @@ not_contain=$(foreach v,$2,$(if $(findstring $1,$v),,$v))
 
 ifeq ($(SCCC_MCU_DIR),k60)
 SRC_FILES:=$(call not_contain,/kl26/,$(SRC_FILES))
+SRC_FILES:=$(call not_contain,/kea128/,$(SRC_FILES))
 
 else ifeq ($(SCCC_MCU_DIR),kl26)
 SRC_FILES:=$(call not_contain,/k60/,$(SRC_FILES))
+SRC_FILES:=$(call not_contain,/kea128/,$(SRC_FILES))
+
+else ifeq ($(SCCC_MCU_DIR),kea128)
+SRC_FILES:=$(call not_contain,/k60/,$(SRC_FILES))
+SRC_FILES:=$(call not_contain,/kl26/,$(SRC_FILES))
 
 endif
 
@@ -179,6 +193,9 @@ SRC_FILES+=$(SRC_PATH)/libbase/k60/pinout/mk60f15_lqfp144.cpp
 
 else ifeq ($(SCCC_MCU),MKL26Z4)
 SRC_FILES+=$(SRC_PATH)/libbase/kl26/pinout/mkl26z4_lqfp100.cpp
+
+else ifeq ($(SCCC_MCU),S9KEAZ128)
+#SRC_FILES+=$(SRC_PATH)/libbase/kea128/pinout/?.cpp
 
 endif
 
