@@ -9,7 +9,7 @@
 
 #pragma once
 
-#define LIBSC_USE_BUTTON 1
+#define LIBSC_USE_BUTTON 0
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 1
@@ -19,12 +19,12 @@
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
 
-#define LIBSC_BUTTON0 libbase::k60::Pin::Name::kPtd7
+//#define LIBSC_BUTTON0 libbase::k60::Pin::Name::kPtd7
 
-#define LIBSC_LED0 libbase::k60::Pin::Name::kPtb20
-#define LIBSC_LED1 libbase::k60::Pin::Name::kPtb21
-#define LIBSC_LED2 libbase::k60::Pin::Name::kPtb22
-#define LIBSC_LED3 libbase::k60::Pin::Name::kPtb23
+#define LIBSC_LED0 libbase::k60::Pin::Name::kPta14
+#define LIBSC_LED1 libbase::k60::Pin::Name::kPta15
+#define LIBSC_LED2 libbase::k60::Pin::Name::kPta16
+#define LIBSC_LED3 libbase::k60::Pin::Name::kPta17
 
 #define LIBSC_MOTOR0_PWMA libbase::k60::Pin::Name::kPtc1
 #define LIBSC_MOTOR0_PWMB libbase::k60::Pin::Name::kPtc2
@@ -55,10 +55,10 @@
 #define LIBSC_SERVO0 libbase::k60::Pin::Name::kPtd0
 
 #define LIBSC_ST7735R_RST libbase::k60::Pin::Name::kPta13
-#define LIBSC_ST7735R_DC libbase::k60::Pin::Name::kPta17
-#define LIBSC_ST7735R_CS libbase::k60::Pin::Name::kPta14
-#define LIBSC_ST7735R_SDAT libbase::k60::Pin::Name::kPta16
-#define LIBSC_ST7735R_SCLK libbase::k60::Pin::Name::kPta15
+#define LIBSC_ST7735R_DC libbase::k60::Pin::Name::kPtb17
+#define LIBSC_ST7735R_CS libbase::k60::Pin::Name::kPtb10
+#define LIBSC_ST7735R_SDAT libbase::k60::Pin::Name::kPtb16
+#define LIBSC_ST7735R_SCLK libbase::k60::Pin::Name::kPtb11
 
-#define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtb17
-#define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtb16
+#define LIBSC_UART0_TX libbase::k60::Pin::Name::kPtd7
+#define LIBSC_UART0_RX libbase::k60::Pin::Name::kPtd6
