@@ -6,7 +6,7 @@
  */
 
 #include <libsc/k60/touchscreen_lcd.h>
-#include <libbase/k60/cmsis/mk60f15.h>
+//#include <libbase/k60/cmsis/mk60f15.h>
 
 namespace libsc {
 namespace k60 {

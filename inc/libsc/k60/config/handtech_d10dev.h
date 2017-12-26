@@ -9,13 +9,13 @@
 
 #pragma once
 
-#define LIBSC_USE_BUTTON 0
+//#define LIBSC_USE_BUTTON 0
 #define LIBSC_USE_LCD 1
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 1
 #define LIBSC_USE_MPU6050 1
-#define LIBSC_USE_OV7725 1
-#define LIBSC_USE_OV7725_FIFO 1
+//#define LIBSC_USE_OV7725 1
+//#define LIBSC_USE_OV7725_FIFO 1
 #define LIBSC_USE_SERVO 1
 #define LIBSC_USE_UART 1
 

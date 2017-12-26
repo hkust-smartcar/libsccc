@@ -16,6 +16,7 @@
 #include <libsc/k60/touchscreen_lcd.h>
 #include <libbase/k60/flash.h>
 
+#if MK60F15
 namespace libutil {
 
 class Touch_Menu {
@@ -132,3 +133,4 @@ private:
 
 
 #endif /* INC_UTIL_TOUCH_MENU_H_ */
+#endif

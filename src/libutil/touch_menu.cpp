@@ -7,6 +7,7 @@
 
 #include <libutil/touch_menu.h>
 
+#if MK60F15
 namespace libutil {
 
 Touch_Menu::Touch_Menu(libsc::k60::TouchScreenLcd* lcd, libbase::k60::Flash* flash) {
@@ -863,4 +864,4 @@ void Touch_Menu::Reset() {
 }
 
 }
-
+#endif

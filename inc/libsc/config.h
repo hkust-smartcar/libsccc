@@ -87,6 +87,9 @@
 #elif defined(K60_2017_CREATIVE)
 #include "libsc/k60/config/2017_creative.h"
 
+#elif defined(K60_HANDTECH_D10DEV)
+#include "libsc/k60/config/handtech_d10dev.h"
+
 #else
 #error Unknown board
 

@@ -8,6 +8,7 @@
 
 #include "libbase/k60/flash.h"
 
+#if MK60F15
 namespace libbase
 {
 namespace k60
@@ -170,3 +171,4 @@ Flash::FlashStatus Flash::Write(void *inBytes, size_t sizeOfBytes)
 
 }
 }
+#endif

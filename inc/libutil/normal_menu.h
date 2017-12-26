@@ -26,6 +26,7 @@
 #include <libsc/lcd_console.h>
 #include <libbase/k60/flash.h>
 
+#if MK60F15
 namespace libutil {
 
 using namespace std;
@@ -226,3 +227,4 @@ private:
 }
 
 #endif /* INC_UTIL_MENU_H_ */
+#endif

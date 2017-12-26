@@ -12,6 +12,7 @@
 
 #include <libutil/normal_menu.h>
 
+#if MK60F15
 namespace libutil {
 
 Menu::Menu(bool is_landscape, libsc::St7735r *lcd, libsc::LcdConsole *console, libsc::Joystick *joystick, libsc::BatteryMeter *battery_meter, libbase::k60::Flash *flash) {
@@ -1162,4 +1163,4 @@ void Menu::Reset(Item item) {
 }
 
 }
-
+#endif

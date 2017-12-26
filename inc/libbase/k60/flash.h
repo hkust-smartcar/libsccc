@@ -11,8 +11,10 @@
 #include <cstring>
 #include <cassert>
 #include <stddef.h>
-#include <libbase/k60/cmsis/mk60f15.h>
+#include <libbase/k60/hardware.h>
+//#include <libbase/k60/cmsis/mk60f15.h>
 
+#if MK60F15
 namespace libbase
 {
 namespace k60
@@ -86,3 +88,4 @@ protected:
 
 }
 }
+#endif

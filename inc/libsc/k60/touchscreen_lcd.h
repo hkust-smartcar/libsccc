@@ -19,7 +19,7 @@
 #include <functional>
 
 #include <libbase/k60/gpio.h>
-#include <libbase/k60/cmsis/mk60f15.h>
+//#include <libbase/k60/cmsis/mk60f15.h>
 #include "libbase/k60/misc_utils.h"
 #include <libsc/system.h>
 #include "libbase/k60/pin.h"
