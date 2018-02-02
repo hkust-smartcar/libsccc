@@ -1,9 +1,9 @@
 /*
- * jy_mcu_bt_106.cpp
- * JY-MCU BT Board v1.06
+ * dk100.cpp
+ * NFC reader
  *
- * Author: Ming Tsang
- * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Author: Dipsy Wong
+ * Copyright (c) 2017-2018 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -41,12 +41,12 @@ Dk100::Dk100(const Config &config)
 }
 
 void Dk100::Handler(const vector<Byte>& v){
-	//trigger when card tab
-	if(v[2] == 0x01){
+	//trigger when card tab if auto detect card is turned on
+	if(v[2] == ByteConst::kCardId){
 	}
 
 	//trigger when write success
-	if(waiting_write && v[2] == 0xFE){
+	if(waiting_write && v[2] == ByteConst::Ack::kACK){
 		waiting_write = false;
 		if(OnWrite) OnWrite(v[3]);
 	}

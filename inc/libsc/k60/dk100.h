@@ -1,9 +1,9 @@
 /*
- * jy_mcu_bt_106.h
- * JY-MCU BT Board v1.06
+ * dk100.h
+ * NFC reader
  *
- * Author: Ming Tsang
- * Copyright (c) 2014-2015 HKUST SmartCar Team
+ * Author: Dipsy Wong
+ * Copyright (c) 2017-2018 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
 
@@ -35,14 +35,32 @@ public:
 	explicit Dk100(const Config &config);
 	explicit Dk100(nullptr_t);
 
+	/**
+	 * Make this the isr of dk100
+	 */
 	bool Listener(const Byte* data, const size_t size);
 
+	/**
+	 * Write 4 bytes to nfc card, halt the program until successfully send
+	 */
 	void SendWrite(const Byte& sector, const Byte *data);
+
+	/**
+	 * Send read command, halt the program until successfully send
+	 */
 	void SendRead(const Byte& sector);
 
+	/**
+	 * set the handler which will be called when successfully write data
+	 */
 	void SetWriteSuccessHandler(OnWriteHandler on_write_handler){ OnWrite = on_write_handler; }
+
+	/**
+	 * set the handler which will be called when successfully read data
+	 */
 	void SetReadSuccessHandler(OnReadHandler on_read_handler){ OnRead = on_read_handler; }
 
+	//some byteconst for reference
 	struct ByteConst{
 		static const Byte 	kStartPkg = 0xAA;
 
@@ -128,6 +146,9 @@ private:
 	Byte sending_buffer[8];
 	vector<Byte> buffer;
 
+	/**
+	 * called when a complete package is received
+	 */
 	void Handler(const vector<Byte>& v);
 
 	void SendWriteHelper();
