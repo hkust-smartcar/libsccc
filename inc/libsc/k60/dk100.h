@@ -10,7 +10,7 @@
 #pragma once
 
 #include <cstdint>
-
+#include <cstring>
 #include <vector>
 #include <functional>
 
@@ -29,10 +29,19 @@ class Dk100 : public UartDevice
 {
 public:
 	typedef UartDevice::Config Config;
-	typedef std::function<void(const vector<Byte>&)> Handler;
+	typedef std::function<void(const Byte& sector)> OnWriteHandler;
+	typedef std::function<void(const Byte& sector, const Byte *data)> OnReadHandler;
 
 	explicit Dk100(const Config &config);
 	explicit Dk100(nullptr_t);
+
+	bool Listener(const Byte* data, const size_t size);
+
+	void SendWrite(const Byte& sector, const Byte *data);
+	void SendRead(const Byte& sector);
+
+	void SetWriteSuccessHandler(OnWriteHandler on_write_handler){ OnWrite = on_write_handler; }
+	void SetReadSuccessHandler(OnReadHandler on_read_handler){ OnRead = on_read_handler; }
 
 	struct ByteConst{
 		static const Byte 	kStartPkg = 0xAA;
@@ -111,7 +120,20 @@ protected:
 
 		libbase::k60::Uart::Config GetUartConfig() const override;
 	};
+private:
+	OnWriteHandler OnWrite = nullptr;
+	OnReadHandler OnRead = nullptr;
+	bool waiting_write = false;
+	bool waiting_read = false;
+	Byte sending_buffer[8];
+	vector<Byte> buffer;
+
+	void Handler(const vector<Byte>& v);
+
+	void SendWriteHelper();
+	void SendReadHelper();
 };
+
 
 }
 }
