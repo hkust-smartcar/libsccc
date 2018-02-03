@@ -52,7 +52,7 @@ void Dk100::Handler(const vector<Byte>& v){
 	}
 
 	//trigger when read success
-	if(v[2] == 0x90){
+	if(waiting_read && v[2] == ByteConst::Ul::kRead){
 		waiting_read = false;
 		if(OnRead){
 			const Byte buf[4] = {v[4],v[5],v[6],v[7]};
@@ -63,6 +63,7 @@ void Dk100::Handler(const vector<Byte>& v){
 
 bool Dk100::Listener(const Byte* data, const size_t size){
 	for(uint8_t i=0; i<size; i++){
+		if(data[i]==0xAA)buffer.clear();
 		buffer.push_back(data[i]);
 		if(buffer.size() > 1){
 			if(buffer.size() == buffer[1]+2){
@@ -82,7 +83,7 @@ void Dk100::SendWriteHelper(){
 
 void Dk100::SendWrite(const Byte& sector, const Byte *to_write){
 	waiting_write = true;
-	Byte buf[8] = {0xAA, 0x06, 0x0A, sector};
+	Byte buf[8] = {ByteConst::kStartPkg, 0x06, ByteConst::Ul::kWrite, sector};
 	memcpy(sending_buffer,buf,4);
 	memcpy(sending_buffer+4,to_write,4);
 	while(waiting_write)SendWriteHelper();
@@ -93,7 +94,7 @@ void Dk100::SendReadHelper(){
 }
 void Dk100::SendRead(const Byte& sector){
 	waiting_read = true;
-	Byte buf[4] = {0xAA, 0x02, 0x09, sector};
+	Byte buf[4] = {ByteConst::kStartPkg, 0x02, ByteConst::Ul::kRead, sector};
 	memcpy(sending_buffer,buf,4);
 	while(waiting_read)SendReadHelper();
 }
