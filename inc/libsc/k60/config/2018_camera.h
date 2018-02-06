@@ -26,11 +26,11 @@
 #define LIBSC_ENCODER1_QDA libbase::k60::Pin::Name::kPta12
 #define LIBSC_ENCODER1_QDB libbase::k60::Pin::Name::kPta13
 
-#define LIBSC_JOYSTICK0_UP libbase::k60::Pin::Name::kPtc8
-#define LIBSC_JOYSTICK0_DOWN libbase::k60::Pin::Name::kPtc4
-#define LIBSC_JOYSTICK0_LEFT libbase::k60::Pin::Name::kPtc5
-#define LIBSC_JOYSTICK0_RIGHT libbase::k60::Pin::Name::kPtc6
-#define LIBSC_JOYSTICK0_SELECT libbase::k60::Pin::Name::kPtc7
+#define LIBSC_JOYSTICK0_UP libbase::k60::Pin::Name::kPtd11
+#define LIBSC_JOYSTICK0_DOWN libbase::k60::Pin::Name::kPtd13
+#define LIBSC_JOYSTICK0_LEFT libbase::k60::Pin::Name::kPtd12
+#define LIBSC_JOYSTICK0_RIGHT libbase::k60::Pin::Name::kPtd15
+#define LIBSC_JOYSTICK0_SELECT libbase::k60::Pin::Name::kPtd14
 
 #define LIBSC_ST7735R_RST libbase::k60::Pin::Name::kPte3
 #define LIBSC_ST7735R_DC libbase::k60::Pin::Name::kPte0
