@@ -618,6 +618,8 @@ TouchScreenLcd::TouchScreenLcd() {
 	delete Touch_Interrupt;
 	Touch_Interrupt = nullptr;
 	gpi_config.config.reset(libbase::k60::Pin::Config::ConfigBit::kPullUp);
+	gpi_config.interrupt = libbase::k60::Pin::Config::Interrupt::kRising;
+	gpi_config.isr = [&](libbase::k60::Gpi* g){if(m_isr) m_isr(g,this);};
 	Touch_Interrupt = new libbase::k60::Gpi(gpi_config);
 	libsc::System::DelayMs(100);
 	uint8_t temp = 0X02;

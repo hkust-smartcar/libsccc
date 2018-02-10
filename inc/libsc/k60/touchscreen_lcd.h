@@ -38,6 +38,7 @@ namespace k60 {
 
 class TouchScreenLcd {
 private:
+	typedef std::function<void(libbase::k60::Gpi*,TouchScreenLcd*)> OnTouchingListener;
 	libbase::k60::Gpo* LCD_RST;
 	libbase::k60::Gpo* backlight;
 	libbase::k60::I2cMaster* touchscreen_i2c;
@@ -48,6 +49,8 @@ private:
 	uint16_t ramcmd;		//Write gram command
 	uint16_t setxcmd;		//set x coor cmd
 	uint16_t setycmd;		//set y coor cmd
+
+	OnTouchingListener m_isr;
 
 	uint16_t LCD_RD_DATA(void);
 	void LCD_WriteReg(uint16_t LCD_Reg, uint16_t LCD_RegValue);
@@ -122,6 +125,9 @@ public:
 
 	bool Scan(uint8_t mode);
 
+	void SetTouchingInterrupt(OnTouchingListener isr){
+		m_isr = isr;
+	}
 };
 
 }

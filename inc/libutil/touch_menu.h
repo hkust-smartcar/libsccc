@@ -130,7 +130,14 @@ private:
 
 }
 
+#else
 
+class Touch_Menu{
+public:
+	Touch_Menu(libsc::k60::TouchScreenLcd* lcd){
+
+	}
+};
 
 #endif /* INC_UTIL_TOUCH_MENU_H_ */
 #endif

@@ -41,14 +41,26 @@ public:
 	bool Listener(const Byte* data, const size_t size);
 
 	/**
-	 * Write 4 bytes to nfc card, halt the program until successfully send
+	 * Write 4 bytes to nfc card, halt the program until successfully send write command
+	 * return false when operation is canceled
 	 */
-	void SendWrite(const Byte& sector, const Byte *data);
+	bool SendWrite(const Byte& sector, const Byte *data);
 
 	/**
-	 * Send read command, halt the program until successfully send
+	 * Send read command, halt the program until successfully send read command
+	 * return false when operation is canceled
 	 */
-	void SendRead(const Byte& sector);
+	bool SendRead(const Byte& sector);
+
+	/**
+	 * return the last data read by send read command
+	 */
+	uint32_t GetData() { return data; }
+
+	/**
+	 * Cancel the current sending process
+	 */
+	void Cancel();
 
 	/**
 	 * set the handler which will be called when successfully write data
@@ -144,7 +156,9 @@ private:
 	bool waiting_write = false;
 	bool waiting_read = false;
 	Byte sending_buffer[8];
+	uint32_t data;
 	vector<Byte> buffer;
+	bool cancel = false;
 
 	/**
 	 * called when a complete package is received

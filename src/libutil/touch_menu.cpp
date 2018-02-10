@@ -16,6 +16,11 @@ Touch_Menu::Touch_Menu(libsc::k60::TouchScreenLcd* lcd, libbase::k60::Flash* fla
 	main_menu.menu_name = "main menu";
 }
 
+Touch_Menu::Touch_Menu(libsc::k60::TouchScreenLcd* lcd) {
+	this->lcd = lcd;
+	main_menu.menu_name = "main menu";
+}
+
 void Touch_Menu::AddItem(char *name, uint8_t *value, Menu *menu) {
 	Item item;
 	item.name = name;

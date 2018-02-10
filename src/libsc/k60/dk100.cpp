@@ -56,6 +56,7 @@ void Dk100::Handler(const vector<Byte>& v){
 		waiting_read = false;
 		if(OnRead){
 			const Byte buf[4] = {v[4],v[5],v[6],v[7]};
+			memcpy(&data,buf,4);
 			OnRead(v[3],buf);
 		}
 	}
@@ -81,22 +82,32 @@ void Dk100::SendWriteHelper(){
 	this->SendBuffer(sending_buffer,8);
 }
 
-void Dk100::SendWrite(const Byte& sector, const Byte *to_write){
+bool Dk100::SendWrite(const Byte& sector, const Byte *to_write){
+	cancel = false;
 	waiting_write = true;
 	Byte buf[8] = {ByteConst::kStartPkg, 0x06, ByteConst::Ul::kWrite, sector};
 	memcpy(sending_buffer,buf,4);
 	memcpy(sending_buffer+4,to_write,4);
 	while(waiting_write)SendWriteHelper();
+	return !cancel;
 }
 
 void Dk100::SendReadHelper(){
 	this->SendBuffer(sending_buffer,4);
 }
-void Dk100::SendRead(const Byte& sector){
+bool Dk100::SendRead(const Byte& sector){
+	cancel = false;
 	waiting_read = true;
 	Byte buf[4] = {ByteConst::kStartPkg, 0x02, ByteConst::Ul::kRead, sector};
 	memcpy(sending_buffer,buf,4);
 	while(waiting_read)SendReadHelper();
+	return !cancel;
+}
+
+void Dk100::Cancel(){
+	cancel = true;
+	waiting_read = false;
+	waiting_write = false;
 }
 
 #else /* LIBSC_USE_UART */
