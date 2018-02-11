@@ -10,11 +10,13 @@
 
 #include <functional>
 #include <string.h>
+#include <string>
 #include <vector>
 #include <cstdio>
 #include <memory>
 #include <libsc/k60/touchscreen_lcd.h>
 #include <libbase/k60/flash.h>
+#include <libutil/touch_keyboard.h>
 
 #if MK60F15
 namespace libutil {
@@ -25,7 +27,7 @@ private:
 	 * Type of the item's data
 	 */
 	enum var_type {
-		uint8, int8, uint16, int16, uint32, int32, flp, boolean, menu, func
+		uint8, int8, uint16, int16, uint32, int32, flp, boolean, menu, func, str
 	};
 
 	struct Menu;
@@ -76,6 +78,7 @@ public:
 	void AddItem(char* name, bool* value, char* true_text, char* false_text, Menu* menu);
 	void AddItem(char* menu_name, Menu* menu);
 	void AddItem(char* name, std::function<void()> f, Menu* menu);
+	void AddItem(char* name, std::string* str, Menu* menu);
 
 	/*
 	 * Entry of menu
@@ -96,6 +99,7 @@ private:
 	std::vector<int32_t*> int32_data;
 	std::vector<float*> float_data;
 	std::vector<bool*> bool_data;
+	std::vector<string*> str_data;
 	std::vector<uint8_t> uint8_backup;
 	std::vector<int8_t> int8_backup;
 	std::vector<uint16_t> uint16_backup;
@@ -104,6 +108,7 @@ private:
 	std::vector<int32_t> int32_backup;
 	std::vector<float> float_backup;
 	std::vector<bool> bool_backup;
+	std::vector<string> str_backup;
 	std::vector<std::function<void()>> func_vector;
 	uint16_t x;
 	uint16_t y;

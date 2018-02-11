@@ -129,6 +129,15 @@ void Touch_Menu::AddItem(char *name, std::function<void()> f, Menu *menu) {
 	menu->menu_items.push_back(item);
 }
 
+void Touch_Menu::AddItem(char *name, std::string *value, Menu *menu) {
+	Item item;
+	item.name = name;
+	item.type = str;
+	item.value_index = str_data.size();
+	str_data.push_back(value);
+	str_backup.push_back(*value);
+	menu->menu_items.push_back(item);
+}
 void Touch_Menu::EnterMenu(Menu* menu, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t char_size) {
 	libsc::System::DelayMs(100);
 	Load();
@@ -286,6 +295,11 @@ void Touch_Menu::MenuAction(Menu *menu) {
 						lcd->BACK_COLOR = libsc::k60::TouchScreenLcd::BLACK;
 						std::function < void() > f = func_vector[menu->menu_items[first_item_num + (tapped_y - first_row_y) / char_size].value_index];
 						f();
+					} else if (menu->menu_items[first_item_num + (tapped_y - first_row_y) / char_size].type == var_type::str) {
+						Item& item = menu->menu_items[first_item_num + (tapped_y - first_row_y) / char_size];
+						string* pStr = str_data[item.value_index];
+						libutil::TouchKeyboard keyboard(lcd);
+						*pStr = keyboard.ShowKeyboard(*pStr);
 					} else {
 						ChangeItemValue(menu->menu_items[first_item_num + (tapped_y - first_row_y) / char_size]);
 					}
@@ -359,6 +373,16 @@ void Touch_Menu::PrintItem(Item item, uint8_t row) {
 			break;
 		case var_type::func:
 			break;
+		case var_type::str:
+		{
+			const string& s = *str_data[item.value_index];
+			if(s.size()<17) memcpy(buf,s.c_str(),s.size());
+			else {
+				memcpy(buf,s.c_str(),14);
+				sprintf(buf,"%s...",buf);
+			}
+			break;
+		}
 		}
 		if (item.type == var_type::boolean) {
 			if (*bool_data[item.value_index]) {
