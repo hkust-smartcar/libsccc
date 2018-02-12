@@ -30,6 +30,8 @@ private:
 		uint8, int8, uint16, int16, uint32, int32, flp, boolean, menu, func, str
 	};
 
+public:
+
 	struct Menu;
 
 	/*
@@ -52,7 +54,6 @@ private:
 		char* menu_name = nullptr;
 	};
 
-public:
 	/*
 	 * Default contructor
 	 * Pass touch screen lcd and flash(keep the data memory even the device shut down) into touch menu class

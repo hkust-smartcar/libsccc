@@ -56,7 +56,7 @@ void Dk100::Handler(const vector<Byte>& v){
 		waiting_read = false;
 		if(OnRead){
 			const Byte buf[4] = {v[4],v[5],v[6],v[7]};
-			memcpy(&data,buf,4);
+			memcpy(data,buf,4);
 			OnRead(v[3],buf);
 		}
 	}

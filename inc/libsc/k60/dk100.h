@@ -55,7 +55,7 @@ public:
 	/**
 	 * return the last data read by send read command
 	 */
-	uint32_t GetData() { return data; }
+	Byte* GetData() { return data; }
 
 	/**
 	 * Cancel the current sending process
@@ -156,7 +156,7 @@ private:
 	bool waiting_write = false;
 	bool waiting_read = false;
 	Byte sending_buffer[8];
-	uint32_t data;
+	Byte data[4];
 	vector<Byte> buffer;
 	bool cancel = false;
 
