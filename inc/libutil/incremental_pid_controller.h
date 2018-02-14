@@ -10,7 +10,7 @@
 #pragma once
 
 #if MK60DZ10 || MK60D10 || MK60F15
-#include "libsc/k60/system.h"
+#include "libsc/system.h"
 
 #elif MKL26Z4
 #include "libsc/kl26/system.h"
@@ -51,7 +51,7 @@ public:
 	void ResetTime()
 	{
 #if MK60DZ10 || MK60D10 || MK60F15
-		m_prev_time = libsc::k60::System::Time();
+		m_prev_time = libsc::System::Time();
 #elif MKL26Z4
 		m_prev_time = libsc::kl26::System::Time();
 #endif
