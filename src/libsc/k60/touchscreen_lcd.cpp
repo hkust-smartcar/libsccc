@@ -609,6 +609,8 @@ TouchScreenLcd::TouchScreenLcd() {
 	libbase::k60::Gpi::Config gpi_config;
 	gpi_config.config.set(libbase::k60::Pin::Config::ConfigBit::kPullUp);
 	gpi_config.pin = libbase::k60::Pin::Name::kPtb20;
+	gpi_config.interrupt = libbase::k60::Pin::Config::Interrupt::kRising;
+	gpi_config.isr = [&](libbase::k60::Gpi* g){if(m_isr) m_isr(g,this);};
 	Touch_Interrupt = new libbase::k60::Gpi(gpi_config);
 	gpo_config.pin = libbase::k60::Pin::Name::kPtb21;
 	Touch_RST = new libbase::k60::Gpo(gpo_config);

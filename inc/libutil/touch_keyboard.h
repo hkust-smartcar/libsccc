@@ -43,7 +43,7 @@ private:
 	TouchScreenLcd* pLcd;
 	uint16_t ox=1, oy=451,		//offset left, top
 			kw = 48, kh = 70;	//key width key height
-	char str[35]="";
+	char str[35]={};
 	uint8_t len=0;
 	bool cap_lock = false;
 	const string keys[5] = {
