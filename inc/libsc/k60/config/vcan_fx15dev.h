@@ -17,7 +17,7 @@
 #define LIBSC_USE_OV7725 1
 #define LIBSC_USE_OV7725_FIFO 1
 #define LIBSC_USE_SERVO 1
-#define LIBSC_USE_UART 1
+#define LIBSC_USE_UART 2
 
 #define LIBSC_BUTTON0 libbase::k60::Pin::Name::kPtd7
 
@@ -62,3 +62,6 @@
 
 #define LIBSC_UART0_TX libbase::k60::Pin::Name::kPte8
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPte9
+
+#define LIBSC_UART1_TX libbase::k60::Pin::Name::kPte24
+#define LIBSC_UART1_RX libbase::k60::Pin::Name::kPte25
