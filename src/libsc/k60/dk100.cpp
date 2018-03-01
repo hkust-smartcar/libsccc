@@ -47,18 +47,18 @@ void Dk100::Handler(const vector<Byte>& v){
 
 	//trigger when write success
 	if(waiting_write && v[2] == ByteConst::Ack::kACK){
-		waiting_write = false;
 		if(OnWrite) OnWrite(v[3]);
+		waiting_write = false;
 	}
 
 	//trigger when read success
 	if(waiting_read && v[2] == ByteConst::Ul::kRead){
-		waiting_read = false;
+		memcpy(data,&v[4],4);
 		if(OnRead){
-			const Byte buf[4] = {v[4],v[5],v[6],v[7]};
-			memcpy(data,buf,4);
-			OnRead(v[3],buf);
+//			const Byte buf[4] = {v[4],v[5],v[6],v[7]};
+			OnRead(v[3],data);
 		}
+		waiting_read = false;
 	}
 }
 
@@ -78,30 +78,34 @@ bool Dk100::Listener(const Byte* data, const size_t size){
 	return true;
 }
 
-void Dk100::SendWriteHelper(){
-	this->SendBuffer(sending_buffer,8);
-}
-
 bool Dk100::SendWrite(const Byte& sector, const Byte *to_write){
+	data[0]=data[1]=data[2]=data[3]=0;
 	cancel = false;
 	waiting_write = true;
 	Byte buf[8] = {ByteConst::kStartPkg, 0x06, ByteConst::Ul::kWrite, sector};
-	memcpy(sending_buffer,buf,4);
-	memcpy(sending_buffer+4,to_write,4);
-	while(waiting_write)SendWriteHelper();
+	memcpy(buf+4,to_write,4);
+	while(waiting_write)SendBuffer(buf,8);
 	return !cancel;
 }
 
-void Dk100::SendReadHelper(){
-	this->SendBuffer(sending_buffer,4);
-}
 bool Dk100::SendRead(const Byte& sector){
+	data[0]=data[1]=data[2]=data[3]=0;
 	cancel = false;
 	waiting_read = true;
 	Byte buf[4] = {ByteConst::kStartPkg, 0x02, ByteConst::Ul::kRead, sector};
-	memcpy(sending_buffer,buf,4);
-	while(waiting_read)SendReadHelper();
+	while(waiting_read)SendBuffer(buf,4);
+	System::DelayMs(100);
 	return !cancel;
+}
+
+bool Dk100::SendRead(const Byte& sector, Byte* target){
+	if(SendRead(sector)){
+		memcpy(target,data,4);
+		return true;
+	}
+	else{
+		return false;
+	}
 }
 
 void Dk100::Cancel(){

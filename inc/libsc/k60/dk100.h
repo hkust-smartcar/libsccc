@@ -14,11 +14,12 @@
 #include <vector>
 #include <functional>
 
+#include "libsc/system.h"
 #include "libbase/k60/uart.h"
-
 #include "libsc/k60/uart_device.h"
 
 using std::vector;
+using libsc::System;
 
 namespace libsc
 {
@@ -51,6 +52,12 @@ public:
 	 * return false when operation is canceled
 	 */
 	bool SendRead(const Byte& sector);
+
+	/**
+	 * Send read command, halt the program until successfully send read command
+	 * return false when operation is canceled, write result to target
+	 */
+	bool SendRead(const Byte& sector, Byte* target);
 
 	/**
 	 * return the last data read by send read command
@@ -164,9 +171,6 @@ private:
 	 * called when a complete package is received
 	 */
 	void Handler(const vector<Byte>& v);
-
-	void SendWriteHelper();
-	void SendReadHelper();
 };
 
 
