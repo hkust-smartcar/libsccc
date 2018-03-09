@@ -181,6 +181,7 @@ Ov7725::Ov7725(const Config &config)
 
 Ov7725::~Ov7725()
 {
+	DmaManager::Delete(m_dma);
 	NVIC_SetPriority(DMA1_DMA17_IRQn, __BASE_IRQ_PRIORITY);
 }
 
