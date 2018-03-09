@@ -66,7 +66,7 @@ private:
 
 	enum struct FlashCmd
 	{
-		kProhram4Byte = 0x06, // FTFE not supported
+		kProgram4Byte = 0x06, // FTFE not supported
 		kProgram8Byte,
 		kEraseBlock,
 		kEraseSector
