@@ -93,6 +93,9 @@
 #elif defined(K60_HANDTECH_D10DEV)
 #include "libsc/k60/config/handtech_d10dev.h"
 
+#elif defined(K60_NFC_CLIENT)
+#include "libsc/k60/config/nfc_client.h"
+
 #else
 #error Unknown board
 

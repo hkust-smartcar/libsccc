@@ -143,6 +143,12 @@ CPPFLAGS+=-DK60_HANDTECH_D10DEV=1
 SCCC_MCU=MK60DZ10
 $(info Config = HANDTECH_D10DEV)
 
+else ifeq ($(SCCC_CONFIG),NFC_CLIENT)
+BIN_SUFFIX:=$(BIN_SUFFIX)-nfc-client
+CPPFLAGS+=-DK60_NFC_CLIENT=1
+SCCC_MCU=MK60F15
+$(info Config = NFC_CLIENT)
+
 else
 $(error Missing/Unknown config '$(SCCC_CONFIG)' (set SCCC_CONFIG))
 
