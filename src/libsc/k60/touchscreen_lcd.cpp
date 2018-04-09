@@ -32,6 +32,8 @@ namespace k60 {
 #define TP_PRES_DOWN 0x80  //touch screen was touched
 #define TP_CATH_PRES 0x40  //key was touched
 
+//#define GT_CMD_WR 		0XBA     	//write cmd
+//#define GT_CMD_RD 		0XBB		//read cmd
 #define GT_CMD_WR 		0X28     	//write cmd
 #define GT_CMD_RD 		0X29		//read cmd
 
@@ -601,18 +603,18 @@ TouchScreenLcd::TouchScreenLcd() {
 	Clear(BLACK);
 
 	libbase::k60::I2cMaster::Config i2c_config;
-	i2c_config.scl_pin = libbase::k60::Pin::Name::kPtd8;
-	i2c_config.sda_pin = libbase::k60::Pin::Name::kPtd9;
+	i2c_config.scl_pin = libbase::k60::Pin::Name::kPtb0;
+	i2c_config.sda_pin = libbase::k60::Pin::Name::kPtb1;
 	i2c_config.baud_rate_khz = 400;
 	i2c_config.is_high_drive_mode = true;
 	touchscreen_i2c = new libbase::k60::I2cMaster(i2c_config);
 	libbase::k60::Gpi::Config gpi_config;
 	gpi_config.config.set(libbase::k60::Pin::Config::ConfigBit::kPullUp);
-	gpi_config.pin = libbase::k60::Pin::Name::kPtb20;
+	gpi_config.pin = libbase::k60::Pin::Name::kPtb21;
 	gpi_config.interrupt = libbase::k60::Pin::Config::Interrupt::kRising;
 	gpi_config.isr = [&](libbase::k60::Gpi* g){if(m_isr) m_isr(g,this);};
 	Touch_Interrupt = new libbase::k60::Gpi(gpi_config);
-	gpo_config.pin = libbase::k60::Pin::Name::kPtb21;
+	gpo_config.pin = libbase::k60::Pin::Name::kPtb20;
 	Touch_RST = new libbase::k60::Gpo(gpo_config);
 	libsc::System::DelayMs(10);
 	Touch_RST->Set(true);
@@ -633,6 +635,12 @@ TouchScreenLcd::TouchScreenLcd() {
 	libsc::System::DelayMs(10);
 	temp = 0X00;
 	GT9147_WR_Reg(GT_CTRL_REG, &temp, 1);
+	delete Touch_Interrupt;
+	Touch_Interrupt = nullptr;
+	gpi_config.config.reset(libbase::k60::Pin::Config::ConfigBit::kPullUp);
+	gpi_config.interrupt = libbase::k60::Pin::Config::Interrupt::kRising;
+	gpi_config.isr = [&](libbase::k60::Gpi* g){if(m_isr) m_isr(g,this);};
+	Touch_Interrupt = new libbase::k60::Gpi(gpi_config);
 }
 
 uint16_t TouchScreenLcd::LCD_RD_DATA(void) {
