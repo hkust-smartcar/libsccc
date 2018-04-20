@@ -39,6 +39,11 @@ public:
 	 */
 	string ShowKeyboard(const string& s);
 
+	/**
+	 * Password mode
+	 */
+	void SetPasswordMode(bool flag){password_mode = flag;}
+
 private:
 	TouchScreenLcd* pLcd;
 	uint16_t ox=1, oy=451,		//offset left, top
@@ -54,6 +59,9 @@ private:
 			",( \\\\).\n\\\\"
 	};
 	const uint8_t pl[5] = {0,0,24,0,0};
+	bool password_mode = false;
+	time_t last_tap = 0;
+	char last_key = '+';
 
 	void RenderKeyboard(bool is_upper_case = false);
 

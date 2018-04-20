@@ -11,14 +11,15 @@ namespace libutil{
 
 string TouchKeyboard::ShowKeyboard(){
 	uint8_t sum=0;
-	time_t last_tap = 0;
-	char last_key = '+';
+	last_tap = 0;
+	last_key = '+';
 	RenderKeyboard();
 	PrintCurrentStr();
 	while(1){
 		if(pLcd->Scan(0) && pLcd->touch_status!=4){
 			sum++;
 			char key = GetKey(pLcd->touch_x[0],pLcd->touch_y[0]);
+			if(key == 0)continue;
 			if(key == last_key){
 				if(System::Time()-last_tap<=300)continue;
 			}
@@ -31,17 +32,17 @@ string TouchKeyboard::ShowKeyboard(){
 					str[len]='\0';
 				}
 				break;
-			case '\b':
+			case '\b':	//backspace
 				if(len>0){
 					str[--len] = '\0';
 				}
 				break;
-			case '\t':
+			case '\t':	//cap_lock
 				RenderKeyboard(cap_lock = !cap_lock);
 				break;
-			case '\n':
+			case '\n':	//enter
 				return string(str);
-			case 0:
+			case 0:		//invalid char (never triggered)
 				break;
 			}
 			PrintCurrentStr();
@@ -104,6 +105,10 @@ void TouchKeyboard::PrintCurrentStr(){
 	char buff[36];
 	strcpy(buff,str);
 	pLcd->Fill(0,0,480,127,0xFFFF);
+	if(password_mode && len > 0){
+		int size = len-(System::Time() - last_tap<500 && last_key != '\b' && last_key != '\t');
+		memset(buff,'*',size);
+	}
 	if(System::Time()/500%2){
 		strcat(buff,"_");
 	}
