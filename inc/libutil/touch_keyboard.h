@@ -51,7 +51,7 @@ private:
 			"qwertyuiop",
 			"asdfghjkl",
 			"\tzxcvbnm\b\\",
-			",(   ).\n\\\\"
+			",( \\\\).\n\\\\"
 	};
 	const uint8_t pl[5] = {0,0,24,0,0};
 

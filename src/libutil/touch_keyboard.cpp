@@ -12,12 +12,19 @@ namespace libutil{
 string TouchKeyboard::ShowKeyboard(){
 	uint8_t sum=0;
 	time_t last_tap = 0;
+	char last_key = '+';
+	pLcd->Fill(0,0,480,127,0xFFFF);
 	RenderKeyboard();
+	PrintCurrentStr();
 	while(1){
-		if(pLcd->Scan(0) && pLcd->touch_status!=4 && System::Time()>last_tap+500){
-			last_tap = System::Time();
+		if(pLcd->Scan(0) && pLcd->touch_status!=4){
 			sum++;
 			char key = GetKey(pLcd->touch_x[0],pLcd->touch_y[0]);
+			if(key == last_key){
+				if(System::Time()-last_tap<=300)continue;
+			}
+			last_key = key;
+			last_tap = System::Time();
 			switch(key){
 			default:
 				if(len<34){
@@ -41,10 +48,10 @@ string TouchKeyboard::ShowKeyboard(){
 			}
 			PrintCurrentStr();
 		}
-		pLcd->ShowNum(0,100,len,4,48);
-		pLcd->ShowNum(0,150,last_tap,4,48);
-		pLcd->ShowNum(0,200,System::Time(),4,48);
-		pLcd->ShowNum(0,250,sum,4,48);
+//		pLcd->ShowNum(0,100,len,4,48);
+//		pLcd->ShowNum(0,150,last_tap,4,48);
+//		pLcd->ShowNum(0,200,System::Time(),4,48);
+//		pLcd->ShowNum(0,250,sum,4,48);
 	}
 }
 
@@ -92,9 +99,9 @@ void TouchKeyboard::RenderKeyboard(bool is_upper_case){
 }
 
 void TouchKeyboard::PrintCurrentStr(){
-	pLcd->ShowString(0, 0, 408, 48, 48, str, 0);
+	pLcd->ShowString(20, 20, 408, 48, 48, str, 0);
 	if(len>17)
-		pLcd->ShowString(0, 50, 408, 48, 48, str+17, 0);
+		pLcd->ShowString(20, 70, 408, 48, 48, str+17, 0);
 }
 
 char TouchKeyboard::GetKey(uint16_t x, uint16_t y){
