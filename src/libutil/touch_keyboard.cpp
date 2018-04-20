@@ -13,7 +13,6 @@ string TouchKeyboard::ShowKeyboard(){
 	uint8_t sum=0;
 	time_t last_tap = 0;
 	char last_key = '+';
-	pLcd->Fill(0,0,480,127,0xFFFF);
 	RenderKeyboard();
 	PrintCurrentStr();
 	while(1){
@@ -34,7 +33,6 @@ string TouchKeyboard::ShowKeyboard(){
 				break;
 			case '\b':
 				if(len>0){
-					pLcd->Fill(0,0,480,100,0x0000);
 					str[--len] = '\0';
 				}
 				break;
@@ -46,6 +44,10 @@ string TouchKeyboard::ShowKeyboard(){
 			case 0:
 				break;
 			}
+			PrintCurrentStr();
+		}
+
+		else if(System::Time()%250 == 0){
 			PrintCurrentStr();
 		}
 //		pLcd->ShowNum(0,100,len,4,48);
@@ -99,9 +101,15 @@ void TouchKeyboard::RenderKeyboard(bool is_upper_case){
 }
 
 void TouchKeyboard::PrintCurrentStr(){
-	pLcd->ShowString(20, 20, 408, 48, 48, str, 0);
+	char buff[36];
+	strcpy(buff,str);
+	pLcd->Fill(0,0,480,127,0xFFFF);
+	if(System::Time()/500%2){
+		strcat(buff,"_");
+	}
+	pLcd->ShowString(20, 20, 408, 48, 48, buff, 0);
 	if(len>17)
-		pLcd->ShowString(20, 70, 408, 48, 48, str+17, 0);
+		pLcd->ShowString(20, 70, 408, 48, 48, buff+17, 0);
 }
 
 char TouchKeyboard::GetKey(uint16_t x, uint16_t y){
