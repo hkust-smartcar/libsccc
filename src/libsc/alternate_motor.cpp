@@ -27,7 +27,7 @@
 #include "libsc/alternate_motor.h"
 
 // 20 kHz
-#define PERIOD 200000
+#define PERIOD 50000
 
 // Default PWM A -> CW
 #ifndef LIBSC_ALTERNATE_MOTOR_CW_PWM
