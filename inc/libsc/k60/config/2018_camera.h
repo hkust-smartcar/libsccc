@@ -15,6 +15,8 @@
 
 #define LIBSC_BATTERY_METER libbase::k60::Adc::Name::kAdc3Ad6A
 
+#define LIBSC_PASSSIVE_BUZZER0_PIT_CHANNEL 1
+#define LIBSC_USE_PASSIVE_BUZZER 1
 #define LIBSC_BUZZER0 libbase::k60::Pin::Name::kPta13
 
 #define LIBSC_ENCODER0_QDA libbase::k60::Pin::Name::kPta10

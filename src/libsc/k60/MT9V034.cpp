@@ -5,7 +5,6 @@
  * Copyright (c) 2014-2018 HKUST SmartCar Team
  * Refer to LICENSE for details
  */
-
 #include "libbase/k60/hardware.h"
 
 #include <cassert>
@@ -381,7 +380,7 @@ void MT9V034::OnVsync(Gpi*) {
 		m_dma->Start();
 		return;
 	}
-	if(!m_is_lock_buffer) {
+	if(!m_is_lock_buffer&&m_dma->IsDone()) {
 		m_dma_config.dst.addr = m_front_buffer_writing?m_front_buf.get():m_back_buf.get();
 		m_dma->Reinit(m_dma_config);
 		m_dma->Start();
