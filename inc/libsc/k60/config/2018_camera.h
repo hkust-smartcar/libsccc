@@ -2,6 +2,7 @@
 
 #define __FPU_PRESENT 1
 
+#define LIBSC_USE_MPU6050 1
 #define LIBSC_USE_BATTERY_METER 1
 #define LIBSC_USE_BUZZER 1
 #define LIBSC_USE_ENCODER 1
@@ -63,3 +64,6 @@
 
 #define LIBSC_UART0_TX libbase::k60::Pin::Name::kPte25
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPte24
+
+#define LIBSC_MPU6050_SCL libbase::k60::Pin::Name::kPtc10
+#define LIBSC_MPU6050_SDA libbase::k60::Pin::Name::kPtc11
