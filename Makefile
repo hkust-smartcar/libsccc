@@ -68,7 +68,7 @@ ARFLAGS+=-r
 ifeq ($(SCCC_BUILD),DEBUG)
 BIN_SUFFIX:=$(BIN_SUFFIX)-d
 CPPFLAGS+=-DDEBUG=1
-CCFLAGS+=-O2 -g3
+CCFLAGS+=-O0 -g3
 $(info Build = DEBUG)
 
 else ifeq ($(SCCC_BUILD),RELEASE)
