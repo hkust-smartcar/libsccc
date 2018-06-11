@@ -90,6 +90,9 @@
 #elif defined(K60_2018_CAMERA)
 #include "libsc/k60/config/2018_camera.h"
 
+#elif defined(K60_2018_CREATIVE)
+#include "libsc/k60/config/2018_creative.h"
+
 #elif defined(K60_HANDTECH_D10DEV)
 #include "libsc/k60/config/handtech_d10dev.h"
 
