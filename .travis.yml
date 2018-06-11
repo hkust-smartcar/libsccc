@@ -3,10 +3,10 @@ cache: apt
 
 env:
   - SCCC_CONFIG=VCAN_FX15DEV
-  - SCCC_CONFIG=2016_CAMERA
-  - SCCC_CONFIG=2016_CCD
-  - SCCC_CONFIG=2016_RAIL
-  - SCCC_CONFIG=2016_MAGNETIC
+  - SCCC_CONFIG=HANDTECH_D10DEV
+  - SCCC_CONFIG=2017_INNO
+  - SCCC_CONFIG=2018_CREATIVE
+  - SCCC_CONFIG=2018_CAMERA
 
 before_install:
   - sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded -y
