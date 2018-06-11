@@ -404,7 +404,7 @@ void MT9V034::Start() {
 }
 void MT9V034::Stop() {
 }
-Byte** MT9V034::LockBuffer() {
+Byte* MT9V034::LockBuffer() {
 	return nullptr;
 }
 void MT9V034::UnlockBuffer() {

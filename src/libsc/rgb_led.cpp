@@ -154,6 +154,7 @@ namespace
 		product.pin = GetRPin(config.id);
 		// Default off
 		product.is_high = config.is_active_low;
+		product.config.set(Pin::Config::ConfigBit::kHighDriveStrength);
 		return product;
 	}
 
@@ -163,6 +164,7 @@ namespace
 		product.pin = GetGPin(config.id);
 		// Default off
 		product.is_high = config.is_active_low;
+		product.config.set(Pin::Config::ConfigBit::kHighDriveStrength);
 		return product;
 	}
 
@@ -172,6 +174,7 @@ namespace
 		product.pin = GetBPin(config.id);
 		// Default off
 		product.is_high = config.is_active_low;
+		product.config.set(Pin::Config::ConfigBit::kHighDriveStrength);
 		return product;
 	}
 
