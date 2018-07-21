@@ -46,6 +46,30 @@ inline Pin::Name GetPin(const uint8_t id)
 	return LIBSC_SERVO0;
 }
 
+#elif LIBSC_USE_SERVO == 4
+
+inline Pin::Name GetPin(const uint8_t id)
+{
+	switch (id)
+	{
+	default:
+		assert(false);
+		// no break
+
+	case 0:
+		return LIBSC_SERVO0;
+
+	case 1:
+		return LIBSC_SERVO1;
+
+	case 2:
+		return LIBSC_SERVO2;
+
+	case 3:
+		return LIBSC_SERVO3;
+	}
+}
+
 #else
 inline Pin::Name GetPin(const uint8_t id)
 {

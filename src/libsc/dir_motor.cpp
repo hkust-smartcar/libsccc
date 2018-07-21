@@ -96,6 +96,73 @@ inline Pin::Name GetDirPin(const uint8_t id)
 	}
 }
 
+#elif LIBSC_USE_MOTOR == 8
+inline Pin::Name GetPwmPin(const uint8_t id)
+{
+	switch (id)
+	{
+	default:
+		assert(false);
+
+	case 0:
+		return LIBSC_MOTOR0_PWM;
+
+	case 1:
+		return LIBSC_MOTOR1_PWM;
+
+	case 2:
+		return LIBSC_MOTOR2_PWM;
+
+	case 3:
+		return LIBSC_MOTOR3_PWM;
+
+	case 4:
+		return LIBSC_MOTOR4_PWM;
+
+	case 5:
+		return LIBSC_MOTOR5_PWM;
+
+	case 6:
+		return LIBSC_MOTOR6_PWM;
+
+	case 7:
+		return LIBSC_MOTOR7_PWM;
+	}
+}
+
+inline Pin::Name GetDirPin(const uint8_t id)
+{
+	switch (id)
+	{
+	default:
+		assert(false);
+
+	case 0:
+		return LIBSC_MOTOR0_DIR;
+
+	case 1:
+		return LIBSC_MOTOR1_DIR;
+
+	case 2:
+		return LIBSC_MOTOR2_DIR;
+
+	case 3:
+		return LIBSC_MOTOR3_DIR;
+
+	case 4:
+		return LIBSC_MOTOR4_DIR;
+
+	case 5:
+		return LIBSC_MOTOR5_DIR;
+
+	case 6:
+		return LIBSC_MOTOR6_DIR;
+
+	case 7:
+		return LIBSC_MOTOR7_DIR;
+	}
+}
+
 
 #else
 inline Pin::Name GetPwmPin(const uint8_t id)

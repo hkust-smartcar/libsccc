@@ -93,6 +93,9 @@
 #elif defined(K60_2018_CREATIVE)
 #include "libsc/k60/config/2018_creative.h"
 
+#elif defined(K60_2018_CREATIVE2)
+#include "libsc/k60/config/2018_creative2.h"
+
 #elif defined(K60_HANDTECH_D10DEV)
 #include "libsc/k60/config/handtech_d10dev.h"
 

@@ -77,6 +77,113 @@ inline uint32_t GetDeadtime(const uint8_t id)
 
 #endif // PINOUT_FTM_COUNT
 
+#elif LIBSC_USE_MOTOR == 8
+inline Pin::Name GetPwmAPin(const uint8_t id)
+{
+	switch (id)
+	{
+	default:
+		assert(false);
+		// no break
+
+	case 0:
+		return LIBSC_MOTOR0_PWMA;
+
+	case 1:
+		return LIBSC_MOTOR1_PWMA;
+
+	case 2:
+		return LIBSC_MOTOR2_PWMA;
+
+	case 3:
+		return LIBSC_MOTOR3_PWMA;
+
+	case 4:
+		return LIBSC_MOTOR4_PWMA;
+
+	case 5:
+		return LIBSC_MOTOR5_PWMA;
+
+	case 6:
+		return LIBSC_MOTOR6_PWMA;
+
+	case 7:
+		return LIBSC_MOTOR7_PWMA;
+	}
+}
+
+inline Pin::Name GetPwmBPin(const uint8_t id)
+{
+	switch (id)
+	{
+	default:
+		assert(false);
+		// no break
+
+	case 0:
+		return LIBSC_MOTOR0_PWMB;
+
+	case 1:
+		return LIBSC_MOTOR1_PWMB;
+
+	case 2:
+		return LIBSC_MOTOR2_PWMB;
+
+	case 3:
+		return LIBSC_MOTOR3_PWMB;
+
+	case 4:
+		return LIBSC_MOTOR4_PWMB;
+
+	case 5:
+		return LIBSC_MOTOR5_PWMB;
+
+	case 6:
+		return LIBSC_MOTOR6_PWMB;
+
+	case 7:
+		return LIBSC_MOTOR7_PWMB;
+	}
+}
+
+#if PINOUT_FTM_COUNT
+// Currently deadtime only supported on FTM
+inline uint32_t GetDeadtime(const uint8_t id)
+{
+	switch (id)
+	{
+	default:
+		assert(false);
+		// no break
+
+	case 0:
+		return LIBSC_MOTOR0_DEADTIME;
+
+	case 1:
+		return LIBSC_MOTOR1_DEADTIME;
+
+	case 2:
+		return LIBSC_MOTOR2_DEADTIME;
+
+	case 3:
+		return LIBSC_MOTOR3_DEADTIME;
+
+	case 4:
+		return LIBSC_MOTOR4_DEADTIME;
+
+	case 5:
+		return LIBSC_MOTOR5_DEADTIME;
+
+	case 6:
+		return LIBSC_MOTOR6_DEADTIME;
+
+	case 7:
+		return LIBSC_MOTOR7_DEADTIME;
+	}
+}
+
+#endif // PINOUT_FTM_COUNT
+
 #else
 inline Pin::Name GetPwmAPin(const uint8_t id)
 {
