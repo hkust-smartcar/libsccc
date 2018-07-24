@@ -278,6 +278,14 @@ inline Pin::Name GetTxPin(const uint8_t id)
 	case 1:
 		return LIBSC_UART1_TX;
 #endif
+#if LIBSC_USE_UART > 2
+	case 2:
+		return LIBSC_UART2_TX;
+#endif
+#if LIBSC_USE_UART > 3
+	case 3:
+		return LIBSC_UART3_TX;
+#endif
 	}
 }
 
@@ -294,6 +302,14 @@ inline Pin::Name GetRxPin(const uint8_t id)
 #if LIBSC_USE_UART > 1
 	case 1:
 		return LIBSC_UART1_RX;
+#endif
+#if LIBSC_USE_UART > 2
+	case 2:
+		return LIBSC_UART2_RX;
+#endif
+#if LIBSC_USE_UART > 3
+	case 3:
+		return LIBSC_UART3_RX;
 #endif
 	}
 }

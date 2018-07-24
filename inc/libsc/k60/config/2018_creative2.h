@@ -5,8 +5,11 @@
 #define LIBSC_USE_LED 4
 #define LIBSC_USE_MOTOR 8
 #define LIBSC_USE_SERVO 4
-#define LIBSC_USE_UART 2
+#define LIBSC_USE_UART 4
+#define LIBSC_USE_ENCODER 1
 
+#define LIBSC_ENCODER0_QDA libbase::k60::Pin::Name::kPta10
+#define LIBSC_ENCODER0_QDB libbase::k60::Pin::Name::kPta11
 
 #define LIBSC_JOYSTICK0_DOWN libbase::k60::Pin::Name::kPtd11
 #define LIBSC_JOYSTICK0_RIGHT libbase::k60::Pin::Name::kPtd12
@@ -94,3 +97,7 @@
 #define LIBSC_UART0_RX libbase::k60::Pin::Name::kPte24
 #define LIBSC_UART1_TX libbase::k60::Pin::Name::kPtb11
 #define LIBSC_UART1_RX libbase::k60::Pin::Name::kPtb10
+#define LIBSC_UART2_TX libbase::k60::Pin::Name::kPtb17
+#define LIBSC_UART2_RX libbase::k60::Pin::Name::kPtb16
+#define LIBSC_UART3_TX libbase::k60::Pin::Name::kPtd3
+#define LIBSC_UART3_RX libbase::k60::Pin::Name::kPtd2
